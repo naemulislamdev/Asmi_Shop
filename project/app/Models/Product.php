@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Helpers\PriceHelper;
 use App\Models\Currency;
-use DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class Product extends Model
@@ -150,7 +151,7 @@ class Product extends Model
             });
         }
         $price = $price * $curr->value;
-        $price = \PriceHelper::showPrice($price);
+        $price = PriceHelper::showPrice($price);
         if ($gs->currency_format == 0) {
             return $curr->sign . $price;
         } else {
@@ -209,7 +210,7 @@ class Product extends Model
         }
 
         $price = $price * $curr->value;
-        $price = \PriceHelper::showPrice($price);
+        $price = PriceHelper::showPrice($price);
 
         if ($gs->currency_format == 0) {
             return $curr->sign . $price;
@@ -257,7 +258,7 @@ class Product extends Model
 
         $curr = Currency::where('is_default', '=', 1)->first();
         $price = $price * $curr->value;
-        $price = \PriceHelper::showPrice($price);
+        $price = PriceHelper::showPrice($price);
 
         if ($gs->currency_format == 0) {
             return $curr->sign . $price;
@@ -317,7 +318,7 @@ class Product extends Model
 
         $price = $price * $curr->value;
         $price = \PriceHelper::showPrice($price);
-        
+
 
         if ($gs->currency_format == 0) {
             return $curr->sign . $price;
@@ -343,7 +344,7 @@ class Product extends Model
             });
         }
         $price = $price * $curr->value;
-        $price = \PriceHelper::showPrice($price);
+        $price = PriceHelper::showPrice($price);
         if ($gs->currency_format == 0) {
             return $curr->sign . $price;
         } else {
@@ -383,7 +384,7 @@ class Product extends Model
         } else {
             $curr = Currency::where('is_default', '=', 1)->first();
         }
-  
+
         $price = $price * $curr->value;
         $price = \PriceHelper::showPrice($price);
         return $price;

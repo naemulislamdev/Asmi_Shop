@@ -68,9 +68,6 @@
                                     </div>
                                 </div>
 
-
-
-
                                 @if (!Auth::check())
                                     <div class="col-lg-12">
                                         <div class="gs-checkbox-wrapper" data-bs-toggle="collapse"
@@ -129,7 +126,7 @@
                                 </div>
                                 <div class="col-lg-6 d-none" id="shipshow">
                                     <div class="input-wrapper">
-                                        <label class="label-cls" for="Shipping">@lang('Shipping')</label>
+                                        <label class="label-cls" for="Shipping">@lang('Shipping') <span class="text-danger">*</span></label>
                                         <select class="input-cls" name="pickup_location">
                                             @foreach ($pickups as $pickup)
                                                 <option value="{{ $pickup->location }}">
@@ -143,7 +140,7 @@
 
                                 <div class="col-lg-6">
                                     <div class="input-wrapper">
-                                        <label class="label-cls" for="customer_name">@lang('Name')</label>
+                                        <label class="label-cls" for="customer_name">@lang('Name') <span class="text-danger">*</span></label>
                                         <input class="input-cls" id="customer_name" type="text" name="customer_name"
                                             placeholder="@lang('Full Name')"
                                             value="{{ Auth::check() ? Auth::user()->name : '' }}">
@@ -151,7 +148,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="input-wrapper">
-                                        <label class="label-cls" for="customer_email">@lang('Email')</label>
+                                        <label class="label-cls" for="customer_email">@lang('Email') <span class="text-danger">*</span></label>
                                         <input class="input-cls" id="customer_email" type="text"
                                             name="customer_email" placeholder="@lang('Your Email')"
                                             value="{{ Auth::check() ? Auth::user()->email : '' }}">
@@ -161,47 +158,48 @@
                                 <div class="col-lg-6">
                                     <div class="input-wrapper">
                                         <label class="label-cls" for="phone">
-                                            @lang('Phone Number')
+                                            @lang('Phone Number') <span class="text-danger">*</span>
                                         </label>
                                         <input class="input-cls" id="phone" type="tel"
                                             placeholder="@lang('Phone Number')" name="customer_phone"
                                             value="{{ Auth::check() ? Auth::user()->phone : '' }}">
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-12">
                                     <div class="input-wrapper">
                                         <label class="label-cls" for="address">
-                                            @lang('Address')
+                                            @lang('Address') <span class="text-danger">*</span>
                                         </label>
                                         <input class="input-cls" id="address" type="text"
                                             placeholder="@lang('Address')" name="customer_address"
                                             value="{{ Auth::check() ? Auth::user()->address : '' }}">
                                     </div>
                                 </div>
-
-
-                                <div class="col-lg-6">
+                                <div class="col-lg-12">
                                     <div class="input-wrapper">
-                                        <label class="label-cls" for="zip">
-                                            @lang('Postal Code')
+                                        <label class="label-cls" for="Order-Note">
+                                            @lang('Order Note')
                                         </label>
-                                        <input class="input-cls" id="zip" type="text"
-                                            placeholder="@lang('Postal Code')" name="customer_zip"
-                                            value="{{ Auth::check() ? Auth::user()->zip : '' }}">
+                                        <input class="input-cls" id="Order-Note" name="order_notes" type="text"
+                                            placeholder="@lang('Order note (Optional)')">
                                     </div>
                                 </div>
 
+                                <input type="hidden"
+                                            placeholder="@lang('Postal Code')" name="customer_zip"
+                                            value="null">
 
-                                <div class="col-lg-6">
+
+                                {{-- <div class="col-lg-6">
                                     <div class="input-wrapper">
                                         <label class="label-cls">@lang('Select Country')</label>
                                         <select class="nice-select" id="select_country" name="customer_country" required>
                                             @include('includes.countries')
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
-                                <div class="col-lg-6 d-none select_state">
+                                {{-- <div class="col-lg-6 d-none select_state">
                                     <div class="input-wrapper">
                                         <label class="label-cls">@lang('Select State')</label>
                                         <select class="nice-select" id="show_state" name="customer_state" required>
@@ -217,11 +215,11 @@
 
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                                 <!-- chekbox -->
-                                <div class="col-lg-12  {{ $digital == 1 ? 'd-none' : '' }}" id="ship_deff">
+                                {{-- <div class="col-lg-12  {{ $digital == 1 ? 'd-none' : '' }}" id="ship_deff">
                                     <div class="gs-checkbox-wrapper" data-bs-toggle="collapse"
                                         data-bs-target="#show_shipping_address" role="region" aria-expanded="false"
                                         aria-controls="show_shipping_address">
@@ -235,12 +233,12 @@
                                         </label>
                                         <label for="shpto">@lang('Ship to a Different Address?')</label>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 
                         <!-- Shipping Address -->
-                        <div class="collapse" id="show_shipping_address">
+                        {{-- <div class="collapse" id="show_shipping_address">
                             <h4 class="form-title">@lang('Shipping Address')</h4>
                             <div class="row g-4">
                                 <div class="col-lg-6">
@@ -312,7 +310,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="col-lg-5 col-xl-4 wow fadeInUp" data-wow-delay=".2s">
                         <div class="summary-box">
@@ -480,15 +478,6 @@
                     value="{{ Session::has('coupon') ? Session::get('coupon_id') : '' }}">
                 <input type="hidden" name="user_id" id="user_id"
                     value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
-
-
-
-
-
-
-
-
-
             </form>
         </div>
     </div>
@@ -600,7 +589,7 @@
 
 
         $(document).ready(function() {
-    
+
             $('#show_state').niceSelect("destroy");
             let country_id = $('#select_country option:selected').attr('data');
             let state_id = $('#select_country option:selected').attr('rel2');

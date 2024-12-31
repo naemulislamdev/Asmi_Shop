@@ -383,14 +383,77 @@
                                 $is_Digital = 1;
                             @endphp
                         @endforeach
+                        <div class="select-payment-list-wrapper">
+                            <h5 class="title">@lang('Select payment Method')</h5>
 
+                            <div class="list-wrapper">
+                                @foreach ($gateways as $gt)
+                                    @if ($gt->checkout == 1)
+                                        @if ($gt->type == 'manual')
+                                            @if ($digital == 0)
+                                                <!-- single payment input -->
+                                                <div class="gs-radio-wrapper payment" data-show="{{ $gt->showForm() }}"
+                                                    data-form="{{ $gt->showCheckoutLink() }}"
+                                                    data-href="{{ route('front.load.payment', ['slug1' => $gt->showKeyword(), 'slug2' => $gt->id]) }}">
+                                                    <input type="radio" id="pl{{ $gt->id }}" name="payment_1">
+                                                    <label class="icon-label" for="pl{{ $gt->id }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                                            height="20" viewBox="0 0 20 20" fill="none">
+                                                            <rect x="0.5" y="0.5" width="19" height="19"
+                                                                rx="9.5" fill="#FDFDFD" />
+                                                            <rect x="0.5" y="0.5" width="19" height="19"
+                                                                rx="9.5" stroke="#EE1243" />
+                                                            <circle cx="10" cy="10" r="4" fill="#EE1243" />
+                                                        </svg>
+                                                    </label>
+                                                    <label class="label-wrapper" for="pl{{ $gt->id }}">
+                                                        <span class="label-title">{{ $gt->title }}</span>
+                                                        <span class="label-subtitle">{{ $gt->subtitle }}</span>
+                                                    </label>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="gs-radio-wrapper payment" data-val="{{ $gt->keyword }}"
+                                                data-show="{{ $gt->showForm() }}"
+                                                data-form="{{ $gt->showCheckoutLink() }}"
+                                                data-href="{{ route('front.load.payment', ['slug1' => $gt->showKeyword(), 'slug2' => $gt->id]) }}">
+                                                <input type="radio" id="pl{{ $gt->id }}" name="payment_1">
+                                                <label class="icon-label" for="pl{{ $gt->id }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                        viewBox="0 0 20 20" fill="none">
+                                                        <rect x="0.5" y="0.5" width="19" height="19"
+                                                            rx="9.5" fill="#FDFDFD" />
+                                                        <rect x="0.5" y="0.5" width="19" height="19"
+                                                            rx="9.5" stroke="#EE1243" />
+                                                        <circle cx="10" cy="10" r="4" fill="#EE1243" />
+                                                    </svg>
+                                                </label>
+                                                <label class="label-wrapper" for="pl{{ $gt->id }}">
+                                                    <span class="label-title"> {{ $gt->name }}</span>
+                                                    @if ($gt->information != null)
+                                                        <span class="label-subtitle">{{ $gt->getAutoDataText() }}</span>
+                                                    @endif
+                                                </label>
+                                            </div>
+                                        @endif
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
 
 
                     </div>
                     <div class="col-lg-5 col-xl-4 wow-replaced" data-wow-delay=".2s">
                         <div class="summary-box">
                             <h4 class="form-title">@lang('Summery')</h4>
-
+<!-- Apply Coupon Code -->
+<div class="summary-inner-box">
+    <h6 class="summary-title">@lang('Apply Coupon Code')</h6>
+    <div class="coupon-wrapper">
+        <input type="text" id="code" placeholder="@lang('Coupon Code')">
+        <button type="submit" id="check_coupon">@lang('Apply')</button>
+    </div>
+</div>
 
                             @if ($digital == 0)
                                 <!-- shipping methods -->
@@ -632,26 +695,11 @@
                     value="{{ Session::has('coupon') ? Session::get('coupon_id') : '' }}">
                 <input type="hidden" name="user_id" id="user_id"
                     value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
-
-
-
-
-
-
             </form>
         </div>
     </div>
     <!--  checkout wrapper end-->
 
-    @php
-        $country = App\Models\Country::where('country_name', $step1->customer_country)->first();
-        $isState = isset($step1->customer_state) ? $step1->customer_state : 0;
-    @endphp
-    <input type="hidden" id="select_country" name="country_id" value="{{ $country->id }}">
-    <input type="hidden" id="state_id" name="state_id"
-        value="{{ isset($step1->customer_state) ? $step1->customer_state : 0 }}">
-    <input type="hidden" id="is_state" name="is_state" value="{{ $isState }}">
-    <input type="hidden" id="state_url" name="state_url" value=" {{ route('country.wise.state', $country->id) }}">
 @endsection
 
 
@@ -818,5 +866,65 @@
                 $('.packing_cost_view').html('{{ $curr->sign }}' + mpack);
             });
         }
+        $(document).on("click", "#check_coupon", function () {
+        var val = $("#code").val();
+        var total = $("#ttotal").val();
+        var ship = 0;
+        $.ajax({
+            type: "GET",
+            url: mainurl + "/carts/coupon/check",
+            data: {
+                code: val,
+                total: total,
+                shipping_cost: ship
+            },
+            success: function (data) {
+                if (data == 0) {
+                    toastr.error('{{ __('Coupon not found') }}');
+                    $("#code").val("");
+                } else if (data == 2) {
+                    toastr.error('{{ __('Coupon already have been taken') }}');
+                    $("#code").val("");
+                } else {
+                    $("#check-coupon-form").toggle();
+                    $(".discount-bar").removeClass('d-none');
+
+                    if (pos == 0) {
+                        $('.total-cost-dum #total-cost').html('{{ $curr->sign }}' + data[0]);
+                        $('#discount').html('{{ $curr->sign }}' + data[2]);
+                    } else {
+                        $('.total-cost-dum #total-cost').html(data[0]);
+                        $('#discount').html(data[2] + '{{ $curr->sign }}');
+                    }
+                    $("#coupon_id").val(data[3]);
+                    $('#grandtotal').val(data[0]);
+                    $('#tgrandtotal').val(data[0]);
+                    $('#coupon_code').val(data[1]);
+                    $('#coupon_discount').val(data[2]);
+                    if (data[4] != 0) {
+                        $('.dpercent').html('(' + data[4] + ')');
+                    } else {
+                        $('.dpercent').html('');
+                    }
+
+
+                    var ttotal = data[6] + parseFloat(mship) + parseFloat(mpack);
+                    ttotal = parseFloat(ttotal);
+                    if (ttotal % 1 != 0) {
+                        ttotal = ttotal.toFixed(2);
+                    }
+
+                    if (pos == 0) {
+                        $('.total-amount').html('{{ $curr->sign }}' + ttotal)
+                    } else {
+                        $('.total-amount').html(ttotal + '{{ $curr->sign }}')
+                    }
+                    toastr.success(lang.coupon_found);
+                    $("#code").val("");
+                }
+            }
+        });
+        return false;
+    });
     </script>
 @endsection

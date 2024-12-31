@@ -1,5 +1,5 @@
 
 /project/vendor
 /project/.env
-/project/.env.example
+project/.env.example
 *.zip
