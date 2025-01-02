@@ -7,28 +7,28 @@ use App\{
     Models\Order,
     Classes\GeniusMailer
 };
+use App\Helpers\OrderHelper;
 use App\Helpers\PriceHelper;
 use App\Models\Country;
 use App\Models\Reward;
 use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Session;
-use OrderHelper;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ManualPaymentController extends CheckoutBaseControlller
 {
     public function store(Request $request)
     {
-        $input = $request->all();
+        $requestInput = $request->all();
         $step1 = Session::get('step1');
-        $step2 = Session::get('step2');
-        $input = array_merge($step1, $step2, $input);
-        
+        $input = array_merge($step1, $requestInput);
+
         $rules = ['txnid' => 'required'];
         $messages = ['required' => __('The Transaction ID field is required.')];
-        \Validator::make($input, $rules, $messages);
+        Validator::make($input, $rules, $messages);
         if ($request->pass_check) {
             $auth = OrderHelper::auth_check($input); // For Authentication Checking
             if (!$auth['auth_success']) {
@@ -79,8 +79,6 @@ class ManualPaymentController extends CheckoutBaseControlller
             $input['vendor_packing_ids'] = $vendor_packing_ids;
             $input['vendor_ids'] = $vendor_ids;
         } else {
-
-
             // multi shipping
 
             $orderTotal = $orderCalculate['total_amount'];
@@ -117,11 +115,12 @@ class ManualPaymentController extends CheckoutBaseControlller
         $input['pay_amount'] = $orderTotal;
         $input['order_number'] = Str::random(4) . time();
         $input['wallet_price'] = $request->wallet_price / $this->curr->value;
+        $input['customer_country'] = 'Bangladesh';
 
         if ($input['tax_type'] == 'state_tax') {
             $input['tax_location'] = State::findOrFail($input['tax'])->state;
         } else {
-            $input['tax_location'] = Country::findOrFail($input['tax'])->country_name;
+            $input['tax_location'] = 'Bangladesh'; // Country::findOrFail($input['tax'])->country_name;
         }
         $input['tax'] = Session::get('current_tax');
 
@@ -132,7 +131,7 @@ class ManualPaymentController extends CheckoutBaseControlller
             $sub = $val * $this->gs->affilate_charge;
             if ($temp_affilate_users != null) {
                 $t_sub = 0;
-                foreach ($temp_affilate_users as $t_cost) {
+                foreach($temp_affilate_users as $t_cost) {
                     $t_sub += $t_cost['charge'];
                 }
                 $sub = $sub - $t_sub;

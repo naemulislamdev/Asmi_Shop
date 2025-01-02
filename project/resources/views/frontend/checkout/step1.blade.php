@@ -31,10 +31,6 @@
                         </div>
                         <div class="single-step">
                             <span class="step-btn">2</span>
-                            <span class="step-txt">@lang('Details')</span>
-                        </div>
-                        <div class="single-step">
-                            <span class="step-btn">3</span>
                             <span class="step-txt">@lang('Payment')</span>
                         </div>
                     </div>
@@ -49,109 +45,18 @@
                         <!-- personal information -->
                         <div class="mb-40">
                             <h4 class="form-title">@lang('Personal Information')</h4>
-                            <div class="row g-4">
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="name">@lang('Name')</label>
-                                        <input class="input-cls" id="name" name="personal_name"
-                                            value="{{ Auth::check() ? Auth::user()->name : '' }}" type="text"
-                                            placeholder="@lang('Enter Your Name')" {{ Auth::check() ? 'readonly' : '' }}>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="email">@lang('Email')</label>
-                                        <input class="input-cls" id="email" type="email" name="personal_email"
-                                            placeholder="@lang('Enter Your Emai')l"
-                                            value="{{ Auth::check() ? Auth::user()->email : '' }}"
-                                            {{ Auth::check() ? 'readonly' : '' }}>
-                                    </div>
-                                </div>
-
-                                @if (!Auth::check())
-                                    <div class="col-lg-12">
-                                        <div class="gs-checkbox-wrapper" data-bs-toggle="collapse"
-                                            data-bs-target="#show_passwords" aria-expanded="false"
-                                            aria-controls="show_passwords" role="region">
-                                            <input type="checkbox" id="showca">
-                                            <label class="icon-label" for="showca">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
-                                                    viewBox="0 0 12 12" fill="none">
-                                                    <path d="M10 3L4.5 8.5L2 6" stroke="#EE1243" stroke-width="1.6666"
-                                                        stroke-linecap="round" stroke-linejoin="round" />
-                                                </svg>
-                                            </label>
-                                            <label for="showca">@lang('Create an account ?')</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 collapse" id="show_passwords">
-                                        <div class="row gy-4">
-                                            <div class="col-lg-6">
-                                                <div class="input-wrapper">
-                                                    <label class="label-cls" for="crpass">
-                                                        @lang('Create Password')
-                                                    </label>
-                                                    <input class="input-cls" id="crpass" type="password"
-                                                        placeholder="@lang('Create Your Password')">
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="input-wrapper">
-                                                    <label class="label-cls" for="conpass">
-                                                        @lang('Confirm Password')
-                                                    </label>
-                                                    <input class="input-cls" id="conpass" type="password"
-                                                        placeholder="@lang('Confirm Password')">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-
-                            </div>
                         </div>
 
                         <!-- Billing Details -->
                         <div class="mb-40">
-                            <h4 class="form-title">@lang('Billing Details')</h4>
                             <div class="row g-4">
-                                <div class="col-lg-6 {{ $digital == 1 ? 'd-none' : '' }}">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="Shipping">@lang('Shipping')</label>
-                                        <select class="input-cls nice-select" id="shipop" name="shipping" required="">
-                                            <option value="shipto">{{ __('Ship To Address') }}</option>
-                                            <option value="pickup">{{ __('Pick Up') }}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 d-none" id="shipshow">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="Shipping">@lang('Shipping') <span class="text-danger">*</span></label>
-                                        <select class="input-cls" name="pickup_location">
-                                            @foreach ($pickups as $pickup)
-                                                <option value="{{ $pickup->location }}">
-                                                    {{ $pickup->location }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-
-
                                 <div class="col-lg-6">
                                     <div class="input-wrapper">
-                                        <label class="label-cls" for="customer_name">@lang('Name') <span class="text-danger">*</span></label>
+                                        <label class="label-cls" for="customer_name">@lang('Name') <span
+                                                class="text-danger">*</span></label>
                                         <input class="input-cls" id="customer_name" type="text" name="customer_name"
                                             placeholder="@lang('Full Name')"
                                             value="{{ Auth::check() ? Auth::user()->name : '' }}">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="customer_email">@lang('Email') <span class="text-danger">*</span></label>
-                                        <input class="input-cls" id="customer_email" type="text"
-                                            name="customer_email" placeholder="@lang('Your Email')"
-                                            value="{{ Auth::check() ? Auth::user()->email : '' }}">
                                     </div>
                                 </div>
 
@@ -163,6 +68,15 @@
                                         <input class="input-cls" id="phone" type="tel"
                                             placeholder="@lang('Phone Number')" name="customer_phone"
                                             value="{{ Auth::check() ? Auth::user()->phone : '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="input-wrapper">
+                                        <label class="label-cls" for="email">@lang('Email')</label>
+                                        <input class="input-cls" id="email" type="email" name="customer_email"
+                                            placeholder="@lang('Enter Your Emai')l"
+                                            value="{{ Auth::check() ? Auth::user()->email : '' }}"
+                                            {{ Auth::check() ? 'readonly' : '' }}>
                                     </div>
                                 </div>
                                 <div class="col-lg-12">
@@ -180,137 +94,56 @@
                                         <label class="label-cls" for="Order-Note">
                                             @lang('Order Note')
                                         </label>
-                                        <input class="input-cls" id="Order-Note" name="order_notes" type="text"
+                                        <input class="input-cls" id="Order-Note" name="order_note" type="text"
                                             placeholder="@lang('Order note (Optional)')">
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row g-4">
 
-                                <input type="hidden"
-                                            placeholder="@lang('Postal Code')" name="customer_zip"
-                                            value="null">
-
-
-                                {{-- <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls">@lang('Select Country')</label>
-                                        <select class="nice-select" id="select_country" name="customer_country" required>
-                                            @include('includes.countries')
-                                        </select>
-                                    </div>
-                                </div> --}}
-
-                                {{-- <div class="col-lg-6 d-none select_state">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls">@lang('Select State')</label>
-                                        <select class="nice-select" id="show_state" name="customer_state" required>
-
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-6 d-none">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls">@lang('Select City')</label>
-                                        <select class="nice-select " id="show_city" name="customer_city" required>
-
-                                        </select>
-                                    </div>
-                                </div> --}}
-
-
-                                <!-- chekbox -->
-                                {{-- <div class="col-lg-12  {{ $digital == 1 ? 'd-none' : '' }}" id="ship_deff">
+                            @if (!Auth::check())
+                                <div class="col-lg-12">
                                     <div class="gs-checkbox-wrapper" data-bs-toggle="collapse"
-                                        data-bs-target="#show_shipping_address" role="region" aria-expanded="false"
-                                        aria-controls="show_shipping_address">
-                                        <input type="checkbox" id="shpto" name="is_shipping" value="1">
-                                        <label class="icon-label" for="shpto">
+                                        data-bs-target="#show_passwords" aria-expanded="false"
+                                        aria-controls="show_passwords" role="region">
+                                        <input type="checkbox" id="showca">
+                                        <label class="icon-label" for="showca">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                                 viewBox="0 0 12 12" fill="none">
                                                 <path d="M10 3L4.5 8.5L2 6" stroke="#EE1243" stroke-width="1.6666"
                                                     stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         </label>
-                                        <label for="shpto">@lang('Ship to a Different Address?')</label>
+                                        <label for="showca">@lang('Create an account ?')</label>
                                     </div>
-                                </div> --}}
-                            </div>
+                                </div>
+                                <div class="col-12 collapse" id="show_passwords">
+                                    <div class="row gy-4">
+
+                                        <div class="col-lg-6">
+                                            <div class="input-wrapper">
+                                                <label class="label-cls" for="crpass">
+                                                    @lang('Create Password')
+                                                </label>
+                                                <input class="input-cls" id="crpass" type="password"
+                                                    placeholder="@lang('Create Your Password')">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="input-wrapper">
+                                                <label class="label-cls" for="conpass">
+                                                    @lang('Confirm Password')
+                                                </label>
+                                                <input class="input-cls" id="conpass" type="password"
+                                                    placeholder="@lang('Confirm Password')">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
                         </div>
-
-                        <!-- Shipping Address -->
-                        {{-- <div class="collapse" id="show_shipping_address">
-                            <h4 class="form-title">@lang('Shipping Address')</h4>
-                            <div class="row g-4">
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="shipping_name">
-                                            @lang('Name')
-                                        </label>
-                                        <input class="input-cls" id="shipping_name" type="text"
-                                            placeholder="@lang('Full Name')" name="shipping_name">
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="shipping_phone">
-                                            @lang('Phone Number')
-                                        </label>
-                                        <input class="input-cls" id="shipping_phone" name="shipping_phone"
-                                            type="tel" placeholder="@lang('Phone Number')">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="shipping_address">
-                                            @lang('Address')
-                                        </label>
-                                        <input class="input-cls" id="shipping_address" name="shipping_address"
-                                            type="text" placeholder="@lang('Address')">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="shipping_zip">
-                                            @lang('Postal Code')
-                                        </label>
-                                        <input class="input-cls" id="shipping_zip" name="shipping_zip" type="text"
-                                            placeholder="@lang('Postal Code')">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="shipping_city">@lang('City')</label>
-                                        <input class="input-cls" id="shipping_city" name="shipping_city" type="text"
-                                            placeholder="@lang('City')">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="shipping_state">@lang('State')</label>
-                                        <input class="input-cls" id="shipping_state" name="shipping_state"
-                                            type="text" placeholder="@lang('State')">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls">@lang('Select Country')</label>
-                                        <select class="nice-select" name="shipping_country">
-                                            @include('partials.user.countries')
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="input-wrapper">
-                                        <label class="label-cls" for="Order-Note">
-                                            @lang('Order Note')
-                                        </label>
-                                        <input class="input-cls" id="Order-Note" name="order_notes" type="text"
-                                            placeholder="@lang('Order note (Optional)')">
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                     <div class="col-lg-5 col-xl-4 wow fadeInUp" data-wow-delay=".2s">
                         <div class="summary-box">

@@ -349,25 +349,23 @@ class CheckoutController extends Controller
     public function checkoutStep1(Request $request)
     {
         $step1 = $request->all();
+        //dd($step1);
         Session::put('step1', $step1);
         return redirect()->route('front.checkout.step2');
     }
 
-    public function checkoutStep2Submit(Request $request)
-    {
-        $step2 = $request->all();
-        Session::put('step2', $step2);
-        return redirect()->route('front.checkout.step3');
-    }
+    // public function checkoutStep2Submit(Request $request)
+    // {
+    //     $step2 = $request->all();
+    //     Session::put('step2', $step2);
+    //     return redirect()->route('front.checkout.step3');
+    // }
 
-    public function checkoutstep3()
+    public function checkoutStep2Submit()
     {
 
         if (!Session::has('step1')) {
             return redirect()->route('front.checkout')->with('success', __("Please fill up step 1."));
-        }
-        if (!Session::has('step2')) {
-            return redirect()->route('front.checkout.step2')->with('success', __("Please fill up step 2."));
         }
 
         if (!Session::has('cart')) {

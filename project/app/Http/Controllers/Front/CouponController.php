@@ -131,20 +131,20 @@ class CouponController extends Controller
 
     public function couponcheck(Request $request)
     {
+        $requestTotal = (float) preg_replace('/[^0-9\.]/ui', '', $request->total);
         $code = $_GET['code'];
         $coupon = Coupon::where('code', '=', $code)->first();
 
         if (!$coupon) {
             return response()->json(0);
         }
-
         $cart = Session::get('cart');
         $discount_items = [];
         foreach ($cart->items as $key => $item) {
             $product = Product::findOrFail($item['item']['id']);
-
             if ($coupon->coupon_type == 'category') {
                 if ($product->category_id == $coupon->category) {
+
                     $discount_items[] = $key;
                 }
             } elseif ($coupon->coupon_type == 'sub_category') {
@@ -165,6 +165,7 @@ class CouponController extends Controller
 
         $main_discount_price = 0;
         foreach ($cart->items as $ckey => $cproduct) {
+
             if (in_array($ckey, $discount_items)) {
                 $main_discount_price += $cproduct['price'];
             }
@@ -191,6 +192,7 @@ class CouponController extends Controller
             $to = date('Y-m-d', strtotime($coupon->end_date));
 
             if ($from <= $today && $to >= $today) {
+
                 if ($coupon->status == 1) {
                     $oldCart = Session::has('cart') ? Session::get('cart') : null;
                     $val = Session::has('already') ? Session::get('already') : null;
@@ -200,7 +202,7 @@ class CouponController extends Controller
                     $cart = new Cart($oldCart);
                     if ($coupon->type == 0) {
 
-                        if ($coupon->price >= $total) {
+                        if ($coupon->price >= $total) { //10.1o >= 5.61
                             return response()->json(3);
                         }
                         Session::put('already', $code);
@@ -212,7 +214,7 @@ class CouponController extends Controller
 
                         $val = $total / 100;
                         $sub = $val * $coupon->price;
-                        $total = $request->total - $sub;
+                        $total = $requestTotal - $sub;
 
                         $data[0] = PriceHelper::showCurrencyPrice($total);
                         $data[1] = $code;
@@ -237,7 +239,7 @@ class CouponController extends Controller
                             return response()->json(3);
                         }
                         Session::put('already', $code);
-                        $total = $request->total - round($coupon->price * $curr->value, 2);
+                        $total = $requestTotal - round($coupon->price * $curr->value, 2);
                         $data[0] = $total;
                         $data[1] = $code;
                         $data[2] = $coupon->price * $curr->value;

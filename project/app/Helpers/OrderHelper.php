@@ -13,8 +13,8 @@ use App\{
     Models\UserNotification
 };
 use App\Models\AffliateBonus;
-use Auth;
-use Session;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class OrderHelper
@@ -159,7 +159,7 @@ class OrderHelper
         try {
             foreach ($cart->items as $prod) {
                 $x = (string)$prod['size_qty'];
-               
+
                 if (!empty($x) && $x != "undefined") {
                     $product = Product::find($prod['item']['id']);
                     $x = (int)$x;
@@ -198,7 +198,7 @@ class OrderHelper
 
     public static function vendor_order_check($cart, $order)
     {
-  
+
         try {
             $notf = array();
 

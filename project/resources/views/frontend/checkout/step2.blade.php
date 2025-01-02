@@ -35,10 +35,6 @@
                         </div>
                         <div class="single-step active">
                             <span class="step-btn">2</span>
-                            <span class="step-txt">@lang('Details')</span>
-                        </div>
-                        <div class="single-step">
-                            <span class="step-btn">3</span>
                             <span class="step-txt">@lang('Payment')</span>
                         </div>
                     </div>
@@ -46,7 +42,7 @@
             </div>
 
             <!-- address-->
-            <form class="address-wrapper" action="{{ route('front.checkout.step2.submit') }}" method="POST">
+            <form class="address-wrapper checkoutform" method="POST">
                 @csrf
                 <div class="row gy-4">
                     <div class="col-lg-7 col-xl-8 wow-replaced" data-wow-delay=".2s">
@@ -109,7 +105,7 @@
                                                 stroke-linejoin="round" />
                                         </svg>
 
-                                        <span class="title">{{ $step1->customer_email }}</span>
+                                        <span class="title">{{ $step1->customer_email ?? 'Empty' }}</span>
                                     </li>
                                 </ul>
                             </div>
@@ -179,7 +175,7 @@
                                                     stroke-linejoin="round" />
                                             </svg>
 
-                                            <span class="title">{{ $step1->customer_email }}</span>
+                                            <span class="title">{{ $step1->customer_email ?? 'Empty' }}</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -439,21 +435,20 @@
                                     @endif
                                 @endforeach
                             </div>
+                            <div class="transection-wrapper pay-area"></div>
                         </div>
-
-
                     </div>
                     <div class="col-lg-5 col-xl-4 wow-replaced" data-wow-delay=".2s">
                         <div class="summary-box">
                             <h4 class="form-title">@lang('Summery')</h4>
-<!-- Apply Coupon Code -->
-<div class="summary-inner-box">
-    <h6 class="summary-title">@lang('Apply Coupon Code')</h6>
-    <div class="coupon-wrapper">
-        <input type="text" id="code" placeholder="@lang('Coupon Code')">
-        <button type="submit" id="check_coupon">@lang('Apply')</button>
-    </div>
-</div>
+                            <!-- Apply Coupon Code -->
+                            <div class="summary-inner-box">
+                                <h6 class="summary-title">@lang('Apply Coupon Code')</h6>
+                                <div class="coupon-wrapper">
+                                    <input type="text" id="code" placeholder="@lang('Coupon Code')">
+                                    <button type="submit" id="check_coupon">@lang('Apply')</button>
+                                </div>
+                            </div>
 
                             @if ($digital == 0)
                                 <!-- shipping methods -->
@@ -610,7 +605,7 @@
                             <div class="summary-inner-box">
                                 <div class="btn-wrappers">
                                     <button type="submit" class="template-btn w-100">
-                                        @lang('Continue')
+                                        @lang('Submit')
                                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24"
                                             viewBox="0 0 25 24" fill="none">
                                             <g clip-path="url(#clip0_489_34176)">
@@ -710,6 +705,19 @@
     <script src="https://js.stripe.com/v3/"></script>
 
 
+    <script type="text/javascript">
+        // under input field
+        $('.payment:first').children('input').prop('checked', true);
+        $('.checkoutform').attr('action', $('.payment:first').attr('data-form'));
+        $(".pay-area").load($('.payment:first').data('href'));
+
+        var show = $('.payment:first').data('show');
+        if (show != 'no') {
+            $('.pay-area').removeClass('d-none');
+        } else {
+            $('.pay-area').addClass('d-none');
+        }
+    </script>
 
 
 
@@ -866,65 +874,92 @@
                 $('.packing_cost_view').html('{{ $curr->sign }}' + mpack);
             });
         }
-        $(document).on("click", "#check_coupon", function () {
-        var val = $("#code").val();
-        var total = $("#ttotal").val();
-        var ship = 0;
-        $.ajax({
-            type: "GET",
-            url: mainurl + "/carts/coupon/check",
-            data: {
-                code: val,
-                total: total,
-                shipping_cost: ship
-            },
-            success: function (data) {
-                if (data == 0) {
-                    toastr.error('{{ __('Coupon not found') }}');
-                    $("#code").val("");
-                } else if (data == 2) {
-                    toastr.error('{{ __('Coupon already have been taken') }}');
-                    $("#code").val("");
-                } else {
-                    $("#check-coupon-form").toggle();
-                    $(".discount-bar").removeClass('d-none');
+        $(document).on("click", "#check_coupon", function() {
+            var val = $("#code").val();
+            var total = $("#ttotal").val();
+            var ship = 0;
+            $.ajax({
+                type: "GET",
+                url: mainurl + "/carts/coupon/check",
+                data: {
+                    code: val,
+                    total: total,
+                    shipping_cost: ship
+                },
+                success: function(data) {
+                    if (data == 0) {
+                        toastr.error('{{ __('Coupon not found') }}');
+                        $("#code").val("");
+                    } else if (data == 2) {
+                        toastr.error('{{ __('Coupon already have been taken') }}');
+                        $("#code").val("");
+                    } else if (data == 3) {
+                        toastr.error('{{ __('Coupon unable') }}');
+                        $("#code").val("");
+                    }else {
+                        $("#check-coupon-form").toggle();
+                        $(".discount-bar").removeClass('d-none');
 
-                    if (pos == 0) {
-                        $('.total-cost-dum #total-cost').html('{{ $curr->sign }}' + data[0]);
-                        $('#discount').html('{{ $curr->sign }}' + data[2]);
-                    } else {
-                        $('.total-cost-dum #total-cost').html(data[0]);
-                        $('#discount').html(data[2] + '{{ $curr->sign }}');
-                    }
-                    $("#coupon_id").val(data[3]);
-                    $('#grandtotal').val(data[0]);
-                    $('#tgrandtotal').val(data[0]);
-                    $('#coupon_code').val(data[1]);
-                    $('#coupon_discount').val(data[2]);
-                    if (data[4] != 0) {
-                        $('.dpercent').html('(' + data[4] + ')');
-                    } else {
-                        $('.dpercent').html('');
-                    }
+                        if (pos == 0) {
+                            $('.total-cost-dum #total-cost').html('{{ $curr->sign }}' + data[0]);
+                            $('#discount').html('{{ $curr->sign }}' + data[2]);
+                        } else {
+                            $('.total-cost-dum #total-cost').html(data[0]);
+                            $('#discount').html(data[2] + '{{ $curr->sign }}');
+                        }
+                        $("#coupon_id").val(data[3]);
+                        $('#grandtotal').val(data[0]);
+                        $('#tgrandtotal').val(data[0]);
+                        $('#coupon_code').val(data[1]);
+                        $('#coupon_discount').val(data[2]);
+                        if (data[4] != 0) {
+                            $('.dpercent').html('(' + data[4] + ')');
+                        } else {
+                            $('.dpercent').html('');
+                        }
 
 
-                    var ttotal = data[6] + parseFloat(mship) + parseFloat(mpack);
-                    ttotal = parseFloat(ttotal);
-                    if (ttotal % 1 != 0) {
-                        ttotal = ttotal.toFixed(2);
-                    }
+                        var ttotal = data[6] + parseFloat(mship) + parseFloat(mpack);
+                        ttotal = parseFloat(ttotal);
+                        if (ttotal % 1 != 0) {
+                            ttotal = ttotal.toFixed(2);
+                        }
 
-                    if (pos == 0) {
-                        $('.total-amount').html('{{ $curr->sign }}' + ttotal)
-                    } else {
-                        $('.total-amount').html(ttotal + '{{ $curr->sign }}')
+                        if (pos == 0) {
+                            $('.total-amount').html('{{ $curr->sign }}' + ttotal)
+                        } else {
+                            $('.total-amount').html(ttotal + '{{ $curr->sign }}')
+                        }
+                        toastr.success(lang.coupon_found);
+                        $("#code").val("");
                     }
-                    toastr.success(lang.coupon_found);
-                    $("#code").val("");
                 }
-            }
+            });
+            return false;
         });
-        return false;
-    });
+
+        $('.payment').on('click', function() {
+
+            if ($(this).data('val') == 'paystack') {
+                $('.checkoutform').attr('id', 'step1-form');
+            } else if ($(this).data('val') == 'mercadopago') {
+                $('.checkoutform').attr('id', 'mercadopago');
+                checkONE = 1;
+            } else {
+                $('.checkoutform').attr('id', '');
+            }
+            $('.checkoutform').attr('action', $(this).attr('data-form'));
+            $('.payment').removeClass('active');
+
+            var show = $(this).attr('data-show');
+            if (show != 'no') {
+                $('.pay-area').removeClass('d-none');
+            } else {
+                $('.pay-area').addClass('d-none');
+            }
+            $($('#v-pills-tabContent .tap-pane').removeClass('active show'));
+            $(".pay-area").addClass('active show').load($(this).attr(
+                'data-href'));
+        })
     </script>
 @endsection

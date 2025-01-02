@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use DB;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -47,7 +47,7 @@ class Order extends Model
         }
         $data['shipping_data'] = $shipping_data;
         $data['vendor_shipping_id'] = $vendor_shipping_id;
-        return $data; 
+        return $data;
     }
 
     public static function getPackingData($cart)
@@ -67,13 +67,13 @@ class Order extends Model
             }
             else{
                 $vendor_packing_id = $users[0];
-            }  
+            }
         }
         else {
             $package_data  = DB::table('packages')->whereUserId(0)->get();
         }
         $data['package_data'] = $package_data;
         $data['vendor_packing_id'] = $vendor_packing_id;
-        return $data; 
+        return $data;
     }
 }

@@ -403,8 +403,6 @@ $isState = isset($step1->customer_state) ? $step1->customer_state : 0;
 <script src="https://js.stripe.com/v3/"></script>
 
 
-
-
 <script type="text/javascript">
     // under input field
     $('.payment:first').children('input').prop('checked', true);

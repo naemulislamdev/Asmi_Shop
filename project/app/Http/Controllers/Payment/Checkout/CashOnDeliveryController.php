@@ -17,10 +17,10 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 {
     public function store(Request $request)
     {
-        $input = $request->all();
+        $requestInput = $request->all();
         $step1 = Session::get('step1');
-        $step2 = Session::get('step2');
-        $input = array_merge($step1, $step2, $input);
+        $input = array_merge($step1, $requestInput);
+        //dd($input);
 
         if ($request->pass_check) {
             $auth = OrderHelper::auth_check($input); // For Authentication Checking
@@ -34,6 +34,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         }
 
         $oldCart = Session::get('cart');
+
         $cart = new Cart($oldCart);
         OrderHelper::license_check($cart); // For License Checking
         $t_oldCart = Session::get('cart');
@@ -101,16 +102,19 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
         $order = new Order;
         $success_url = route('front.payment.return');
+
         $input['user_id'] = Auth::check() ? Auth::user()->id : null;
         $input['cart'] = $new_cart;
         $input['affilate_users'] = $affilate_users;
         $input['pay_amount'] = $orderTotal;
         $input['order_number'] = Str::random(4) . time();
         $input['wallet_price'] = $request->wallet_price / $this->curr->value;
+        $input['customer_country'] = 'Bangladesh';
+
         if ($input['tax_type'] == 'state_tax') {
             $input['tax_location'] = State::findOrFail($input['tax'])->state;
         } else {
-            $input['tax_location'] = Country::findOrFail($input['tax'])->country_name;
+            $input['tax_location'] = 'Bangladesh'; // Country::findOrFail($input['tax'])->country_name;
         }
         $input['tax'] = Session::get('current_tax');
 

@@ -186,7 +186,7 @@
                                             stroke="#4C3533" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round" />
                                     </svg>
-                                    <p>{{ $order->pickup_location }}</p>
+                                    <p>{{ $order->customer_address }}</p>
                                 </div>
 
                             </div>
@@ -247,7 +247,7 @@
                                         stroke="#4C3533" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-                                <p>{{ $order->customer_email }}</p>
+                                <p>{{ $order->customer_email ?? 'Empty' }}</p>
                             </div>
                         </div>
                     @endif

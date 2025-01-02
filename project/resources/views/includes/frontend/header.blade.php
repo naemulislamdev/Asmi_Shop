@@ -11,34 +11,12 @@
                 </div>
                 <div class="info-right">
                     <ul class="d-flex wows align-items-center">
-
-                        @if (Auth::guard('web')->check() && Auth::guard('web')->user()->is_vendor == 2)
-                            <li class="d-none d-lg-block"><a class="border px-3 py-1"
-                                    href="{{ route('vendor.dashboard') }}">{{ __('Vendor Panel') }}</a>
-                            </li>
-                        @else
-                            <li class="d-none d-lg-block">
-                                <a href="{{ route('vendor.login') }}" class="info-bar-btn">
-                                    {{ __('Vendor Login') }}
-                                </a>
-                            </li>
-                        @endif
-
-                        @if (!Auth::guard('rider')->check())
-                            <li class="d-none d-lg-block"><a href="{{ route('rider.login') }}" class="info-bar-btn">
-                                    @lang('Rider Login')
-                                </a>
-                            </li>
-                        @endif
-
-
-
-                        <li class="d-none d-md-inline-block">
+                        {{-- <li class="d-none d-md-inline-block">
                             <svg xmlns="http://www.w3.org/2000/svg" width="2" height="21" viewBox="0 0 2 21"
                                 fill="none">
                                 <path d="M1 0.5V20.5" stroke="white" stroke-opacity="0.8" />
                             </svg>
-                        </li>
+                        </li> --}}
 
                         <li class="d-flex gap-2 align-items-center">
                             <svg  xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21"
@@ -47,9 +25,6 @@
                                     d="M9.99935 2.16669C12.4993 3.83335 13.2683 7.41005 13.3327 10.5C13.2683 13.59 12.4994 17.1667 9.99935 18.8334M9.99935 2.16669C7.49935 3.83335 6.73039 7.41005 6.66602 10.5C6.73039 13.59 7.49935 17.1667 9.99935 18.8334M9.99935 2.16669C5.39698 2.16669 1.66602 5.89765 1.66602 10.5M9.99935 2.16669C14.6017 2.16669 18.3327 5.89765 18.3327 10.5M9.99935 18.8334C14.6017 18.8334 18.3327 15.1024 18.3327 10.5M9.99935 18.8334C5.39698 18.8334 1.66602 15.1024 1.66602 10.5M18.3327 10.5C16.666 13 13.0893 13.769 9.99935 13.8334C6.90938 13.769 3.33268 13 1.66602 10.5M18.3327 10.5C16.666 8.00002 13.0893 7.23106 9.99935 7.16669C6.90938 7.23106 3.33268 8.00002 1.66602 10.5"
                                     stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
-
-
-
 
                             <div class="dropdown">
                                 <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -72,55 +47,6 @@
                                 </ul>
                             </div>
                         </li>
-
-
-                        <li >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="2" height="21" viewBox="0 0 2 21"
-                                fill="none">
-                                <path d="M1 0.5V20.5" stroke="white" stroke-opacity="0.8" />
-                            </svg>
-                        </li>
-
-                        @if ($gs->is_currency == 1)
-
-
-                            <li class="d-flex gap-2 align-items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21"
-                                    viewBox="0 0 20 21" fill="none">
-                                    <path
-                                        d="M7.08268 12.7222C7.08268 13.7961 7.95324 14.6667 9.02713 14.6667H10.8327C11.9833 14.6667 12.916 13.7339 12.916 12.5834C12.916 11.4328 11.9833 10.5 10.8327 10.5H9.16602C8.01542 10.5 7.08268 9.56728 7.08268 8.41669C7.08268 7.26609 8.01542 6.33335 9.16602 6.33335H10.9716C12.0455 6.33335 12.916 7.20391 12.916 8.2778M9.99935 5.08335V6.33335M9.99935 14.6667V15.9167M18.3327 10.5C18.3327 15.1024 14.6017 18.8334 9.99935 18.8334C5.39698 18.8334 1.66602 15.1024 1.66602 10.5C1.66602 5.89765 5.39698 2.16669 9.99935 2.16669C14.6017 2.16669 18.3327 5.89765 18.3327 10.5Z"
-                                        stroke="white" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-
-
-
-                                <div class="dropdown">
-                                    <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        {{ Session::has('currency')
-                                            ? $currencies->where('id', '=', Session::get('currency'))->first()->name
-                                            : DB::table('currencies')->where('is_default', '=', 1)->first()->name }}
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        @foreach ($currencies as $currency)
-                                            <li>
-
-                                                <a class="dropdown-item dropdown__item {{ Session::has('currency')
-                                                    ? (Session::get('currency') == $currency->id
-                                                        ? 'active'
-                                                        : '')
-                                                    : ($currencies->where('is_default', '=', 1)->first()->id == $currency->id
-                                                        ? 'active'
-                                                        : '') }}"
-                                                    href="{{ route('front.currency', $currency->id) }}">{{ $currency->name }}</a>
-                                            </li>
-                                        @endforeach
-
-                                    </ul>
-                                </div>
-                            </li>
-                        @endif
                         <li class="d-none d-md-inline-block">
 
                             <svg xmlns="http://www.w3.org/2000/svg" width="2" height="21" viewBox="0 0 2 21"
@@ -216,37 +142,14 @@
                             </div>
                         </li>
 
-
-                        <li class="has-submenu">
-                            <a href="javascript:void(0)">
-                                @lang('Pages')
-                            </a>
-                            <span class="has-submenu-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M18.7098 8.20986C18.6169 8.11613 18.5063 8.04174 18.3844 7.99097C18.2625 7.9402 18.1318 7.91406 17.9998 7.91406C17.8678 7.91406 17.7371 7.9402 17.6152 7.99097C17.4934 8.04174 17.3828 8.11613 17.2898 8.20986L12.7098 12.7899C12.6169 12.8836 12.5063 12.958 12.3844 13.0088C12.2625 13.0595 12.1318 13.0857 11.9998 13.0857C11.8678 13.0857 11.7371 13.0595 11.6152 13.0088C11.4934 12.958 11.3828 12.8836 11.2898 12.7899L6.70982 8.20986C6.61685 8.11613 6.50625 8.04174 6.38439 7.99097C6.26253 7.9402 6.13183 7.91406 5.99982 7.91406C5.8678 7.91406 5.7371 7.9402 5.61524 7.99097C5.49338 8.04174 5.38278 8.11613 5.28982 8.20986C5.10356 8.39722 4.99902 8.65067 4.99902 8.91486C4.99902 9.17905 5.10356 9.4325 5.28982 9.61986L9.87982 14.2099C10.4423 14.7717 11.2048 15.0872 11.9998 15.0872C12.7948 15.0872 13.5573 14.7717 14.1198 14.2099L18.7098 9.61986C18.8961 9.4325 19.0006 9.17905 19.0006 8.91486C19.0006 8.65067 18.8961 8.39722 18.7098 8.20986Z"
-                                        fill="#180207" />
-                                </svg>
-                            </span>
-                            <ul class="dropdown-menu">
-                                @foreach ($pages->where('header', '=', 1) as $data)
-                                    <li>
-                                        <a class="dropdown-item dropdown__item"
-                                            href="{{ route('front.vendor', $data->slug) }}">{{ $data->title }}</a>
-                                    </li>
-                                @endforeach
-
-                            </ul>
-                        </li>
                         @if ($ps->blog == 1)
                             <li class="{{ request()->path() == 'blog' ? 'active' : '' }}"><a
                                     href="{{ route('front.blog') }}" class="nav-link">@lang('Blog')</a>
                         @endif
                         </li>
-                        <li class="{{ request()->path() == 'faq' ? 'active' : '' }}"><a
+                        {{-- <li class="{{ request()->path() == 'faq' ? 'active' : '' }}"><a
                                 href="{{ route('front.faq') }}" class="nav-link">@lang('Faq')</a>
-                        </li>
+                        </li> --}}
                         <li class="{{ request()->path() == 'contact' ? 'active' : '' }}"><a
                                 href="{{ route('front.contact') }}" class="nav-link">@lang('Contact Us')</a>
                         </li>
