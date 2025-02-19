@@ -13,11 +13,12 @@ use App\{
 };
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
-use Validator;
 use Illuminate\Support\Str;
 use JWTAuth;
 use App\Classes\GeniusMailer;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 class AuthController extends Controller
 {
   /**
@@ -96,6 +97,9 @@ class AuthController extends Controller
    *
    * @return \Illuminate\Http\JsonResponse
    */
+  public function test(Request $request){
+    return $request->all();
+  }
   public function login(Request $request)
   {
     try {
@@ -246,7 +250,7 @@ class AuthController extends Controller
       'expires_in' => auth()->factory()->getTTL() * 300
     ]);
   }
-  
+
     public function guard()
     {
         return Auth::guard();

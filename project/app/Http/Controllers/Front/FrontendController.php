@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class FrontendController extends Controller
@@ -60,6 +61,7 @@ class FrontendController extends Controller
 
     public function index(Request $request)
     {
+        //return Hash::make('12345678');
 
          $gs = $this->gs;
         // $data['ps'] = $this->ps;

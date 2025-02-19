@@ -25,12 +25,13 @@ Route::group(['prefix' => 'user'], function () {
     Route::post('social/login', 'Api\Auth\AuthController@social_login');
     Route::post('refresh/token', 'Api\Auth\AuthController@refresh');
     Route::get('details', 'Api\Auth\AuthController@details');
-    
+    Route::post('testapi', 'Api\Auth\AuthController@test');
+
     Route::group(['middleware' => 'auth:api'], function () {
 
 
         // --------------------- USER DASHBOARD ---------------------
-        
+
         Route::get('/dashboard', 'Api\User\ProfileController@dashboard');
 
         // --------------------- USER DASHBOARD ENDS ---------------------
@@ -100,22 +101,22 @@ Route::group(['prefix' => 'user'], function () {
         Route::post('/withdraw/create', 'Api\User\WithdrawController@store');
 
         // ---------------------WITHDRAW CONTROLLER ENDS ---------------------
-        
-        
+
+
         // ---------------------WISHLIST CONTROLLER ---------------------
 
         Route::get('/wishlists','Api\User\WishlistController@wishlists');
         Route::post('/wishlist/add','Api\User\WishlistController@addwish');
         Route::get('/wishlist/remove/{id}','Api\User\WishlistController@removewish');
 
-        // ---------------------WISHLIST CONTROLLER ---------------------        
-        
-        
-         // ---------------------REWORD CONTROLLER ---------------------  
+        // ---------------------WISHLIST CONTROLLER ---------------------
+
+
+         // ---------------------REWORD CONTROLLER ---------------------
        Route::get('/reword/get', 'Api\User\WithdrawController@getReword');
        Route::post('/reword/store', 'Api\User\WithdrawController@convertSubmit');
-          
-     // ---------------------REWORD CONTROLLER ---------------------  
+
+     // ---------------------REWORD CONTROLLER ---------------------
         // ---------------------PACKAGE CONTROLLER ---------------------
 
         Route::get('/packages', 'Api\User\PackageController@packages');
@@ -130,9 +131,9 @@ Route::group(['prefix' => 'user'], function () {
           Route::post('/deposit/store', 'Api\User\DepositController@store');
           Route::get('/transactions', 'Api\User\DepositController@transactions');
           Route::get('/transaction/details', 'Api\User\DepositController@transactionDetails');
-  
+
           // ---------------------DEPOSIT CONTROLLER ENDS ---------------------
-  
+
 
     });
 
@@ -200,7 +201,7 @@ Route::group(['prefix' => 'front'], function () {
     //------------ Checkout Controller ------------
 
     Route::post('/checkout','Api\Front\CheckoutController@checkout');
-   
+
     Route::get('/get-shipping-packaging','Api\Front\CheckoutController@getShippingPackaging');
     Route::get('/vendor/wise/shipping-packaging','Api\Front\CheckoutController@VendorWisegetShippingPackaging');
     Route::get('/order/details','Api\Front\CheckoutController@orderDetails');

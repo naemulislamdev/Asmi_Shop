@@ -22,20 +22,22 @@ use App\Models\Shipping;
 use App\Models\State;
 use App\Models\User;
 use App\Models\VendorOrder;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use Session;
 
 class CheckoutController extends Controller
 {
     public function checkout(Request $request)
     {
+       // return $request->all();
 
         try {
 
             $datas = ['id', 'qty', 'size', 'size_qty', 'size_key', 'size_price', 'color', 'keys', 'values', 'prices'];
             $input = $request->all();
+
 
             $items = $input['items'];
 
@@ -48,10 +50,10 @@ class CheckoutController extends Controller
 
             foreach ($items as $key => $item) {
                 if (array_keys($item) == $datas) {
+                    //return $input['currency_code'];
                     $this->addtocart($new_cart, $input['currency_code'], $item['id'], $item['qty'], $item['size'], $item['color'], $item['size_qty'], $item['size_price'], $item['size_key'], $item['keys'], $item['values'], $item['prices'], $input['affilate_user']);
                 }
             }
-
 
             $cart = new Cart($new_cart);
 
@@ -458,6 +460,7 @@ class CheckoutController extends Controller
 
     protected function addtocart($cart, $currency_code, $p_id, $p_qty, $p_size, $p_color, $p_size_qty, $p_size_price, $p_size_key, $p_keys, $p_values, $p_prices, $affilate_user)
     {
+        //return $cart->items;
 
         try {
 
@@ -582,19 +585,63 @@ class CheckoutController extends Controller
     }
 
 
+    // public function VendorWisegetShippingPackaging(Request $request)
+    // {
+
+    //     $explode = explode(',', $request->vendor_ids);
+
+    //     foreach ($explode as $key => $value) {
+    //         $shipping[$value] = Shipping::where('user_id', $value)->get();
+    //         $packaging[$value] = Package::where('user_id', $value)->get();
+    //     }
+
+
+    //     return response()->json(['status' => true, 'data' => ['shipping' => $shipping, 'packaging' => $packaging], 'error' => []]);
+    // }
+
     public function VendorWisegetShippingPackaging(Request $request)
-    {
+{
+    $vendorIds = explode(',', $request->vendor_ids);
 
-        $explode = explode(',', $request->vendor_ids);
+    foreach ($vendorIds as $key => $value) {
+        // Fetch and format shipping data for each vendor
+        $shipping = Shipping::where('user_id', $value)->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'user_id' => $item->user_id,
+                'title' => $item->title,
+                'subtitle' => $item->subtitle,
+                'price' => $item->price,
+            ];
+        });
 
-        foreach ($explode as $key => $value) {
-            $shipping[$value] = Shipping::where('user_id', $value)->get();
-            $packaging[$value] = Package::where('user_id', $value)->get();
-        }
-
-
-        return response()->json(['status' => true, 'data' => ['shipping' => $shipping, 'packaging' => $packaging], 'error' => []]);
+        // Fetch and format packaging data for each vendor
+        $packaging = Package::where('user_id', $value)->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'user_id' => $item->user_id,
+                'title' => $item->title,
+                'subtitle' => $item->subtitle,
+                'price' => $item->price,
+            ];
+        });
     }
+
+    // Ensure all keys are nested under "00" regardless of vendor IDs
+    $formattedShipping = ['00' => $shipping];
+    $formattedPackaging = ['00' => $packaging];
+
+    // Build and return the response
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'shipping' => $formattedShipping,
+            'packaging' => $formattedPackaging
+        ],
+        'error' => []
+    ]);
+}
+
 
 
     public function countries()

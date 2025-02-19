@@ -30,9 +30,9 @@ use App\Models\Product;
 use App\Models\Service;
 use App\Models\Slider;
 use App\Models\User;
-use DB;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class FrontendController extends Controller
 {
@@ -332,7 +332,7 @@ class FrontendController extends Controller
             }else{
                 $blogs = Blog::all();
             }
-            
+
             return response()->json(['status' => true, 'data' => BlogResource::collection($blogs), 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
@@ -355,7 +355,7 @@ class FrontendController extends Controller
 
     public function settings(Request $request)
     {
-    
+
         try {
 
             $rules = [
@@ -374,6 +374,9 @@ class FrontendController extends Controller
             }
 
             $setting = DB::table($name)->first();
+            // $formattedSetting = collect((array) $setting)->map(function ($value, $key) {
+            //     return $key === 'id' ? $value : (string) $value;
+            // })->toArray();
             return response()->json(['status' => true, 'data' => $setting, 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);

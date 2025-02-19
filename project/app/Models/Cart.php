@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Session;
+use Illuminate\Support\Facades\Session;
 
 class Cart extends Model
 {
@@ -100,8 +100,9 @@ class Cart extends Model
 
     // ************** ADD TO CART MULTIPLE *****************
 
-    public function addnum($item, $id, $qty, $size, $color, $size_qty, $size_price,$color_price, $size_key, $keys, $values, $affilate_user)
+    public function addnum($item, $id, $qty, $size, $color, $size_qty, $size_price, $size_key, $keys, $values, $affilate_user)
     {
+        $color_price = '';
         $size_cost = 0;
         $color_cost = 0;
 
@@ -180,7 +181,7 @@ class Cart extends Model
         }
 
 
-        
+
         $item->price += $size_cost;
         $item->price += $color_cost;
         $storedItem['item_price'] = $item->price;
@@ -211,7 +212,7 @@ class Cart extends Model
                 }
             }
         }
-        
+
         $storedItem['price'] = $item->price * $storedItem['qty'];
 
 

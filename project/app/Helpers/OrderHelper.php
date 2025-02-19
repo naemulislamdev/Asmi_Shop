@@ -52,6 +52,7 @@ class OrderHelper
 
     public static function license_check($cart)
     {
+        return $cart;
 
         foreach ($cart->items as $key => $prod) {
             if (!empty($prod['item']['license']) && !empty($prod['item']['license_qty'])) {

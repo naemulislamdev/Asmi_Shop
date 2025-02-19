@@ -132,6 +132,7 @@ class PriceHelper
             }
 
             if ($gs->multiple_shipping == 0) {
+
                 $vendor_shipping_ids = [];
                 $vendor_packing_ids = [];
                 foreach ($vendor_ids as $vendor_id) {
@@ -160,6 +161,7 @@ class PriceHelper
                     'success' => true,
                 ];
             } else {
+                
 
                 if (isset($input['shipping']) && gettype($input['shipping']) == 'string') {
                     $shippingData = json_decode($input['shipping'], true);

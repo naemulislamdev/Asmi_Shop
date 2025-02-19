@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Payment;
 
-use App\Http\Controllers\Front\FrontBaseController;
+use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\Deposit;
 use App\Models\Order;
 use App\Models\PaymentGateway;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {

@@ -8,14 +8,15 @@ use App\{
     Classes\GeniusMailer,
     Models\PaymentGateway
 };
+use App\Helpers\OrderHelper;
 use App\Helpers\PriceHelper;
 use App\Models\Country;
 use App\Models\Reward;
 use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Session;
-use OrderHelper;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class SslController extends CheckoutBaseControlller
@@ -24,10 +25,9 @@ class SslController extends CheckoutBaseControlller
     {
         $input = $request->all();
         $step1 = Session::get('step1');
-        $step2 = Session::get('step2');
-        $input = array_merge($step1, $step2, $input);
+        $input = array_merge($step1, $input);
 
-        
+
         $data = PaymentGateway::whereKeyword('sslcommerz')->first();
         $paydata = $data->convertAutoData();
 
@@ -249,9 +249,9 @@ class SslController extends CheckoutBaseControlller
         $payment_id = Session::get('order_payment_id');
 
         if (Session::has('currency')) {
-            $this->curr = \DB::table('currencies')->find(Session::get('currency'));
+            $this->curr = DB::table('currencies')->find(Session::get('currency'));
         } else {
-            $this->curr = \DB::table('currencies')->where('is_default', '=', 1)->first();
+            $this->curr = DB::table('currencies')->where('is_default', '=', 1)->first();
         }
 
         $cart = Session::get('cart');

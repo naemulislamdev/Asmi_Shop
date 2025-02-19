@@ -10,7 +10,7 @@ use App\{
 };
 
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
