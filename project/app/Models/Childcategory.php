@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Childcategory extends Model
 {
-    protected $fillable = ['subcategory_id','name','slug'];
+    protected $fillable = ['subcategory_id','name','slug', 'banner', 'status'];
     public $timestamps = false;
 
     public function subcategory()
@@ -18,7 +18,7 @@ class Childcategory extends Model
     {
         return $this->hasMany('App\Models\Product');
     }
- 
+
 
     public function setSlugAttribute($value)
     {

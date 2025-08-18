@@ -19,9 +19,11 @@ class PriceHelper
             return DB::table('generalsettings')->first();
         });
         if (is_numeric($price) && floor($price) != $price) {
-            return number_format($price, 2, $gs->decimal_separator, $gs->thousand_separator);
+
+            return (int) number_format($price, 2, $gs->decimal_separator, $gs->thousand_separator);
         } else {
-            return number_format($price, 0, $gs->decimal_separator, $gs->thousand_separator);
+            //dd($price, 0, $gs->decimal_separator, $gs->thousand_separator);
+            return $price;
         }
     }
 
@@ -141,10 +143,11 @@ class PriceHelper
                 }
 
                 $shipping = isset($input['shipping_id']) && $input['shipping_id'] != 0 ? Shipping::findOrFail($input['shipping_id']) : null;
+                //dd($shipping);
 
                 $packeing = isset($input['packaging_id']) && $input['packaging_id'] != 0 ? Package::findOrFail($input['packaging_id']) : null;
 
-                $totalAmount = $totalAmount+@$shipping->price+@$packeing->price;
+                $totalAmount = $totalAmount + @$shipping->price + @$packeing->price;
 
                 if (isset($input['coupon_id']) && !empty($input['coupon_id'])) {
                     $totalAmount = $totalAmount - $input['coupon_discount'];
@@ -161,7 +164,7 @@ class PriceHelper
                     'success' => true,
                 ];
             } else {
-                
+
 
                 if (isset($input['shipping']) && gettype($input['shipping']) == 'string') {
                     $shippingData = json_decode($input['shipping'], true);
@@ -309,5 +312,19 @@ class PriceHelper
                 'message' => $e->getMessage(),
             ];
         }
+    }
+    public static function discountPrice($price, $discount, $discountType)
+    {
+        if ($discount > 0) {
+            //$discount_type
+            if ($discountType == 'percent') {
+                $discountedPrice = $price - ($price * ($discount / 100));
+                return self::showPrice($discountedPrice);
+            } elseif ($discountType == 'flat') {
+                $discountedPrice = $price - $discount;
+                return self::showPrice($discountedPrice);
+            }
+        }
+        return self::showPrice($price);
     }
 }

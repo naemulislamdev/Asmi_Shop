@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Session;
 class Product extends Model
 {
 
-    protected $fillable = ['user_id', 'category_id', 'product_type', 'affiliate_link', 'sku', 'subcategory_id', 'childcategory_id', 'attributes', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'details', 'price', 'previous_price', 'stock', 'policy', 'status', 'views', 'tags', 'featured', 'best', 'top', 'hot', 'latest', 'big', 'trending', 'popular', 'features', 'colors', 'product_condition', 'ship', 'meta_tag', 'meta_description', 'youtube', 'type', 'file', 'license', 'license_qty', 'link', 'platform', 'region', 'licence_type', 'measure', 'discount_date', 'is_discount', 'whole_sell_qty', 'whole_sell_discount', 'catalog_id', 'slug', 'flash_count', 'hot_count', 'new_count', 'sale_count', 'best_seller_count', 'popular_count', 'top_rated_count', 'big_save_count', 'trending_count', 'page_count', 'seller_product_count', 'wishlist_count', 'vendor_page_count', 'min_price', 'max_price', 'product_page', 'post_count', 'minimum_qty', 'preordered', 'color_all', 'size_all', "color_price", 'stock_check', 'cross_products'];
+    protected $fillable = ['user_id', 'category_id', 'product_type', 'affiliate_link', 'sku', 'subcategory_id', 'childcategory_id', 'attributes', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'details', 'price', 'previous_price','discount','discount_type', 'stock', 'policy', 'status', 'views', 'tags', 'featured', 'best', 'top', 'hot', 'latest', 'big', 'trending', 'popular', 'features', 'colors', 'product_condition', 'ship', 'meta_tag', 'meta_description', 'youtube', 'type', 'file', 'license', 'license_qty', 'link', 'platform', 'region', 'licence_type', 'measure', 'discount_date', 'is_discount', 'whole_sell_qty', 'whole_sell_discount', 'catalog_id', 'slug', 'flash_count', 'hot_count', 'new_count', 'sale_count', 'best_seller_count', 'popular_count', 'top_rated_count', 'big_save_count', 'trending_count', 'page_count', 'seller_product_count', 'wishlist_count', 'vendor_page_count', 'min_price', 'max_price', 'product_page', 'post_count', 'minimum_qty', 'preordered', 'color_all', 'size_all', "color_price", 'stock_check', 'cross_products'];
 
     public $selectable = ['id', 'user_id', 'name', 'slug', 'features', 'colors', 'thumbnail', 'price', 'previous_price', 'attributes', 'size', 'size_price', 'discount_date', 'color_all', 'size_all', 'stock_check', 'category_id', 'details', 'type'];
 
@@ -79,6 +79,14 @@ class Product extends Model
     {
         $sizes = array_unique($this->size);
         return in_array($value, $sizes);
+    }
+    public static function whereTrending($value)
+    {
+        return static::where('trending', $value);
+    }
+    public static function whereStatus($value)
+    {
+        return static::where('status', $value);
     }
 
     public function checkVendor()
@@ -325,8 +333,6 @@ class Product extends Model
         } else {
             return $price . $curr->sign;
         }
-
-
     }
 
     public static function convertPrice($price)

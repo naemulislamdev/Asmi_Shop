@@ -536,7 +536,6 @@
                                             class="right-side cart-total">{{ Session::has('cart') ? App\Models\Product::convertPrice(Session::get('cart')->totalPrice) : '0.00' }}</span>
                                     </div>
 
-
                                     <div class="price-details tax_show d-none">
                                         <span>@lang('Tax')</span>
                                         <span class="right-side original_tax original_tax">0</span>

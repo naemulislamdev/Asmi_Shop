@@ -49,6 +49,7 @@ Route::group(['prefix' => 'user'], function () {
         Route::get('/favorite/vendors', 'Api\User\ProfileController@favorites');
         Route::post('/favorite/store', 'Api\User\ProfileController@favorite');
         Route::get('/favorite/delete/{id}', 'Api\User\ProfileController@favdelete');
+        Route::get('/delete/user-account/{id}', 'Api\User\ProfileController@deleteUserAC');
 
         // --------------------- USER FAVORITE ENDS ---------------------
 

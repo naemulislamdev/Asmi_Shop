@@ -25,9 +25,18 @@ class Cart extends Model
 
     public function add($item, $id, $size, $color, $keys, $values)
     {
+        $discounted = $item->price;
+        if ($item->discount > 0) {
+            if ($item->discount_type === 'percent') {
+                $discounted = (int) $item->price - ($item->price * ($item->discount / 100));
+            } elseif ($item->discount_type === 'flat') {
+                $discounted = (int) $item->price - $item->discount;
+            }
+        }
+        //dd($discounted);
 
         $size_cost = 0;
-        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => $keys, 'values' => $values, 'item_price' => $item->price, 'discount' => 0, 'affilate_user' => 0];
+        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => $keys, 'values' => $values, 'item_price' => $discounted, 'discount' => $item->discount,'discount_type' => $item->discount_type, 'affilate_user' => 0,];
         if ($item->type == 'Physical') {
             if ($this->items) {
                 if (array_key_exists($id . $size . $color . str_replace(str_split(' ,'), '', $values), $this->items)) {
@@ -102,6 +111,7 @@ class Cart extends Model
 
     public function addnum($item, $id, $qty, $size, $color, $size_qty, $size_price, $size_key, $keys, $values, $affilate_user)
     {
+        //dd($qty);
         $color_price = '';
         $size_cost = 0;
         $color_cost = 0;
@@ -213,12 +223,12 @@ class Cart extends Model
             }
         }
 
-        $storedItem['price'] = $item->price * $storedItem['qty'];
+        $storedItem['price'] = $item->price * (int) $storedItem['qty'];
 
 
 
         $this->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)] = $storedItem;
-        $this->totalQty += $storedItem['qty'];
+        $this->totalQty += (int) $storedItem['qty'];
     }
 
     // ************** ADD TO CART MULTIPLE ENDS *****************
@@ -227,7 +237,7 @@ class Cart extends Model
 
     public function adding($item, $id, $size_qty, $size_price)
     {
-        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => '', 'values' => '', 'item_price' => $item->price, 'discount' => 0, 'affilate_user' => 0];
+        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => '', 'values' => '', 'item_price' => $item->price, 'discount' => $item->discount,'discount_type' => $item->discount_type, 'affilate_user' => 0];
         if ($this->items) {
             if (array_key_exists($id, $this->items)) {
                 $storedItem = $this->items[$id];
@@ -272,7 +282,7 @@ class Cart extends Model
 
     public function reducing($item, $id, $size_qty, $size_price)
     {
-        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => '', 'values' => '', 'item_price' => $item->price, 'discount' => 0, 'affilate_user' => 0];
+        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => '', 'values' => '', 'item_price' => $item->price, 'discount' => $item->discount,'discount_type' => $item->discount_type, 'affilate_user' => 0];
         if ($this->items) {
             if (array_key_exists($id, $this->items)) {
                 $storedItem = $this->items[$id];
@@ -341,7 +351,7 @@ class Cart extends Model
 
     public function removeItem($id)
     {
-        $this->totalQty -= $this->items[$id]['qty'];
+        $this->totalQty -= (int) $this->items[$id]['qty'];
         $this->totalPrice -= $this->items[$id]['price'];
         unset($this->items[$id]);
         if (Session::has('current_discount')) {

@@ -112,19 +112,9 @@ class FrontendController extends Controller
             ->orderby('id', 'desc')
             ->get();
 
-        $data['latest_products'] = Product::whereLatest(1)->whereStatus(1)
+        $data['latest_products'] = Product::latest()->where('status', 1)
 
             ->take($gs->new_count)
-            ->with(['user' => function ($query) {
-                $query->select('id', 'is_vendor');
-            }])
-            ->when('user', function ($query) {
-                foreach ($query as $q) {
-                    if ($q->is_vendor == 2) {
-                        return $q;
-                    }
-                }
-            })
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')

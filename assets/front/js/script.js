@@ -307,13 +307,13 @@ $(document).ready(function () {
       max: max_value,
       values: [start_value, end_value],
       slide: function (event, ui) {
-        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+        $("#amount").val("৳ " + ui.values[0] + " - ৳ " + ui.values[1]);
       },
     });
     $("#amount").val(
-      "$" +
+      "৳ " +
       $("#slider-range").slider("values", 0) +
-      " - $" +
+      " - ৳ " +
       $("#slider-range").slider("values", 1)
     );
   });
@@ -361,8 +361,8 @@ $(document).ready(function () {
   $(".product-cards-slider").slick({
     dots: true,
     infinite: true,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: 5,
+    slidesToScroll: 5,
     speed: 500,
     autoplay: true,
     fade: false,

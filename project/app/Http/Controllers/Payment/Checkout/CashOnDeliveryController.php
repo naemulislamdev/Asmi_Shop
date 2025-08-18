@@ -18,8 +18,10 @@ class CashOnDeliveryController extends CheckoutBaseControlller
     public function store(Request $request)
     {
         $requestInput = $request->all();
-        $step1 = Session::get('step1');
-        $input = array_merge($step1, $requestInput);
+        //dd($requestInput);
+        //$step1 = Session::get('step1');
+        //$input = array_merge($step1, $requestInput);
+        $input = $requestInput;
         //dd($input);
 
         if ($request->pass_check) {
@@ -44,10 +46,12 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $new_cart['totalPrice'] = $t_cart->totalPrice;
         $new_cart['items'] = $t_cart->items;
         $new_cart = json_encode($new_cart);
-        $temp_affilate_users = OrderHelper::product_affilate_check($cart); // For Product Based Affilate Checking
-        $affilate_users = $temp_affilate_users == null ? null : json_encode($temp_affilate_users);
+        //$temp_affilate_users = OrderHelper::product_affilate_check($cart);
+        //$affilate_users = $temp_affilate_users == null ? null : json_encode($temp_affilate_users);
+        $affilate_users = null;
 
         $orderCalculate = PriceHelper::getOrderTotal($input, $cart);
+        //dd($orderCalculate);
 
         if (isset($orderCalculate['success']) && $orderCalculate['success'] == false) {
             return redirect()->back()->with('unsuccess', $orderCalculate['message']);
@@ -79,7 +83,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $orderTotal = $orderCalculate['total_amount'];
             $shipping = $orderCalculate['shipping'];
             $packeing = $orderCalculate['packeing'];
-            $is_shipping = $orderCalculate['is_shipping'];
+        $is_shipping = $orderCalculate['is_shipping'];
             $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
             $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
             $vendor_ids = $orderCalculate['vendor_ids'];

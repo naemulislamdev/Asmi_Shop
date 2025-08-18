@@ -18,3 +18,4 @@
         @include('frontend.ajax.cart-page')
     </section>
 @endsection
+

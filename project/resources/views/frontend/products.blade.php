@@ -2,11 +2,30 @@
 
 @section('content')
     <section class="gs-breadcrumb-section bg-class"
-        data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
+        data-background="
+        @if (!empty($cat->name) && !empty($subcat->name) && !empty($childcat->name)) {{ $childcat->banner ? asset('assets/images/childcategories/' . $childcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
+                        @elseif (!empty($cat->name) && !empty($subcat->name))
+                            {{ $subcat->banner ? asset('assets/images/subcategories/' . $subcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
+                        @elseif (!empty($cat->name))
+                            {{ $cat->photo ? asset('assets/images/categories/' . $cat->photo) : asset('assets/images/' . $gs->breadcrumb_banner) }}
+                        @else
+                           {{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }} @endif
+
+         ">
         <div class="container">
             <div class="row justify-content-center content-wrapper">
                 <div class="col-12">
-                    <h2 class="breadcrumb-title">@lang('Product')</h2>
+                    <h2 class="breadcrumb-title">
+                        @if (!empty($cat->name) && !empty($subcat->name) && !empty($childcat->name))
+                            {{ $childcat->name ?? 'Products' }}
+                        @elseif (!empty($cat->name) && !empty($subcat->name))
+                            {{ $subcat->name ?? 'Products' }}
+                        @elseif (!empty($cat->name))
+                            {{ $cat->name ?? 'Products' }}
+                        @else
+                            @lang('Products')
+                        @endif
+                    </h2>
                     <ul class="bread-menu">
                         <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
                         <li><a href="javascript:;">@lang('Product')</a></li>
@@ -592,13 +611,13 @@
                     values: [start_value, end_value],
                     step: 10,
                     slide: function(event, ui) {
-                        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+                        $("#amount").val("৳" + ui.values[0] + " - ৳" + ui.values[1]);
                     },
                 });
                 $("#amount").val(
-                    "$" +
+                    "৳" +
                     $("#slider-range").slider("values", 0) +
-                    " - $" +
+                    " - ৳" +
                     $("#slider-range").slider("values", 5000)
                 );
             });

@@ -296,7 +296,7 @@ class ProductController extends AdminBaseController
                 $input['color_all'] = null;
                 $input['color_price'] = null;
             } else {
-              
+
                 $input['color_all'] = implode(',', $request->color_all);
             }
 
@@ -352,11 +352,11 @@ class ProductController extends AdminBaseController
             $input['tags'] = implode(',', $request->tags);
         }
 
-        $input['price'] = ($input['price'] / $sign->value);
-        $input['previous_price'] = ($input['previous_price'] / $sign->value);
-        if ($request->cross_products) {
-            $input['cross_products'] = implode(',', $request->cross_products);
-        }
+         $input['price'] = (int) ($input['price'] / $sign->value);
+        // $input['previous_price'] = (int) ($input['previous_price'] / $sign->value);
+        // if ($request->cross_products) {
+        //     $input['cross_products'] = implode(',', $request->cross_products);
+        // }
 
         $attrArr = [];
         if (!empty($request->category_id)) {
@@ -826,7 +826,7 @@ class ProductController extends AdminBaseController
         }
 
         $input['price'] = $input['price'] / $sign->value;
-        $input['previous_price'] = $input['previous_price'] / $sign->value;
+        //$input['previous_price'] = $input['previous_price'] / $sign->value;
 
         // store filtering attributes for physical product
         $attrArr = [];

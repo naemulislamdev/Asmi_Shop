@@ -2,14 +2,23 @@
 
     <div class="single-product">
         <div class="img-wrapper">
-            @if ($product->offPercentage() && round($product->offPercentage()) > 0)
-                <span class="product-badge">-{{ round($product->offPercentage()) }}%</span>
+            @if ($product->discount > 0)
+                @if ($product->discount_type == 'percent')
+                    <span class="product-badge">
+                        {{ $product->discount }} %
+                    </span>
+                @elseif($product->discount_type == 'flat')
+                    <span class="product-badge">
+                        {{ $product->discount }} ৳
+                    </span>
+                @endif
             @endif
+
 
             @if (Auth::check())
                 @if (isset($wishlist))
                     <a href="javascript:;" class="removewishlist"
-                        data-href="{{ route('user-wishlist-remove',App\Models\Wishlist::where('user_id', '=', $user->id)->where('product_id', '=', $product->id)->first()->id) }}">
+                        data-href="{{ route('user-wishlist-remove', App\Models\Wishlist::where('user_id', '=', $user->id)->where('product_id', '=', $product->id)->first()->id) }}">
                         <div class="add-to-wishlist-btn bg-danger">
                             <i class="fas fa-trash  text-white"></i>
                         </div>
@@ -40,10 +49,11 @@
             @endif
 
 
-
-            <img class="product-img"
-                src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/noimage.png') }}"
-                alt="product img">
+            <a href="{{ route('front.product', $product->slug) }}">
+                <img class="product-img"
+                    src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/noimage.png') }}"
+                    alt="product img">
+            </a>
 
             <div class="add-to-cart">
 
@@ -112,9 +122,14 @@
                 <h6 class="product-title">{{ $product->showName() }}</h6>
             </a>
             <div class="price-wrapper">
-                <h6>{{ $product->showPrice() }}</h6>
+                @if ($product->discount > 0)
+                    <h6>{{ \App\Helpers\PriceHelper::discountPrice($product->price, $product->discount, $product->discount_type) }}৳
+                    </h6>
 
-                <h6><del>{{ $product->showPreviousPrice() }}</del></h6>
+                    <h6><del>{{ $product->showPrice() }}</del></h6>
+                @else
+                    <h6>{{ $product->showPrice() }}</h6>
+                @endif
             </div>
 
             <div class="ratings-wrapper">

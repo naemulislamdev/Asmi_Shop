@@ -1,27 +1,5 @@
 <footer class="gs-footer-section {{ $gs->theme == 'theme3' ? 'home-3' : '' }}">
-    <div class="newslatter {{ $gs->theme != 'theme1' ? 'newslatter2' : '' }}">
-        <div class="container">
-            <div class="row newslatter-row">
-                <div class="col-lg-7 col-md-6 col-12 newslatter-area">
-                    <div class="newslatter-content">
-                        <h2>@lang('SIGN UP TO NEWSLATTER')</h2>
-                    </div>
-                </div>
-                <div class="col-lg-5 col-md-6 col-12 newslatter-area">
-                    <div class="newslatter-form">
-                        <form action="{{ route('front.subscribe') }}" method="POST">
-                            @csrf
-                            <input class="news-latter-input" type="email" placeholder="@lang('Enter Your Email')" name="email">
-                            <button class="newsletter-btn" type="submit">@lang('Send')</button>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="container">
-
         <div class="row footer-row gy-3">
             <div class="col-lg-3 col-md-6 col-12 left-info">
                 <img class="logo" src="{{ asset('assets/images/' . $gs->footer_logo) }}" alt="">
@@ -87,7 +65,7 @@
 
                 <div class="social-links">
                     @foreach (DB::table('social_links')->where('user_id', 0)->where('status', 1)->get() as $link)
-                        <a class="wow-replaced" data-wow-delay=".3s" href="">
+                        <a class="wow-replaced" data-wow-delay=".3s" href="{{ $link->link }}" target="_blank">
                             <i class="{{ $link->icon }}"></i>
                         </a>
                     @endforeach
@@ -139,48 +117,14 @@
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 col-12">
-                <h5 class=" wow-replaced">@lang('Recent Post')</h5>
-                <div class="gs-sm-recent-post-wrapper">
-                    @php
-                        $footer_blogs = App\Models\Blog::where('status', 1)->orderBy('id', 'desc')->take(3)->get();
-                    @endphp
-                    @foreach ($footer_blogs as $footer_blog)
-                        <a href="{{ route('front.blogshow', $footer_blog->slug) }}"
-                            class="recent-post d-flex wow-replaced" data-wow-delay=".1s">
-                            <img src="{{ asset('assets/images/blogs/' . $footer_blog->photo) }}" alt="recent post">
-                            <div class="recent-post-content">
-                                <h6 class="post-title">
-                                    {{ mb_strlen($footer_blog->title, 'UTF-8') > 45 ? mb_substr($footer_blog->title, 0, 45, 'UTF-8') . ' ..' : $footer_blog->title }}
-                                </h6>
-                                <span class="post-date">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                        viewBox="0 0 18 18" fill="none">
-                                        <g clip-path="url(#clip0_274_25512)">
-                                            <path
-                                                d="M14.25 1.5H13.5V0.75C13.5 0.551088 13.421 0.360322 13.2803 0.21967C13.1397 0.0790176 12.9489 0 12.75 0C12.5511 0 12.3603 0.0790176 12.2197 0.21967C12.079 0.360322 12 0.551088 12 0.75V1.5H6V0.75C6 0.551088 5.92098 0.360322 5.78033 0.21967C5.63968 0.0790176 5.44891 0 5.25 0C5.05109 0 4.86032 0.0790176 4.71967 0.21967C4.57902 0.360322 4.5 0.551088 4.5 0.75V1.5H3.75C2.7558 1.50119 1.80267 1.89666 1.09966 2.59966C0.396661 3.30267 0.00119089 4.2558 0 5.25L0 14.25C0.00119089 15.2442 0.396661 16.1973 1.09966 16.9003C1.80267 17.6033 2.7558 17.9988 3.75 18H14.25C15.2442 17.9988 16.1973 17.6033 16.9003 16.9003C17.6033 16.1973 17.9988 15.2442 18 14.25V5.25C17.9988 4.2558 17.6033 3.30267 16.9003 2.59966C16.1973 1.89666 15.2442 1.50119 14.25 1.5ZM1.5 5.25C1.5 4.65326 1.73705 4.08097 2.15901 3.65901C2.58097 3.23705 3.15326 3 3.75 3H14.25C14.8467 3 15.419 3.23705 15.841 3.65901C16.2629 4.08097 16.5 4.65326 16.5 5.25V6H1.5V5.25ZM14.25 16.5H3.75C3.15326 16.5 2.58097 16.2629 2.15901 15.841C1.73705 15.419 1.5 14.8467 1.5 14.25V7.5H16.5V14.25C16.5 14.8467 16.2629 15.419 15.841 15.841C15.419 16.2629 14.8467 16.5 14.25 16.5Z"
-                                                fill="#BDBDBD" />
-                                            <path
-                                                d="M9 12.375C9.62132 12.375 10.125 11.8713 10.125 11.25C10.125 10.6287 9.62132 10.125 9 10.125C8.37868 10.125 7.875 10.6287 7.875 11.25C7.875 11.8713 8.37868 12.375 9 12.375Z"
-                                                fill="#BDBDBD" />
-                                            <path
-                                                d="M5.25 12.375C5.87132 12.375 6.375 11.8713 6.375 11.25C6.375 10.6287 5.87132 10.125 5.25 10.125C4.62868 10.125 4.125 10.6287 4.125 11.25C4.125 11.8713 4.62868 12.375 5.25 12.375Z"
-                                                fill="#BDBDBD" />
-                                            <path
-                                                d="M12.75 12.375C13.3713 12.375 13.875 11.8713 13.875 11.25C13.875 10.6287 13.3713 10.125 12.75 10.125C12.1287 10.125 11.625 10.6287 11.625 11.25C11.625 11.8713 12.1287 12.375 12.75 12.375Z"
-                                                fill="#BDBDBD" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip1_274_25512">
-                                                <rect width="18" height="18" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                    {{ date('M d - Y', strtotime($footer_blog->created_at)) }}</span>
-                            </div>
+                <h5 class=" wow-replaced">@lang('Download Our App')</h5>
+                <ul class="footer-category-links">
+                    <li class="wow-replaced" data-wow-delay=".1s">
+                        <a href="{{ asset('assets/front/images/app-release.apk') }}" download="app-release.apk">
+                            <img src="{{ asset('assets/front/images/google_app.png') }}" alt="Google Play Store" width="100%">
                         </a>
-                    @endforeach
-
-                </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

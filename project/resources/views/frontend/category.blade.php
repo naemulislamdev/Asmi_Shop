@@ -1,7 +1,7 @@
 <div class="products-header d-flex justify-content-between align-items-center py-10 px-20 bg-light md-mt-30">
     <div class="products-header-left d-flex align-items-center">
        <h6 class="woocommerce-products-header__title page-title"> <strong> {{ __('Products')  }}</strong>  </h6>
-       <div class="woocommerce-result-count"></div> 
+       <div class="woocommerce-result-count"></div>
     </div>
     <div class="products-header-right">
        <form class="woocommerce-ordering" method="get">

@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\FavoriteSeller;
 use App\Models\Product;
-use App\Models\User;use Auth;
+use App\Models\User;
+use Auth;
 use Hash;
 use Illuminate\Http\Request;
 use Validator;
@@ -192,6 +193,23 @@ class ProfileController extends Controller
             $wish = FavoriteSeller::find($id);
             $wish->delete();
             return response()->json(['status' => true, 'data' => ['message' => 'Successfully Removed The Seller.'], 'error' => []]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => true, 'data' => [], 'error' => $e->getMessage()]);
+        }
+    }
+    public function deleteUserAC($id)
+    {
+        try {
+            $user = User::find($id);
+            $photo = $user->photo;
+            if($photo){
+                $filePath = public_path('/assets/images/users/'. $photo);
+                if(file_exists($filePath)){
+                    unlink($filePath);
+                }
+            }
+            $user->delete();
+            return response()->json(['status' => true, 'data' => ['message' => 'Account Deleted Successfully!'], 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => $e->getMessage()]);
         }

@@ -80,6 +80,11 @@ class ChildCategoryController extends AdminBaseController
         //--- Logic Section
         $data = new Childcategory();
         $input = $request->all();
+        if ($file = $request->file('banner')) {
+            $name = \PriceHelper::ImageCreateName($file);
+            $file->move('assets/images/childcategories', $name);
+            $input['banner'] = $name;
+        }
         $data->fill($input)->save();
         //--- Logic Section Ends
 
@@ -119,6 +124,16 @@ class ChildCategoryController extends AdminBaseController
         //--- Logic Section
         $data = Childcategory::findOrFail($id);
         $input = $request->all();
+        if ($file = $request->file('banner')) {
+            $name = \PriceHelper::ImageCreateName($file);
+            $file->move('assets/images/childcategories', $name);
+            if ($data->banner != null) {
+                if (file_exists(public_path() . '/assets/images/childcategories/' . $data->banner)) {
+                    unlink(public_path() . '/assets/images/childcategories/' . $data->banner);
+                }
+            }
+            $input['banner'] = $name;
+        }
         $data->update($input);
         //--- Logic Section Ends
 

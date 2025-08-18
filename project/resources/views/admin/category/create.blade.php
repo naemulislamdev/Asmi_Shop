@@ -9,7 +9,7 @@
                   <div class="col-lg-12">
                     <div class="product-description">
                       <div class="body-area">
-                        @include('alerts.admin.form-error')  
+                        @include('alerts.admin.form-error')
                         <form id="geniusformdata" action="{{route('admin-cat-create')}}" method="POST" enctype="multipart/form-data">
                           {{csrf_field()}}
 
@@ -53,14 +53,28 @@
                                 </div>
                               </div>
                             </div>
-
-
+                            <div class="row">
+                              <div class="col-lg-4">
+                                <div class="left-area">
+                                  <h4 class="heading">{{ __('Set Banner') }} *</h4>
+                                </div>
+                              </div>
+                              <div class="col-lg-7">
+                                <div class="img-upload ">
+                                  <div id="image-preview" class="img-preview" style="background: url({{ asset('assets/admin/images/upload.png') }});">
+                                    <label for="image-upload" class="img-label"><i class="icofont-upload-alt"></i>{{ __('Upload Image') }}</label>
+                                    <input type="file" name="photo" class="img-upload">
+                                  </div>
+                                  <p class="text">{{__('Prefered Size: (1900x267) or Square Sized Image')}}</p>
+                                </div>
+                              </div>
+                            </div>
 
                           <br>
                           <div class="row">
                             <div class="col-lg-4">
                               <div class="left-area">
-                                
+
                               </div>
                             </div>
                             <div class="col-lg-7">

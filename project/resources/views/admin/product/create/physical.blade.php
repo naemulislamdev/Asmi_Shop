@@ -267,16 +267,9 @@
                                             </div>
                                         </div>
 
-
-
-
-
-
-
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 <div class="left-area">
-
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
@@ -680,7 +673,7 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="price" type="number" class="input-field"
-                                                    placeholder="{{ __('e.g 20') }}" step="0.1" required=""
+                                                    placeholder="{{ __('e.g 20') }}" required=""
                                                     min="0">
                                             </div>
                                         </div>
@@ -693,9 +686,23 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
-                                                <input name="previous_price" step="0.1" type="number"
+                                                <input name="discount" type="number"
                                                     class="input-field" placeholder="{{ __('e.g 20') }}"
                                                     min="0">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Discount type') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select class="form-control" name="discount_type">
+                                                    <option selected disabled>{{ __('Select Type') }}</option>
+                                                    <option value="flat">{{ __('Flat') }}</option>
+                                                    <option value="percent">{{ __('Percentage') }}</option>
+                                                </select>
                                             </div>
                                         </div>
 

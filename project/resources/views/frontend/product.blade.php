@@ -31,13 +31,11 @@
                                 href="{{ route('front.category', $productt->category->slug) }}">{{ $productt->category->name }}</a>
                         </li>
                         @if ($productt->subcategory_id)
-          
                             <li><a
                                     href="{{ route('front.category', [$productt->category->slug, $productt->subcategory->slug]) }}">{{ $productt->subcategory->name }}</a>
                             </li>
                         @endif
                         @if ($productt->childcategory_id)
-             
                             <li><a
                                     href="{{ route('front.category', [$productt->category->slug, $productt->subcategory->slug, $productt->childcategory->slug]) }}">{{ $productt->childcategory->name }}</a>
                             </li>
@@ -81,11 +79,26 @@
                         <div class="product-info-wrapper  {{ $productt->type != 'Physical' ? 'mb-3' : '' }}">
                             <h3>{{ $productt->name }}</h3>
                             <div class="price-wrapper">
-                                <h5 id="sizeprice">{{ $productt->showPrice() }}</h5>
-                                <h5><del>{{ $productt->showPreviousPrice() }}</del></h5>
+                                @if ($productt->discount > 0)
+                                    <h5 id="sizeprice">
+                                        {{ \App\Helpers\PriceHelper::discountPrice($productt->price, $productt->discount, $productt->discount_type) }} ৳
+                                    </h5>
+                                    <h5><del>{{ $productt->price }} ৳</del></h5>
+                                @else
+                                    <h5 id="sizeprice">{{ $productt->price }} ৳</h5>
+                                @endif
 
-                                @if ($productt->offPercentage() && round($productt->offPercentage()) > 0)
-                                    <span class="product-badge">-{{ round($productt->offPercentage()) }}%</span>
+
+                                @if ($productt->discount > 0)
+                                    @if ($productt->discount_type == 'percent')
+                                        <span class="product-badge">
+                                            {{ $productt->discount }} %
+                                        </span>
+                                    @elseif($productt->discount_type == 'flat')
+                                        <span class="product-badge">
+                                            {{ $productt->discount }} ৳
+                                        </span>
+                                    @endif
                                 @endif
 
                             </div>
@@ -229,8 +242,8 @@
                                                     id="size_{{ $key }}" data-value="{{ $key }}"
                                                     data-key="{{ str_replace(' ', '', $data1) }}"
                                                     data-price="{{ $productt->size_price[$key] * $curr->value }}"
-                                                    data-qty="{{ $productt->size_qty[$key] }}" value="{{ $key }}"
-                                                    name="size">
+                                                    data-qty="{{ $productt->size_qty[$key] }}"
+                                                    value="{{ $key }}" name="size">
                                                 <label for="size_{{ $key }}">{{ $data1 }}</label>
                                             </li>
                                         @endforeach
@@ -305,6 +318,7 @@
                         <input type="hidden" id="product_price"
                             value="{{ round($productt->vendorPrice() * $curr->value, 2) }}">
                         <input type="hidden" id="product_id" value="{{ $productt->id }}">
+                        <input type="hidden" id="product_discount" value="{{ $productt->discount }}">
                         <input type="hidden" id="curr_pos" value="{{ $gs->currency_format }}">
                         <input type="hidden" id="curr_sign" value="{{ $curr->sign }}">
 
@@ -505,13 +519,13 @@
 
 
                             </span>
-                            <span> <b>@lang('Total Items :')</b>
+                            {{-- <span> <b>@lang('Total Items :')</b>
                                 @if ($productt->user_id != 0)
                                     {{ App\Models\Product::where('user_id', '=', $productt->user_id)->get()->count() }}
                                 @else
                                     {{ App\Models\Product::where('user_id', '=', 0)->get()->count() }}
                                 @endif
-                            </span>
+                            </span> --}}
 
                             <div class="action-btns-wrapper">
 
@@ -548,7 +562,7 @@
                                 @if ($productt->user_id != 0)
                                     @if (Auth::check())
                                         @if (Auth::user()->favorites()->where('vendor_id', '=', $productt->user_id)->get()->count() > 0)
-                                            <a class="template-btn dark-outline" href="javascript:;" >
+                                            <a class="template-btn dark-outline" href="javascript:;">
                                                 <i class="fas fa-check"></i>
                                                 {{ __('Favorite') }}
                                             </a>

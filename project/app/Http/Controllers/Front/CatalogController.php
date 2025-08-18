@@ -53,6 +53,7 @@ class CatalogController extends Controller
         if (!empty($slug)) {
             $cat = Category::where('slug', $slug)->firstOrFail();
             $data['cat'] = $cat;
+            //$data['cat_banner'] = $cat->photo;
         }
 
         if (!empty($slug1)) {
@@ -97,7 +98,7 @@ class CatalogController extends Controller
                 return $query->where('childcategory_id', $childcat->id);
             })
             ->when($search, function ($query, $search) {
-                return $query->where('name', 'like', '%' . $search . '%')->orWhere('name', 'like', $search . '%');
+                return $query->where('name', 'like', '%' . $search . '%')->orWhere('sku', 'like', $search . '%');
             })
             ->when($minprice, function ($query, $minprice) {
                 return $query->where('price', '>=', $minprice);

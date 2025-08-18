@@ -134,4 +134,15 @@ class UserController extends UserBaseController
         return view('user.affilate.affilate-program', compact('user', 'final_affilate_users'));
     }
 
+    public function deleteUserAC($id)
+    {
+        $user = $this->user;
+        if ($user->id == $id) {
+            $user->delete();
+            return redirect()->route('front.index')->with('success', __('Account deleted successfully.'));
+        } else {
+            return redirect()->back()->with('unsuccess', __('You are not authorized to delete this account.'));
+        }
+    }
+
 }

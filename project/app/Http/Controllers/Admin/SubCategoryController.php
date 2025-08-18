@@ -75,6 +75,11 @@ class SubCategoryController extends AdminBaseController
         //--- Logic Section
         $data = new Subcategory();
         $input = $request->all();
+        if ($file = $request->file('banner')) {
+            $name = \PriceHelper::ImageCreateName($file);
+            $file->move('assets/images/subcategories', $name);
+            $input['banner'] = $name;
+        }
         $data->fill($input)->save();
         //--- Logic Section Ends
 
@@ -113,6 +118,16 @@ class SubCategoryController extends AdminBaseController
         //--- Logic Section
         $data = Subcategory::findOrFail($id);
         $input = $request->all();
+        if ($file = $request->file('banner')) {
+            $name = \PriceHelper::ImageCreateName($file);
+            $file->move('assets/images/subcategories', $name);
+            if ($data->banner != null) {
+                if (file_exists(public_path() . '/assets/images/subcategories/' . $data->banner)) {
+                    unlink(public_path() . '/assets/images/subcategories/' . $data->banner);
+                }
+            }
+            $input['banner'] = $name;
+        }
         $data->update($input);
         //--- Logic Section Ends
 

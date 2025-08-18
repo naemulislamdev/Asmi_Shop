@@ -50,8 +50,9 @@ class ManualPaymentController extends CheckoutBaseControlller
         $new_cart['totalPrice'] = $t_cart->totalPrice;
         $new_cart['items'] = $t_cart->items;
         $new_cart = json_encode($new_cart);
-        $temp_affilate_users = OrderHelper::product_affilate_check($cart); // For Product Based Affilate Checking
-        $affilate_users = $temp_affilate_users == null ? null : json_encode($temp_affilate_users);
+//$temp_affilate_users = OrderHelper::product_affilate_check($cart);
+        //$affilate_users = $temp_affilate_users == null ? null : json_encode($temp_affilate_users);
+        $affilate_users = null;
 
 
         $orderCalculate = PriceHelper::getOrderTotal($input, $cart);

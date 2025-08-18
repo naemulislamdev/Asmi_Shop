@@ -250,6 +250,7 @@
 
   $(document).on("click", "#addtodetailscart", function (e) {
     let pid = "";
+    let p_discount = "";
     let qty = "";
     let size_key = "";
     let size = "";
@@ -263,6 +264,7 @@
 
     // get all the input values
     pid = $("#product_id").val();
+    p_discount = $("#product_discount").val();
     qty = $("#order-qty").val();
     size_key = $(".cart_size input:checked").val();
     size = $(".cart_size input:checked").attr("data-key");
@@ -293,6 +295,7 @@
       url: mainurl + "/addnumcart",
       data: {
         id: pid,
+        discount: p_discount,
         qty: qty,
         size: size,
         color: color,
@@ -312,11 +315,13 @@
         } else if (data[3]) {
           toastr.error(lang.minimum_qty_error + " " + data[4]);
         } else {
+          console.log(data);
           $("#cart-count").html(data[0]);
           $("#cart-count1").html(data[0]);
           $(".cart-popup").load(mainurl + "/carts/view");
           $("#cart-items").load(mainurl + "/carts/view");
-          toastr.success("Successfully Added To Cart");
+          toastr.success(" Added To Cart");
+
         }
       },
     });

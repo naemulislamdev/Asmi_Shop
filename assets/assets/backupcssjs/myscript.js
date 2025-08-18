@@ -246,6 +246,7 @@
 
     // get all the input values
     pid = $("#product_id").val();
+    pid = $("#product_discount").val();
     qty = $("#order-qty").val();
     size_key = $(".cart_size input:checked").val();
     size = $(".cart_size input:checked").attr("data-key");

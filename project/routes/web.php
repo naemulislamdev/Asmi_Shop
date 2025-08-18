@@ -1224,6 +1224,7 @@ Route::group(['middleware' => 'maintenance'], function () {
         // User Profile
         Route::get('/profile', 'User\UserController@profile')->name('user-profile');
         Route::post('/profile', 'User\UserController@profileupdate')->name('user-profile-update');
+        Route::get('/delete/user-account/{id}', 'User\UserController@deleteUserAC');
         // User Profile Ends
 
         // Display important Codes For Payment Gatweways
@@ -1778,13 +1779,19 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/country/tax/check', 'Front\CartController@country_tax');
     Route::get('/{slug}', 'Front\VendorController@index')->name('front.vendor');
 
+    Route::get('/cache/clear', function () {
+            Artisan::call('cache:clear');
+            Artisan::call('config:clear');
+            Artisan::call('route:clear');
+            Artisan::call('view:clear');
+            return 'Cache Cleared Successfully';
+    });
+
     // VENDOR AND PAGE SECTION ENDS
 
     // ************************************ FRONT SECTION ENDS**********************************************
 
 });
-
-
 
 
 Route::post('the/genius/ocean/2441139', 'Front\FrontendController@subscription');

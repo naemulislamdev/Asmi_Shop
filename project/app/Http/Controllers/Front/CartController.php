@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 
-use App\Models\Cart;use App\Models\Country;
+use App\Models\Cart;
+use App\Models\Country;
 use App\Models\Generalsetting;
 use App\Models\Product;
 use App\Models\State;
 use App\Helpers\PriceHelper;
 use Illuminate\Http\Request;
+use App\Models\PaymentGateway;
 use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
@@ -36,16 +38,24 @@ class CartController extends Controller
         if (Session::has('coupon_percentage')) {
             Session::forget('coupon_percentage');
         }
+
+        $digital = 0;
+        $vendor_shipping_id = 0;
+        $vendor_packing_id = 0;
+        $curr = $this->curr;
+        $gateways = PaymentGateway::scopeHasGateway($this->curr->id);
+
         $oldCart = Session::get('cart');
         $cart = new Cart($oldCart);
         $products = $cart->items;
         $totalPrice = $cart->totalPrice;
         $mainTotal = $totalPrice;
+        $totalQty = $cart->totalQty;
 
         if ($request->ajax()) {
-            return view('frontend.ajax.cart-page', compact('products', 'totalPrice', 'mainTotal'));
+            return view('frontend.ajax.cart-page', compact('products', 'totalPrice', 'mainTotal', 'gateways', 'digital', 'totalQty', 'vendor_shipping_id', 'vendor_packing_id'));
         }
-        return view('frontend.cart', compact('products', 'totalPrice', 'mainTotal'));
+        return view('frontend.cart', compact('products', 'totalPrice', 'mainTotal', 'gateways', 'digital', 'totalQty', 'vendor_shipping_id', 'vendor_packing_id'));
     }
 
     public function cartview()
@@ -86,7 +96,41 @@ class CartController extends Controller
     public function addcart($id)
     {
 
-        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'color_all', "color_price"]);
+        $prod = Product::where('id', '=', $id)->first([
+            'id',
+            'user_id',
+            'slug',
+            'name',
+            'photo',
+            'size',
+            'size_qty',
+            'size_price',
+            'color',
+            'price',
+            'discount',
+            'discount_type',
+            'stock',
+            'type',
+            'file',
+            'link',
+            'license',
+            'license_qty',
+            'measure',
+            'whole_sell_qty',
+            'whole_sell_discount',
+            'attributes',
+            'color_all',
+            "color_price"
+        ]);
+
+        // ✅ Apply discount before anything else
+        if ($prod->discount > 0) {
+            if ($prod->discount_type === 'percent') {
+                $prod->price = $prod->price - ($prod->price * ($prod->discount / 100));
+            } elseif ($prod->discount_type === 'flat') {
+                $prod->price = $prod->price - $prod->discount;
+            }
+        }
 
         // Set Attrubutes
 
@@ -321,6 +365,7 @@ class CartController extends Controller
     {
 
         $id = $_GET['id'];
+        $discount = isset($request->discount) ? $request->discount : 0;
         $qty = isset($request->qty) ? $request->qty : 1;
         $size = isset($request->size) ? str_replace(' ', '-', $request->size) : '';
         $color = isset($request->color) ? $request->color : '';
@@ -340,10 +385,23 @@ class CartController extends Controller
 
         $size_price = ($size_price / $curr->value);
         $color_price = ($color_price / $curr->value);
-        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'minimum_qty', 'stock_check', 'size_price', 'color_all']);
+        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'discount', 'discount_type', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'minimum_qty', 'stock_check', 'size_price', 'color_all']);
         if ($prod->type != 'Physical') {
             $qty = 1;
         }
+        // Apply discount if available
+        if ($prod->discount > 0) {
+            if ($prod->discount_type === 'percent') {
+                // Percentage discount
+                $prod->price = $prod->price - ($prod->price * ($prod->discount / 100));
+            } elseif ($prod->discount_type === 'flat') {
+                // Flat discount
+                $prod->price = $prod->price - $prod->discount;
+            }
+        }
+
+        // Ensure price does not go below zero
+        $prod->price = max($prod->price, 0);
 
         if ($prod->user_id != 0) {
             $prc = $prod->price + $this->gs->fixed_commission + ($prod->price / 100) * $this->gs->percentage_commission;
@@ -431,7 +489,7 @@ class CartController extends Controller
             }
         }
 
-        $cart->addnum($prod, $prod->id, $qty, $size, $color, $size_qty, $size_price, $color_price, $size_key, $keys, $values, $affilate_user);
+        $cart->addnum($prod, $prod->id, $discount, $qty, $size, $color, $size_qty, $size_price, $color_price, $size_key, $keys, $values, $affilate_user);
 
         if ($cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['stock'] < 0) {
 
@@ -473,6 +531,7 @@ class CartController extends Controller
         $prices = isset($request->prices) ? explode(",", $request->prices) : 0;
         $affilate_user = isset($_GET['affilate_user']) ? $_GET['affilate_user'] : '0';
 
+
         $keys = !$keys ? '' : implode(',', $keys);
         $values = !$values ? '' : implode(',', $values);
 
@@ -482,10 +541,25 @@ class CartController extends Controller
         $size_price = ($size_price / $curr->value);
         $color_price = (float) $_GET['color_price'];
 
-        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'minimum_qty', 'stock_check', 'color_price', 'color_all']);
+        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'discount', 'discount_type', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'minimum_qty', 'stock_check', 'color_price', 'color_all']);
+        //$qty = 1;
+
         if ($prod->type != 'Physical') {
             $qty = 1;
         }
+
+        if ($prod->discount > 0) {
+            if ($prod->discount_type === 'percent') {
+                // Percentage discount
+                $prod->price = $prod->price - ($prod->price * ($prod->discount / 100));
+            } elseif ($prod->discount_type === 'flat') {
+                // Flat discount
+                $prod->price = $prod->price - $prod->discount;
+            }
+        }
+
+        // Ensure price does not go below zero
+        $prod->price = max($prod->price, 0);
 
         if ($prod->user_id != 0) {
             $prc = $prod->price + $this->gs->fixed_commission + ($prod->price / 100) * $this->gs->percentage_commission;
@@ -557,7 +631,7 @@ class CartController extends Controller
                 }
             }
         }
-
+        //dd($qty);
         $cart->addnum($prod, $prod->id, $qty, $size, $color, $size_qty, $size_price, $color_price, $size_key, $keys, $values, $affilate_user);
 
         if ($cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['dp'] == 1) {
@@ -593,7 +667,20 @@ class CartController extends Controller
         $itemid = $_GET['itemid'];
         $size_qty = $_GET['size_qty'];
         $size_price = $_GET['size_price'];
-        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'stock_check']);
+        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'discount', 'discount_type', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'stock_check']);
+
+        if ($prod->discount > 0) {
+            if ($prod->discount_type === 'percent') {
+                // Percentage discount
+                $prod->price = $prod->price - ($prod->price * ($prod->discount / 100));
+            } elseif ($prod->discount_type === 'flat') {
+                // Flat discount
+                $prod->price = $prod->price - $prod->discount;
+            }
+        }
+
+        // Ensure price does not go below zero
+        $prod->price = max($prod->price, 0);
 
         if ($prod->user_id != 0) {
             $prc = $prod->price + $this->gs->fixed_commission + ($prod->price / 100) * $this->gs->percentage_commission;
@@ -678,7 +765,19 @@ class CartController extends Controller
         $itemid = $_GET['itemid'];
         $size_qty = $_GET['size_qty'];
         $size_price = $_GET['size_price'];
-        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes']);
+        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'discount', 'discount_type', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes']);
+        if ($prod->discount > 0) {
+            if ($prod->discount_type === 'percent') {
+                // Percentage discount
+                $prod->price = $prod->price - ($prod->price * ($prod->discount / 100));
+            } elseif ($prod->discount_type === 'flat') {
+                // Flat discount
+                $prod->price = $prod->price - $prod->discount;
+            }
+        }
+        // Ensure price does not go below zero
+        $prod->price = max($prod->price, 0);
+
         if ($prod->user_id != 0) {
             $prc = $prod->price + $this->gs->fixed_commission + ($prod->price / 100) * $this->gs->percentage_commission;
             $prod->price = $prc;
