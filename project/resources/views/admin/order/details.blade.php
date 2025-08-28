@@ -334,31 +334,6 @@
                                     <td width="45%">{{$order->shipping_country == null ? $order->customer_country :
                                         $order->shipping_country}}</td>
                                 </tr>
-
-
-                                <tr>
-                                    <th width="45%">{{ __('State') }}</th>
-                                    <th width="10%">:</th>
-                                    <td width="45%">{{$order->shipping_state == null ? $order->customer_state:
-                                        $order->shipping_state }}</td>
-                                </tr>
-
-
-
-                                <tr>
-                                    <th width="45%"><strong>{{ __('City') }}:</strong></th>
-                                    <th width="10%">:</th>
-                                    <td width="45%">{{$order->shipping_city == null ? $order->customer_city :
-                                        $order->shipping_city}}</td>
-                                </tr>
-                                <tr>
-                                    <th width="45%"><strong>{{ __('Postal Code') }}:</strong></th>
-                                    <th width="10%">:</th>
-                                    <td width="45%">{{$order->shipping_zip == null ? $order->customer_zip :
-                                        $order->shipping_zip}}</td>
-                                </tr>
-
-
                                 @endif
                             </tbody>
                         </table>
@@ -408,7 +383,6 @@
                                 <tr>
                                     <th>{{ __('Product ID#') }}</th>
                                     <th>{{ __('Shop Name') }}</th>
-                                    <th>{{ __('Vendor Status') }}</th>
                                     <th>{{ __('Product Title') }}</th>
                                     <th>{{ __('Details') }}</th>
                                     <th>{{ __('Total Price') }}</th>
@@ -444,36 +418,6 @@
 
                                     </td>
                                     <td>
-                                        @if($product['item']['user_id'] != 0)
-                                        @php
-                                        $user = App\Models\VendorOrder::where('order_id','=',$order->id)->where('user_id','=',$product['item']['user_id'])->first();
-
-
-                                        @endphp
-
-                                        @if($order->dp == 1 && $order->payment_status == 'Completed')
-
-                                        <span class="badge badge-success">{{ __('Completed') }}</span>
-
-                                        @else
-                                        @if($user->status == 'pending')
-                                        <span class="badge badge-warning">{{ucwords($user->status)}}</span>
-                                        @elseif($user->status == 'processing')
-                                        <span class="badge badge-info">{{ucwords($user->status)}}</span>
-                                        @elseif($user->status == 'on delivery')
-                                        <span class="badge badge-primary">{{ucwords($user->status)}}</span>
-                                        @elseif($user->status == 'completed')
-                                        <span class="badge badge-success">{{ucwords($user->status)}}</span>
-                                        @elseif($user->status == 'declined')
-                                        <span class="badge badge-danger">{{ucwords($user->status)}}</span>
-                                        @endif
-                                        @endif
-
-                                        @endif
-                                    </td>
-
-
-                                    <td>
                                         <input type="hidden" value="{{ $product['license'] }}">
 
                                         @if($product['item']['user_id'] != 0)
@@ -505,13 +449,6 @@
                                         <a href="javascript:;" data-toggle="modal" data-target="#confirm-delete"
                                             class="btn btn-info product-btn license" style="padding: 5px 12px;"><i
                                                 class="fa fa-eye"></i> {{ __('View License') }}</a>
-                                        @endif
-
-                                        @if($product['affilate_user'] != 0)
-                                        <p>
-                                            <strong>{{ __('Referral User') }} :</strong> {{
-                                            \App\Models\User::find($product['affilate_user'])->name }}
-                                        </p>
                                         @endif
 
                                     </td>
@@ -567,7 +504,7 @@
                                                 <i class="fas fa-edit"></i> {{ __("Edit") }}
                                             </a>
                                             @endif
-                                            
+
                                             <a class="add-btn delete-product"
                                                 data-href="{{ route('admin-order-product-delete',[$itemKey,$order->id]) }}"
                                                 data-toggle="modal" data-target="#delete-product-modal">
@@ -908,8 +845,8 @@ $(document).on('click','.show_add_product',function(){
      $(document).on('click','.license' , function(e){
         var id = $(this).parent().find('input[type=hidden]').val();
         var key = $(this).parent().parent().find('input[type=hidden]').val();
-        $('#key').html(id);  
-        $('#license-key').val(key);    
+        $('#key').html(id);
+        $('#license-key').val(key);
     });
 
     $(document).on('click','#license-edit' , function(e){

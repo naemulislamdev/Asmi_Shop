@@ -140,14 +140,14 @@
                                         <td class="cart-price"
                                             id="prc{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}">
                                             {{ App\Models\Product::convertPrice($product['item_price']) }}
-                                            @if ($product['discount'] > 0)
+                                            {{-- @if ($product['discount'] > 0)
                                                 @if ($product['discount_type'] == 'percent')
                                                     <span class=""> {{ $product['discount'] }}%</span>
                                                 @else
                                                     <span class="">
                                                         {{ App\Models\Product::convertPrice($product['discount']) }}</span>
                                                 @endif
-                                            @endif
+                                            @endif --}}
 
                                         </td>
                                         <td>
@@ -193,6 +193,9 @@
                                                         <input class="input-cls" id="customer_name" type="text"
                                                             name="customer_name" placeholder="@lang('Full Name')"
                                                             value="{{ Auth::check() ? Auth::user()->name : '' }}">
+                                                        @error('customer_name')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
 
@@ -204,16 +207,23 @@
                                                         <input class="input-cls" id="phone" type="tel"
                                                             placeholder="@lang('Phone Number')" name="customer_phone"
                                                             value="{{ Auth::check() ? Auth::user()->phone : '' }}">
+                                                        <span id="phoneFeedback" class="small text-danger"></span>
+                                                        @error('customer_phone')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <div class="input-wrapper">
-                                                        <label class="label-cls"
-                                                            for="email">@lang('Email')</label>
+                                                        <label class="label-cls" for="email">@lang('Email')
+                                                            (Optional)</label>
                                                         <input class="input-cls" id="email" type="email"
-                                                            name="customer_email" placeholder="@lang('Enter Your Emai')l"
+                                                            name="customer_email" placeholder="@lang('Enter Your Email')"
                                                             value="{{ Auth::check() ? Auth::user()->email : '' }}"
                                                             {{ Auth::check() ? 'readonly' : '' }}>
+                                                        @error('customer_email')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-6">
@@ -224,6 +234,9 @@
                                                         <input class="input-cls" id="address" type="text"
                                                             placeholder="@lang('Address')" name="customer_address"
                                                             value="{{ Auth::check() ? Auth::user()->address : '' }}">
+                                                        @error('customer_address')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-12">
@@ -233,6 +246,9 @@
                                                         </label>
                                                         <input class="input-cls" id="Order-Note" name="order_note"
                                                             type="text" placeholder="@lang('Order note (Optional)')">
+                                                        @error('order_note')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -354,6 +370,7 @@
                                                 @if ($gt->checkout == 1)
                                                     @if ($gt->type == 'manual')
                                                         @if ($digital == 0)
+
                                                             <!-- single payment input -->
                                                             <div class="gs-radio-wrapper payment"
                                                                 data-show="{{ $gt->showForm() }}"
@@ -481,8 +498,8 @@
                         <div class="accordion mb-3" id="accordionExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
-                                    <a class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false"
+                                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseTwo" aria-expanded="false"
                                         aria-controls="collapseTwo">
                                         Have a coupon code?
                                     </a>
@@ -492,10 +509,14 @@
                                     <div class="accordion-body">
                                         <div class="summary-inner-box">
                                             <h6 class="summary-title">@lang('Apply Coupon Code')</h6>
-                                            <div class="coupon-wrapper">
-                                                <input type="text" id="code" class="form-control"
-                                                    placeholder="@lang('Coupon Code')">
-                                                <button type="submit" id="check_coupon">@lang('Apply')</button>
+                                            <div class="coupon-wrapper mt-3">
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" id="code"
+                                                        placeholder="@lang('Coupon Code')"
+                                                        aria-describedby="basic-addon2">
+                                                    <button type="submit" class="btn btn-outline-secondary"
+                                                        id="check_coupon">@lang('Apply')</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -738,6 +759,8 @@
         }
         $(document).on("click", "#check_coupon", function() {
             var val = $("#code").val();
+            //console.log(val);
+
             var total = $("#ttotal").val();
             var ship = 0;
             $.ajax({
@@ -823,5 +846,36 @@
             $(".pay-area").addClass('active show').load($(this).attr(
                 'data-href'));
         })
+    </script>
+    <script>
+        document.getElementById('phone').addEventListener('input', function() {
+            const phoneInput = this.value;
+            const phoneFeedback = document.getElementById('phoneFeedback');
+            const regex = /^(01[3-9]\d{8})$/;
+
+            if (phoneInput === '') {
+                phoneFeedback.textContent = '';
+            } else if (!regex.test(phoneInput)) {
+                phoneFeedback.classList.add('text-danger');
+                phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
+            } else {
+                phoneFeedback.textContent = 'Valid phone number!';
+                phoneFeedback.classList.remove('text-danger');
+                phoneFeedback.classList.add('text-success');
+            }
+        });
+
+        // Also validate when the field loses focus
+        document.getElementById('phone').addEventListener('blur', function() {
+            const phoneInput = this.value;
+            const phoneFeedback = document.getElementById('phoneFeedback');
+            const regex = /^(01[3-9]\d{8})$/;
+
+            if (phoneInput === '') {
+                phoneFeedback.textContent = 'Phone number is required';
+            } else if (!regex.test(phoneInput)) {
+                phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
+            }
+        });
     </script>
 @endsection

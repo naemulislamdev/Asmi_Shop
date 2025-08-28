@@ -338,6 +338,9 @@
             <a href="{{ route('admin-arrival-index') }}"><span>{{ __('Best Month Offer') }}</span></a>
         </li>
         <li>
+            <a href="{{ route('admin-flash-deal-index') }}"><span>{{ __('Flash Deals') }}</span></a>
+        </li>
+        <li>
             <a href="{{ route('admin-ps-deal') }}"><span>{{ __('Deal of the day') }}</span></a>
         </li>
 

@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="{{asset('assets/print/css/style.css')}}">
   <link href="{{asset('assets/print/css/print.css')}}" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-        <link rel="icon" type="image/png" href="{{asset('assets/images/'.$gs->favicon)}}"> 
+        <link rel="icon" type="image/png" href="{{asset('assets/images/'.$gs->favicon)}}">
   <style type="text/css">
 @page { size: auto;  margin: 0mm; }
 @page {
@@ -57,7 +57,7 @@ html {
             <div class="invoice__metaInfo">
                 <div class="col-lg-6">
                     <div class="invoice__orderDetails">
-                        
+
                         <p><strong>{{ __('Order Details') }} </strong></p>
                         <span><strong>{{ __('Invoice Number') }} :</strong> {{ sprintf("%'.08d", $order->id) }}</span><br>
                         <span><strong>{{ __('Order Date') }} :</strong> {{ date('d-M-Y',strtotime($order->created_at)) }}</span><br>
@@ -83,8 +83,6 @@ html {
                             <p><strong>{{ __('Shipping Details') }}</strong></p>
                            <span><strong>{{ __('Customer Name') }}</strong>: {{ $order->shipping_name == null ? $order->customer_name : $order->shipping_name}}</span><br>
                            <span><strong>{{ __('Address') }}</strong>: {{ $order->shipping_address == null ? $order->customer_address : $order->shipping_address }}</span><br>
-                           <span><strong>{{ __('City') }}</strong>: {{ $order->shipping_city == null ? $order->customer_city : $order->shipping_city }}</span><br>
-                           <span><strong>{{ __('Country') }}</strong>: {{ $order->shipping_country == null ? $order->customer_country : $order->shipping_country }}</span>
                         </div>
                 </div>
                 @endif
@@ -93,8 +91,6 @@ html {
                             <p><strong>{{ __('Billing Details') }}</strong></p>
                             <span><strong>{{ __('Customer Name') }}</strong>: {{ $order->customer_name}}</span><br>
                             <span><strong>{{ __('Address') }}</strong>: {{ $order->customer_address }}</span><br>
-                            <span><strong>{{ __('City') }}</strong>: {{ $order->customer_city }}</span><br>
-                            <span><strong>{{ __('Country') }}</strong>: {{ $order->customer_country }}</span>
                         </div>
                 </div>
             </div>
@@ -159,13 +155,13 @@ html {
                                                     @foreach( array_combine(explode(',', $product['keys']), explode(',', $product['values']))  as $key => $value)
                                                     <p>
 
-                                                        <b>{{ ucwords(str_replace('_', ' ', $key))  }} : </b> {{ $value }} 
+                                                        <b>{{ ucwords(str_replace('_', ' ', $key))  }} : </b> {{ $value }}
 
                                                     </p>
                                                     @endforeach
 
                                                     @endif
-                                               
+
                                             </td>
 
                                             <td> {{ \PriceHelper::showCurrencyPrice($product['price'] * $order->currency_value)  }} <small>{{ $product['discount'] == 0 ? '' : '('.$product['discount'].'% '.__('Off').')' }}</small>
@@ -185,7 +181,7 @@ html {
 
                                         </tr>
                                         @if($order->shipping_cost != 0)
-                                        @php 
+                                        @php
                                         $price = round(($order->shipping_cost / $order->currency_value),2);
                                         @endphp
                                             @if(DB::table('shippings')->where('price','=',$price)->count() > 0)
@@ -198,7 +194,7 @@ html {
                                         @endif
 
                                         @if($order->packing_cost != 0)
-                                        @php 
+                                        @php
                                         $pprice = round(($order->packing_cost / $order->currency_value),2);
                                         @endphp
                                         @if(DB::table('packages')->where('price','=',$pprice)->count() > 0)

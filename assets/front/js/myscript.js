@@ -157,6 +157,7 @@
           $.get(mainurl + "/carts", function (response) {
             $(".load_cart").html(response);
           });
+          window.location.reload();
         }
       },
     });
@@ -195,6 +196,7 @@
             $.get(mainurl + "/carts", function (response) {
               $(".load_cart").html(response);
             });
+            window.location.reload();
           } else {
             return false;
           }

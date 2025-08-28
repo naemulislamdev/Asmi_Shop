@@ -37,7 +37,7 @@
     <!-- breadcrumb end -->
 
     <!-- product wrapper start -->
-    <div class="gs-blog-wrapper">
+    <div class="gs-blog-wrapper" style="background: #ededed">
         <div class="container">
             <div class="row flex-column-reverse flex-lg-row">
                 <div class="col-12 col-lg-4 col-xl-3 mt-40 mt-lg-0">

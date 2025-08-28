@@ -2,6 +2,7 @@
 
 // ************************************ ADMIN SECTION **********************************************
 
+use App\Http\Controllers\Admin\OrderExportController;
 use App\Http\Controllers\Front\FrontendController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -84,6 +85,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/order/updatecart/{id}', 'Admin\OrderController@updatecart');
         Route::get('/ordercart/product-delete/{id}/{orderid}', 'Admin\OrderController@product_delete')->name('admin-order-product-delete');
         // Order Tracking
+        Route::get('/orders/export', [OrderExportController::class, 'export'])->name('orders.export');
 
         // CREATE ORDER
 
@@ -702,6 +704,13 @@ Route::prefix('admin')->group(function () {
         Route::get('/right/banner', 'Admin\PageSettingController@right_banner')->name('admin-ps-right-banner');
         Route::get('/menu/links', 'Admin\PageSettingController@menu_links')->name('admin-ps-menu-links');
         Route::get('/deal/of/day', 'Admin\PageSettingController@deal')->name('admin-ps-deal');
+        //------------ ADMIN Flash Deal section------------
+        Route::get('/flash/deal', 'Admin\FlashDealController@index')->name('admin-flash-deal-index');
+        Route::get('/flash/deal/create', 'Admin\FlashDealController@create')->name('admin-flash-deal-create');
+        Route::post('/flash/deal/store', 'Admin\FlashDealController@store')->name('admin-flash-deal-store');
+        Route::get('/flash/deal/edit/{id}', 'Admin\FlashDealController@edit')->name('admin-flash-deal-edit');
+        Route::post('/flash/deal/update/{id}', 'Admin\FlashDealController@update')->name('admin-flash-deal-update');
+        Route::get('/flash/deal/delete/{id}', 'Admin\FlashDealController@destroy')->name('admin-flash-deal-delete');
         //------------ ADMIN PAGE SECTION ENDS------------
 
         Route::get('/page-settings/contact', 'Admin\PageSettingController@contact')->name('admin-ps-contact');

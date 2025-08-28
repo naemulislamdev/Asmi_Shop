@@ -17,6 +17,13 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 {
     public function store(Request $request)
     {
+        $request->validate([
+            'customer_name' => 'required|string|max:50',
+            'customer_phone' => 'required|string|max:255',
+            'email' => 'nullable|string|email|max:255',
+            'customer_address' => 'required|string|max:255',
+            'order_note' => 'nullable|string|max:255',
+        ]);
         $requestInput = $request->all();
         //dd($requestInput);
         //$step1 = Session::get('step1');

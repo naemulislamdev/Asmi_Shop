@@ -5,7 +5,7 @@
                 <div class="info-left">
                     <ul class="wows align-items-center">
                         <li><a href="tel:+1(234)567-8901">
-                                @lang('Contact & Support'): {{ $ps->phone }}</a>
+                                <i class="fab fa-whatsapp"></i> {{ $ps->phone }}</a>
                         </li>
                     </ul>
                 </div>

@@ -4,28 +4,12 @@
 
 
 @section('content')
-    <section class="gs-breadcrumb-section bg-class"
-        data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
-        <div class="container">
-            <div class="row justify-content-center content-wrapper">
-                <div class="col-12">
-                    <h2 class="breadcrumb-title">@lang('Success')</h2>
-                    <ul class="bread-menu">
-                        <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
-                        <li><a href="#">@lang('Success')</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
     <div class="gs-success-invoice-section">
         <div class="container">
             <div class="success-invoice-box">
                 <div class="success-invoice-header wow-replaced" data-wow-delay=".1s">
-                    <svg class="succss-icon" xmlns="http://www.w3.org/2000/svg" width="121" height="120" viewBox="0 0 121 120"
+                    <img src="{{ asset('assets/front/images/success-check.gif') }}" alt="Order Successfully" width="200">
+                    {{-- <svg class="succss-icon" xmlns="http://www.w3.org/2000/svg" width="121" height="120" viewBox="0 0 121 120"
                         fill="none">
                         <g clip-path="url(#clip0_6740_32691)">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -46,7 +30,7 @@
                                 <rect width="120" height="120" fill="white" transform="translate(0.5)" />
                             </clipPath>
                         </defs>
-                    </svg>
+                    </svg> --}}
                     <h3>@lang('THANK YOU FOR YOUR PURCHASE')</h3>
                     <h5>@lang("We'll email you an order confirmation with details and tracking info")</h5>
                     <a href="{{ route('front.index') }}" class="template-btn btn-success-page">@lang('Get Back to Our Homepage')</a>
@@ -355,7 +339,7 @@
                                                 alt="" class="d-lg-none d-table-cell pb-24 small-device-img">
                                             <h6>{{ $product['item']['name'] }}</h6>
                                             <p><span>@lang('Quantity:')</span> {{ $product['qty'] }}</p>
-                                            <p><span>Size:</span>
+                                            {{-- <p><span>Size:</span>
                                                 @if (!empty($product['size']))
                                                     <b>{{ __('Size') }}</b>:
                                                     {{ $product['item']['measure'] }}{{ str_replace('-', '                                                                ', $product['size']) }}
@@ -371,7 +355,7 @@
                                                             style="background-color: #{{ $product['color'] == '' ? ' white' : $product['color'] }};"></span>
                                                     </div>
                                                 @endif
-                                            </p>
+                                            </p> --}}
 
                                             @if (!empty($product['keys']))
                                                 @foreach (array_combine(explode(',', $product['keys']), explode(',', $product['values'])) as $key => $value)

@@ -5,11 +5,11 @@
             @if ($product->discount > 0)
                 @if ($product->discount_type == 'percent')
                     <span class="product-badge">
-                        {{ $product->discount }} %
+                        {{ $product->discount }}% OFF
                     </span>
                 @elseif($product->discount_type == 'flat')
                     <span class="product-badge">
-                        {{ $product->discount }} ৳
+                        {{ $product->discount }}৳ OFF
                     </span>
                 @endif
             @endif
@@ -130,9 +130,15 @@
                 @else
                     <h6>{{ $product->showPrice() }}</h6>
                 @endif
+
+                @if ($product->measure)
+                        <h6 class="measure-product">
+                            / Per {{ $product->measure }}
+                        </h6>
+                    @endif
             </div>
 
-            <div class="ratings-wrapper">
+            {{-- <div class="ratings-wrapper">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16"
                     fill="none">
                     <path
@@ -142,7 +148,7 @@
 
                 <span class="rating-title">{{ number_format($product->ratings_avg_rating, 1) }}
                     ({{ $product->ratings_count }})</span>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

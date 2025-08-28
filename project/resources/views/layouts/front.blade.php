@@ -25,13 +25,25 @@
             padding: 15px 0;
         }
 
+        .fa-whatsapp {
+            color: #048835;
+            background: #fff;
+            padding: 3px 6px;
+            font-size: 22px;
+            border-radius: 7px;
+        }
+
         .header-logo-wrapper>img {
             width: 142px;
         }
 
         .single-product .content-wrapper,
         .single-product-list-view .content-wrapper {
-            height: 140px;
+            height: 112px;
+            background: #f5f5f5;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 14px 13px !important;
         }
 
         .gs-breadcrumb-section {
@@ -57,51 +69,97 @@
         .gs-cate-section {
             padding: 35px 0px;
         }
+
         .gs-offer-section .product-wrapper {
-    border-radius: 20px;
-    background: #ddd;
-    overflow: hidden;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-.gs-explore-product-section {
-    padding: 22px 0px;
-}
-.gs-offer-section {
-    padding-bottom: 52px;
-}
-.gs-footer-section .footer-row {
-    padding-top: 30px;
-    padding-bottom: 0px;
-}
-.gs-footer-section {
-    background-color: #005862;
-}
-.gs-footer-section .gs-footer-bottom {
-    background-color: #007182;
-}
-.gs-single-cat {
-    background: #ffffff;
-    border-radius: 12px;
-}
-.gs-single-cat .cate-img {
-    width: 190px;
-    height: 190px;
-    padding: 2px;
-    border: 0px solid #858585;
-    border-radius: 23px;
-    margin-bottom: 12px;
-}
-.cate-title{
-    background: #ececec;
-    height: 50px;
-}
-.single-product .img-wrapper, .single-product-list-view .img-wrapper {
-    border: 1px solid #e5e5e5;
-}
-.single-product .img-wrapper .product-img, .single-product-list-view .img-wrapper .product-img {
-    width: 100%;
-    height: 230px;
-}
+            border-radius: 20px;
+            background: #ddd;
+            overflow: hidden;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        }
+
+        .gs-explore-product-section {
+            padding: 22px 0px;
+        }
+
+        .gs-offer-section {
+            padding-bottom: 52px;
+        }
+
+        .gs-footer-section .footer-row {
+            padding-top: 30px;
+            padding-bottom: 0px;
+        }
+
+        .gs-footer-section {
+            background-color: #005862;
+        }
+
+        .gs-footer-section .gs-footer-bottom {
+            background-color: #007182;
+        }
+
+        .gs-single-cat {
+            background: #ffffff;
+            border-radius: 12px;
+        }
+
+        .gs-single-cat .cate-img {
+            width: 190px;
+            height: 190px;
+            padding: 2px;
+            border: 0px solid #858585;
+            border-radius: 23px;
+            margin-bottom: 4px;
+        }
+
+        .gs-single-cat {
+            background: #2cc1db;
+            border-radius: 12px;
+        }
+
+        .gs-single-cat .title {
+            margin-bottom: 4px;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .single-product .img-wrapper,
+        .single-product-list-view .img-wrapper {
+            border: 0px solid #e5e5e5;
+        }
+
+        .single-product .img-wrapper .product-img,
+        .single-product-list-view .img-wrapper .product-img {
+            width: 100%;
+            height: 260px;
+        }
+
+        .single-product .add-cart,
+        .single-product-list-view .add-cart {
+            width: 110px;
+        }
+
+        .single-product .add-to-cart,
+        .single-product-list-view .add-to-cart {
+            gap: 5px;
+        }
+
+        .measure-product {
+            color: #888888 !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+            margin-top: 5px;
+        }
+
+        .single-product .img-wrapper .product-badge,
+        .single-product-list-view .img-wrapper .product-badge {
+            width: 70px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            background: #cf3f00;
+            font-size: 14px;
+            font-weight: 600;
+        }
     </style>
 
 </head>

@@ -81,7 +81,8 @@
                             <div class="price-wrapper">
                                 @if ($productt->discount > 0)
                                     <h5 id="sizeprice">
-                                        {{ \App\Helpers\PriceHelper::discountPrice($productt->price, $productt->discount, $productt->discount_type) }} ৳
+                                        {{ \App\Helpers\PriceHelper::discountPrice($productt->price, $productt->discount, $productt->discount_type) }}
+                                        ৳
                                     </h5>
                                     <h5><del>{{ $productt->price }} ৳</del></h5>
                                 @else
@@ -815,7 +816,24 @@
         <div class="container">
             <h2 class="title text-center">@lang('Related Products')</h2>
             <div class="product-cards-slider">
-                @foreach (App\Models\Product::where('type', $productt->type)->where('product_type', $productt->product_type)->withCount('ratings')->withAvg('ratings', 'rating')->take(12)->get() as $product)
+                @php
+                    $query = App\Models\Product::query()
+                        ->where('product_type', $productt->product_type)
+                        ->withCount('ratings')
+                        ->withAvg('ratings', 'rating');
+
+                    if ($productt->childcategory_id) {
+                        $query->where('childcategory_id', $productt->childcategory_id);
+                    } elseif ($productt->subcategory_id) {
+                        $query->where('subcategory_id', $productt->subcategory_id);
+                    } else {
+                        $query->where('category_id', $productt->category_id);
+                    }
+
+                    // Fetch 12 random related products
+                    $related_products = $query->inRandomOrder()->take(12)->get();
+                @endphp
+                @foreach ($related_products as $product)
                     @include('includes.frontend.home_product', ['class' => 'not'])
                 @endforeach
             </div>

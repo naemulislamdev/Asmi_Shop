@@ -112,9 +112,7 @@
                             <div class="summary-inner-box">
                                 <h4 class="title">{{ $langg->lang127 }}</h4>
                                 <div class="total-price">
-                                    <h4 class="form-title">@lang('Total Order Amount')</h4>
-
-                                    <p>
+                                    <h3 class="text-bold">
                                         @if ($gs->currency_format == 0)
                                             <span id="total-cost">{{ $order->currency_sign }}<span
                                                     class="total_price">
@@ -123,11 +121,10 @@
                                             <span id="total-cost"> <span class="total_price">
                                                     {{ $order->pay_amount * $order->currency_value }}</span>{{ $order->currency_sign }}</span>
                                         @endif
-                                    </p>
+                                    </h3>
+                                    <h5 class="form-title">@lang('Total Order Amount')</h5>
                                 </div>
-
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -221,7 +218,6 @@
             total = Math.round(total);
             if (val == 0) {
                 var handler = PaystackPop.setup({
-                    key: '{{ $paystackData['key'] }}',
                     email: $('input[name=email]').val(),
                     amount: total * 100,
                     currency: "{{ $curr->name }}",

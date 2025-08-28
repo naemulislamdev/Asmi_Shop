@@ -135,14 +135,17 @@ class CouponController extends Controller
         $code = $_GET['code'];
         $coupon = Coupon::where('code', '=', $code)->first();
 
+
         if (!$coupon) {
             return response()->json(0);
         }
+        // dd($coupon);
         $cart = Session::get('cart');
         $discount_items = [];
         foreach ($cart->items as $key => $item) {
             $product = Product::findOrFail($item['item']['id']);
             if ($coupon->coupon_type == 'category') {
+//dd($product);
                 if ($product->category_id == $coupon->category) {
 
                     $discount_items[] = $key;

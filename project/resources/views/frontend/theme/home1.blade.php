@@ -33,14 +33,46 @@
             }
         }
     </style>
+    <style>
+        .flash-deal {
+            background: url('assets/front/images/weeklyoffer-bg.png');
+            /* border: 2px solid #ff9800; */
+            border-radius: 10px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 100% 100%;
+        }
+
+        .countdown-box .time-box {
+            background: #fff;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 5px 5px;
+            min-width: 80px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .countdown-box span {
+            font-size: 17px;
+            font-weight: bold;
+            color: #e65100;
+            display: block;
+        }
+
+        .countdown-box small {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+
     <!-- hero section start -->
     <section class="hero-slider-wrapper">
         @foreach ($sliders as $slider)
             <div class="gs-hero-section">
-                <img src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="">
+                <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
+                    style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
             </div>
         @endforeach
-
     </section>
     <!-- hero section end -->
 
@@ -90,6 +122,56 @@
         </div>
     </section>
     <!-- Featured Product Section Completed -->
+    <!-- Flash Deal Countdown Section -->
+    @php
+        $flashDeal = \App\Models\FlashDeal::where('status', 1)->first();
+        if($flashDeal){
+            $ProductsId = json_decode($flashDeal->products);
+            $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->get();
+        }
+    @endphp
+    @if($flashDeal)
+    <section class="flash-deal py-4 gs-explore-product-section">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h2 class="mb-3 text-right">🔥 {{$flashDeal->title}}</h2>
+                </div>
+                <div class="col-lg-6">
+                    <div id="countdown" class="countdown-box d-flex justify-content-center gap-3 mb-4">
+                        <div class="time-box">
+                            <span id="days">00</span>
+                            <small>Days</small>
+                        </div>
+                        <div class="time-box">
+                            <span id="hours">00</span>
+                            <small>Hours</small>
+                        </div>
+                        <div class="time-box">
+                            <span id="minutes">00</span>
+                            <small>Minutes</small>
+                        </div>
+                        <div class="time-box">
+                            <span id="seconds">00</span>
+                            <small>Seconds</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="myTabContent1">
+                <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
+                    role="tabpanel" aria-labelledby="ex-product-1" tabindex="0">
+                    <div class="product-cards-slider">
+                        @foreach ($flashDealProducts as $product)
+                            @include('includes.frontend.home_product')
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
     <!-- categories section end -->
     @if ($ps->arrival_section == 1)
         <!-- product offer section start -->
@@ -150,7 +232,7 @@
         <!-- product offer section end -->
     @endif
     <!-- explore product section start -->
-    <section class="gs-explore-product-section bg-light-white">
+    <section class="gs-explore-product-section" style="background: #ededed">
         <div class="container">
             <!-- title box  & nav-tab -->
             <div class="row mb-36 justify-content-center">
@@ -369,9 +451,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                    anim. Culpa
-                                                                                                                                                                                                                                                                                    deserunt
-                                                                                                                                                                                                                                                                                    nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                        anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                        deserunt
+                                                                                                                                                                                                                                                                                                                                                                        nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>
@@ -412,5 +494,55 @@
                 }
             });
         });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".home-slider").forEach(function(img) {
+                img.addEventListener("click", function() {
+                    let url = this.getAttribute("data-href");
+                    if (url) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+       $(function() {
+    // ✅ Get start & end date dynamically from DB
+    var startDate = new Date("{{ $flashDeal->start_date ?? '' }} 00:00:00").getTime();
+    var endDate   = new Date("{{ $flashDeal->end_date ?? '' }} 23:59:59").getTime();
+
+    var timer = setInterval(function() {
+        var now = new Date().getTime();
+
+        // 1️⃣ Before start date
+        if (now < startDate) {
+            $("#countdown").html("<h3>⏳ Deal Not Started Yet!</h3>");
+            return;
+        }
+
+        // 2️⃣ After end date
+        if (now > endDate) {
+            clearInterval(timer);
+            $("#countdown").html("<h3>⚡ Deal Expired!</h3>");
+            return;
+        }
+
+        // 3️⃣ Countdown running
+        var distance = endDate - now;
+
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        $("#days").text(days < 10 ? "0" + days : days);
+        $("#hours").text(hours < 10 ? "0" + hours : hours);
+        $("#minutes").text(minutes < 10 ? "0" + minutes : minutes);
+        $("#seconds").text(seconds < 10 ? "0" + seconds : seconds);
+    }, 1000);
+});
+
     </script>
 @endpush

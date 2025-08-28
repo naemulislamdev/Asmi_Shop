@@ -40,7 +40,7 @@
             <div class="row invoice__metaInfo mb-4">
                 <div class="col-lg-6">
                     <div class="invoice__orderDetails">
-                        
+
                         <p><strong>{{ __('Order Details') }} </strong></p>
                         <span><strong>{{ __('Invoice Number') }} :</strong> {{ sprintf("%'.08d", $order->id) }}</span><br>
                         <span><strong>{{ __('Order Date') }} :</strong> {{ date('d-M-Y',strtotime($order->created_at)) }}</span><br>
@@ -65,8 +65,6 @@
                             <p><strong>{{ __('Shipping Address') }}</strong></p>
                            <span><strong>{{ __('Customer Name') }}</strong>: {{ $order->shipping_name == null ? $order->customer_name : $order->shipping_name}}</span><br>
                            <span><strong>{{ __('Address') }}</strong>: {{ $order->shipping_address == null ? $order->customer_address : $order->shipping_address }}</span><br>
-                           <span><strong>{{ __('City') }}</strong>: {{ $order->shipping_city == null ? $order->customer_city : $order->shipping_city }}</span><br>
-                           <span><strong>{{ __('Country') }}</strong>: {{ $order->shipping_country == null ? $order->customer_country : $order->shipping_country }}</span>
 
                         </div>
                 </div>
@@ -78,8 +76,6 @@
                             <p><strong>{{ __('Billing Details') }}</strong></p>
                             <span><strong>{{ __('Customer Name') }}</strong>: {{ $order->customer_name}}</span><br>
                             <span><strong>{{ __('Address') }}</strong>: {{ $order->customer_address }}</span><br>
-                            <span><strong>{{ __('City') }}</strong>: {{ $order->customer_city }}</span><br>
-                            <span><strong>{{ __('Country') }}</strong>: {{ $order->customer_country }}</span>
                         </div>
                 </div>
             </div>
@@ -147,7 +143,7 @@
 
                                                     @foreach( array_combine(explode(',', $product['keys']), explode(',', $product['values']))  as $key => $value)
                                                     <p>
-                                                        <b>{{ ucwords(str_replace('_', ' ', $key))  }} : </b> {{ $value }} 
+                                                        <b>{{ ucwords(str_replace('_', ' ', $key))  }} : </b> {{ $value }}
                                                     </p>
                                                     @endforeach
                                                     @endif
@@ -169,7 +165,7 @@
                                             <td>{{ \PriceHelper::showCurrencyPrice($subtotal  * $order->currency_value) }}</td>
                                         </tr>
                                         @if($order->shipping_cost != 0)
-                                        @php 
+                                        @php
                                         $price = round(($order->shipping_cost / $order->currency_value),2);
                                         @endphp
                                             @if(DB::table('shippings')->where('price','=',$price)->count() > 0)
@@ -181,7 +177,7 @@
                                         @endif
 
                                         @if($order->packing_cost != 0)
-                                        @php 
+                                        @php
                                         $pprice = round(($order->packing_cost / $order->currency_value),2);
                                         @endphp
                                         @if(DB::table('packages')->where('price','=',$pprice)->count() > 0)

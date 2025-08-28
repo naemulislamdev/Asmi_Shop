@@ -55,13 +55,14 @@ class CheckoutController extends Controller
             $shipping_data = DB::table('shippings')->where('user_id', '=', 0)->get();
 
             $curr = Currency::where('sign', '=', $order->currency_sign)->firstOrFail();
+            //$curr = $this->curr;
             $gateways = PaymentGateway::scopeHasGateway($curr->id);
 
-            $paystack = PaymentGateway::whereKeyword('paystack')->first();
-            $paystackData = $paystack->convertAutoData();
+            // $paystack = PaymentGateway::whereKeyword('paystack')->first();
+            // $paystackData = $paystack->convertAutoData();
 
             if ($order->payment_status == 'Pending') {
-                return view('payment.checkout', compact('order', 'package_data', 'shipping_data', 'gateways', 'paystackData'));
+                return view('payment.checkout', compact('order', 'package_data', 'shipping_data', 'gateways'));
             }
         }
     }

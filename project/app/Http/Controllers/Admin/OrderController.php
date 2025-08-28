@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Classes\GeniusMailer;use App\Models\AffliateBonus;
-use App\Models\Cart;use App\Models\DeliveryRider;
+use App\Classes\GeniusMailer;
+use App\Helpers\PriceHelper;
+use App\Models\AffliateBonus;
+use App\Models\Cart;
+use App\Models\Category;
+use App\Models\DeliveryRider;
 use App\Models\Generalsetting;
 use App\Models\Order;
 use App\Models\OrderTrack;
@@ -16,15 +20,16 @@ use App\Models\Shipping;
 
 use App\Models\User;
 use Carbon\Carbon;
-use Datatables;
 use Illuminate\Http\Request;
 use Session;
+use Yajra\DataTables\Facades\DataTables;
 
 class OrderController extends AdminBaseController
 {
     //*** GET Request
     public function orders(Request $request)
     {
+        $categories = Category::where('status', 1)->get();
         if ($request->status == 'pending') {
             return view('admin.order.pending');
         } else if ($request->status == 'processing') {
@@ -34,7 +39,7 @@ class OrderController extends AdminBaseController
         } else if ($request->status == 'declined') {
             return view('admin.order.declined');
         } else {
-            return view('admin.order.index');
+            return view('admin.order.index', compact('categories'));
         }
     }
 
@@ -68,13 +73,13 @@ class OrderController extends AdminBaseController
         }
 
         //--- Integrating This Collection Into Datatables
-        return Datatables::of($datas)
+        return DataTables::of($datas)
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
                 return $id;
             })
             ->editColumn('pay_amount', function (Order $data) {
-                return \PriceHelper::showOrderCurrencyPrice((($data->pay_amount + $data->wallet_price) * $data->currency_value), $data->currency_sign);
+                return PriceHelper::showOrderCurrencyPrice((($data->pay_amount + $data->wallet_price) * $data->currency_value), $data->currency_sign);
             })
             ->addColumn('action', function (Order $data) {
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';

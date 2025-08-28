@@ -353,9 +353,11 @@
                                                     <select id="product_measure">
                                                         <option value="">{{ __('None') }}</option>
                                                         <option value="Gram">{{ __('Gram') }}</option>
-                                                        <option value="Kilogram">{{ __('Kilogram') }}</option>
-                                                        <option value="Litre">{{ __('Litre') }}</option>
-                                                        <option value="Pound">{{ __('Pound') }}</option>
+                                                        <option value="KG">{{ __('Kilogram') }}</option>
+                                                        <option value="LTR">{{ __('Litre') }}</option>
+                                                        <option value="POUND">{{ __('Pound') }}</option>
+                                                        <option value="PCS">{{ __('Pieces') }}</option>
+                                                        <option value="ML">{{ __('ML') }}</option>
                                                         <option value="Custom">{{ __('Custom') }}</option>
                                                     </select>
                                                 </div>
@@ -453,7 +455,7 @@
                                                 <ul class="list">
                                                     <li>
                                                         <input name="stock_check" class="stock-check" type="checkbox"
-                                                            id="size-check" value="1">
+                                                            id="size-check" value="200">
                                                         <label for="size-check"
                                                             class="stock-text">{{ __('Manage Stock') }}</label>
                                                     </li>
@@ -687,8 +689,7 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="discount" type="number"
-                                                    class="input-field" placeholder="{{ __('e.g 20') }}"
-                                                    min="0">
+                                                    class="input-field" placeholder="Enter discount amount" value="0">
                                             </div>
                                         </div>
                                         <div class="row">

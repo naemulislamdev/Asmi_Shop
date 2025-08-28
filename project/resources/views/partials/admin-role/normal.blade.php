@@ -165,7 +165,7 @@
         <li>
             <a href="{{ route('admin-rating-index') }}"><span>{{ __('Product Reviews') }}</span></a>
         </li>
-     
+
         <li>
             <a href="{{ route('admin-report-index') }}"><span>{{ __('Reports') }}</span></a>
         </li>
@@ -261,7 +261,7 @@
             <a href="{{ route('admin-vendor-subs','completed') }}"><span>{{ __('Completed Subscriptions') }}</span></a>
         </li>
         <li>
-            <a href="{{ route('admin-vendor-pendings','pending') }}"><span>{{ __('Pending Subscriptions') }}</span></a>
+            <a href="#"><span>{{ __('Pending Subscriptions') }}</span></a>
         </li>
     </ul>
 </li>
@@ -348,7 +348,7 @@
         <li>
             <a href="{{ route('admin-gs-fav') }}"><span>{{ __('Favicon') }}</span></a>
         </li>
- 
+
         <li>
             <a href="{{ route('admin-shipping-index') }}"><span>{{ __('Shipping Methods') }}</span></a>
         </li>

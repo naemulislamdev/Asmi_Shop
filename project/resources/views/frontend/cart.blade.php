@@ -1,6 +1,6 @@
 @extends('layouts.front')
 @section('content')
-    <section class="gs-breadcrumb-section bg-class"
+    {{-- <section class="gs-breadcrumb-section bg-class"
         data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
         <div class="container">
             <div class="row justify-content-center content-wrapper">
@@ -13,7 +13,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
     <section class="gs-cart-section load_cart">
         @include('frontend.ajax.cart-page')
     </section>

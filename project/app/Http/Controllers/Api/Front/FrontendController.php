@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api\Front;
 use App\Classes\GeniusMailer;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BannerResource;
-use App\Http\Resources\BlogResource;use App\Http\Resources\FaqResource;
+use App\Http\Resources\BlogResource;
+use App\Http\Resources\FaqResource;
 use App\Http\Resources\FeaturedBannerResource;
 use App\Http\Resources\FeaturedLinkResource;
 use App\Http\Resources\OrderTrackResource;
@@ -13,13 +14,15 @@ use App\Http\Resources\PageResource;
 use App\Http\Resources\PartnerResource;
 use App\Http\Resources\ProductlistResource;
 use App\Http\Resources\ServiceResource;
-use App\Http\Resources\SliderResource;use App\Models\ArrivalSection;
+use App\Http\Resources\SliderResource;
+use App\Models\ArrivalSection;
 use App\Models\Banner;
 use App\Models\Blog;
 use App\Models\Currency;
 use App\Models\Faq;
 use App\Models\FeaturedBanner;
 use App\Models\FeaturedLink;
+use App\Models\FlashDeal;
 use App\Models\Generalsetting;
 use App\Models\Language;
 use App\Models\Order;
@@ -309,6 +312,43 @@ class FrontendController extends Controller
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
         }
     }
+    public function flashDeal()
+    {
+        try {
+            $flashDeal = FlashDeal::where('status', 1)->first();
+
+            if (!$flashDeal) {
+                return response()->json([
+                    'status' => false,
+                    'data'   => [],
+                    'error'  => ['message' => 'No active flash deal found.']
+                ]);
+            }
+
+            $ProductsId = json_decode($flashDeal->products);
+            $flashDealProducts = Product::whereIn('id', $ProductsId)->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => [
+                    'flash_deal' => [
+                        'title'      => $flashDeal->title,
+                        'start_date' => $flashDeal->start_date,
+                        'end_date'   => $flashDeal->end_date,
+                    ],
+                    'products'   => ProductlistResource::collection($flashDealProducts),
+                ],
+                'error'  => []
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'data'   => [],
+                'error'  => ['message' => $e->getMessage()]
+            ]);
+        }
+    }
+
 
     // Display All Type Of Products Ends
 
@@ -327,9 +367,9 @@ class FrontendController extends Controller
     public function blogs(Request $request)
     {
         try {
-            if($request->type == 'latest'){
-                $blogs = Blog::orderby('id','desc')->take(6)->get();
-            }else{
+            if ($request->type == 'latest') {
+                $blogs = Blog::orderby('id', 'desc')->take(6)->get();
+            } else {
                 $blogs = Blog::all();
             }
 
@@ -423,12 +463,12 @@ class FrontendController extends Controller
 
             $rules =
                 [
-                'name' => 'required',
-                'email' => 'required|email',
-                'phone' => 'required',
-                'message' => 'required',
+                    'name' => 'required',
+                    'email' => 'required|email',
+                    'phone' => 'required',
+                    'message' => 'required',
 
-            ];
+                ];
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -484,12 +524,9 @@ class FrontendController extends Controller
     {
         $ArrivalSection = ArrivalSection::get()->toArray();
         foreach ($ArrivalSection as $key => $value) {
-            $ArrivalSection[$key]['photo'] = url('/') . '/assets/images/banners/' . $value['photo'];
+            $ArrivalSection[$key]['photo'] = url('/') . '/assets/images/arrival/' . $value['photo'];
         }
 
         return response()->json(['status' => true, 'data' => $ArrivalSection, 'error' => []]);
     }
-
-
-
 }

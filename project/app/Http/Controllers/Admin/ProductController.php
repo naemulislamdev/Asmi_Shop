@@ -664,6 +664,7 @@ class ProductController extends AdminBaseController
         $data = Product::findOrFail($id);
         $sign = $this->curr;
         $input = $request->all();
+        //dd( $input);
 
         //Check Types
         if ($request->type_check == 1) {
@@ -764,6 +765,8 @@ class ProductController extends AdminBaseController
             if ($request->measure_check == "") {
                 $input['measure'] = null;
             }
+
+            $input['measure'] = $request->measure;
         }
 
         // Check Seo

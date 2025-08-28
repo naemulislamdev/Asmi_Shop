@@ -593,10 +593,10 @@
                                         </div>
 
                                         @php
-                                            
-                                            
-                                           
-                                           
+
+
+
+
                                         @endphp
                                         <div class="{{is_array($data->color_all) ? '' : ' showbox' }}">
                                             <div class="row">
@@ -604,7 +604,7 @@
                                                 <div class="col-lg-12">
                                                     <div class="select-input-color" id="color-section">
                                                         @if (is_array($data->color_all))
-                                                            
+
                                                         @foreach ($data->color_all as $key => $color)
                                                         <div class="size-area">
                                                             <span class="remove size-remove"><i
@@ -631,7 +631,7 @@
                                                     @endforeach
 
                                                         @endif
-                                                        
+
                                                     </div>
                                                     <a href="javascript:;" id="color-btn" class="add-more mt-4 mb-3"><i
                                                             class="fas fa-plus"></i>{{ __('Add More Color') }} </a>
@@ -641,7 +641,7 @@
                                         </div>
 
 
-                                        <div class="{{ $data->measure == null ? 'showbox' : '' }}">
+                                        <div class="">
                                             <div class="row">
                                                 <div class="col-lg-6">
                                                     <div class="left-area">
@@ -656,22 +656,28 @@
                                                         <option value="Gram"
                                                             {{ $data->measure == 'Gram' ? 'selected' : '' }}>
                                                             {{ __('Gram') }}</option>
-                                                        <option value="Kilogram"
-                                                            {{ $data->measure == 'Kilogram' ? 'selected' : '' }}>
+                                                        <option value="KG"
+                                                            {{ $data->measure == 'KG' ? 'selected' : '' }}>
                                                             {{ __('Kilogram') }}</option>
-                                                        <option value="Litre"
-                                                            {{ $data->measure == 'Litre' ? 'selected' : '' }}>
+                                                        <option value="LTR"
+                                                            {{ $data->measure == 'LTR' ? 'selected' : '' }}>
                                                             {{ __('Litre') }}</option>
-                                                        <option value="Pound"
-                                                            {{ $data->measure == 'Pound' ? 'selected' : '' }}>
+                                                        <option value="POUND"
+                                                            {{ $data->measure == 'POUND' ? 'selected' : '' }}>
                                                             {{ __('Pound') }}</option>
+                                                        <option value="PCS"
+                                                            {{ $data->measure == 'PCS' ? 'selected' : '' }}>
+                                                            {{ __('Pieces') }}</option>
+                                                        <option value="ML"
+                                                            {{ $data->measure == 'ML' ? 'selected' : '' }}>
+                                                            {{ __('Millilitre') }}</option>
                                                         <option value="Custom"
-                                                            {{ in_array($data->measure, explode(',', 'Gram,Kilogram,Litre,Pound')) ? '' : 'selected' }}>
+                                                            {{ in_array($data->measure, explode(',', 'Gram,KG,LTR,POUND,PCS,ML,PCS')) ? '' : 'selected' }}>
                                                             {{ __('Custom') }}</option>
                                                     </select>
                                                 </div>
                                                 {{-- <div class="col-lg-1"></div> --}}
-                                                <div class="col-lg-6 {{ in_array($data->measure, explode(',', 'Gram,Kilogram,Litre,Pound')) ? 'hidden' : '' }}"
+                                                <div class="col-lg-6 {{ in_array($data->measure, explode(',', 'Gram,KG,LTR,POUND,PCS,ML,PCS')) ? 'hidden' : '' }}"
                                                     id="measure">
                                                     <input name="measure" type="text" id="measurement"
                                                         class="input-field" placeholder="Enter Unit"
@@ -691,7 +697,7 @@
                                                 <ul class="list">
                                                     <li>
                                                         <input name="stock_check" class="stock-check" type="checkbox"
-                                                            id="size-check" value="1"
+                                                            id="size-check" value="200"
                                                             {{ !empty($data->size) ? 'checked' : '' }}>
                                                         <label for="size-check"
                                                             class="stock-text">{{ __('Manage Stock') }}</label>
@@ -1038,10 +1044,23 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
-                                                <input name="previous_price" step="0.1" type="number"
-                                                    class="input-field" placeholder="e.g 20"
-                                                    value="{{ round($data->previous_price * $sign->value, 2) }}"
+                                                <input name="discount" type="number" value="{{ round($data->discount * $sign->value, 2) }}"
+                                                    class="input-field" placeholder="{{ __('e.g 20') }}"
                                                     min="0">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Discount type') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select class="form-control" name="discount_type">
+                                                    <option selected disabled>{{ __('Select Type') }}</option>
+                                                    <option {{ $data->discount_type == 'flat' ? 'selected' : '' }} value="flat">{{ __('Flat') }}</option>
+                                                    <option {{ $data->discount_type == 'percent' ? 'selected' : '' }} value="percent">{{ __('Percentage') }}</option>
+                                                </select>
                                             </div>
                                         </div>
 

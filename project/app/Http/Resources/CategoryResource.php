@@ -17,8 +17,8 @@ class CategoryResource extends JsonResource
       return [
         'id' => $this->id,
         'name' => $this->name,
-        'icon' => url('/') . '/assets/images/categories/'.$this->photo,
-        'image' => $this->when($this->image, url('/') . '/assets/images/categories/'.$this->image),
+        'icon' => $this->when($this->image, url('/') . '/assets/images/categories/'.$this->image),
+        'banner' => url('/') . '/assets/images/categories/'.$this->photo,
         'count' => $this->products()->where('status', 1)->count() . ' item(s)',
         'subcategories' => route('subcategories', $this->id),
         'attributes' => route('attibutes', $this->id) . '?type=category',

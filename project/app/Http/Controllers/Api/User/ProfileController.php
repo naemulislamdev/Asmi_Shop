@@ -8,10 +8,10 @@ use App\Http\Resources\UserResource;
 use App\Models\FavoriteSeller;
 use App\Models\Product;
 use App\Models\User;
-use Auth;
-use Hash;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
@@ -39,12 +39,12 @@ class ProfileController extends Controller
             $rules =
                 [
                 'name' => 'required',
-                'email' => 'required|email|unique:users,email,' . auth()->user()->id,
+                'email' => 'nullable|email|unique:users,email,' . auth()->user()->id,
                 'phone' => 'required',
-                'fax' => 'required',
-                'city' => 'required',
-                'country' => 'required',
-                'zip' => 'required',
+                'fax' => 'nullable',
+                'city' => 'nullable',
+                'country' => 'nullable',
+                'zip' => 'nullable',
                 'address' => 'required',
                 'photo' => 'mimes:jpeg,jpg,png,svg',
 

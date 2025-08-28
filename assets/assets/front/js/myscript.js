@@ -156,6 +156,8 @@
         } else {
           $.get(mainurl + "/carts", function (response) {
             $(".load_cart").html(response);
+            //console.log(response);
+            //window.location.reload();
           });
         }
       },

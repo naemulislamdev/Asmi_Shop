@@ -22,6 +22,7 @@
         "laravel/socialite": "^5.9",
         "laravel/tinker": "^2.8",
         "league/omnipay": "^3.2",
+        "maatwebsite/excel": "^3.1",
         "mercadopago/dx-php": "^2.5.3",
         "mews/purifier": "^3.4",
         "mollie/laravel-mollie": "^2.25",

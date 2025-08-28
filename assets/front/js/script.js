@@ -361,8 +361,8 @@ $(document).ready(function () {
   $(".product-cards-slider").slick({
     dots: true,
     infinite: true,
-    slidesToShow: 5,
-    slidesToScroll: 5,
+    slidesToShow: 6,
+    slidesToScroll: 6,
     speed: 500,
     autoplay: true,
     fade: false,
