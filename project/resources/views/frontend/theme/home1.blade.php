@@ -125,52 +125,53 @@
     <!-- Flash Deal Countdown Section -->
     @php
         $flashDeal = \App\Models\FlashDeal::where('status', 1)->first();
-        if($flashDeal){
+        if ($flashDeal) {
             $ProductsId = json_decode($flashDeal->products);
             $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->get();
         }
     @endphp
-    @if($flashDeal)
-    <section class="flash-deal py-4 gs-explore-product-section">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-lg-6">
-                    <h2 class="mb-3 text-right">🔥 {{$flashDeal->title}}</h2>
-                </div>
-                <div class="col-lg-6">
-                    <div id="countdown" class="countdown-box d-flex justify-content-center gap-3 mb-4">
-                        <div class="time-box">
-                            <span id="days">00</span>
-                            <small>Days</small>
-                        </div>
-                        <div class="time-box">
-                            <span id="hours">00</span>
-                            <small>Hours</small>
-                        </div>
-                        <div class="time-box">
-                            <span id="minutes">00</span>
-                            <small>Minutes</small>
-                        </div>
-                        <div class="time-box">
-                            <span id="seconds">00</span>
-                            <small>Seconds</small>
+    @if ($flashDeal)
+        <section class="flash-deal py-4 gs-explore-product-section">
+            <div class="container text-center">
+                <div class="row align-items-center mb-4">
+                    <div class="col-lg-6">
+                        <h2 class="mb-3 text-right">🔥 {{ $flashDeal->title }}</h2>
+                    </div>
+                    <div class="col-lg-6">
+                        <h2 class="mb-3 text-left">⏰ @lang('Offer end time')</h2>
+                        <div id="countdown" class="countdown-box d-flex justify-content-center gap-3 mb-4">
+                            <div class="time-box">
+                                <span id="days">00</span>
+                                <small>Days</small>
+                            </div>
+                            <div class="time-box">
+                                <span id="hours">00</span>
+                                <small>Hours</small>
+                            </div>
+                            <div class="time-box">
+                                <span id="minutes">00</span>
+                                <small>Minutes</small>
+                            </div>
+                            <div class="time-box">
+                                <span id="seconds">00</span>
+                                <small>Seconds</small>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="tab-content" id="myTabContent1">
-                <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
-                    role="tabpanel" aria-labelledby="ex-product-1" tabindex="0">
-                    <div class="product-cards-slider">
-                        @foreach ($flashDealProducts as $product)
-                            @include('includes.frontend.home_product')
-                        @endforeach
+                <div class="tab-content" id="myTabContent1">
+                    <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
+                        role="tabpanel" aria-labelledby="ex-product-1" tabindex="0">
+                        <div class="product-cards-slider">
+                            @foreach ($flashDealProducts as $product)
+                                @include('includes.frontend.home_product')
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
     @endif
     <!-- categories section end -->
     @if ($ps->arrival_section == 1)
@@ -419,28 +420,6 @@
     </section>
     <!-- Explore Product Section Completed -->
 
-    <!-- Service Section -->
-    <section class="gs-service-section">
-        <div class="container">
-            <div class="row service-row">
-                @foreach (DB::table('services')->get() as $service)
-                    <div class="col-lg-3 col-md-6 col-sm-12 services-area wow-removed">
-                        <div class="single-service d-flex flex-lg-column flex-xl-row text-lg-center text-xl-start">
-                            <div class="icon-wrapper">
-                                <img src="{{ asset('assets/images/services/' . $service->photo) }}" alt="service">
-                            </div>
-                            <div class="service-content">
-                                <h6 class="service-title">{{ $service->title }}</h6>
-                                <p class="service-desc">{{ $service->details }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-    <!-- Service Section Completed -->
-
 
     @if ($ps->blog == 1)
         <!-- Latest Post Section  -->
@@ -451,9 +430,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                        anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                        deserunt
-                                                                                                                                                                                                                                                                                                                                                                        nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                    anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                    deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                    nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>
@@ -508,41 +487,40 @@
         });
     </script>
     <script>
-       $(function() {
-    // ✅ Get start & end date dynamically from DB
-    var startDate = new Date("{{ $flashDeal->start_date ?? '' }} 00:00:00").getTime();
-    var endDate   = new Date("{{ $flashDeal->end_date ?? '' }} 23:59:59").getTime();
+        $(function() {
+            // ✅ Get start & end date dynamically from DB
+            var startDate = new Date("{{ $flashDeal->start_date ?? '' }} 00:00:00").getTime();
+            var endDate = new Date("{{ $flashDeal->end_date ?? '' }} 23:59:59").getTime();
 
-    var timer = setInterval(function() {
-        var now = new Date().getTime();
+            var timer = setInterval(function() {
+                var now = new Date().getTime();
 
-        // 1️⃣ Before start date
-        if (now < startDate) {
-            $("#countdown").html("<h3>⏳ Deal Not Started Yet!</h3>");
-            return;
-        }
+                // 1️⃣ Before start date
+                if (now < startDate) {
+                    $("#countdown").html("<h3>⏳ Deal Not Started Yet!</h3>");
+                    return;
+                }
 
-        // 2️⃣ After end date
-        if (now > endDate) {
-            clearInterval(timer);
-            $("#countdown").html("<h3>⚡ Deal Expired!</h3>");
-            return;
-        }
+                // 2️⃣ After end date
+                if (now > endDate) {
+                    clearInterval(timer);
+                    $("#countdown").html("<h3>⚡ Deal Expired!</h3>");
+                    return;
+                }
 
-        // 3️⃣ Countdown running
-        var distance = endDate - now;
+                // 3️⃣ Countdown running
+                var distance = endDate - now;
 
-        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        $("#days").text(days < 10 ? "0" + days : days);
-        $("#hours").text(hours < 10 ? "0" + hours : hours);
-        $("#minutes").text(minutes < 10 ? "0" + minutes : minutes);
-        $("#seconds").text(seconds < 10 ? "0" + seconds : seconds);
-    }, 1000);
-});
-
+                $("#days").text(days < 10 ? "0" + days : days);
+                $("#hours").text(hours < 10 ? "0" + hours : hours);
+                $("#minutes").text(minutes < 10 ? "0" + minutes : minutes);
+                $("#seconds").text(seconds < 10 ? "0" + seconds : seconds);
+            }, 1000);
+        });
     </script>
 @endpush

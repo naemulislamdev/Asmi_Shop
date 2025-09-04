@@ -51,7 +51,9 @@
                             <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>{{ __('Customer Email') }}</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Address') }}</th>
+                                        <th>{{ __('Branch') }}</th>
                                         <th>{{ __('Order Number') }}</th>
                                         <th>{{ __('Total Qty') }}</th>
                                         <th>{{ __('Total Cost') }}</th>
@@ -249,8 +251,16 @@
                 serverSide: true,
                 ajax: '{{ route('admin-order-datatables', 'none') }}',
                 columns: [{
-                        data: 'customer_email',
-                        name: 'customer_email'
+                        data: 'customer_name',
+                        name: 'customer_name'
+                    },
+                    {
+                        data: 'customer_address',
+                        name: 'customer_address'
+                    },
+                    {
+                        data: 'branch',
+                        name: 'branch'
                     },
                     {
                         data: 'id',

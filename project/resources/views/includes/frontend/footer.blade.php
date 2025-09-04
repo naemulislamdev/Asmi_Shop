@@ -120,8 +120,13 @@
                 <h5 class=" wow-replaced">@lang('Download Our App')</h5>
                 <ul class="footer-category-links">
                     <li class="wow-replaced" data-wow-delay=".1s">
-                        <a href="{{ asset('assets/front/images/app-release.apk') }}" download="app-release.apk">
+                        <a href="{{ asset('assets/front/images/app-release.apk') }}" target="_blank" download="app-release.apk">
                             <img src="{{ asset('assets/front/images/google_app.png') }}" alt="Google Play Store" width="100%">
+                        </a>
+                    </li>
+                    <li class="wow-replaced" data-wow-delay=".1s">
+                        <a href="{{ asset('assets/front/images/app-release.apk') }}" target="_blank" download="app-release.apk">
+                            <img src="{{ asset('assets/front/images/apple_app.png') }}" alt="Apple App Store" width="100%">
                         </a>
                     </li>
                 </ul>
@@ -133,7 +138,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="footer-bottom-content">
-                        <p>{{$gs->copyright}}</p>
+                        <p>{{$gs->copyright}} <a href="https://evertechit.com/" target="_blank" style="color: #47e7ff;"> Developed By Evertech IT</a></p>
                     </div>
                 </div>
             </div>

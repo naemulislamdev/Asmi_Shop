@@ -244,7 +244,7 @@ class ProductController extends AdminBaseController
         $input['photo'] = $image_name;
 
         if ($request->type == "Physical" || $request->type == "Listing") {
-            $rules = ['sku' => 'min:8|unique:products'];
+            $rules = ['sku' => 'min:4|unique:products'];
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -681,7 +681,7 @@ class ProductController extends AdminBaseController
         // Check Physical
         if ($data->type == "Physical" || $data->type == "Listing") {
             //--- Validation Section
-            $rules = ['sku' => 'min:8|unique:products,sku,' . $id];
+            $rules = ['sku' => 'min:4|unique:products,sku,' . $id];
 
             $validator = Validator::make($request->all(), $rules);
 

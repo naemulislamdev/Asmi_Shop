@@ -86,9 +86,9 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         } else {
 
             // multi shipping
-
             $orderTotal = $orderCalculate['total_amount'];
             $shipping = $orderCalculate['shipping'];
+
             $packeing = $orderCalculate['packeing'];
         $is_shipping = $orderCalculate['is_shipping'];
             $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
@@ -96,7 +96,8 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $vendor_ids = $orderCalculate['vendor_ids'];
             $shipping_cost = $orderCalculate['shipping_cost'];
             $packing_cost = $orderCalculate['packing_cost'];
-
+            //$shipping->id;
+            $input['shipping'] = $shipping->id;
             $input['shipping_title'] = $vendor_shipping_ids;
             $input['vendor_shipping_id'] = $vendor_shipping_ids;
             $input['packing_title'] = $vendor_packing_ids;
@@ -107,9 +108,10 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $input['vendor_shipping_ids'] = $vendor_shipping_ids;
             $input['vendor_packing_ids'] = $vendor_packing_ids;
             $input['vendor_ids'] = $vendor_ids;
-            unset($input['shipping']);
-            unset($input['packeging']);
+            // unset($input['shipping']);
+            // unset($input['packeging']);
         }
+        //dd($shipping);
 
         $order = new Order;
         $success_url = route('front.payment.return');

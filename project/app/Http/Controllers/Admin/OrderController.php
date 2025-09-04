@@ -74,6 +74,10 @@ class OrderController extends AdminBaseController
 
         //--- Integrating This Collection Into Datatables
         return DataTables::of($datas)
+            ->editColumn('branch', function (Order $data) {
+                $id = '<a href="#" data-toggle="modal" data-target="#vendorform' . $data->id . '">' . __('Select') . '</a>';
+                return $id;
+            })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
                 return $id;
@@ -85,7 +89,7 @@ class OrderController extends AdminBaseController
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
                 return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '<i class="fas fa-chevron-down"></i></button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . '</div></div>';
             })
-            ->rawColumns(['id', 'action'])
+            ->rawColumns(['branch','id', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 

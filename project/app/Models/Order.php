@@ -76,4 +76,8 @@ class Order extends Model
         $data['vendor_packing_id'] = $vendor_packing_id;
         return $data;
     }
+    public function shippingMethod()
+    {
+        return $this->belongsTo('App\Models\Shipping','shipping');
+    }
 }

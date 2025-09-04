@@ -31,7 +31,7 @@ class CheckoutController extends Controller
 {
     public function checkout(Request $request)
     {
-       // return $request->all();
+        //return $request->all();
 
         try {
 
