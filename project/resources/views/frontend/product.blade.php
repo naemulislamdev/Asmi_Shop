@@ -118,7 +118,7 @@
                                             @if ($productt->emptyStock())
                                                 <div class="stock-availability out-stock">{{ __('Out Of Stock') }}</div>
                                             @else
-                                                {{ $gs->show_stock == 0 ? '' : $productt->stock }} {{ __('In Stock') }}
+                                            <span class="badge bg-success text-white py-0">{{ __('In Stock') }}</span>
                                             @endif
                                         @endif
 
@@ -226,8 +226,8 @@
                                                     id="size_{{ $key }}" data-value="{{ $key }}"
                                                     data-key="{{ str_replace(' ', '', $data1) }}"
                                                     data-price="{{ $productt->size_price[$key] * $curr->value }}"
-                                                    data-qty="{{ $productt->size_qty[$key] }}"
-                                                    value="{{ $key }}" name="size">
+                                                    data-qty="{{ $productt->size_qty[$key] }}" value="{{ $key }}"
+                                                    name="size">
                                                 <label for="size_{{ $key }}">{{ $data1 }}</label>
                                             </li>
                                         @endforeach
@@ -308,17 +308,23 @@
 
 
                         <!-- add to cart buy btn wrapper -->
-                        <div class="row row-cols-2">
-                            <div class="col">
-                                <button type="button" class="template-btn dark-btn w-100" id="addtodetailscart">
-                                    @lang('add to cart')
-                                </button>
+                        @if ($productt->stock == 0)
+                            <div class="outofstock">
+                                <h5>{{ __('Out of Stock') }}</h5>
                             </div>
-                            <div class="col">
-                                <button type="button" class="template-btn w-100"
-                                    id="addtobycard">@lang('buy now')</button>
+                        @else
+                            <div class="row row-cols-2">
+                                <div class="col">
+                                    <button type="button" class="template-btn dark-btn w-100" id="addtodetailscart">
+                                        @lang('add to cart')
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="template-btn w-100"
+                                        id="addtobycard">@lang('buy now')</button>
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
                         <!-- wish-compare-report-wrapper -->
                         <div class="wish-compare-report-wrapper">

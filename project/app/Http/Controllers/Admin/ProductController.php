@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\PriceHelper;
 use App\Models\Attribute;
 use App\Models\AttributeOption;
 use App\Models\Category;
@@ -10,11 +11,12 @@ use App\Models\Currency;
 use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Subcategory;
-use Datatables;use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Image;
-use Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends AdminBaseController
 {
@@ -28,7 +30,7 @@ class ProductController extends AdminBaseController
         }
 
         //--- Integrating This Collection Into Datatables
-        return Datatables::of($datas)
+        return DataTables::of($datas)
             ->editColumn('name', function (Product $data) {
                 $name = mb_strlen($data->name, 'UTF-8') > 50 ? mb_substr($data->name, 0, 50, 'UTF-8') . '...' : $data->name;
                 $id = '<small>' . __("ID") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . sprintf("%'.08d", $data->id) . '</a></small>';
@@ -37,7 +39,7 @@ class ProductController extends AdminBaseController
             })
             ->editColumn('price', function (Product $data) {
                 $price = $data->price * $this->curr->value;
-                return \PriceHelper::showAdminCurrencyPrice($price);
+                return PriceHelper::showAdminCurrencyPrice($price);
             })
             ->editColumn('photo', function (Product $data) {
                 $photo = $data->photo ? asset('assets/images/products/' . $data->photo) : asset('assets/images/noimage.png');
@@ -83,7 +85,7 @@ class ProductController extends AdminBaseController
             })
             ->editColumn('price', function (Product $data) {
                 $price = $data->price * $this->curr->value;
-                return \PriceHelper::showAdminCurrencyPrice($price);
+                return PriceHelper::showAdminCurrencyPrice($price);
             })
             ->editColumn('stock', function (Product $data) {
                 $stck = (string) $data->stock;
@@ -229,7 +231,7 @@ class ProductController extends AdminBaseController
 
         // Check File
         if ($file = $request->file('file')) {
-            $name = time() . \Str::random(8) . str_replace(' ', '', $file->getClientOriginalExtension());
+            $name = time() . Str::random(8) . str_replace(' ', '', $file->getClientOriginalExtension());
             $file->move('assets/files', $name);
             $input['file'] = $name;
         }
@@ -456,7 +458,7 @@ class ProductController extends AdminBaseController
             foreach ($files as $key => $file) {
                 if (in_array($key, $request->galval)) {
                     $gallery = new Gallery;
-                    $name = time() . \Str::random(8) . str_replace(' ', '', $file->getClientOriginalExtension());
+                    $name = time() . Str::random(8) . str_replace(' ', '', $file->getClientOriginalExtension());
                     $file->move('assets/images/galleries', $name);
                     $gallery['photo'] = $name;
                     $gallery['product_id'] = $lastid;

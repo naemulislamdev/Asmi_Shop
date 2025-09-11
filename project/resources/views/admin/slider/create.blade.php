@@ -38,7 +38,7 @@
                                 @include('alerts.admin.form-both')
 
 
-                                <div class="panel panel-default slider-panel">
+                                {{-- <div class="panel panel-default slider-panel">
                                     <div class="panel-heading text-center">
                                         <h3>{{ __('Sub Title') }}</h3>
                                     </div>
@@ -73,14 +73,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 {{-- Sub Title Section Ends --}}
 
 
                                 {{-- Title Section --}}
 
-                                <div class="panel panel-default slider-panel">
+                                {{-- <div class="panel panel-default slider-panel">
                                     <div class="panel-heading text-center">
                                         <h3>{{ __('Title') }}</h3>
                                     </div>
@@ -115,14 +115,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 {{-- Title Section Ends --}}
 
 
                                 {{-- Details Section --}}
 
-                                <div class="panel panel-default slider-panel">
+                                {{-- <div class="panel panel-default slider-panel">
                                     <div class="panel-heading text-center">
                                         <h3>{{ __('Description') }}</h3>
                                     </div>
@@ -158,7 +158,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 {{-- Title Section Ends --}}
 
@@ -175,8 +175,7 @@
                                                 style="background: url({{ asset('assets/admin/images/upload.png') }});">
                                                 <label for="image-upload" class="img-label" id="image-label"><i
                                                         class="icofont-upload-alt"></i>{{ __('Upload Image') }}</label>
-                                                <input type="file" name="photo" class="img-upload"
-                                                    id="image-upload">
+                                                <input type="file" name="photo" class="img-upload" id="image-upload">
                                             </div>
                                             <p class="text">{{ __('Prefered Size: (1920x800) or Square Sized Image') }}
                                             </p>
@@ -195,6 +194,17 @@
                                     <div class="col-lg-7">
                                         <input type="text" class="input-field" name="link"
                                             placeholder="{{ __('Link') }}" required="" value="">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="left-area">
+                                            <h4 class="heading">{{ __('Order') }} *</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <input type="number" class="input-field" name="order"
+                                            placeholder="{{ __('Order') }}" required="" value="">
                                     </div>
                                 </div>
 

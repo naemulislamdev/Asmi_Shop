@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Classes\GeniusMailer;
 use App\Helpers\PriceHelper;
 use App\Models\AffliateBonus;
+use App\Models\Branch;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\DeliveryRider;
@@ -30,6 +31,8 @@ class OrderController extends AdminBaseController
     public function orders(Request $request)
     {
         $categories = Category::where('status', 1)->get();
+        $branchs = Branch::where('status', 1)->get();
+
         if ($request->status == 'pending') {
             return view('admin.order.pending');
         } else if ($request->status == 'processing') {
@@ -39,7 +42,7 @@ class OrderController extends AdminBaseController
         } else if ($request->status == 'declined') {
             return view('admin.order.declined');
         } else {
-            return view('admin.order.index', compact('categories'));
+            return view('admin.order.index', compact('categories', 'branchs'));
         }
     }
 
@@ -75,8 +78,17 @@ class OrderController extends AdminBaseController
         //--- Integrating This Collection Into Datatables
         return DataTables::of($datas)
             ->editColumn('branch', function (Order $data) {
-                $id = '<a href="#" data-toggle="modal" data-target="#vendorform' . $data->id . '">' . __('Select') . '</a>';
-                return $id;
+                if ($data->branch_id) {
+                    return '<a href="javascript:;" class="select-branch badge badge-success"
+                data-id="' . $data->id . '"
+                data-toggle="modal"
+                data-target="#branchModal">' . $data->branch->name . '</a>';
+
+                }
+                return '<a href="javascript:;" class="select-branch"
+                data-id="' . $data->id . '"
+                data-toggle="modal"
+                data-target="#branchModal">' . __('Select') . '</a>';
             })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
@@ -89,8 +101,22 @@ class OrderController extends AdminBaseController
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
                 return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '<i class="fas fa-chevron-down"></i></button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . '</div></div>';
             })
-            ->rawColumns(['branch','id', 'action'])
+            ->rawColumns(['branch', 'id', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
+    }
+
+    public function assignBranch(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'branch_id' => 'required|exists:branches,id',
+        ]);
+
+        $order = Order::findOrFail($request->order_id);
+        $order->branch_id = $request->branch_id;
+        $order->save();
+
+        return response()->json(['message' => 'Branch assigned successfully.']);
     }
 
     public function show($id)

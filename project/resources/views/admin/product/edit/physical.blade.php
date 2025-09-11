@@ -648,8 +648,8 @@
                                                         <h4 class="heading">{{ __('Product Measurement') }}*</h4>
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6">
-                                                    <select id="product_measure">
+                                                <div class="col-lg-12">
+                                                    <select id="product_measure" name="measure">
                                                         <option value=""
                                                             {{ $data->measure == null ? 'selected' : '' }}>
                                                             {{ __('None') }}</option>
@@ -670,19 +670,10 @@
                                                             {{ __('Pieces') }}</option>
                                                         <option value="ML"
                                                             {{ $data->measure == 'ML' ? 'selected' : '' }}>
-                                                            {{ __('Millilitre') }}</option>
-                                                        <option value="Custom"
-                                                            {{ in_array($data->measure, explode(',', 'Gram,KG,LTR,POUND,PCS,ML,PCS')) ? '' : 'selected' }}>
-                                                            {{ __('Custom') }}</option>
+                                                            {{ __('ML') }}</option>
                                                     </select>
                                                 </div>
-                                                {{-- <div class="col-lg-1"></div> --}}
-                                                <div class="col-lg-6 {{ in_array($data->measure, explode(',', 'Gram,KG,LTR,POUND,PCS,ML,PCS')) ? 'hidden' : '' }}"
-                                                    id="measure">
-                                                    <input name="measure" type="text" id="measurement"
-                                                        class="input-field" placeholder="Enter Unit"
-                                                        value="{{ $data->measure }}">
-                                                </div>
+
                                             </div>
                                         </div>
 

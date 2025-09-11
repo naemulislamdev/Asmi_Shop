@@ -80,4 +80,8 @@ class Order extends Model
     {
         return $this->belongsTo('App\Models\Shipping','shipping');
     }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 }

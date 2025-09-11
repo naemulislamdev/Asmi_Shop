@@ -152,7 +152,7 @@ class FrontendController extends Controller
     public function sliders()
     {
         try {
-            $sliders = Slider::all();
+            $sliders = Slider::OrderBy('order', 'asc')->get();
             return response()->json(['status' => true, 'data' => SliderResource::collection($sliders), 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);

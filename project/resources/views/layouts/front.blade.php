@@ -160,6 +160,25 @@
             font-size: 14px;
             font-weight: 600;
         }
+        .outofstock-box {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        .outofstock-box h5 {
+            color: #fff;
+            font-size: 20px;
+            background: #cf3f00;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
     </style>
 
 </head>

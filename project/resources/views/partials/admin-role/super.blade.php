@@ -143,9 +143,12 @@
 </li>
 
 <li>
+    <a href="{{ route('admin-branch-index') }}" class=" wave-effect"><i
+            class="fas fa-sitemap"></i>{{ __('Branch') }}</a>
+</li>
+<li>
     <a href="{{ route('admin-coupon-index') }}" class=" wave-effect"><i
-            class="fas fa-percentage"></i>{{ __('Set
-                                Coupons') }}</a>
+            class="fas fa-percentage"></i>{{ __('Set Coupons') }}</a>
 </li>
 
 <li>
@@ -466,7 +469,7 @@
 <li>
     <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
             class="fas fa-user-secret"></i>{{ __('Manage
-                                Staffs') }}</a>
+                                            Staffs') }}</a>
 </li>
 
 <li>
@@ -488,7 +491,7 @@
 <li>
     <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
             class="fas fa-list-alt"></i>{{ __('Addon
-                                Manager') }}</a>
+                                            Manager') }}</a>
 </li>
 
 <li>

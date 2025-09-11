@@ -1,21 +1,18 @@
 @extends('layouts.admin')
 
 @section('content')
-    <input type="hidden" id="headerdata" value="{{ __('SLIDER') }}">
+    <input type="hidden" id="headerdata" value="{{ __('BRANCH') }}">
     <div class="content-area">
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-12">
-                    <h4 class="heading">{{ __('Sliders') }}</h4>
+                    <h4 class="heading">{{ __('Branches') }}</h4>
                     <ul class="links">
                         <li>
                             <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
                         </li>
                         <li>
-                            <a href="javascript:;">{{ __('Home Page Settings') }} </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin-sl-index') }}">{{ __('Sliders') }}</a>
+                            <a href="{{ route('admin-branch-index') }}">{{ __('Branches') }}</a>
                         </li>
                     </ul>
                 </div>
@@ -32,8 +29,9 @@
                             <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>{{ __('Featured Image') }}</th>
-                                        <th width="40%">{{ __('Order') }}</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Address') }}</th>
+                                        <th>{{ __('Status') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
                                 </thead>
@@ -91,7 +89,7 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <p class="text-center">{{ __('You are about to delete this Slider.') }}</p>
+                    <p class="text-center">{{ __('You are about to delete this Coupon.') }}</p>
                     <p class="text-center">{{ __('Do you want to proceed?') }}</p>
                 </div>
 
@@ -125,16 +123,19 @@
                 ordering: false,
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('admin-sl-datatables') }}',
+                ajax: '{{ route('admin-branch-datatables') }}',
                 columns: [{
-                        data: 'photo',
-                        name: 'photo',
-                        searchable: false,
-                        orderable: false
+                        data: 'name',
+                        name: 'name'
                     },
                     {
-                        data: 'order',
-                        name: 'order'
+                        data: 'address',
+                        name: 'address'
+                    },
+                    {
+                        data: 'status',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         data: 'action',
@@ -145,19 +146,21 @@
                 ],
                 language: {
                     processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">'
+                },
+                drawCallback: function(settings) {
+                    $('.select').niceSelect();
                 }
             });
 
             $(function() {
                 $(".btn-area").append('<div class="col-sm-4 table-contents">' +
-                    '<a class="add-btn" href="{{ route('admin-sl-create') }}">' +
-                    '<i class="fas fa-plus"></i> {{ __('Add New Slider') }}' +
+                    '<a class="add-btn" href="{{ route('admin-branch-create') }}">' +
+                    '<i class="fas fa-plus"></i> <span class="remove-mobile">{{ __('Add New') }}<span>' +
                     '</a>' +
                     '</div>');
             });
 
 
-            {{-- DATA TABLE ENDS --}}
 
         })(jQuery);
     </script>

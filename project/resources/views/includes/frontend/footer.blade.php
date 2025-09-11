@@ -120,12 +120,12 @@
                 <h5 class=" wow-replaced">@lang('Download Our App')</h5>
                 <ul class="footer-category-links">
                     <li class="wow-replaced" data-wow-delay=".1s">
-                        <a href="{{ asset('assets/front/images/app-release.apk') }}" target="_blank" download="app-release.apk">
+                        <a href="https://play.google.com/store/apps/details?id=com.asmishop.android" target="_blank">
                             <img src="{{ asset('assets/front/images/google_app.png') }}" alt="Google Play Store" width="100%">
                         </a>
                     </li>
                     <li class="wow-replaced" data-wow-delay=".1s">
-                        <a href="{{ asset('assets/front/images/app-release.apk') }}" target="_blank" download="app-release.apk">
+                        <a href="https://apps.apple.com/app/asmi-shop/id6751156113" target="_blank">
                             <img src="{{ asset('assets/front/images/apple_app.png') }}" alt="Apple App Store" width="100%">
                         </a>
                     </li>

@@ -61,21 +61,7 @@ class FrontendController extends Controller
 
     public function index(Request $request)
     {
-        //return Hash::make('12345678');
-
          $gs = $this->gs;
-        // $data['ps'] = $this->ps;
-        // if (!empty($request->reff)) {
-        //     $affilate_user = DB::table('users')
-        //         ->where('affilate_code', '=', $request->reff)
-        //         ->first();
-        //     if (!empty($affilate_user)) {
-        //         if ($gs->is_affilate == 1) {
-        //             Session::put('affilate', $affilate_user->id);
-        //             return redirect()->route('front.index');
-        //         }
-        //     }
-        // }
         if (!empty($request->forgot)) {
             if ($request->forgot == 'success') {
                 return redirect()->guest('/')->with('forgot-modal', __('Please Login Now !'));
@@ -83,6 +69,7 @@ class FrontendController extends Controller
         }
 
         $data['sliders'] = DB::table('sliders')
+            ->orderBy('order', 'asc')
             ->get();
 
         $data['featured_categories'] = Category::withCount('products')->where('is_featured', 1)->get();

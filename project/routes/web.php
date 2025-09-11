@@ -86,6 +86,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/ordercart/product-delete/{id}/{orderid}', 'Admin\OrderController@product_delete')->name('admin-order-product-delete');
         // Order Tracking
         Route::get('/orders/export', [OrderExportController::class, 'export'])->name('orders.export');
+        Route::post('order/assign-branch', 'Admin\OrderController@assignBranch')->name('admin-order-assign-branch');
 
         // CREATE ORDER
 
@@ -109,6 +110,9 @@ Route::prefix('admin')->group(function () {
         Route::get('/order/track/edit/{id}', 'Admin\OrderTrackController@edit')->name('admin-order-track-edit');
         Route::post('/order/track/update/{id}', 'Admin\OrderTrackController@update')->name('admin-order-track-update');
         Route::delete('/order/track/delete/{id}', 'Admin\OrderTrackController@delete')->name('admin-order-track-delete');
+
+
+
 
         // Order Tracking Ends
 
@@ -352,6 +356,18 @@ Route::prefix('admin')->group(function () {
     });
 
     //------------ ADMIN COUPON SECTION ENDS------------
+
+    Route::group(['middleware' => 'permissions:branch'], function () {
+
+        Route::get('/branch/datatables', 'Admin\BranchController@datatables')->name('admin-branch-datatables'); //JSON REQUEST
+        Route::get('/branch', 'Admin\BranchController@index')->name('admin-branch-index');
+        Route::get('/branch/create', 'Admin\BranchController@create')->name('admin-branch-create');
+        Route::post('/branch/create', 'Admin\BranchController@store')->name('admin-branch-store');
+        Route::get('/branch/edit/{id}', 'Admin\BranchController@edit')->name('admin-branch-edit');
+        Route::post('/branch/edit/{id}', 'Admin\BranchController@update')->name('admin-branch-update');
+        Route::delete('/branch/delete/{id}', 'Admin\BranchController@destroy')->name('admin-branch-delete');
+        Route::get('/branch/status/{id1}/{id2}', 'Admin\BranchController@status')->name('admin-branch-status');
+    });
 
     //------------ ADMIN USER SECTION ------------
 

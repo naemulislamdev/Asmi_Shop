@@ -79,14 +79,15 @@ html {
                             <p><strong>{{ __('Shipping Details') }}</strong></p>
                            <span><strong>{{ __('Customer Name') }}</strong>: {{ $order->shipping_name == null ? $order->customer_name : $order->shipping_name}}</span><br>
                            <span><strong>{{ __('Address') }}</strong>: {{ $order->shipping_address == null ? $order->customer_address : $order->shipping_address }}</span><br>
+                           <span><strong>{{ __('Customer Phone') }}</strong>: {{ $order->customer_phone ?? ''}}</span><br>
                         </div>
                 </div>
                 @endif
                 <div class="col-lg-6" style="width:50%;">
                         <div class="invoice__orderDetails" style="margin-top:5px;">
                             <p><strong>{{ __('Billing Details') }}</strong></p>
-                            <span><strong>{{ __('Customer Name') }}</strong>: {{ $order->customer_name}}</span><br>
-                            <span><strong>{{ __('Address') }}</strong>: {{ $order->customer_address }}</span><br>
+                           <span><strong>{{ __('Branch Name') }}</strong>: {{ $order->branch->name ?? '' }}</span><br>
+                            <span><strong>{{ __('Address') }}</strong>: {{ $order->branch->address ?? '' }}</span><br>
                         </div>
                 </div>
             </div>

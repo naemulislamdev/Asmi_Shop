@@ -186,6 +186,38 @@
     {{-- ADD / EDIT MODAL ENDS --}}
     <!-- Button trigger modal -->
     <!-- Button trigger modal -->
+    <!--Branch modal -->
+    <!-- Branch Modal -->
+    <div class="modal fade" id="branchModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <form id="branchForm">
+                @csrf
+                <input type="hidden" name="order_id" id="branch_order_id">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('Select Branch') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>{{ __('Branch') }}</label>
+                            <select name="branch_id" class="form-control" required>
+                                <option selected disabled>{{ __('Choose Branch') }}</option>
+                                @foreach ($branchs as $branch)
+                                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--End Branch modal -->
 
 
     <!-- Modal -->
@@ -298,6 +330,28 @@
 
         })(jQuery);
     </script>
+    <script>
+        $(document).on('click', '.select-branch', function() {
+            var orderId = $(this).data('id');
+            $('#branch_order_id').val(orderId);
+        });
 
+        $('#branchForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('admin-order-assign-branch') }}",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function(res) {
+                    $('#branchModal').modal('hide');
+                    $('#geniustable').DataTable().ajax.reload(); // reload datatable
+                    toastr.success(res.message);
+                },
+                error: function(err) {
+                    toastr.error('Something went wrong');
+                }
+            });
+        });
+    </script>
     {{-- DATA TABLE --}}
 @endsection
