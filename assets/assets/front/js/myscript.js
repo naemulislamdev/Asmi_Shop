@@ -98,9 +98,10 @@
   });
 
   // add to card
-  $(document).on("click", ".add_cart_click", function (e) {
+  $(document).on("click", ".add_cart_clic", function (e) {
     e.preventDefault();
     $.get($(this).attr("data-href"), function (data) {
+      
       if (data == "digital") {
         toastr.error(lang.cart_already);
       } else if (data[0] == 0) {

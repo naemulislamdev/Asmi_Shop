@@ -63,27 +63,43 @@ class OrderController extends AdminBaseController
 
     public function datatables($status)
     {
-        if ($status == 'pending') {
-            $datas = Order::where('status', '=', 'pending')->latest('id')->get();
-        } elseif ($status == 'processing') {
-            $datas = Order::where('status', '=', 'processing')->latest('id')->get();
-        } elseif ($status == 'completed') {
-            $datas = Order::where('status', '=', 'completed')->latest('id')->get();
-        } elseif ($status == 'declined') {
-            $datas = Order::where('status', '=', 'declined')->latest('id')->get();
+        if (auth()->user()->role_id != 0) {
+            if ($status == 'pending') {
+                $datas = Order::where('status', '=', 'pending')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            } elseif ($status == 'processing') {
+                $datas = Order::where('status', '=', 'processing')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            } elseif ($status == 'completed') {
+                $datas = Order::where('status', '=', 'completed')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            } elseif ($status == 'declined') {
+                $datas = Order::where('status', '=', 'declined')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            } else {
+                $datas = Order::where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            }
         } else {
-            $datas = Order::latest('id')->get();
+            if ($status == 'pending') {
+                $datas = Order::where('status', '=', 'pending')->latest('id')->get();
+            } elseif ($status == 'processing') {
+                $datas = Order::where('status', '=', 'processing')->latest('id')->get();
+            } elseif ($status == 'completed') {
+                $datas = Order::where('status', '=', 'completed')->latest('id')->get();
+            } elseif ($status == 'declined') {
+                $datas = Order::where('status', '=', 'declined')->latest('id')->get();
+            } else {
+                $datas = Order::latest()->get();
+            }
         }
 
         //--- Integrating This Collection Into Datatables
         return DataTables::of($datas)
+        ->editColumn('date', function(Order $data){
+            return \Carbon\Carbon::parse($data->created_at)->format('d M Y');
+        })
             ->editColumn('branch', function (Order $data) {
                 if ($data->branch_id) {
                     return '<a href="javascript:;" class="select-branch badge badge-success"
                 data-id="' . $data->id . '"
                 data-toggle="modal"
                 data-target="#branchModal">' . $data->branch->name . '</a>';
-
                 }
                 return '<a href="javascript:;" class="select-branch"
                 data-id="' . $data->id . '"
@@ -101,7 +117,7 @@ class OrderController extends AdminBaseController
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
                 return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '<i class="fas fa-chevron-down"></i></button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . '</div></div>';
             })
-            ->rawColumns(['branch', 'id', 'action'])
+            ->rawColumns(['date','branch', 'id', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
@@ -185,11 +201,21 @@ class OrderController extends AdminBaseController
     //*** POST Request
     public function update(Request $request, $id)
     {
+       // dd($request->all());
         //--- Logic Section
         $data = Order::findOrFail($id);
 
         $input = $request->all();
+
         if ($request->has('status')) {
+            $data->payment_status = $input['payment_status'];
+            $data->status = $input['status'];
+            $data->update();
+            $msg = __('Status Updated Successfully.');
+                return response()->json($msg);
+
+        }
+        if ($request->has('status') == 'test') {
             if ($data->status == "completed") {
                 $input['status'] = "completed";
                 $data->update($input);

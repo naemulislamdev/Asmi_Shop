@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $gs->title }}</title>
     <!--Essential css files-->
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/bootstrap.min.css">
@@ -39,7 +40,7 @@
 
         .single-product .content-wrapper,
         .single-product-list-view .content-wrapper {
-            height: 112px;
+            height: 123px;
             background: #f5f5f5;
             border-bottom-left-radius: 12px;
             border-bottom-right-radius: 12px;
@@ -160,6 +161,7 @@
             font-size: 14px;
             font-weight: 600;
         }
+
         .outofstock-box {
             position: absolute;
             top: 0;
@@ -172,12 +174,22 @@
             justify-content: center;
             z-index: 2;
         }
+
         .outofstock-box h5 {
             color: #fff;
             font-size: 20px;
             background: #cf3f00;
             padding: 5px 10px;
             border-radius: 5px;
+        }
+
+        .flash_timer {
+            background: #fff12e;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 5px 5px;
+            min-width: 80px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 
@@ -276,10 +288,155 @@
             </script>';
         }
     @endphp
-
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {},
+            Tawk_LoadStart = new Date();
+        (function() {
+            var s1 = document.createElement("script"),
+                s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/68ce640071624f1929ac0656/1j5j3d8mt';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
 
     @yield('script')
     @stack('scripts')
+    <script>
+        $(function() {
+            $(".countdown").each(function() {
+                var $this = $(this);
+                var startDate = new Date($this.data("start") + " 00:00:00").getTime();
+                var endDate = new Date($this.data("end") + " 23:59:59").getTime();
+                var $timer = $this.find(".flash_timer");
+
+                var interval = setInterval(function() {
+                    var now = new Date().getTime();
+
+                    if (now < startDate) {
+                        $timer.html("⏳ Deal Not Started Yet!");
+                        return;
+                    }
+
+                    if (now > endDate) {
+                        clearInterval(interval);
+                        $timer.html("⚡ Deal Expired!");
+                        return;
+                    }
+
+                    var distance = endDate - now;
+
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    $timer.text(
+                        (days < 10 ? "0" + days : days) + ":" +
+                        (hours < 10 ? "0" + hours : hours) + ":" +
+                        (minutes < 10 ? "0" + minutes : minutes) + ":" +
+                        (seconds < 10 ? "0" + seconds : seconds) + " Left"
+                    );
+                }, 1000);
+            });
+        });
+    </script>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        let typingTimer;
+        const typingDelay = 300;
+
+        searchInput.addEventListener('keyup', function() {
+            clearTimeout(typingTimer);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            typingTimer = setTimeout(() => {
+                fetch(`{{ route('front.ajax.search') }}?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(products => {
+                        if (products.length > 0) {
+                            let html = '';
+                            products.forEach(p => {
+                                const productUrl = `{{ route('front.product', ':slug') }}`
+                                    .replace(':slug', p.slug);
+
+                                html += `
+        <div class="search-item">
+            <a href="${productUrl}">
+                <div class="d-flex align-items-center">
+                    <img src="{{ asset('/assets/images/thumbnails') }}/${p.thumbnail}" alt="" style="width:40px;height:40px;margin-right:10px;">
+                    <div>
+                        <strong>${p.name}</strong><br>
+                        <span>৳ ${parseFloat(p.price).toFixed(2)}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    `;
+                            });
+                            searchResults.innerHTML = html;
+                            searchResults.style.display = 'block';
+                        } else {
+                            searchResults.innerHTML =
+                                `<div class="search-item">No products found</div>`;
+                            searchResults.style.display = 'block';
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        searchResults.style.display = 'none';
+                    });
+            }, typingDelay);
+        });
+
+        // Hide results when clicked outside
+        document.addEventListener('click', function(e) {
+            if (!searchResults.contains(e.target) && e.target !== searchInput) {
+                searchResults.style.display = 'none';
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selects = document.querySelectorAll('.measure-select');
+
+            selects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const measureType = this.dataset.measureType;
+                    const selectedValue = parseFloat(this.value);
+                    const priceElement = this.closest('.price-wrapper').querySelector(
+                        '.product-price');
+                    const basePrice = parseFloat(priceElement.dataset.basePrice);
+
+                    let newPrice = basePrice;
+
+                    // Custom calculation rules
+                    if (measureType === 'KG' || measureType === 'LTR') {
+                        // smaller quantity = divide
+                        newPrice = basePrice * selectedValue;
+                    } else if (measureType === 'PCS') {
+                        // more pieces = multiply
+                        newPrice = basePrice * selectedValue;
+                    }
+
+                    priceElement.textContent = newPrice.toFixed(2) + '৳';
+                });
+            });
+        });
+    </script>
+
 
 </body>
 

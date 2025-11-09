@@ -9,10 +9,12 @@ use App\Models\ArrivalSection;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\Category;
+use App\Models\Childcategory;
 use App\Models\Generalsetting;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Rating;
+use App\Models\Subcategory;
 use App\Models\Subscriber;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -61,7 +63,7 @@ class FrontendController extends Controller
 
     public function index(Request $request)
     {
-         $gs = $this->gs;
+        $gs = $this->gs;
         if (!empty($request->forgot)) {
             if ($request->forgot == 'success') {
                 return redirect()->guest('/')->with('forgot-modal', __('Please Login Now !'));
@@ -70,6 +72,7 @@ class FrontendController extends Controller
 
         $data['sliders'] = DB::table('sliders')
             ->orderBy('order', 'asc')
+            ->where('type', 'web')
             ->get();
 
         $data['featured_categories'] = Category::withCount('products')->where('is_featured', 1)->get();
@@ -97,6 +100,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->inRandomOrder()
             ->get();
 
         $data['latest_products'] = Product::latest()->where('status', 1)
@@ -105,6 +109,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->inRandomOrder()
             ->get();
 
         $data['sale_products'] = Product::whereSale(1)->whereStatus(1)
@@ -123,12 +128,13 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->inRandomOrder()
             ->get();
 
         $data['best_products'] = Product::query()->whereStatus(1)->whereBest(1)
 
             ->take($gs->best_seller_count)
-        // get category id and created at
+            // get category id and created at
             ->with(['user' => function ($query) {
                 $query->select('id', 'is_vendor');
             }])
@@ -143,6 +149,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->inRandomOrder()
             ->get();
 
         $data['popular_products'] = Product::whereStatus(1)->whereFeatured(1)
@@ -162,6 +169,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->inRandomOrder()
             ->get();
 
         $data['top_products'] = Product::whereStatus(1)->whereTop(1)
@@ -179,6 +187,7 @@ class FrontendController extends Controller
             })
             ->orderby('id', 'desc')
             ->withCount('ratings')->withAvg('ratings', 'rating')
+            ->inRandomOrder()
             ->get();
 
         $data['big_products'] = Product::whereStatus(1)->whereBig(1)
@@ -197,6 +206,7 @@ class FrontendController extends Controller
             ->orderby('id', 'desc')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
+            ->inRandomOrder()
             ->get();
 
         $data['trending_products'] = Product::whereStatus(1)->whereTrending(1)
@@ -215,6 +225,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->inRandomOrder()
             ->get();
 
         $data['flash_products'] = Product::whereStatus(1)->whereIsDiscount(1)
@@ -300,7 +311,7 @@ class FrontendController extends Controller
         $data['best_products'] = Product::query()->whereStatus(1)->whereBest(1)
 
             ->take($gs->best_seller_count)
-        // get category id and created at
+            // get category id and created at
             ->with(['user' => function ($query) {
                 $query->select('id', 'is_vendor');
             }])
@@ -411,6 +422,164 @@ class FrontendController extends Controller
     }
 
     // -------------------------------- HOME PAGE SECTION ENDS ----------------------------------------
+    public function offers(Request $request, $slug = null, $slug1 = null, $slug2 = null, $slug3 = null)
+    {
+        $data['categories'] = Category::where('status', 1)->get();
+
+        if ($request->view_check) {
+            session::put('view', $request->view_check);
+        }
+
+        //   dd(session::get('view'));
+
+        $cat = null;
+        $subcat = null;
+        $childcat = null;
+        $flash = null;
+        $minprice = $request->min;
+        $maxprice = $request->max;
+        $sort = $request->sort;
+        $search = $request->search;
+        $pageby = $request->pageby;
+
+        $minprice = ($minprice / $this->curr->value);
+        $maxprice = ($maxprice / $this->curr->value);
+        $type = $request->has('type') ?? '';
+
+        if (!empty($slug)) {
+            $cat = Category::where('slug', $slug)->firstOrFail();
+            $data['cat'] = $cat;
+            //$data['cat_banner'] = $cat->photo;
+        }
+
+        if (!empty($slug1)) {
+            $subcat = Subcategory::where('slug', $slug1)->firstOrFail();
+            $data['subcat'] = $subcat;
+        }
+        if (!empty($slug2)) {
+            $childcat = Childcategory::where('slug', $slug2)->firstOrFail();
+            $data['childcat'] = $childcat;
+        }
+
+        $prods = Product::with('user')
+            ->where('discount', '>', 0)
+            ->orderByDesc('updated_at') // latest updated discount products first
+            ->orderByDesc('stock')
+            ->when($cat, function ($query, $cat) {
+                return $query->where('category_id', $cat->id);
+            })
+            ->when($subcat, function ($query, $subcat) {
+                return $query->where('subcategory_id', $subcat->id);
+            })
+            ->when($type, function ($query, $type) {
+                return $query->with('user')->whereStatus(1)->whereIsDiscount(1)
+                    ->where('discount_date', '>=', date('Y-m-d'))
+                    ->whereHas('user', function ($user) {
+                        $user->where('is_vendor', 2);
+                    });
+            })
+            ->when($childcat, function ($query, $childcat) {
+                return $query->where('childcategory_id', $childcat->id);
+            })
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%')->orWhere('sku', 'like', $search . '%');
+            })
+            ->when($minprice, function ($query, $minprice) {
+                return $query->where('price', '>=', $minprice);
+            })
+            ->when($maxprice, function ($query, $maxprice) {
+                return $query->where('price', '<=', $maxprice);
+            })
+            ->when($sort, function ($query, $sort) {
+                if ($sort == 'date_desc') {
+                    return $query->latest('id');
+                } elseif ($sort == 'date_asc') {
+                    return $query->oldest('id');
+                } elseif ($sort == 'price_desc') {
+                    return $query->latest('price');
+                } elseif ($sort == 'price_asc') {
+                    return $query->oldest('price');
+                }
+            })
+            ->when(empty($sort), function ($query, $sort) {
+                return $query->latest('id');
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating');
+
+        $prods = $prods->where(function ($query) use ($cat, $subcat, $childcat, $type, $request) {
+            $flag = 0;
+            if (!empty($cat)) {
+                foreach ($cat->attributes as $key => $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($subcat)) {
+                foreach ($subcat->attributes as $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0 && $flag == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($childcat)) {
+                foreach ($childcat->attributes as $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0 && $flag == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        $prods = $prods->where('status', 1)->get()
+
+            ->map(function ($item) {
+                $item->price = $item->vendorSizePrice();
+                return $item;
+            })->paginate(isset($pageby) ? $pageby : $this->gs->page_count);
+
+
+        $data['prods'] = $prods;
+        if ($request->ajax()) {
+            $data['ajax_check'] = 1;
+            return view('frontend.ajax.category', $data);
+        }
+
+        return view('frontend.offers', $data);
+    }
 
     // -------------------------------- BLOG SECTION ----------------------------------------
 
@@ -580,9 +749,10 @@ class FrontendController extends Controller
         $gs = $this->gs;
 
         if ($gs->is_capcha == 1) {
-            $request->validate([
-                "g-recaptcha-response" => "required",
-            ],
+            $request->validate(
+                [
+                    "g-recaptcha-response" => "required",
+                ],
                 [
                     'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
                 ]

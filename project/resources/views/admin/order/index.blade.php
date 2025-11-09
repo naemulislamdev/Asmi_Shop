@@ -53,6 +53,7 @@
                                     <tr>
                                         <th>{{ __('Name') }}</th>
                                         <th>{{ __('Address') }}</th>
+                                        <th>{{ __('Date') }}</th>
                                         <th>{{ __('Branch') }}</th>
                                         <th>{{ __('Order Number') }}</th>
                                         <th>{{ __('Total Qty') }}</th>
@@ -289,6 +290,10 @@
                     {
                         data: 'customer_address',
                         name: 'customer_address'
+                    },
+                    {
+                        data: 'date',
+                        name: 'date'
                     },
                     {
                         data: 'branch',

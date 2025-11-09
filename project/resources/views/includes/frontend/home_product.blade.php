@@ -86,7 +86,8 @@
                     @else
                         @if ($product->type != 'Listing')
                             <a {{ $product->cross_products ? 'data-bs-target=#exampleModal' : '' }} href="javascript:;"
-                                data-href="{{ route('product.cart.add', $product->id) }}"
+                                data-href="{{ route('product.add.to.cart', $product->id) }}"
+                                data-product-id="{{ $product->id }}"
                                 data-cross-href="{{ route('front.show.cross.product', $product->id) }}"
                                 class="add_cart_click {{ $product->cross_products ? 'view_cross_product' : '' }}">
                                 <div class="add-cart">
@@ -124,33 +125,54 @@
                 <h6 class="product-title">{{ $product->showName() }}</h6>
             </a>
             <div class="price-wrapper">
-                @if ($product->discount > 0)
-                    <h6>{{ \App\Helpers\PriceHelper::discountPrice($product->price, $product->discount, $product->discount_type) }}৳
-                    </h6>
+                @php
+                    $basePrice =
+                        $product->discount > 0
+                            ? \App\Helpers\PriceHelper::discountPrice(
+                                $product->price,
+                                $product->discount,
+                                $product->discount_type,
+                            )
+                            : $product->price;
+                @endphp
 
-                    <h6><del>{{ $product->showPrice() }}</del></h6>
+                @if ($product->discount > 0)
+                <h6 class="product-price" data-base-price="{{ $basePrice }}">{{ \App\Helpers\PriceHelper::discountPrice($product->price, $product->discount, $product->discount_type) }}৳ </h6>
+                <h6><del>{{ $product->showPrice() }}</del></h6>
                 @else
-                    <h6>{{ $product->showPrice() }}</h6>
-                @endif
+                <h6 class="product-price" data-base-price="{{ $basePrice }}">{{ $product->showPrice() }}</h6>
+                 @endif
+                 <br>
 
                 @if ($product->measure)
                     <h6 class="measure-product">
-                        / Per {{ $product->measure }}
+                        / Per
+                        <select class="measure-select" data-measure-type="{{ $product->measure }}">
+                            @if ($product->measure == 'KG')
+                                <option value="1">1kg</option>
+                                <option value="0.5">500gm</option>
+                                <option value="0.25">250gm</option>
+                            @elseif($product->measure == 'LTR')
+                                <option value="1">1L</option>
+                                <option value="0.5">500ml</option>
+                                <option value="0.25">250ml</option>
+                            @elseif($product->measure == 'PCS')
+                                <option value="1">1p</option>
+                                <option value="5">5p</option>
+                                <option value="10">10p</option>
+                            @endif
+                        </select>
                     </h6>
                 @endif
             </div>
-
-            {{-- <div class="ratings-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16"
-                    fill="none">
-                    <path
-                        d="M8.5 0.5L10.4084 6.37336L16.584 6.37336L11.5878 10.0033L13.4962 15.8766L8.5 12.2467L3.50383 15.8766L5.41219 10.0033L0.416019 6.37336L6.59163 6.37336L8.5 0.5Z"
-                        fill="#EEAE0B" />
-                </svg>
-
-                <span class="rating-title">{{ number_format($product->ratings_avg_rating, 1) }}
-                    ({{ $product->ratings_count }})</span>
-            </div> --}}
+            @if ($product->start_date != null && $product->end_date != null)
+                <div class="d-flex justify-content-center w-100">
+                    <div class="d-flex justify-content-center countdown" data-start="{{ $product->start_date }}"
+                        data-end="{{ $product->end_date }}">
+                        <span class="flash_timer"></span>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>

@@ -97,82 +97,40 @@
             </div>
         </div>
     </div>
-    <!-- Faetured Products Section Started -->
-    <section class="gs-explore-product-section bg-white">
-        <div class="container">
-            <!-- title box  & nav-tab -->
-            <div class="row mb-36 justify-content-center">
-                <div class="col-12">
-                    <div class="gs-title-box text-center">
-                        <h2 class="title wow-replaced">@lang('Today’s Featured Products')</h2>
-                    </div>
-                </div>
-            </div>
-            <!-- tab content -->
-            <div class="tab-content" id="myTabContent1">
-                <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
-                    role="tabpanel" aria-labelledby="ex-product-1" tabindex="0">
-                    <div class="product-cards-slider">
-                        @foreach ($popular_products as $product)
-                            @include('includes.frontend.home_product')
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Featured Product Section Completed -->
+
     <!-- Flash Deal Countdown Section -->
     @php
+        use Carbon\Carbon;
+
         $flashDeal = \App\Models\FlashDeal::where('status', 1)->first();
+        $flashDealExpired = false;
+        $flashDealProducts = [];
+
         if ($flashDeal) {
             $ProductsId = json_decode($flashDeal->products);
             $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->get();
+            $flashDealExpired = Carbon::now()->gt(Carbon::parse($flashDeal->end_date));
         }
     @endphp
-    @if ($flashDeal)
-        <section class="flash-deal py-4 gs-explore-product-section">
-            <div class="container text-center">
-                <div class="row align-items-center mb-4">
-                    <div class="col-lg-6">
-                        <h2 class="mb-3 text-right">🔥 {{ $flashDeal->title }}</h2>
-                    </div>
-                    <div class="col-lg-6">
-                        <h2 class="mb-3 text-left">⏰ @lang('Offer end time')</h2>
-                        <div id="countdown" class="countdown-box d-flex justify-content-center gap-3 mb-4">
-                            <div class="time-box">
-                                <span id="days">00</span>
-                                <small>Days</small>
-                            </div>
-                            <div class="time-box">
-                                <span id="hours">00</span>
-                                <small>Hours</small>
-                            </div>
-                            <div class="time-box">
-                                <span id="minutes">00</span>
-                                <small>Minutes</small>
-                            </div>
-                            <div class="time-box">
-                                <span id="seconds">00</span>
-                                <small>Seconds</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="tab-content" id="myTabContent1">
-                    <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
-                        role="tabpanel" aria-labelledby="ex-product-1" tabindex="0">
-                        <div class="product-cards-slider">
-                            @foreach ($flashDealProducts as $product)
-                                @include('includes.frontend.home_product')
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    @if ($flashDeal && !$flashDealExpired)
+        {{-- 🟢 Flash deal active: show it at the top --}}
+        @include('includes.frontend.flash_deal', [
+            'flashDeal' => $flashDeal,
+            'flashDealProducts' => $flashDealProducts,
+        ])
     @endif
+
+    {{-- 🟢 Featured products always show --}}
+    @include('includes.frontend.featured_products', ['popular_products' => $popular_products])
+    @if ($flashDeal && $flashDealExpired)
+        {{-- 🔴 Flash deal expired: show it at the bottom --}}
+        @include('includes.frontend.flash_deal', [
+            'flashDeal' => $flashDeal,
+            'flashDealProducts' => $flashDealProducts,
+        ])
+    @endif
+
     <!-- categories section end -->
     @if ($ps->arrival_section == 1)
         <!-- product offer section start -->
@@ -320,6 +278,7 @@
                 $categoryWiseProducts = App\Models\Product::where('category_id', $fcategory->id)
                     ->where('status', 1)
                     ->take(12)
+                    ->inRandomOrder()
                     ->get();
             @endphp
             @if ($categoryWiseProducts->count() > 0)
@@ -413,7 +372,6 @@
                 @foreach ($best_products as $product)
                     @include('includes.frontend.home_product')
                 @endforeach
-
             </div>
 
         </div>
@@ -430,9 +388,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                    anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                    deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                    nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>

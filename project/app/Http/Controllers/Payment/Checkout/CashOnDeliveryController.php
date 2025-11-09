@@ -19,7 +19,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
     {
         $request->validate([
             'customer_name' => 'required|string|max:50',
-            'customer_phone' => 'required|string|max:255',
+            'customer_phone' => 'required|regex:/^(01[3-9]\d{8})$/',
             'email' => 'nullable|string|email|max:255',
             'customer_address' => 'required|string|max:255',
             'order_note' => 'nullable|string|max:255',

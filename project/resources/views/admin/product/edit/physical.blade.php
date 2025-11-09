@@ -573,6 +573,49 @@
                                             </div>
                                         </div>
 
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="is_flash_deal"
+                                                            type="checkbox" id="flash" value="1"
+                                                            {{ $data->is_flash_deal != 0 ? 'checked' : '' }}>
+                                                        <label
+                                                            for="flash">{{ __('Allow Flash Deal') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="{{ $data->is_flash_deal != 0 ? '' : 'showbox' }}">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Product Flash Deal') }}*
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <label>Start Date</label>
+                                                    <input type="date" class="input-field"
+                                                        placeholder="{{ __('Start Date') }}" name="start_date"
+                                                        value="{{ $data->start_date == null ? '' : $data->start_date }}">
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <label>End Date</label>
+                                                    <input type="date" class="input-field"
+                                                        placeholder="{{ __('End Date') }}" name="end_date"
+                                                        value="{{ $data->end_date == null ? '' : $data->end_date }}">
+                                                </div>
+                                            </div>
+                                        </div>
+
 
                                         <div class="row">
                                             <div class="col-lg-12">
@@ -921,8 +964,7 @@
 
                                         <div
                                             class="{{ $data->meta_tag == null && strip_tags($data->meta_description) == null
-                                                ? "
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    										showbox"
+                                                ? "showbox"
                                                 : '' }}">
                                             <div class="row">
                                                 <div class="col-lg-12">

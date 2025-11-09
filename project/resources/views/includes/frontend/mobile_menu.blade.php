@@ -1,7 +1,76 @@
 <!-- mobile menu -->
+<style>
+    /* Search Results Box */
+#searchResults {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    max-height: 350px;
+    overflow-y: auto;
+    display: none;
+}
+
+/* Each product item */
+.search-item {
+    padding: 10px 15px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.search-item:last-child {
+    border-bottom: none;
+}
+
+.search-item:hover {
+    background: #f8f9fa;
+}
+
+/* Product image */
+.search-item img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 10px;
+}
+
+/* Product text */
+.search-item strong {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.2;
+}
+
+.search-item span {
+    font-size: 14px;
+    color: #007bff;
+    font-weight: 500;
+}
+
+/* Scrollbar styling (optional, for nice UX) */
+#searchResults::-webkit-scrollbar {
+    width: 6px;
+}
+#searchResults::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+#searchResults::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+</style>
 <div class="mobile-menu">
     <div class="mobile-menu-top">
-        <img src="{{ asset('assets/images/' . $gs->footer_logo) }}" alt="">
+        <img src="{{ asset('assets/images/' . $gs->footer_logo) }}" alt="Logo" style="width:100px;">
         <svg class="close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
             fill="none">
             <path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round"
@@ -32,42 +101,20 @@
                             <!-- main list -->
                             <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
                             <li><a href="{{ route('front.category') }}">@lang('Product')</a></li>
-                            <li>
-                                <a href="#" data-bs-toggle="collapse" data-bs-target="#child_level_1"
-                                    aria-controls="child_level_1" aria-expanded="false" class="collapsed">
-                                    @lang('Pages')
-                                </a>
 
-                                <ul id="child_level_1" class="accordion-collapse collapse ms-3">
-                                    @foreach ($pages->where('header', '=', 1) as $data)
-                                        <li>
-                                            <a href="{{ route('front.vendor', $data->slug) }}">{{ $data->title }}</a>
-                                        </li>
-                                    @endforeach
-
-                                </ul>
-                            </li>
-                            <li><a href="{{ route('front.blog') }}">@lang('BLOG')</a></li>
-                            <li><a href="{{ route('front.faq') }}">@lang('FAQ')</a></li>
+                            <li><a href="{{ route('front.offers') }}"><img src="{{asset('assets/front/images/sp_offer.png')}}" alt="Special Offers" style="width:90px;"></a></li>
                             <li><a href="{{ route('front.contact') }}">@lang('CONTACT')</a></li>
 
                         </ul>
 
                         <div class="auth-actions-btn gap-4 d-flex flex-column">
 
-                            {{-- Vendor Panel or Vendor Login --}}
-                            @if (Auth::guard('web')->check() && Auth::guard('web')->user()->is_vendor == 2)
-                                <a class="template-btn" href="{{ route('vendor.dashboard') }}">@lang('Vendor Panel')</a>
-                            @elseif (!Auth::guard('web')->check() && !Auth::guard('rider')->check())
-                                <a class="template-btn" href="{{ route('vendor.login') }}">@lang('Vendor Login')</a>
-                            @endif
-
                             {{-- Rider Dashboard or Rider Login --}}
-                            @if (Auth::guard('rider')->check())
+                            {{-- @if (Auth::guard('rider')->check())
                                 <a class="template-btn" href="{{ route('rider-dashboard') }}">@lang('Rider Dashboard')</a>
                             @elseif (!Auth::guard('web')->check() && !Auth::guard('rider')->check())
                                 <a class="template-btn" href="{{ route('rider.login') }}">@lang('Rider Login')</a>
-                            @endif
+                            @endif --}}
 
                             {{-- User Dashboard or User Login --}}
                             @if (Auth::guard('web')->check() && Auth::guard('web')->user()->is_vendor != 2)
@@ -77,9 +124,6 @@
                             @endif
 
                         </div>
-
-
-
                     </div>
                 </div>
             </div>
@@ -191,41 +235,13 @@
 
 <!-- search bar -->
 <div class="search-bar" id="searchBar">
-    <div class="container">
+    <div class="container position-relative">
         <div class="row">
             <div class="col">
-                <form class="search-form"
-                    action="{{ route('front.category', [Request::route('category'), Request::route('subcategory'), Request::route('childcategory')]) }}">
-
-                    @if (!empty(request()->input('sort')))
-                        <input type="hidden" name="sort" value="{{ request()->input('sort') }}">
-                    @endif
-                    @if (!empty(request()->input('minprice')))
-                        <input type="hidden" name="minprice" value="{{ request()->input('minprice') }}">
-                    @endif
-                    @if (!empty(request()->input('maxprice')))
-                        <input type="hidden" name="maxprice" value="{{ request()->input('maxprice') }}">
-                    @endif
-
+                <form class="search-form" action="{{ route('front.search') }}" method="GET">
                     <div class="input-group input__group">
-                        <input type="text" class="form-control form__control" name="search"
-                            placeholder="@lang('Search Any Product Here')">
-                        <div class="input-group-append">
-                            <span class="search-separator"></span>
-                            <button class="dropdown-toggle btn btn-secondary search-category-dropdown" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                @lang('All Categories')
-                            </button>
-                            <ul class="dropdown-menu">
-                                @foreach ($categories as $category)
-                                    <li>
-                                        <a class="dropdown-item dropdown__item"
-                                            href="javascript:;">{{ $category->name }}</a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-
+                        <input type="text" class="form-control form__control" name="search" id="searchInput"
+                            placeholder="@lang('Search Any Product Here')" autocomplete="off">
 
                         <div class="input-group-append">
                             <button class="btn btn-primary search-icn" type="submit">
@@ -240,6 +256,9 @@
                         </div>
                     </div>
                 </form>
+
+                <!-- 🔍 AJAX Search Result Box -->
+                <div id="searchResults"></div>
             </div>
         </div>
     </div>

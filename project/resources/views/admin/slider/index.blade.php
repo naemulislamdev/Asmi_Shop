@@ -34,6 +34,7 @@
                                     <tr>
                                         <th>{{ __('Featured Image') }}</th>
                                         <th width="40%">{{ __('Order') }}</th>
+                                        <th>{{ __('Type') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
                                 </thead>
@@ -135,6 +136,10 @@
                     {
                         data: 'order',
                         name: 'order'
+                    },
+                    {
+                        data: 'type',
+                        name: 'type'
                     },
                     {
                         data: 'action',

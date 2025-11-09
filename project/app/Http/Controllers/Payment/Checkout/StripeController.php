@@ -85,11 +85,11 @@ class StripeController extends CheckoutBaseControlller
 
     public function notify(Request $request)
     {
-       
+
         $input = Session::get('input_data');
         $stripe = new \Stripe\StripeClient(Config::get('services.stripe.secret'));
         $response = $stripe->checkout->sessions->retrieve($request->session_id);
-       
+
         if ($response->status == 'complete') {
             $oldCart = Session::get('cart');
             $cart = new Cart($oldCart);
@@ -103,7 +103,7 @@ class StripeController extends CheckoutBaseControlller
             $new_cart = json_encode($new_cart);
             $temp_affilate_users = \OrderHelper::product_affilate_check($cart); // For Product Based Affilate Checking
             $affilate_users = $temp_affilate_users == null ? null : json_encode($temp_affilate_users);
-            
+
             $orderCalculate = \PriceHelper::getOrderTotal($input, $cart);
 
             if (isset($orderCalculate['success']) && $orderCalculate['success'] == false) {

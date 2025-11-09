@@ -61,7 +61,7 @@
                         <!-- product-info-wrapper  -->
                         <div class="product-info-wrapper  {{ $productt->type != 'Physical' ? 'mb-3' : '' }}">
                             <h3>{{ $productt->name }}</h3>
-                            <div class="price-wrapper">
+                            <div class="price-wrapper mb-3">
                                 @if ($productt->discount > 0)
                                     <h5 id="sizeprice">
                                         {{ \App\Helpers\PriceHelper::discountPrice($productt->price, $productt->discount, $productt->discount_type) }}
@@ -86,6 +86,12 @@
                                 @endif
 
                             </div>
+                            @if ($productt->start_date != null && $productt->end_date != null)
+                                <div class="mb-4 countdown" data-start="{{ $productt->start_date }}"
+                                    data-end="{{ $productt->end_date }}">
+                                    <span class="flash_timer"></span>
+                                </div>
+                            @endif
                             <div class="rating-wrapper">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23"
                                     fill="none">
@@ -118,7 +124,7 @@
                                             @if ($productt->emptyStock())
                                                 <div class="stock-availability out-stock">{{ __('Out Of Stock') }}</div>
                                             @else
-                                            <span class="badge bg-success text-white py-0">{{ __('In Stock') }}</span>
+                                                <span class="badge bg-success text-white py-0">{{ __('In Stock') }}</span>
                                             @endif
                                         @endif
 

@@ -9,7 +9,7 @@ class Admin extends Authenticatable
     protected $guard = 'admin';
 
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'email_token', 'role_id', 'photo', 'created_at', 'updated_at', 'remember_token','shop_name'
+        'name', 'email', 'phone', 'password', 'email_token', 'role_id', 'branch_id', 'photo', 'created_at', 'updated_at', 'remember_token','shop_name'
     ];
 
     protected $hidden = [
@@ -19,6 +19,11 @@ class Admin extends Authenticatable
     public function role()
     {
     	return $this->belongsTo('App\Models\Role')->withDefault();
+    }
+
+    public function branch()
+    {
+    	return $this->belongsTo('App\Models\Branch')->withDefault();
     }
 
     public function IsSuper(){

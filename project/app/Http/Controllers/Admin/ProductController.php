@@ -24,14 +24,15 @@ class ProductController extends AdminBaseController
     public function datatables(Request $request)
     {
         if ($request->type == 'all') {
-            $datas = Product::whereProductType('normal')->latest('id')->get();
+            $datas = Product::query()->whereProductType('normal')->latest('id')->get();
         } else if ($request->type == 'deactive') {
-            $datas = Product::whereProductType('normal')->whereStatus(0)->latest('id')->get();
+            $datas = Product::query()->whereProductType('normal')->whereStatus(0)->latest('id')->get();
         }
 
         //--- Integrating This Collection Into Datatables
         return DataTables::of($datas)
             ->editColumn('name', function (Product $data) {
+                //dd($data);
                 $name = mb_strlen($data->name, 'UTF-8') > 50 ? mb_substr($data->name, 0, 50, 'UTF-8') . '...' : $data->name;
                 $id = '<small>' . __("ID") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . sprintf("%'.08d", $data->id) . '</a></small>';
                 $id3 = $data->type == 'Physical' ? '<small class="ml-2"> ' . __("SKU") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . $data->sku . '</a>' : '';
@@ -695,6 +696,15 @@ class ProductController extends AdminBaseController
             // Check Condition
             if ($request->product_condition_check == "") {
                 $input['product_condition'] = 0;
+            }
+            if ($request->is_flash_deal == 1) {
+                $input['is_flash_deal'] = 1;
+                $input['start_date'] = $request->start_date;
+                $input['end_date'] = $request->end_date;
+            }else{
+                $input['is_flash_deal'] = 0;
+                $input['start_date'] = null;
+                $input['end_date'] = null;
             }
 
             // Check Preorderd

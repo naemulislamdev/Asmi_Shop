@@ -1,41 +1,6 @@
 @extends('layouts.front')
 
 @section('content')
-    <section class="gs-breadcrumb-section bg-class"
-        data-background="
-        @if (!empty($cat->name) && !empty($subcat->name) && !empty($childcat->name)) {{ $childcat->banner ? asset('assets/images/childcategories/' . $childcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
-                        @elseif (!empty($cat->name) && !empty($subcat->name))
-                            {{ $subcat->banner ? asset('assets/images/subcategories/' . $subcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
-                        @elseif (!empty($cat->name))
-                            {{ $cat->photo ? asset('assets/images/categories/' . $cat->photo) : asset('assets/images/' . $gs->breadcrumb_banner) }}
-                        @else
-                           {{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }} @endif
-
-         ">
-        {{-- <div class="container">
-            <div class="row justify-content-center content-wrapper">
-                <div class="col-12">
-                    <h2 class="breadcrumb-title">
-                        @if (!empty($cat->name) && !empty($subcat->name) && !empty($childcat->name))
-                            {{ $childcat->name ?? 'Products' }}
-                        @elseif (!empty($cat->name) && !empty($subcat->name))
-                            {{ $subcat->name ?? 'Products' }}
-                        @elseif (!empty($cat->name))
-                            {{ $cat->name ?? 'Products' }}
-                        @else
-                            @lang('Products')
-                        @endif
-                    </h2>
-                    <ul class="bread-menu">
-                        <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
-                        <li><a href="javascript:;">@lang('Product')</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div> --}}
-    </section>
-    <!-- breadcrumb end -->
-
     <!-- product wrapper start -->
     <div class="gs-blog-wrapper" style="background: #ededed">
         <div class="container">
@@ -46,74 +11,6 @@
                         <div class="single-product-widget">
                             <h5 class="widget-title">@lang('Product categories')</h5>
                             <div class="product-cat-widget">
-
-                                {{-- <ul class="accordion">
-                                    @foreach ($categories as $category)
-                                        @if ($category->subs->count() > 0)
-                                            <li>
-
-                                                <div class="d-flex justify-content-between align-items-lg-baseline">
-                                                    <a href="{{ route('front.category', $category->slug) }}">
-                                                        {{ $category->name }}
-                                                    </a>
-
-                                                    <button data-bs-toggle="collapse"
-                                                        data-bs-target="#{{ $category->slug }}_level_2"
-                                                        aria-controls="{{ $category->slug }}_level_2" aria-expanded="false"
-                                                        class="collapsed">
-                                                        <i class="fa-solid fa-plus"></i>
-                                                        <i class="fa-solid fa-minus"></i>
-                                                    </button>
-                                                </div>
-
-                                                @foreach ($category->subs as $subcategory)
-                                                    <ul id="{{ $category->slug }}_level_2"
-                                                        class="accordion-collapse collapse ms-3">
-                                                        <li>
-
-                                                            <div
-                                                                class="d-flex justify-content-between align-items-lg-baseline">
-                                                                <a href="{{ route('front.category', [$category->slug, $subcategory->slug]) }}"
-                                                                    @if ($subcategory->childs->count() > 0) data-bs-toggle="collapse"
-                                                                    data-bs-target="#inner{{ $subcategory->slug }}_level_2_1"
-                                                                    aria-controls="inner{{ $subcategory->slug }}_level_2_1"
-                                                                    aria-expanded="false" class="collapsed" @endif>
-                                                                    {{ $subcategory->name }}
-                                                                </a>
-
-                                                                <button
-                                                                    @if ($subcategory->childs->count() > 0) data-bs-toggle="collapse"
-                                                                data-bs-target="#inner{{ $subcategory->slug }}_level_2_1"
-                                                                aria-controls="inner{{ $subcategory->slug }}_level_2_1"
-                                                                aria-expanded="false" class="collapsed" @endif>
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                    <i class="fa-solid fa-minus"></i>
-                                                                </button>
-                                                            </div>
-
-
-                                                            @if ($subcategory->childs->count() > 0)
-                                                                <ul id="inner{{ $subcategory->slug }}_level_2_1"
-                                                                    class="accordion-collapse collapse ms-3">
-                                                                    @foreach ($subcategory->childs as $child)
-                                                                        <li><a
-                                                                                href="{{ route('front.category', [$category->slug, $subcategory->slug, $child->slug]) }}">{{ $child->name }}</a>
-                                                                        </li>
-                                                                    @endforeach
-                                                                </ul>
-                                                            @endif
-                                                        </li>
-                                                    </ul>
-                                                @endforeach
-
-                                            </li>
-                                        @else
-                                            <li><a
-                                                    href="{{ route('front.category', $category->slug) }}">{{ $category->name }}</a>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </ul> --}}
                                 <ul class="accordion">
                                     @foreach ($categories as $category)
                                         @if ($category->subs->count() > 0)
@@ -122,7 +19,7 @@
                                                     $isCategoryActive = Request::segment(2) === $category->slug;
                                                 @endphp
                                                 <div class="d-flex justify-content-between align-items-lg-baseline">
-                                                    <a href="{{ route('front.category', $category->slug) }}"
+                                                    <a href="{{ route('front.offers', $category->slug) }}"
                                                         class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}">
                                                         {{ $category->name }}
                                                     </a>
@@ -148,7 +45,7 @@
                                                         <li class="">
                                                             <div
                                                                 class="d-flex justify-content-between align-items-lg-baseline">
-                                                                <a href="{{ route('front.category', [$category->slug, $subcategory->slug]) }}"
+                                                                <a href="{{ route('front.offers', [$category->slug, $subcategory->slug]) }}"
                                                                     class="{{ $isSubcategoryActive ? 'sidebar-active-color' : '' }} "
                                                                     @if ($subcategory->childs->count() > 0) data-bs-toggle="collapse"
                                                                    data-bs-target="#inner{{ $subcategory->slug }}_level_2_1"
@@ -180,7 +77,7 @@
                                                                                 Request::segment(4) === $child->slug;
                                                                         @endphp
                                                                         <li>
-                                                                            <a href="{{ route('front.category', [$category->slug, $subcategory->slug, $child->slug]) }}"
+                                                                            <a href="{{ route('front.offers', [$category->slug, $subcategory->slug, $child->slug]) }}"
                                                                                 class="{{ $isChildActive ? 'sidebar-active-color' : '' }}">
                                                                                 {{ $child->name }}
                                                                             </a>
@@ -195,7 +92,7 @@
                                             </li>
                                         @else
                                             <li>
-                                                <a href="{{ route('front.category', $category->slug) }}"
+                                                <a href="{{ route('front.offers', $category->slug) }}"
                                                     class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
                                                     {{ $category->name }}
                                                 </a>
@@ -227,7 +124,7 @@
                             </div>
 
                             <button class="template-btn mt-3 w-100" id="price_filter">@lang('Apply Filter')</button>
-                            <a href="{{ route('front.category') }}"
+                            <a href="{{ route('front.offers') }}"
                                 class="template-btn dark-btn w-100 mt-3">@lang('Clear Filter')</a>
                         </div>
 
@@ -338,49 +235,6 @@
                                 @endforeach
                             @endif
                         @endif
-
-                        {{-- <a href="{{ route('front.category') }}" class="template-btn dark-btn">Clear Filter</a> --}}
-
-                        <!-- Recent Product-->
-                        <div class="single-product-widget">
-                            <h5 class="widget-title">@lang('Recent Product')</h5>
-                            <div class="gs-recent-post-widget">
-                                @foreach ($latest_products as $product)
-                                    <a href="{{ route('front.product', $product['slug']) }}">
-
-                                        <div class="gs-single-recent-product-widget">
-                                            <div class="img-wrapper">
-                                                <img class="thumb"
-                                                    src="{{ $product['thumbnail'] ? asset('assets/images/thumbnails/' . $product['thumbnail']) : asset('assets/images/noimage.png') }}"
-                                                    alt="product img">
-                                            </div>
-                                            <div class="content-wrapper">
-                                                <h6 class="title">{{ $product['name'] }}</h6>
-                                                <div class="price-wrapper">
-                                                    <span
-                                                        class="price">{{ PriceHelper::showPrice($product['price']) }}</span>
-                                                    <span
-                                                        class="price"><del>{{ PriceHelper::showPrice($product['previous_price']) }}</del></span>
-                                                </div>
-                                                <div class="rating-wrapper">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                        viewBox="0 0 14 14" fill="none">
-                                                        <path
-                                                            d="M7 0.5L8.5716 5.33688H13.6574L9.5429 8.32624L11.1145 13.1631L7 10.1738L2.8855 13.1631L4.4571 8.32624L0.342604 5.33688H5.4284L7 0.5Z"
-                                                            fill="#EEAE0B" />
-                                                    </svg>
-                                                    <span
-                                                        class="rating">{{ number_format($product->ratings_avg_rating, 1) }}
-                                                        ({{ $product->ratings_count }})
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                @endforeach
-
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-12 col-lg-8 col-xl-9 gs-main-blog-wrapper">
@@ -444,8 +298,6 @@
                             <!-- list and grid view tab btns  end -->
                         </div>
                     </div>
-
-
 
                     @if ($prods->count() == 0)
                         <!-- product nav wrapper for no data found -->
@@ -524,7 +376,7 @@
 
         function filter() {
             let filterlink =
-                '{{ route('front.category', [Request::route('category'), Request::route('subcategory'), Request::route('childcategory')]) }}';
+                '{{ route('front.offers', [Request::route('category'), Request::route('subcategory'), Request::route('childcategory')]) }}';
 
             let params = new URLSearchParams();
 
@@ -571,7 +423,7 @@
                 let page = urlParams.get('page'); // value of 'page' parameter
 
                 let fullUrl =
-                    '{{ route('front.category', [Request::route('category'), Request::route('subcategory'), Request::route('childcategory')]) }}';
+                    '{{ route('front.offers', [Request::route('category'), Request::route('subcategory'), Request::route('childcategory')]) }}';
                 let params = new URLSearchParams();
 
                 $(".attribute-input").each(function() {

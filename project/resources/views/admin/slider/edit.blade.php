@@ -210,6 +210,20 @@
                                             placeholder="{{ __('Order') }}" required="" value="{{ $data->order }}">
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="left-area">
+                                            <h4 class="heading">{{ __('Slider type') }} *</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <select name="type" required>
+                                            <option selected disabled>{{ __('Select slider type') }}</option>
+                                            <option {{$data->type == 'web'? 'selected':''}} value="web">{{ __('Web Slider') }}</option>
+                                            <option {{$data->type == 'mobile'? 'selected':''}} value="mobile">{{ __('Mobile Slider') }}</option>
+                                        </select>
+                                    </div>
+                                </div>
 
 
                                 <div class="row">

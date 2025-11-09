@@ -93,18 +93,6 @@
                                 </tr>
                                 @endif
 
-                                @if($order->packing_cost != 0)
-
-                                <tr>
-                                    <th width="45%">{{ __('Packaging Cost') }}</th>
-                                    <td width="10%">:</td>
-                                    <td width="45%">{{
-                                        \PriceHelper::showOrderCurrencyPrice($order->packing_cost,$order->currency_sign)
-                                        }}</td>
-                                </tr>
-
-                                @endif
-
 
                                 @if($order->wallet_price != 0)
                                 <tr>
@@ -162,9 +150,9 @@
                                 <th width="10%">:</th>
 
                                 @if($order->payment_status == 'Pending')
-                                <span class='badge badge-danger'>{{__('Unpaid')}}</span>
+                                <td><span class='badge badge-danger'>Unpaid</span></td>
                                 @else
-                                <span class='badge badge-success'>{{__('Paid')}}</span>
+                                <td><span class='badge badge-success'>Paid</span></td>
                                 @endif
 
                                 @if(!empty($order->order_note))

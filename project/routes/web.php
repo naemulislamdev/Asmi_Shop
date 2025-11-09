@@ -1040,7 +1040,7 @@ Route::group(['middleware' => 'maintenance'], function () {
 
             //------------ PRODUCT SECTION ------------
 
-            Route::get('/products/datatables', 'Vendor\ProductController@datatables')->name('vendor-prod-datatables'); //JSON REQUEST
+            Route::get('/vendor/products/datatables', 'Vendor\ProductController@datatables')->name('vendor-prod-datatables'); //JSON REQUEST
             Route::get('/products', 'Vendor\ProductController@index')->name('vendor-prod-index');
 
             Route::post('/products/upload/update/{id}', 'Vendor\ProductController@uploadUpdate')->name('vendor-prod-upload-update');
@@ -1548,6 +1548,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/language/{id}', 'Front\FrontendController@language')->name('front.language');
     Route::get('/order/track/{id}', 'Front\FrontendController@trackload')->name('front.track.search');
     // BLOG SECTION
+    Route::get('/offers/{category?}/{subcategory?}/{childcategory?}', 'Front\FrontendController@offers')->name('front.offers');
     Route::get('/blog', 'Front\FrontendController@blog')->name('front.blog');
     Route::get('/blog/{slug}', 'Front\FrontendController@blogshow')->name('front.blogshow');
     Route::get('/blog/category/{slug}', 'Front\FrontendController@blogcategory')->name('front.blogcategory');
@@ -1580,7 +1581,9 @@ Route::group(['middleware' => 'maintenance'], function () {
     // TAG SECTION ENDS
 
     // TAG SECTION
-    Route::get('/search', 'Front\CatalogController@search')->name('front.search');
+    Route::get('/search', 'Front\CatalogController@homeSearch')->name('front.search');
+    Route::get('/ajax-search', 'Front\CatalogController@ajaxSearch')->name('front.ajax.search');
+
     // TAG SECTION ENDS
 
     // PRODCT SECTION
@@ -1611,6 +1614,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/carts/view', 'Front\CartController@cartview');
     Route::get('/carts', 'Front\CartController@cart')->name('front.cart');
     Route::get('/addcart/{id}', 'Front\CartController@addcart')->name('product.cart.add');
+    Route::post('product/cart/add/{id?}', 'Front\CartController@addcartPost')->name('product.add.to.cart');
     Route::get('/addtocart/{id}', 'Front\CartController@addtocart')->name('product.cart.quickadd');
     Route::get('/addnumcart', 'Front\CartController@addnumcart')->name('details.cart');
     Route::get('/addtonumcart', 'Front\CartController@addtonumcart');

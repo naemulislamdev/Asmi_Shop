@@ -98,9 +98,59 @@
   });
 
   // add to card
+  // $(document).on("click", ".add_cart_click", function (e) {
+  //   e.preventDefault();
+  //   $.get($(this).attr("data-href"), function (data) {
+  //     if (data == "digital") {
+  //       toastr.error(lang.cart_already);
+  //     } else if (data[0] == 0) {
+  //       toastr.error(lang.cart_out);
+  //     } else {
+  //       $("#cart-count").html(data[0]);
+  //       $("#cart-count1").html(data[0]);
+  //       $("#total-cost").html(data[1]);
+  //       $(".cart-popup").load(mainurl + "/carts/view");
+  //       toastr.success(lang.cart_success);
+  //     }
+  //   });
+  //   return true;
+  // });
+  //modify add to cart logic for cross products
+  $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
   $(document).on("click", ".add_cart_click", function (e) {
-    e.preventDefault();
-    $.get($(this).attr("data-href"), function (data) {
+  e.preventDefault();
+
+  const $btn = $(this);
+  const productId = $btn.data("product-id");
+  const $wrapper = $btn.closest(".single-product");
+  const measureType = $wrapper.find(".measure-select").data("measure-type");
+  const selectedMeasureValue = parseFloat($wrapper.find(".measure-select").val() || 1);
+  const basePrice = parseFloat($wrapper.find(".product-price").data("base-price"));
+  let finalPrice = basePrice;
+
+  // price calculation logic
+  if (measureType === "KG" || measureType === "LTR") {
+    finalPrice = basePrice * selectedMeasureValue;
+  } else if (measureType === "PCS") {
+    finalPrice = basePrice * selectedMeasureValue;
+  }
+  console.log(finalPrice);
+
+  // send price & measure info via AJAX
+  $.ajax({
+    url: $btn.data("href"),
+    method: "POST",
+    data: {
+      product_id: productId,
+      measure_value: selectedMeasureValue,
+      measure_type: measureType,
+      final_price: finalPrice,
+    },
+    success: function (data) {
       if (data == "digital") {
         toastr.error(lang.cart_already);
       } else if (data[0] == 0) {
@@ -112,14 +162,18 @@
         $(".cart-popup").load(mainurl + "/carts/view");
         toastr.success(lang.cart_success);
       }
-    });
-    return true;
+    },
   });
+});
+  //End add to cart
 
   $(document).on("click", ".quantity-up", function () {
     var pid = $(this).parent().find(".prodid").val();
     var itemid = $(this).parent().find(".itemid").val();
     var size_qty = $(this).parent().find(".size_qty").val();
+    console.log(pid);
+    console.log(itemid);
+    console.log(size_qty);
 
     var size_price = $(this)
       .parent()

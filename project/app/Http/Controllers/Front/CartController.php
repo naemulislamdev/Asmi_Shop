@@ -13,6 +13,7 @@ use App\Helpers\PriceHelper;
 use Illuminate\Http\Request;
 use App\Models\PaymentGateway;
 use Illuminate\Support\Facades\Session;
+use Svg\Tag\Rect;
 
 class CartController extends Controller
 {
@@ -95,6 +96,7 @@ class CartController extends Controller
 
     public function addcart($id)
     {
+        //dd($id);
 
         $prod = Product::where('id', '=', $id)->first([
             'id',
@@ -131,6 +133,152 @@ class CartController extends Controller
                 $prod->price = $prod->price - $prod->discount;
             }
         }
+
+        // Set Attrubutes
+
+        $keys = '';
+        $values = '';
+        if (!empty($prod->license_qty)) {
+            $lcheck = 1;
+            foreach ($prod->license_qty as $ttl => $dtl) {
+                if ($dtl < 1) {
+                    $lcheck = 0;
+                } else {
+                    $lcheck = 1;
+                    break;
+                }
+            }
+            if ($lcheck == 0) {
+                return 0;
+            }
+        }
+
+        // Set Size
+
+        $size = '';
+        if (!empty($prod->size)) {
+            $size = trim($prod->size[0]);
+        }
+        $size = str_replace(' ', '-', $size);
+
+        // Set Color
+
+        $color = '';
+        if (!empty($prod->color)) {
+            $color = $prod->color[0];
+            $color = str_replace('#', '', $color);
+        }
+
+        // Vendor Comission
+
+        if ($prod->user_id != 0) {
+            $gs = Generalsetting::findOrFail(1);
+            $prc = $prod->price + $gs->fixed_commission + ($prod->price / 100) * $gs->percentage_commission;
+            $prod->price = $prc;
+        }
+
+        // Set Attribute
+
+        if (!empty($prod->attributes)) {
+            $attrArr = json_decode($prod->attributes, true);
+
+            $count = count($attrArr);
+            $i = 0;
+            $j = 0;
+            if (!empty($attrArr)) {
+                foreach ($attrArr as $attrKey => $attrVal) {
+
+                    if (is_array($attrVal) && array_key_exists("details_status", $attrVal) && $attrVal['details_status'] == 1) {
+                        if ($j == $count - 1) {
+                            $keys .= $attrKey;
+                        } else {
+                            $keys .= $attrKey . ',';
+                        }
+                        $j++;
+
+                        foreach ($attrVal['values'] as $optionKey => $optionVal) {
+
+                            $values .= $optionVal . ',';
+                            $prod->price += $attrVal['prices'][$optionKey];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        $keys = rtrim($keys, ',');
+        $values = rtrim($values, ',');
+
+        $oldCart = Session::has('cart') ? Session::get('cart') : null;
+        $cart = new Cart($oldCart);
+
+        if ($cart->items != null && @$cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['dp'] == 1) {
+            return 'digital';
+        }
+
+        $cart->add($prod, $prod->id, $size, $color, $keys, $values);
+        if ($cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['stock'] < 0) {
+            return 0;
+        }
+
+        if ($cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['size_qty']) {
+            if ($cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['qty'] > $cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['size_qty']) {
+                return 0;
+            }
+        }
+        $cart->totalPrice = 0;
+        foreach ($cart->items as $data) {
+            $cart->totalPrice += $data['price'];
+        }
+
+        Session::put('cart', $cart);
+        $data[0] = count($cart->items);
+        return response()->json($data);
+    }
+    public function addcartPost(Request $request)
+    {
+        $id = $request->product_id;
+        //$request->dd();
+        $prod = Product::select(
+            'id',
+            'user_id',
+            'slug',
+            'name',
+            'photo',
+            'size',
+            'size_qty',
+            'size_price',
+            'color',
+            'price',
+            'discount',
+            'discount_type',
+            'stock',
+            'type',
+            'file',
+            'link',
+            'license',
+            'license_qty',
+            'measure',
+            'whole_sell_qty',
+            'whole_sell_discount',
+            'attributes',
+            'color_all',
+            "color_price"
+        )->findOrFail($id);
+
+        // If user sent a custom price
+        $finalPrice = $request->has('final_price') ? (int) $request->final_price : $prod->price;
+        //dd($finalPrice);
+        $prod->price = $finalPrice;
+
+        // ✅ Apply discount before anything else
+        // if ($prod->discount > 0) {
+        //     if ($prod->discount_type === 'percent') {
+        //         $prod->price = $prod->price - ($prod->price * ($prod->discount / 100));
+        //     } elseif ($prod->discount_type === 'flat') {
+        //         $prod->price = $prod->price - $prod->discount;
+        //     }
+        // }
 
         // Set Attrubutes
 
@@ -659,6 +807,7 @@ class CartController extends Controller
 
     public function addbyone()
     {
+        //dd($_GET['size_qty']);
         if (Session::has('coupon')) {
             Session::forget('coupon');
         }
@@ -752,6 +901,7 @@ class CartController extends Controller
         $data[2] = PriceHelper::showCurrencyPrice($data[2] * $curr->value);
         $data[3] = PriceHelper::showCurrencyPrice($data[3] * $curr->value);
         $data[4] = $cart->items[$itemid]['discount'] == 0 ? '' : '(' . $cart->items[$itemid]['discount'] . '% ' . __('Off') . ')';
+        //dd($data);
         return response()->json($data);
     }
 

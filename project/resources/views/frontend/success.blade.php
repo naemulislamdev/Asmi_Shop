@@ -177,10 +177,6 @@
                         @endif
                     @endif
 
-
-
-
-
                     @if ($order->dp == 0)
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <h5>@lang('Billing Address')</h5>

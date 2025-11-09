@@ -78,10 +78,11 @@ class CatalogController extends Controller
             })
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
+            ->orderByDesc('stock')
             ->take(5)
             ->get();
 
-        $prods = Product::with('user')->when($cat, function ($query, $cat) {
+        $prods = Product::with('user')->orderByDesc('stock')->when($cat, function ($query, $cat) {
             return $query->where('category_id', $cat->id);
         })
             ->when($subcat, function ($query, $subcat) {
@@ -186,6 +187,8 @@ class CatalogController extends Controller
                 $item->price = $item->vendorSizePrice();
                 return $item;
             })->paginate(isset($pageby) ? $pageby : $this->gs->page_count);
+
+
         $data['prods'] = $prods;
         if ($request->ajax()) {
             $data['ajax_check'] = 1;
@@ -193,6 +196,28 @@ class CatalogController extends Controller
         }
 
         return view('frontend.products', $data);
+    }
+    public function homeSearch(Request $request)
+    {
+        $keyword = $request->search;
+
+        $products = Product::where('name', 'like', "%{$keyword}%")
+            ->orWhere('sku', 'like', "%{$keyword}%") // for SKU
+            ->paginate(20);
+
+        return view('frontend.search', compact('products', 'keyword'));
+    }
+
+    public function ajaxSearch(Request $request)
+    {
+        $keyword = $request->query('q');
+
+        $products = Product::where('name', 'like', "%{$keyword}%")
+            ->orWhere('sku', 'like', "%{$keyword}%")
+            ->take(5)
+            ->get(['id', 'name', 'slug', 'price', 'thumbnail']);
+
+        return response()->json($products);
     }
 
     public function getsubs(Request $request)
@@ -219,6 +244,5 @@ class CatalogController extends Controller
         $input = $request->all();
         $data->fill($input)->save();
         return back()->with('success', 'Report has been sent successfully.');
-
     }
 }

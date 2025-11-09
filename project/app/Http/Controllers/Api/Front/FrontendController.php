@@ -152,7 +152,7 @@ class FrontendController extends Controller
     public function sliders()
     {
         try {
-            $sliders = Slider::OrderBy('order', 'asc')->get();
+            $sliders = Slider::OrderBy('order', 'asc')->where('type','mobile')->get();
             return response()->json(['status' => true, 'data' => SliderResource::collection($sliders), 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
@@ -308,6 +308,32 @@ class FrontendController extends Controller
                 $prods = Product::where('status', 1)->get();
                 return response()->json(['status' => true, 'data' => ProductlistResource::collection($prods), 'error' => []]);
             }
+        } catch (\Exception $e) {
+            return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+    public function featuredProducts()
+    {
+        $gs = $this->gs;
+        try {
+            $popular_products = Product::whereStatus(1)->whereFeatured(1)
+                ->take($gs->popular_count)
+                ->with(['user' => function ($query) {
+                    $query->select('id', 'is_vendor');
+                }])
+
+                ->when('user', function ($query) {
+                    foreach ($query as $q) {
+                        if ($q->is_vendor == 2) {
+                            return $q;
+                        }
+                    }
+                })
+                ->withCount('ratings')
+                ->withAvg('ratings', 'rating')
+                ->orderby('id', 'desc')
+                ->get();
+            return response()->json(['status' => true, 'data' => ProductlistResource::collection($popular_products), 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
         }

@@ -141,6 +141,9 @@
                                 </div>
                             </div>
                         </li>
+                        <li class="{{ request()->path() == 'offers' ? 'active' : '' }}">
+                            <a href="{{ route('front.offers') }}" class="nav-link"><img src="{{asset('assets/front/images/sp_offer.png')}}" alt="Special Offers" style="width:90px;"></a>
+                        </li>
 
                         @if ($ps->blog == 1)
                             <li class="{{ request()->path() == 'blog' ? 'active' : '' }}"><a
@@ -186,11 +189,6 @@
                     </div>
 
                     <div class="icon-circle">
-
-
-
-
-
                         @if (Auth::guard('web')->check())
                             <a href="{{ auth()->check() ? route('user-wishlists') : route('user.login') }}">
                                 <span class="cart-count" id="wishlist-count">
