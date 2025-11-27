@@ -129,8 +129,9 @@ class AuthController extends Controller
         auth()->logout();
         return response()->json(['status' => false, 'data' => [], 'error' => ["message" => 'Your Account Has Been Banned.']]);
       }
+      $expired = auth()->factory()->getTTL() * 60;
 
-      return response()->json(['status' => true, 'data' => ['token' => $token, 'user' => new UserResource(auth()->user())], 'error' => []]);
+      return response()->json(['status' => true, 'data' => ['token' => $token, 'expires_in' => $expired, 'user' => new UserResource(auth()->user())], 'error' => []]);
     } catch (\Exception $e) {
       return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
     }
@@ -247,7 +248,7 @@ class AuthController extends Controller
     return response()->json([
       'access_token' => $token,
       'token_type' => 'bearer',
-      'expires_in' => auth()->factory()->getTTL() * 300
+      'expires_in' => auth()->factory()->getTTL() * 60
     ]);
   }
 

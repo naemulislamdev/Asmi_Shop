@@ -57,8 +57,6 @@
                                     }
 
                                 @endphp --}}
-
-
                                     <tr class="">
                                         <td class="cart-product-area">
                                             <div class="cart-product d-flex">
@@ -109,6 +107,10 @@
                                                         value="{{ $product['size_price'] }}">
                                                     <input type="hidden" class="minimum_qty"
                                                         value="{{ $product['item']['minimum_qty'] == null ? '0' : $product['item']['minimum_qty'] }}">
+                                                    <input type="hidden" class="item_price"
+                                                        value="{{ $product['item_price']}}">
+                                                    <input type="hidden" class="unique_key"
+                                                        value="{{ $product['unique_key'] }}">
 
                                                     <button type="button"
                                                         class="cart-quantity-btn quantity-up">+</button>
@@ -153,7 +155,7 @@
                                         <td>
                                             <a class="cart-remove-btn"
                                                 ata-class="cremove{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}"
-                                                href="{{ route('product.cart.remove', $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values'])) }}">
+                                                href="{{ route('product.cart.remove', $product['unique_key']) }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none">
                                                     <path

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Classes\GeniusMailer;
 use App\Helpers\OrderHelper;
+use App\Helpers\PriceHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Country;
 use App\Models\Currency;
+use App\Models\CustomeProduct;
 use App\Models\Order;
 use App\Models\Pagesetting;
 use App\Models\Product;
@@ -15,6 +17,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Datatables;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class OrderCreateController extends AdminBaseController
@@ -33,8 +36,9 @@ class OrderCreateController extends AdminBaseController
 
         $sign = $this->curr;
         Session::forget('order_products');
+        $custome_products = CustomeProduct::all();
 
-        return view('admin.order.create.index', compact('products', 'selectd_products', 'sign'));
+        return view('admin.order.create.custome_order', compact('products', 'selectd_products', 'sign', 'custome_products'));
     }
 
     public function datatables()
@@ -47,8 +51,8 @@ class OrderCreateController extends AdminBaseController
                 $price = $data->price * $this->curr->value;
                 $img = '<img src="' . asset('assets/images/thumbnails/' . $data->thumbnail) . '" alt="' . $data->name . '" class="img-thumbnail" width="100"> <br>';
                 $name =  mb_strlen($data->name, 'UTF-8') > 50 ? mb_substr($data->name, 0, 50, 'UTF-8') . '...' : $data->name;
-                
-              
+
+
                 return  $img . $name . $data->checkVendor() . '<br><small>' . __("Price") . ': ' . $price . ' ' . $this->curr->sign . '</small>';
             })
 
@@ -113,7 +117,7 @@ class OrderCreateController extends AdminBaseController
 
     public function addcart(Request $request)
     {
-    
+
         $id = $_GET['id'];
         $qty = $_GET['qty'];
         $size = str_replace(' ', '-', $_GET['size']);
@@ -129,7 +133,7 @@ class OrderCreateController extends AdminBaseController
         $keys = $keys == "" ? '' : $keys;
         $values = $values == "" ? '' : $values;
         $curr = $this->curr;
-       
+
         $size_price = ($size_price / $curr->value);
         $color_price = ($color_price / $curr->value);
         $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'minimum_qty', 'stock_check', 'color_all']);
@@ -144,7 +148,7 @@ class OrderCreateController extends AdminBaseController
             $prod->price = round($prc, 2);
         }
         if (!empty($prices)) {
-            foreach (explode(',',$prices) as $data) {
+            foreach (explode(',', $prices) as $data) {
                 $prod->price += ($data / $curr->value);
             }
         }
@@ -183,7 +187,7 @@ class OrderCreateController extends AdminBaseController
             }
         }
 
-        
+
         if (empty($color)) {
             if (!empty($prod->color_all)) {
                 $color = $prod->color_all[0];
@@ -195,7 +199,7 @@ class OrderCreateController extends AdminBaseController
         $oldCart = Session::has('admin_cart') ? Session::get('admin_cart') : null;
         $cart = new Cart($oldCart);
 
-        
+
 
         $cart->addnum($prod, $prod->id, $qty, $size, $color, $size_qty, $size_price, $color_price, $size_key, $keys, $values, $affilate_user);
 
@@ -221,8 +225,8 @@ class OrderCreateController extends AdminBaseController
         Session::put('admin_cart', $cart);
         $data[0] = count($cart->items);
         $data[1] = $cart->totalPrice;
-        $data[1] = \PriceHelper::showCurrencyPrice($data[1] * $curr->value);
-        
+        $data[1] = PriceHelper::showCurrencyPrice($data[1] * $curr->value);
+
         return view('admin.order.create.product_add_table');
     }
 
@@ -268,12 +272,12 @@ class OrderCreateController extends AdminBaseController
 
     public function viewCreateOrder(Request $request)
     {
-        
+
         Session::put('order_address', $request->all());
-      
+
         $cart = Session::get('admin_cart');
         $address = Session::get('order_address');
-   
+
         return view('admin.order.create.view', compact('cart', 'address'));
     }
 
@@ -360,6 +364,90 @@ class OrderCreateController extends AdminBaseController
         $mailer = new GeniusMailer();
         $mailer->sendCustomMail($data);
 
-        return redirect(route('admin-order-show',$order->id))->with('added', 'Order has been placed successfully!');
+        return redirect(route('admin-order-show', $order->id))->with('added', 'Order has been placed successfully!');
+    }
+    public function bulkUploadCustomeOrder()
+    {
+        return view('admin.order.create.bulk_upload_products');
+    }
+    public function bulkUploadCustomeOrderSubmit(Request $request)
+    {
+        $log = "";
+
+        // Validate file
+        $validator = Validator::make($request->all(), [
+            'csvfile' => 'required|mimes:csv,txt,xlsx,xls',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->getMessageBag()->toArray()]);
+        }
+
+        // Save uploaded file
+        $file = $request->file('csvfile');
+        $filename = time() . '-' . $file->getClientOriginalName();
+        $originalPath = public_path('assets/temp_files/' . $filename);
+        $file->move(public_path('assets/temp_files'), $filename);
+
+        // Read full raw file
+        $raw = file_get_contents($originalPath);
+
+        // Detect encoding
+        $encoding = mb_detect_encoding(
+            $raw,
+            ['UTF-8', 'UTF-16LE', 'UTF-16BE', 'UTF-32LE', 'UTF-32BE', 'ISO-8859-1', 'Windows-1252'],
+            true
+        );
+
+        if (!$encoding) {
+            $encoding = 'UTF-8'; // fallback
+        }
+
+        // Convert to real UTF-8
+        $converted = mb_convert_encoding($raw, 'UTF-8', $encoding);
+
+        // Remove BOM
+        $converted = preg_replace('/^\xEF\xBB\xBF/', '', $converted);
+
+        // Save as a clean UTF-8 temp file
+        $cleanFile = public_path('assets/temp_files/utf8_' . $filename);
+        file_put_contents($cleanFile, $converted);
+
+        // Open file
+        $handle = fopen($cleanFile, 'r');
+        $i = 0;
+
+        while (($line = fgetcsv($handle)) !== false) {
+            $i++;
+
+            // Skip header
+            if ($i == 1) continue;
+
+            // Skip empty lines
+            if (count($line) < 3) continue;
+
+            // Safe values
+            $sku         = trim($line[1] ?? '');
+            $name        = trim($line[2] ?? '');
+            $measurement = trim($line[3] ?? '');
+            $price       = trim($line[4] ?? 0);
+            $qty         = trim($line[5] ?? 1);
+
+            // Save to DB
+            CustomeProduct::create([
+                'sku'         => $sku,
+                'name'        => $name,        // ✔ Bengali will store correct
+                'measurement' => $measurement,
+                'price'       => $price,
+                'quantity'    => $qty,
+            ]);
+        }
+
+        fclose($handle);
+
+        @unlink($cleanFile);
+        @unlink($originalPath);
+
+        return response()->json(__('Bulk Custom Product File Imported Successfully.') . $log);
     }
 }

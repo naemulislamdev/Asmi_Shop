@@ -1,9 +1,9 @@
-@extends('layouts.admin') 
+@extends('layouts.admin')
 @section('styles')
 <link href="{{asset('assets/admin/css/jquery-ui.css')}}" rel="stylesheet" type="text/css">
 
 @endsection
-@section('content')  
+@section('content')
 <div class="content-area">
 <div class="mr-breadcrumb">
    <div class="row">
@@ -31,15 +31,15 @@
           <form action="{{route('admin.order.create.view')}}" method="POST">
             @csrf
             <div class="gocover" style="background: url({{asset('assets/images/'.$gs->admin_loader)}}) no-repeat scroll center center rgba(45, 45, 45, 0.5);"></div>
-            
-            @include('alerts.admin.form-both') 
-          
-           
+
+            @include('alerts.admin.form-both')
+
+
               <div class="product-area">
                 <div class="row">
                   <div class="col-lg-3 border-right p-0">
                     <div class="mr-table allproduct">
-                      @include('alerts.admin.form-success') 
+                      @include('alerts.admin.form-success')
                       <div class="table-responsive" style="height: 100vh">
                           <table id="order-geniustable"   class="table table-hover dt-responsive" cellspacing="0" width="100%">
                             <thead>
@@ -52,7 +52,7 @@
                       </div>
                     </div>
                   </div>
-                 
+
                   <div class="col-lg-9" >
 
                     <div class="py-4 px-4 my-2 mx-4 border">
@@ -71,10 +71,10 @@
                                 @endforeach
                             </select>
                             </div>
-                           
+
                         </div>
                       </div>
-                     
+
                       <div id="order_create_user_address">
                         @include('admin.order.create.address_form')
                       </div>
@@ -91,14 +91,11 @@
       </div>
     </div>
   </div>
-
 </div>
-
-
   @include('admin.order.create.adds-product')
 
 
-@endsection    
+@endsection
 
 
 @section('scripts')
@@ -107,7 +104,7 @@
 
   <script type="text/javascript">
 
- 
+
   (function($) {
 		"use strict";
     $('#sidebarCollapse').click();
@@ -131,7 +128,7 @@
 	})(jQuery);
 
 
-  
+
 $(document).on('click','.order_product_add',function(e){
 
 if(admin_loader == 1)
@@ -182,7 +179,7 @@ $(document).on('click','.removeOrder',function(){
         $('#view_table_order').html(data);
       }
     });
-    
+
   }else{
     return false;
   }
@@ -199,4 +196,4 @@ $(document).ready(function(){
 
 
 
-@endsection   
+@endsection

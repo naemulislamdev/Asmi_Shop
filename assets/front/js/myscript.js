@@ -171,9 +171,8 @@
     var pid = $(this).parent().find(".prodid").val();
     var itemid = $(this).parent().find(".itemid").val();
     var size_qty = $(this).parent().find(".size_qty").val();
-    console.log(pid);
-    console.log(itemid);
-    console.log(size_qty);
+    var item_price = $(this).parent().find(".item_price").val();
+    var unique_key = $(this).parent().find(".unique_key").val();
 
     var size_price = $(this)
       .parent()
@@ -202,6 +201,8 @@
         itemid: itemid,
         size_qty: size_qty,
         size_price: size_price,
+        item_price: item_price,
+        unique_key: unique_key,
       },
       success: function (data) {
         $(".gocover").hide();
@@ -224,6 +225,8 @@
     var size_price = $(this).siblings(".size_price").val();
     var qty = parseInt($("#qty" + itemid).val());
     var minimum_qty = $(this).siblings(".minimum_qty").val();
+    var item_price = $(this).parent().find(".item_price").val();
+    var unique_key = $(this).parent().find(".unique_key").val();
 
     $(".gocover").show();
     if (qty <= 1) {
@@ -244,14 +247,19 @@
           itemid: itemid,
           size_qty: size_qty,
           size_price: size_price,
+          item_price: item_price,
+          unique_key: unique_key,
         },
         success: function (data) {
+          console.log(data);
           if (data.qty >= 1) {
             $.get(mainurl + "/carts", function (response) {
               $(".load_cart").html(response);
             });
+            
             window.location.reload();
           } else {
+            console.log("Quantity less than 1");
             return false;
           }
         },

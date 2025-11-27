@@ -23,7 +23,7 @@ Route::group(['prefix' => 'user'], function () {
     Route::post('forgot', 'Api\Auth\AuthController@forgot');
     Route::post('forgot/submit', 'Api\Auth\AuthController@forgot_submit');
     Route::post('social/login', 'Api\Auth\AuthController@social_login');
-    Route::post('refresh/token', 'Api\Auth\AuthController@refresh');
+    Route::get('refresh/token', 'Api\Auth\AuthController@refresh');
     Route::get('details', 'Api\Auth\AuthController@details');
     Route::post('testapi', 'Api\Auth\AuthController@test');
 

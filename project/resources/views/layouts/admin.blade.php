@@ -235,7 +235,7 @@
 			}
 		</style>
 	@endif
-
+@stack('scripts')
 </body>
 
 </html>

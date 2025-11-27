@@ -213,6 +213,7 @@ class ProductController extends AdminBaseController
     public function store(Request $request)
     {
         //--- Validation Section
+        dd($request->all());
         $rules = [
             'photo' => 'required',
             'file' => 'mimes:zip',

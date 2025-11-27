@@ -18,6 +18,9 @@
             <a href="{{ route('admin-orders-all') }}?status=declined"> {{ __('Declined Orders') }}</a>
         </li>
         <li>
+            <a href="{{ route('admin-bulk-upload-custome-order') }}"> {{ __('Bulk Upload Custome Order') }}</a>
+        </li>
+        <li>
             <a href="{{ route('admin-order-create') }}"> {{ __('Pos') }}</a>
         </li>
 

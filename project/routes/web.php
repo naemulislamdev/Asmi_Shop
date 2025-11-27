@@ -102,6 +102,10 @@ Route::prefix('admin')->group(function () {
         Route::post('/order/create/user-address', 'Admin\OrderCreateController@userAddressSubmit')->name('admin.order.create.user.address');
         Route::post('/order/create/order/view', 'Admin\OrderCreateController@viewCreateOrder')->name('admin.order.create.view');
         Route::get('/order/create/order/submit', 'Admin\OrderCreateController@CreateOrderSubmit')->name('admin-order-create-submit');
+        // CREATE ORDER ENDS
+        // Bulk Upload Custome Order
+        Route::get('/bulk/upload/custome/order', 'Admin\OrderCreateController@bulkUploadCustomeOrder')->name('admin-bulk-upload-custome-order');
+        Route::post('/bulk/upload/custome/order/submit', 'Admin\OrderCreateController@bulkUploadCustomeOrderSubmit')->name('admin-bulk-upload-custome-order-submit');
 
         Route::get('/order/{id}/track', 'Admin\OrderTrackController@index')->name('admin-order-track');
         Route::get('/order/{id}/trackload', 'Admin\OrderTrackController@load')->name('admin-order-track-load');
