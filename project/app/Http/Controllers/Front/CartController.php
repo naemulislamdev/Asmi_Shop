@@ -124,13 +124,11 @@ class CartController extends Controller
             'color_price'
         )->findOrFail($id);
 
-        // Get final price from request (frontend must send 'final_price' as numeric)
         $finalPriceFromRequest = $request->has('final_price') ? (float) $request->final_price : null;
         $measureValue = $request->has('measure_value') ? (string) $request->measure_value : '';
+        $quantity = $request->has('quantity') ? $request->quantity : 1;
 
-        // If frontend didn't pass final price, use product's base price (and possibly apply discount price helper)
         if (is_null($finalPriceFromRequest)) {
-            // Use discountPrice helper if product has discount
             if ($prod->discount > 0) {
                 $finalPriceFromRequest = (float) \App\Helpers\PriceHelper::discountPrice($prod->price, $prod->discount, $prod->discount_type);
             } else {
@@ -138,10 +136,8 @@ class CartController extends Controller
             }
         }
 
-        // Use selected measurement price (front-end should already compute final_price correctly)
         $finalPrice = (float) $finalPriceFromRequest;
 
-        // Assign final price to product instance so later logic uses it
         $prod->price = $finalPrice;
 
         // Validate license quantity
@@ -233,7 +229,7 @@ class CartController extends Controller
         }
 
         // Add to cart (pass finalPrice & measureValue)
-        $cart->add($prod, $prod->id, $size, $color, $keys, $values, $finalPrice, $measureValue);
+        $cart->add($prod, $prod->id, $size, $color, $keys, $values, $finalPrice, $uniqueKey, $measureValue, $quantity);
 
         // Use the same uniqueKey to inspect the cart row
         if ($cart->items[$uniqueKey]['stock'] < 0) {

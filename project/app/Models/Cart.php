@@ -26,7 +26,7 @@ class Cart extends Model
     }
 
     // ************** ADD TO CART *****************
-    public function add($item, $id, $size, $color, $keys, $values, $finalPrice = null, $measureValue = '')
+    public function add($item, $id, $size, $color, $keys, $values, $finalPrice = null, $uniqueKey, $measureValue = '', $quantity)
     {
         $finalPrice = is_null($finalPrice) ? (float) $item->price : (float) $finalPrice;
 
@@ -34,14 +34,14 @@ class Cart extends Model
 
         $priceKey = number_format((float)$finalPrice, 2, '.', '');
 
-        $uniqueKey = implode('_', [
-            $id,
-            $size ?? '',
-            $color ?? '',
-            $valuesKeyPart,
-            $priceKey,
-            str_replace(str_split(' ,'), '', (string)$measureValue)
-        ]);
+        // $uniqueKey = implode('_', [
+        //     $id,
+        //     $size ?? '',
+        //     $color ?? '',
+        //     $valuesKeyPart,
+        //     $priceKey,
+        //     str_replace(str_split(' ,'), '', (string)$measureValue)
+        // ]);
 
         // Default stored item structure
         $storedItem = [
@@ -73,14 +73,15 @@ class Cart extends Model
         }
 
         // increase quantity
-        $storedItem['qty'] = ($storedItem['qty'] ?? 0) + 1;
+
+        $storedItem['qty'] = ($storedItem['qty'] ?? 0) + $quantity;
 
         // decrease stock (if stock is numeric)
         $stck = (string) ($item->stock ?? '');
         if ($stck !== null && $stck !== '') {
             // If stock is numeric, reduce by 1
             if (is_numeric($storedItem['stock'])) {
-                $storedItem['stock'] = $storedItem['stock'] - 1;
+                $storedItem['stock'] = $storedItem['stock'] - $quantity;
             }
         }
 

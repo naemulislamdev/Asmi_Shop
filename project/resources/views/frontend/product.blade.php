@@ -61,15 +61,25 @@
                         <!-- product-info-wrapper  -->
                         <div class="product-info-wrapper  {{ $productt->type != 'Physical' ? 'mb-3' : '' }}">
                             <h3>{{ $productt->name }}</h3>
+                            @php
+                                $basePrice =
+                                    $productt->discount > 0
+                                        ? \App\Helpers\PriceHelper::discountPrice(
+                                            $productt->price,
+                                            $productt->discount,
+                                            $productt->discount_type,
+                                        )
+                                        : $productt->price;
+                            @endphp
                             <div class="price-wrapper mb-3">
                                 @if ($productt->discount > 0)
-                                    <h5 id="sizeprice">
+                                    <h5 class="product-price" data-base-price="{{ $basePrice }}">
                                         {{ \App\Helpers\PriceHelper::discountPrice($productt->price, $productt->discount, $productt->discount_type) }}
                                         ৳
                                     </h5>
                                     <h5><del>{{ $productt->price }} ৳</del></h5>
                                 @else
-                                    <h5 id="sizeprice">{{ $productt->price }} ৳</h5>
+                                    <h5 class="product-price" data-base-price="{{ $basePrice }}">{{ $productt->price }} ৳</h5>
                                 @endif
 
 
@@ -84,6 +94,28 @@
                                         </span>
                                     @endif
                                 @endif
+
+                                @if ($productt->measure)
+                                    <h6 class="measure-product">
+                                        / Per
+                                        <select class="measure-select" data-measure-type="{{ $productt->measure }}">
+                                            @if ($productt->measure == 'KG')
+                                                <option value="1">1kg</option>
+                                                <option value="0.5">500gm</option>
+                                                <option value="0.25">250gm</option>
+                                            @elseif($productt->measure == 'LTR')
+                                                <option value="1">1L</option>
+                                                <option value="0.5">500ml</option>
+                                                <option value="0.25">250ml</option>
+                                            @elseif($productt->measure == 'PCS')
+                                                <option value="1">1p</option>
+                                                <option value="5">5p</option>
+                                                <option value="10">10p</option>
+                                            @endif
+                                        </select>
+                                    </h6>
+                                @endif
+                                    <input type="hidden" id="product-id" data-base-pid="{{ $productt->id }}" value="{{ $productt->id }}">
 
                             </div>
                             @if ($productt->start_date != null && $productt->end_date != null)
@@ -232,8 +264,8 @@
                                                     id="size_{{ $key }}" data-value="{{ $key }}"
                                                     data-key="{{ str_replace(' ', '', $data1) }}"
                                                     data-price="{{ $productt->size_price[$key] * $curr->value }}"
-                                                    data-qty="{{ $productt->size_qty[$key] }}" value="{{ $key }}"
-                                                    name="size">
+                                                    data-qty="{{ $productt->size_qty[$key] }}"
+                                                    value="{{ $key }}" name="size">
                                                 <label for="size_{{ $key }}">{{ $data1 }}</label>
                                             </li>
                                         @endforeach
@@ -321,13 +353,12 @@
                         @else
                             <div class="row row-cols-2">
                                 <div class="col">
-                                    <button type="button" class="template-btn dark-btn w-100" id="addtodetailscart">
+                                    <a href="javascript:;" data-href="{{ route('product.add.to.cart', $productt->id) }}" class="template-btn dark-btn w-100 add_cart_details">
                                         @lang('add to cart')
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="col">
-                                    <button type="button" class="template-btn w-100"
-                                        id="addtobycard">@lang('buy now')</button>
+                                    <button type="button" class="template-btn w-100 buy-now-btn">@lang('buy now')</button>
                                 </div>
                             </div>
                         @endif

@@ -118,53 +118,108 @@
   //modify add to cart logic for cross products
   $.ajaxSetup({
     headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
-});
+  });
   $(document).on("click", ".add_cart_click", function (e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const $btn = $(this);
-  const productId = $btn.data("product-id");
-  const $wrapper = $btn.closest(".single-product");
-  const measureType = $wrapper.find(".measure-select").data("measure-type");
-  const selectedMeasureValue = parseFloat($wrapper.find(".measure-select").val() || 1);
-  const basePrice = parseFloat($wrapper.find(".product-price").data("base-price"));
-  let finalPrice = basePrice;
+    const $btn = $(this);
+    const productId = $btn.data("product-id");
+    const $wrapper = $btn.closest(".single-product");
+    const measureType = $wrapper.find(".measure-select").data("measure-type");
+    const selectedMeasureValue = parseFloat($wrapper.find(".measure-select").val() || 1);
+    const basePrice = parseFloat($wrapper.find(".product-price").data("base-price"));
+    let finalPrice = basePrice;
 
-  // price calculation logic
-  if (measureType === "KG" || measureType === "LTR") {
-    finalPrice = basePrice * selectedMeasureValue;
-  } else if (measureType === "PCS") {
-    finalPrice = basePrice * selectedMeasureValue;
-  }
-  console.log(finalPrice);
+    // price calculation logic
+    if (measureType === "KG" || measureType === "LTR") {
+      finalPrice = basePrice * selectedMeasureValue;
+    } else if (measureType === "PCS") {
+      finalPrice = basePrice * selectedMeasureValue;
+    }
 
-  // send price & measure info via AJAX
-  $.ajax({
-    url: $btn.data("href"),
-    method: "POST",
-    data: {
-      product_id: productId,
-      measure_value: selectedMeasureValue,
-      measure_type: measureType,
-      final_price: finalPrice,
-    },
-    success: function (data) {
-      if (data == "digital") {
-        toastr.error(lang.cart_already);
-      } else if (data[0] == 0) {
-        toastr.error(lang.cart_out);
-      } else {
+    // send price & measure info via AJAX
+    $.ajax({
+      url: $btn.data("href"),
+      method: "POST",
+      data: {
+        product_id: productId,
+        measure_value: selectedMeasureValue,
+        measure_type: measureType,
+        final_price: finalPrice
+      },
+      success: function (data) {
+        if (data == "digital") {
+          toastr.error(lang.cart_already);
+        } else if (data[0] == 0) {
+          toastr.error(lang.cart_out);
+        } else {
+          $("#cart-count").html(data[0]);
+          $("#cart-count1").html(data[0]);
+          $("#total-cost").html(data[1]);
+          $(".cart-popup").load(mainurl + "/carts/view");
+          toastr.success(lang.cart_success);
+        }
+      },
+    });
+  });
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+  $(document).on("click", ".add_cart_details, .buy-now-btn", function (e) {
+    e.preventDefault();
+
+    let productId = $("#product-id").val();
+    let quantity = $("#order-qty").val();
+    const $btn = $(this);
+
+    const measureType = $(".measure-select").data("measure-type");
+    const selectedMeasureValue = parseFloat($(".measure-select").val() || 1);
+    const basePrice = parseFloat($(".product-price").data("base-price"));
+
+    // Calculate price
+    let finalPrice = basePrice * selectedMeasureValue;
+    console.log(finalPrice);
+    
+
+    $.ajax({
+      url: $(".add_cart_details").data("href"), // same add-to-cart route
+      method: "POST",
+      data: {
+        product_id: productId,
+        measure_value: selectedMeasureValue,
+        measure_type: measureType,
+        final_price: finalPrice,
+        quantity: quantity
+      },
+      success: function (data) {
+        if (data == "digital") {
+          return toastr.error(lang.cart_already);
+        }
+
+        if (data[0] == 0) {
+          return toastr.error(lang.cart_out);
+        }
+
+        // Update cart info
         $("#cart-count").html(data[0]);
         $("#cart-count1").html(data[0]);
         $("#total-cost").html(data[1]);
         $(".cart-popup").load(mainurl + "/carts/view");
-        toastr.success(lang.cart_success);
-      }
-    },
+
+        // If BUY NOW clicked → redirect to cart
+        if ($btn.hasClass("buy-now-btn")) {
+          window.location.href = mainurl + "/carts";
+        } else {
+          toastr.success(lang.cart_success);
+        }
+      },
+    });
   });
-});
+
   //End add to cart
 
   $(document).on("click", ".quantity-up", function () {
@@ -256,7 +311,7 @@
             $.get(mainurl + "/carts", function (response) {
               $(".load_cart").html(response);
             });
-            
+
             window.location.reload();
           } else {
             console.log("Quantity less than 1");
@@ -311,159 +366,4 @@
       $("#sizeprice").html(total + sign);
     }
   }
-
-  $(document).on("click", "#addtodetailscart", function (e) {
-    let pid = "";
-    let qty = "";
-    let size_key = "";
-    let size = "";
-    let size_qty = "";
-    let size_price = "";
-    let color = "";
-    let color_price = "";
-    let values = "";
-    let keys = "";
-    let prices = "";
-
-    // get all the input values
-    pid = $("#product_id").val();
-    qty = $("#order-qty").val();
-    size_key = $(".cart_size input:checked").val();
-    size = $(".cart_size input:checked").attr("data-key");
-    size_qty = $(".cart_size input:checked").attr("data-qty");
-    size_price = $(".cart_size input:checked").attr("data-price");
-    color = $(".cart_color input:checked").attr("data-color");
-    color_price = $(".cart_color input:checked").attr("data-price");
-    values = $(".cart_attr:checked")
-      .map(function () {
-        return $(this).val();
-      })
-      .get();
-    keys = $(".cart_attr:checked")
-      .map(function () {
-        return $(this).attr("data-key");
-      })
-      .get();
-    prices = $(".cart_attr:checked")
-      .map(function () {
-        return $(this).attr("data-price");
-      })
-      .get();
-
-    //return true;
-
-    $.ajax({
-      type: "GET",
-      url: mainurl + "/addnumcart",
-      data: {
-        id: pid,
-        qty: qty,
-        size: size,
-        color: color,
-        color_price: color_price,
-        size_qty: size_qty,
-        size_price: size_price,
-        size_key: size_key,
-        keys: keys,
-        values: values,
-        prices: prices,
-      },
-      success: function (data) {
-        if (data == "digital") {
-          toastr.error("Already Added To Cart");
-        } else if (data == 0) {
-          toastr.error("Out Of Stock");
-        } else if (data[3]) {
-          toastr.error(lang.minimum_qty_error + " " + data[4]);
-        } else {
-          $("#cart-count").html(data[0]);
-          $("#cart-count1").html(data[0]);
-          $(".cart-popup").load(mainurl + "/carts/view");
-          $("#cart-items").load(mainurl + "/carts/view");
-          toastr.success("Successfully Added To Cart");
-        }
-      },
-    });
-  });
-
-  $(document).on("click", "#addtobycard", function () {
-    let pid = "";
-    let qty = "";
-    let size_key = "";
-    let size = "";
-    let size_qty = "";
-    let size_price = "";
-    let color = "";
-    let color_price = "";
-    let values = "";
-    let keys = "";
-    let prices = "";
-
-    // get all the input values
-    pid = $("#product_id").val();
-    qty = $("#order-qty").val();
-    size_key = $(".cart_size input:checked").val();
-    size = $(".cart_size input:checked").attr("data-key");
-    size_qty = $(".cart_size input:checked").attr("data-qty");
-    size_price = $(".cart_size input:checked").attr("data-price");
-    color = $(".cart_color input:checked").attr("data-color");
-
-    if (size_key == undefined) {
-      size_key = "";
-    }
-    if (size == undefined) {
-      size = "";
-    }
-    if (size_qty == undefined) {
-      size_qty = "";
-    }
-
-    if (color != undefined) {
-      color = color.replace("#", "");
-    } else {
-      color = "";
-    }
-
-    color_price = $(".cart_color input:checked").attr("data-price");
-    values = $(".cart_attr:checked")
-      .map(function () {
-        return $(this).val();
-      })
-      .get();
-    keys = $(".cart_attr:checked")
-      .map(function () {
-        return $(this).attr("data-key");
-      })
-      .get();
-    prices = $(".cart_attr:checked")
-      .map(function () {
-        return $(this).attr("data-price");
-      })
-      .get();
-
-    window.location =
-      mainurl +
-      "/addtonumcart?id=" +
-      pid +
-      "&qty=" +
-      qty +
-      "&size=" +
-      size +
-      "&color=" +
-      color +
-      "&color_price=" +
-      color_price +
-      "&size_qty=" +
-      size_qty +
-      "&size_price=" +
-      size_price +
-      "&size_key=" +
-      size_key +
-      "&keys=" +
-      keys +
-      "&values=" +
-      values +
-      "&prices=" +
-      prices;
-  });
 })(jQuery);
