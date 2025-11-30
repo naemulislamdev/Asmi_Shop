@@ -195,6 +195,7 @@
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
+    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/customize.css">
 </head>
 
 <body class="overflow-auto" style="overflow: auto !important;">
@@ -208,28 +209,30 @@
     <!-- header area -->
     {{-- @include('includes.frontend.header') --}}
     <header class="header shadow">
-        <!-- Desktop Logo, Menubar, Search Start -->
-        <div class="d-flex align-items-center justify-content-between px-3 container-fluid">
-            <div class="d-flex align-items-center gap-3 logo_Bar">
-                <div id="menu-btn" class="menu-icon active">
-                    <i class="fa-solid fa-bars-staggered"></i>
+        <div class="container-fluid">
+            <!-- Desktop Logo, Menubar, Search Start -->
+            <div class="d-flex align-items-center justify-content-between px-3 container-fluid">
+                <div class="d-flex align-items-center gap-3 logo_Bar">
+                    <div id="menu-btn" class="menu-icon active">
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </div>
+                    <img src="{{ asset('assets/assets/images/icons/logo.png') }}" class="logo" />
                 </div>
-                <img src="./img/logo.png" class="logo" />
-            </div>
 
-            <div class="search-box d-none d-lg-block">
+                <div class="search-box d-none d-lg-block">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search for products (e.g. milk, rice, potato)" />
+                </div>
+
+                <button class="btn login-btn">Login</button>
+            </div>
+            <!-- Desktop Logo, Menubar, Search  End-->
+
+            <!-- mobile search will appear below automatically -->
+            <div class="search-box d-lg-none container">
                 <i class="fas fa-search"></i>
                 <input type="text" placeholder="Search for products (e.g. milk, rice, potato)" />
             </div>
-
-            <button class="btn login-btn">Login</button>
-        </div>
-        <!-- Desktop Logo, Menubar, Search  End-->
-
-        <!-- mobile search will appear below automatically -->
-        <div class="search-box d-lg-none container">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search for products (e.g. milk, rice, potato)" />
         </div>
     </header>
 
@@ -250,13 +253,16 @@
 
         <div class="ps-3">
             <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-                <p class="pb-0 mb-0"><img src="./img/favourites.svg" /> Favourites</p>
+                <p class="pb-0 mb-0"><img src="{{ asset('assets/assets/images/icons/favourites.svg') }}" /> Favourites
+                </p>
             </a>
             <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-                <p class="pb-0 mb-0"><img src="./img/winter-collection.webp" /> Winter Collection</p>
+                <p class="pb-0 mb-0"><img src="{{ asset('assets/assets/images/icons/winter-collection.webp') }}" />
+                    Winter Collection</p>
             </a>
             <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-                <p class="pb-0 mb-0"><img src="./img/flash-sales.webp" /> Flash Sales</p>
+                <p class="pb-0 mb-0"><img src="{{ asset('assets/assets/images/icons/flash-sales.webp') }}" /> Flash
+                    Sales</p>
             </a>
         </div>
 
@@ -293,40 +299,10 @@
 
                                         <!-- Sub accordion for Fruits -->
                                         <div class="accordion" id="fruitsSubAccordion">
-
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#dryFruits">
-                                                        Dry Fruits
-                                                    </button>
-                                                </h2>
-                                                <div id="dryFruits" class="accordion-collapse collapse"
-                                                    data-bs-parent="#fruitsSubAccordion">
-                                                    <div class="accordion-body ms-3">
-                                                        <a href="#">Almond</a><br>
-                                                        <a href="#">Date</a><br>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse" data-bs-target="#freshFruits">
-                                                        Fresh Fruits
-                                                    </button>
-                                                </h2>
-                                                <div id="freshFruits" class="accordion-collapse collapse"
-                                                    data-bs-parent="#fruitsSubAccordion">
-                                                    <div class="accordion-body ms-3">
-                                                        Apple <br>
-                                                        Banana <br>
-                                                        Orange <br>
-                                                        Mango <br>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <ul>
+                                                <li><a href="">Dry Food</a></li>
+                                                <li><a href="">Fresh Fruits</a></li>
+                                            </ul>
 
                                         </div>
                                         <!-- fruitsSubAccordion -->
@@ -617,35 +593,33 @@
     <div class="overlay"></div>
     <!-- Main Content -->
     <main id="main-content" class="main-content">
+
         @yield('content')
+
         <div class="container product-cart-offcanvas position-relative">
             <div class="text-end position-fixed" style="right: 1%; top: 50%">
-                <div class="cart-box anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+
+                <div class="cart-wrapper  anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
                     aria-controls="offcanvasRight">
-                    <div class="text-center p-1"
-                        style="
-                background-color: #fff;
-                padding: 0 !important;
-                border-radius: 114px 122px 0 0;
-              ">
-                        <img style="height: 21px; width: auto" src="./img/bag.png" alt="" />
-                        <p class="mb-0 pb-0 text-dark text-uppercase" style="font-size: 13px; font-weight: bold">
-                            10 Items
-                        </p>
+                    <div class="cart-top">
+                        <img style="height: 21px; width: auto"
+                            src="{{ asset('assets/assets/images/icons/bag.png ') }}" alt="" />
+                        <p>10 ITEMS</p>
                     </div>
-                    <div class="">
-                        <p class="mb-0 pb-0 text-center text-white fw-bold text-uppercase" style="font-size: 13px">
-                            <span class="fw-bolder" style="font-size: 14px">৳</span> 1000
-                        </p>
+
+                    <div class="cart-bottom">
+                        <p><span>৳</span> 1000</p>
                     </div>
                 </div>
+
             </div>
 
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
                 aria-labelledby="offcanvasRightLabel">
                 <div class="offcanvas-header">
                     <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
-                        <img style="height: 40px; width: auto" src="./img/bag.png" alt="" />
+                        <img style="height: 40px; width: auto"
+                            src="{{ asset('assets/assets/images/icons/bag.png ') }}" alt="" />
                         <span class="cart-total-item">100 ITEMS</span>
                     </h5>
 
@@ -971,51 +945,50 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
         integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous">
     </script>
-<script>
-    $(document).ready(function() {
-
-        // ======================
-        // MENU BUTTON TOGGLE
-        // ======================
-        $("#menu-btn").click(function() {
-            if (window.innerWidth < 992) {
-                // Mobile Offcanvas
-                $("#mobile-offcanvas").toggleClass("active");
-            } else {
-                // Desktop Sidebar Toggle
-                $("#sidebar").toggleClass("active");
-
-                if ($("#sidebar").hasClass("active")) {
-                    $("#sidebar").css("left", "0");
-                    $("#main-content").css("margin-left", "230px");
+    <script>
+        $(document).ready(function() {
+            // ======================
+            // MENU BUTTON TOGGLE
+            // ======================
+            $("#menu-btn").click(function() {
+                if (window.innerWidth < 992) {
+                    // Mobile Offcanvas
+                    $("#mobile-offcanvas").toggleClass("active");
                 } else {
-                    $("#sidebar").css("left", "-230px");
-                    $("#main-content").css("margin-left", "0");
+                    // Desktop Sidebar Toggle
+                    $("#sidebar").toggleClass("active");
+
+                    if ($("#sidebar").hasClass("active")) {
+                        $("#sidebar").css("left", "0");
+                        $("#main-content").css("margin-left", "230px");
+                    } else {
+                        $("#sidebar").css("left", "-230px");
+                        $("#main-content").css("margin-left", "0");
+                    }
                 }
-            }
+            });
+
+            // ======================
+            // CATEGORY ACCORDION
+            // ======================
+            $(".cat-link").click(function(e) {
+                e.preventDefault();
+
+                let parent = $(this).parent();
+
+                if (parent.hasClass("open")) {
+                    return;
+                }
+
+                $(".cat-item").removeClass("open");
+                $(".submenu").slideUp(200);
+
+                parent.addClass("open");
+                parent.find(".submenu").slideDown(200);
+            });
+
         });
-
-        // ======================
-        // CATEGORY ACCORDION
-        // ======================
-        $(".cat-link").click(function(e) {
-            e.preventDefault();
-
-            let parent = $(this).parent();
-
-            if (parent.hasClass("open")) {
-                return; // একই item আবার hide হবে না
-            }
-
-            $(".cat-item").removeClass("open");
-            $(".submenu").slideUp(200);
-
-            parent.addClass("open");
-            parent.find(".submenu").slideDown(200);
-        });
-
-    });
-</script>
+    </script>
 
 </body>
 

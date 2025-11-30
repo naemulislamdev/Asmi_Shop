@@ -67,12 +67,14 @@
 
     <!-- hero section start -->
     <section class="hero-slider-wrapper">
-        @foreach ($sliders as $slider)
-            <div class="gs-hero-section">
-                <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
-                    style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
-            </div>
-        @endforeach
+
+            @foreach ($sliders as $slider)
+                <div class="gs-hero-section">
+                    <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
+                        style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
+                </div>
+            @endforeach
+
     </section>
     <!-- hero section end -->
 
@@ -388,9 +390,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>

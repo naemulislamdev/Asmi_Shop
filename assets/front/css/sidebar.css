@@ -1,11 +1,14 @@
+* a {
+    text-decoration: none !important;
+}
 .header {
-  background: #fff;
-  border-bottom: 1px solid #ddd;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 10;
-  padding: 10px 0;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 9999;
+    padding: 10px 0;
 }
 body * {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -599,4 +602,54 @@ body * {
     .logo_Bar {
     gap: 45px !important;
   }
+}
+
+.cart-wrapper {
+    width: 62px;
+    height: 68px;
+    background: #fff;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+/* Top Half */
+.cart-top {
+    height: 63%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.cart-top p {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Bottom Half */
+.cart-bottom {
+    height: 38%;
+    background: #1bb9cb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-bottom p {
+    color: #fff;
+    font-weight: 700;
+    margin: 0;
+    font-size: 12px;
+}
+
+.cart-bottom span {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+
+
+#main-content {
+    overflow-x: hidden;
 }
