@@ -567,7 +567,9 @@ body * {
     z-index: 2;
     background: linear-gradient(to right, #fff 0, #a8eef5 100%) !important;
 }
-
+.sidebar .accordion-body {
+    padding: 0 0;
+}
 
 /* =========================== Responsive ================= */
 

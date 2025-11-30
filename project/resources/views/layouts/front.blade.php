@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/datatables.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/style.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/custom.css">
-    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
+
     <link rel="icon" href="{{ asset('assets/images/' . $gs->favicon) }}">
     @include('includes.frontend.extra_head')
     @yield('css')
@@ -193,10 +193,11 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
 </head>
 
-<body class="overflow-auto" style="overflow: auto !important">
+<body class="overflow-auto" style="overflow: auto !important;">
 
     @php
         $categories = App\Models\Category::with('subs')->where('status', 1)->get();
@@ -234,523 +235,362 @@
 
     <!-- Desktop Sidebar Start -->
     <aside id="sidebar" class="sidebar active pt-4 shadow">
-      <div class="offers-container">
-        <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-          <p class="pb-0 mb-0">
-            Offers <span class="offer-outline-btn">17</span>
-          </p>
-        </a>
-        <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-          <p class="pb-0 mb-0">Egg Club</p>
-        </a>
-      </div>
-      <div class="ps-3">
-        <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-          <p class="pb-0 mb-0">
-            <img src="./img/favourites.svg" alt="" /> Favourites
-          </p>
-        </a>
-        <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-          <p class="pb-0 mb-0">
-            <img src="./img/winter-collection.webp" alt="" /> Winter Collection
-          </p>
-        </a>
-        <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
-          <p class="pb-0 mb-0">
-            <img src="./img/flash-sales.webp" alt="" /> Flash Sales
-          </p>
-        </a>
-      </div>
-      <div class="accordion" id="accordionExample category-menu">
-        <!-- Food -->
-      <div class="accordion-item">
-  <h2 class="accordion-header">
-    <button
-      class="accordion-button collapsed"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#food"
-      aria-expanded="false"
-      aria-controls="food"
-    >
-      Food
-    </button>
-  </h2>
 
-  <div
-    id="food"
-    class="accordion-collapse collapse"
-    data-bs-parent="#accordionExample"
-  >
-    <div class="accordion-body">
+        <!-- Offers Section -->
+        <div class="offers-container">
+            <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
+                <p class="pb-0 mb-0">
+                    Offers <span class="offer-outline-btn">17</span>
+                </p>
+            </a>
+            <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
+                <p class="pb-0 mb-0">Egg Club</p>
+            </a>
+        </div>
 
-      <!-- Sub Accordion Inside Food -->
-      <div class="accordion" id="foodSubAccordion">
+        <div class="ps-3">
+            <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
+                <p class="pb-0 mb-0"><img src="./img/favourites.svg" /> Favourites</p>
+            </a>
+            <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
+                <p class="pb-0 mb-0"><img src="./img/winter-collection.webp" /> Winter Collection</p>
+            </a>
+            <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
+                <p class="pb-0 mb-0"><img src="./img/flash-sales.webp" /> Flash Sales</p>
+            </a>
+        </div>
 
-        <!-- Fruits -->
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingFruits">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#fruits"
-              aria-expanded="false"
-              aria-controls="fruits"
-            >
-              Fruits
-            </button>
-          </h2>
-          <div
-            id="fruits"
-            class="accordion-collapse collapse"
-            data-bs-parent="#foodSubAccordion"
-          >
-            <div class="accordion-body">
+        <!-- MAIN ACCORDION -->
+        <div class="accordion category-menu" id="accordionExample">
 
-              <!-- Sub accordion for fruits -->
-              <div class="accordion" id="fruitsSubAccordion">
-
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button
-                      class="accordion-button collapsed"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#dryFruits"
-                    >
-                      Dry Fruits
+            <!-- Food -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#food" aria-expanded="false">
+                        Food
                     </button>
-                  </h2>
-                  <div
-                    id="dryFruits"
-                    class="accordion-collapse collapse"
-                    data-bs-parent="#fruitsSubAccordion"
-                  >
-                    <div class="accordion-body">
-                      Almonds <br>
-                      Cashew <br>
-                      Walnuts <br>
-                      Raisins <br>
-                    </div>
-                  </div>
-                </div>
+                </h2>
 
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button
-                      class="accordion-button collapsed"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#freshFruits"
-                    >
-                      Fresh Fruits
+                <div id="food" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+
+                        <!-- Food Sub Accordion -->
+                        <div class="accordion" id="foodSubAccordion">
+
+                            <!-- Fruits -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#fruits">
+                                        Fruits
+                                    </button>
+                                </h2>
+
+                                <div id="fruits" class="accordion-collapse collapse"
+                                    data-bs-parent="#foodSubAccordion">
+                                    <div class="accordion-body">
+
+                                        <!-- Sub accordion for Fruits -->
+                                        <div class="accordion" id="fruitsSubAccordion">
+
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="#dryFruits">
+                                                        Dry Fruits
+                                                    </button>
+                                                </h2>
+                                                <div id="dryFruits" class="accordion-collapse collapse"
+                                                    data-bs-parent="#fruitsSubAccordion">
+                                                    <div class="accordion-body ms-3">
+                                                        <a href="#">Almond</a><br>
+                                                        <a href="#">Date</a><br>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="#freshFruits">
+                                                        Fresh Fruits
+                                                    </button>
+                                                </h2>
+                                                <div id="freshFruits" class="accordion-collapse collapse"
+                                                    data-bs-parent="#fruitsSubAccordion">
+                                                    <div class="accordion-body ms-3">
+                                                        Apple <br>
+                                                        Banana <br>
+                                                        Orange <br>
+                                                        Mango <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <!-- fruitsSubAccordion -->
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Fruits End -->
+
+                            <!-- Vegetables -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#vegetables">
+                                        Vegetables
+                                    </button>
+                                </h2>
+                                <div id="vegetables" class="accordion-collapse collapse"
+                                    data-bs-parent="#foodSubAccordion">
+                                    <div class="accordion-body">
+                                        Potatoes <br>
+                                        Onions <br>
+                                        Carrots <br>
+                                        Spinach <br>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Meat -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#meat">
+                                        Meat
+                                    </button>
+                                </h2>
+                                <div id="meat" class="accordion-collapse collapse"
+                                    data-bs-parent="#foodSubAccordion">
+                                    <div class="accordion-body">
+                                        Beef <br>
+                                        Chicken <br>
+                                        Mutton <br>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fish -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#fish">
+                                        Fish
+                                    </button>
+                                </h2>
+                                <div id="fish" class="accordion-collapse collapse"
+                                    data-bs-parent="#foodSubAccordion">
+                                    <div class="accordion-body">
+                                        Hilsa <br>
+                                        Rohu <br>
+                                        Catfish <br>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Eggs -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#eggs">
+                                        Eggs
+                                    </button>
+                                </h2>
+                                <div id="eggs" class="accordion-collapse collapse"
+                                    data-bs-parent="#foodSubAccordion">
+                                    <div class="accordion-body">
+                                        Chicken Eggs <br>
+                                        Duck Eggs <br>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- foodSubAccordion -->
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Baby Food -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#baby">
+                        Baby Food & Care
                     </button>
-                  </h2>
-                  <div
-                    id="freshFruits"
-                    class="accordion-collapse collapse"
-                    data-bs-parent="#fruitsSubAccordion"
-                  >
+                </h2>
+                <div id="baby" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                      Apple <br>
-                      Banana <br>
-                      Orange <br>
-                      Mango <br>
+                        • Baby Formula & Cereal <br>
+                        • Diapers & Wipes <br>
+                        • Baby Lotion & Shampoo
                     </div>
-                  </div>
                 </div>
-
-              </div>
-              <!-- fruitsSubAccordion end -->
-
             </div>
-          </div>
-        </div>
-        <!-- Fruits End -->
 
-        <!-- Vegetables -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#vegetables"
-            >
-              Vegetables
-            </button>
-          </h2>
-          <div
-            id="vegetables"
-            class="accordion-collapse collapse"
-            data-bs-parent="#foodSubAccordion"
-          >
-            <div class="accordion-body">
-              Potatoes <br>
-              Onions <br>
-              Carrots <br>
-              Spinach <br>
+            <!-- Home Cleaning -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#cleaning">
+                        Home Cleaning
+                    </button>
+                </h2>
+                <div id="cleaning" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Dish Wash & Floor Cleaner <br>
+                        • Bathroom & Toilet Cleaner <br>
+                        • Glass & Surface Cleaner
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Meat -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#meat"
-            >
-              Meat
-            </button>
-          </h2>
-          <div
-            id="meat"
-            class="accordion-collapse collapse"
-            data-bs-parent="#foodSubAccordion"
-          >
-            <div class="accordion-body">
-              Beef <br>
-              Chicken <br>
-              Mutton <br>
+            <!-- Beauty & Health -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#beauty">
+                        Beauty & Health
+                    </button>
+                </h2>
+                <div id="beauty" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Skin Care & Face Wash <br>
+                        • Hair Care & Shampoo <br>
+                        • Medicine & Wellness Items
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Fish -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#fish"
-            >
-              Fish
-            </button>
-          </h2>
-          <div
-            id="fish"
-            class="accordion-collapse collapse"
-            data-bs-parent="#foodSubAccordion"
-          >
-            <div class="accordion-body">
-              Hilsa <br>
-              Rohu <br>
-              Catfish <br>
+            <!-- Fashion -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#fashion">
+                        Fashion & Lifestyle
+                    </button>
+                </h2>
+                <div id="fashion" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Men's & Women's Clothing <br>
+                        • Footwear & Bags <br>
+                        • Accessories & Lifestyle Products
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Eggs -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#eggs"
-            >
-              Eggs
-            </button>
-          </h2>
-          <div
-            id="eggs"
-            class="accordion-collapse collapse"
-            data-bs-parent="#foodSubAccordion"
-          >
-            <div class="accordion-body">
-              Chicken Eggs <br>
-              Duck Eggs <br>
+            <!-- Home & Kitchen -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#kitchen">
+                        Home & Kitchen
+                    </button>
+                </h2>
+                <div id="kitchen" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Kitchen Tools <br>
+                        • Storage <br>
+                        • Home Essentials
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-      </div>
-      <!-- foodSubAccordion end -->
-
-    </div>
-  </div>
-</div>
-
-
-        <!-- Baby Food & Care -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#baby"
-              aria-expanded="false"
-              aria-controls="baby"
-            >
-              Baby Food & Care
-            </button>
-          </h2>
-          <div
-            id="baby"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Baby Formula & Cereal <br />
-              • Diapers & Wipes <br />
-              • Baby Lotion & Shampoo
+            <!-- Stationaries -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#stationaries">
+                        Stationaries
+                    </button>
+                </h2>
+                <div id="stationaries" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Office <br>
+                        • Books <br>
+                        • Pens
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Home Cleaning -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#cleaning"
-              aria-expanded="false"
-              aria-controls="cleaning"
-            >
-              Home Cleaning
-            </button>
-          </h2>
-          <div
-            id="cleaning"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Dish Wash & Floor Cleaner <br />
-              • Bathroom & Toilet Cleaner <br />
-              • Glass & Surface Cleaner
+            <!-- Toys -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#toys">
+                        Toys & Sports
+                    </button>
+                </h2>
+                <div id="toys" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Kids Toys <br>
+                        • Outdoor <br>
+                        • Fitness Gadgets
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Beauty & Health -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#beauty"
-              aria-expanded="false"
-              aria-controls="beauty"
-            >
-              Beauty & Health
-            </button>
-          </h2>
-          <div
-            id="beauty"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Skin Care & Face Wash <br />
-              • Hair Care & Shampoo <br />
-              • Medicine & Wellness Items
+            <!-- Gadgets -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#gadgets">
+                        Gadgets
+                    </button>
+                </h2>
+                <div id="gadgets" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Headphones <br>
+                        • Smart Watches <br>
+                        • Mobile Gadgets
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Fashion & Lifestyle -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#fashion"
-              aria-expanded="false"
-              aria-controls="fashion"
-            >
-              Fashion & Lifestyle
-            </button>
-          </h2>
-          <div
-            id="fashion"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Men's & Women's Clothing <br />
-              • Footwear & Bags <br />
-              • Accessories & Lifestyle Products
+            <!-- Grocery -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#grocery">
+                        Grocery
+                    </button>
+                </h2>
+                <div id="grocery" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        • Daily Essentials & Dry Foods <br>
+                        • Beverages & Snacks <br>
+                        • Household Grocery Items
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Home & Kitchen -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#kitchen"
-              aria-expanded="false"
-              aria-controls="kitchen"
-            >
-              Home & Kitchen
-            </button>
-          </h2>
-          <div
-            id="kitchen"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Kitchen Tools <br />
-              • Storage <br />
-              • Home Essentials
-            </div>
-          </div>
         </div>
-
-        <!-- Stationaries -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#stationaries"
-              aria-expanded="false"
-              aria-controls="stationaries"
-            >
-              Stationaries
-            </button>
-          </h2>
-          <div
-            id="stationaries"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Office <br />
-              • Books <br />
-              • Pens
-            </div>
-          </div>
-        </div>
-
-        <!-- Toys & Sports -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#toys"
-              aria-expanded="false"
-              aria-controls="toys"
-            >
-              Toys & Sports
-            </button>
-          </h2>
-          <div
-            id="toys"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Kids Toys <br />
-              • Outdoor <br />
-              • Fitness Gadgets
-            </div>
-          </div>
-        </div>
-
-        <!-- Gadgets -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#gadgets"
-              aria-expanded="false"
-              aria-controls="gadgets"
-            >
-              Gadgets
-            </button>
-          </h2>
-          <div
-            id="gadgets"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Headphones <br />
-              • Smart Watches <br />
-              • Mobile Gadgets
-            </div>
-          </div>
-        </div>
-
-        <!-- Grocery -->
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#grocery"
-              aria-expanded="false"
-              aria-controls="grocery"
-            >
-              Grocery
-            </button>
-          </h2>
-          <div
-            id="grocery"
-            class="accordion-collapse collapse"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              • Daily Essentials & Dry Foods <br />
-              • Beverages & Snacks <br />
-              • Household Grocery Items
-            </div>
-          </div>
-        </div>
-      </div>
     </aside>
     <!-- Desktop Sidebar End -->
 
+
     <!-- Mobile Offcanvas Start-->
     <div id="mobile-offcanvas" class="mobile-offcanvas shadow">
-      <div class="accordion" id="accordionExample">
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOne">
-            <button
-              class="accordion-button"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseOne"
-              aria-expanded="true"
-              aria-controls="collapseOne"
-            >
-              Accordion Item #1
-            </button>
-          </h2>
-          <div
-            id="collapseOne"
-            class="accordion-collapse collapse show"
-            aria-labelledby="headingOne"
-            data-bs-parent="#accordionExample"
-          >
-            <div class="accordion-body">
-              This is the first item's accordion body.
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Accordion Item #1
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        This is the first item's accordion body.
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
     <!-- Mobile Offcanvas End-->
 
@@ -775,186 +615,152 @@
 
 
     <div class="overlay"></div>
+    <!-- Main Content -->
     <main id="main-content" class="main-content">
         @yield('content')
         <div class="container product-cart-offcanvas position-relative">
-        <div class="text-end position-fixed" style="right: 1%; top: 50%">
-          <div
-            class="cart-box anim"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight"
-            aria-controls="offcanvasRight"
-          >
-            <div
-              class="text-center p-1"
-              style="
+            <div class="text-end position-fixed" style="right: 1%; top: 50%">
+                <div class="cart-box anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+                    aria-controls="offcanvasRight">
+                    <div class="text-center p-1"
+                        style="
                 background-color: #fff;
                 padding: 0 !important;
                 border-radius: 114px 122px 0 0;
-              "
-            >
-              <img
-                style="height: 21px; width: auto"
-                src="./img/bag.png"
-                alt=""
-              />
-              <p
-                class="mb-0 pb-0 text-dark text-uppercase"
-                style="font-size: 13px; font-weight: bold"
-              >
-                10 Items
-              </p>
+              ">
+                        <img style="height: 21px; width: auto" src="./img/bag.png" alt="" />
+                        <p class="mb-0 pb-0 text-dark text-uppercase" style="font-size: 13px; font-weight: bold">
+                            10 Items
+                        </p>
+                    </div>
+                    <div class="">
+                        <p class="mb-0 pb-0 text-center text-white fw-bold text-uppercase" style="font-size: 13px">
+                            <span class="fw-bolder" style="font-size: 14px">৳</span> 1000
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="">
-              <p
-                class="mb-0 pb-0 text-center text-white fw-bold text-uppercase"
-                style="font-size: 13px"
-              >
-                <span class="fw-bolder" style="font-size: 14px">৳</span> 1000
-              </p>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
+                aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
+                        <img style="height: 40px; width: auto" src="./img/bag.png" alt="" />
+                        <span class="cart-total-item">100 ITEMS</span>
+                    </h5>
+
+                    <button type="button" class="close-text-btn btn border-2 btn-outline-light"
+                        data-bs-dismiss="offcanvas">
+                        Close
+                    </button>
+                </div>
+                <div class="offcanvas-body p-0">
+                    <!-- Free Delivery info Message -->
+                    <div class="alert py-1 px-0 my-0 alert-success rounded-0" role="alert">
+                        <strong style="font-size: 12px; padding-left: 5px">Free Home Delivery on orders over
+                            ৳1000!</strong>
+                        <i class="fas fa-info-circle ms-2 d-inline-block"></i>
+                    </div>
+                    <!-- Super Express Delivery -->
+                    <div style="background-color: #eee" class="p-1">
+                        <img style="height: 30px; width: auto" src="./img/fast-delivery.png" alt="fast delivery" />
+                        <strong style="font-size: 13px; margin-left: 8px">Super Express Delivery</strong>
+                    </div>
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- cart footer start -->
+                    <button class="order-btn">
+                        <span class="order-text">Place Order</span>
+                        <span class="order-price">৳ 1,545</span>
+                    </button>
+
+                    <!-- cart footer end -->
+                </div>
+                <div class="left-close">
+                    <button data-bs-dismiss="offcanvas" title="close">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
-          </div>
         </div>
+        <!-- cart offcanvas End -->
 
-        <div
-          class="offcanvas offcanvas-end"
-          tabindex="-1"
-          id="offcanvasRight"
-          aria-labelledby="offcanvasRightLabel"
-        >
-          <div class="offcanvas-header">
-            <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
-              <img
-                style="height: 40px; width: auto"
-                src="./img/bag.png"
-                alt=""
-              />
-              <span class="cart-total-item">100 ITEMS</span>
-            </h5>
-
-            <button
-              type="button"
-              class="close-text-btn btn border-2 btn-outline-light"
-              data-bs-dismiss="offcanvas"
-            >
-              Close
-            </button>
-          </div>
-          <div class="offcanvas-body p-0">
-            <!-- Free Delivery info Message -->
-            <div
-              class="alert py-1 px-0 my-0 alert-success rounded-0"
-              role="alert"
-            >
-              <strong style="font-size: 12px; padding-left: 5px"
-                >Free Home Delivery on orders over ৳1000!</strong
-              >
-              <i class="fas fa-info-circle ms-2 d-inline-block"></i>
-            </div>
-            <!-- Super Express Delivery -->
-            <div style="background-color: #eee" class="p-1">
-              <img
-                style="height: 30px; width: auto"
-                src="./img/fast-delivery.png"
-                alt="fast delivery"
-              />
-              <strong style="font-size: 13px; margin-left: 8px"
-                >Super Express Delivery</strong
-              >
-            </div>
-            <!-- Cart Items Start  -->
-            <div class="cart-item border-bottom">
-              <!-- Quantity -->
-              <div class="item-qty">
-                <button class="qty-btn">
-                  <i class="fa-solid fa-chevron-up"></i>
-                </button>
-                <p>1</p>
-                <button class="qty-btn">
-                  <i class="fa-solid fa-chevron-down"></i>
-                </button>
-              </div>
-
-              <!-- Product Image -->
-              <div class="item-img">
-                <img src="./img/eggs.webp" alt="" />
-              </div>
-
-              <!-- Title + Measure -->
-              <div class="item-info">
-                <h6>Chicken Eggs (Discounted)</h6>
-                <p class="item-measure">৳115 / 12 pcs</p>
-              </div>
-
-              <!-- Price -->
-              <div class="item-price">
-                <p class="old">৳125</p>
-                <p class="new">৳115</p>
-              </div>
-
-              <!-- Remove -->
-              <div class="item-remove">
-                <button><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </div>
-            <!-- Cart Items end -->
-            <!-- Cart Items Start  -->
-            <div class="cart-item border-bottom">
-              <!-- Quantity -->
-              <div class="item-qty">
-                <button class="qty-btn">
-                  <i class="fa-solid fa-chevron-up"></i>
-                </button>
-                <p>1</p>
-                <button class="qty-btn">
-                  <i class="fa-solid fa-chevron-down"></i>
-                </button>
-              </div>
-
-              <!-- Product Image -->
-              <div class="item-img">
-                <img src="./img/eggs.webp" alt="" />
-              </div>
-
-              <!-- Title + Measure -->
-              <div class="item-info">
-                <h6>Chicken Eggs (Discounted)</h6>
-                <p class="item-measure">৳115 / 12 pcs</p>
-              </div>
-
-              <!-- Price -->
-              <div class="item-price">
-                <p class="old">৳125</p>
-                <p class="new">৳115</p>
-              </div>
-
-              <!-- Remove -->
-              <div class="item-remove">
-                <button><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </div>
-            <!-- Cart Items end -->
-            <!-- cart footer start -->
-            <button class="order-btn">
-              <span class="order-text">Place Order</span>
-              <span class="order-price">৳ 1,545</span>
-            </button>
-
-            <!-- cart footer end -->
-          </div>
-          <div class="left-close">
-            <button data-bs-dismiss="offcanvas" title="close">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- cart offcanvas End -->
-
-       <!-- footer section -->
-    @include('includes.frontend.footer')
-    <!-- footer section -->
+        <!-- footer section -->
+        @include('includes.frontend.footer')
+        <!-- footer section -->
     </main>
+
+
 
     <!--Esential Js Files-->
     <script src="{{ asset('assets/front') }}/js/jquery.min.js"></script>
@@ -1158,49 +964,59 @@
             });
         });
     </script>
-
-    <script>
-        $(document).ready(function () {
-  $("#menu-btn").click(function () {
-    if (window.innerWidth < 992) {
-      // Mobile Offcanvas
-      $("#mobile-offcanvas").toggleClass("active");
-    } else {
-      // Desktop Sidebar Toggle
-      $("#sidebar").toggleClass("active");
-
-      if ($("#sidebar").hasClass("active")) {
-        $("#sidebar").css("left", "0");
-        $("#main-content").css("margin-left", "230px");
-      } else {
-        $("#sidebar").css("left", "-230px");
-        $("#main-content").css("margin-left", "0");
-      }
-    }
-  });
-});
-
-// accordion
-$(document).ready(function () {
-  $(".cat-link").click(function (e) {
-    e.preventDefault();
-
-    let parent = $(this).parent();
-
-    if (parent.hasClass("open")) {
-      return; // same item click করলে hide হবে না
-    }
-
-    $(".cat-item").removeClass("open");
-    $(".submenu").slideUp(200);
-
-    parent.addClass("open");
-    parent.find(".submenu").slideDown(200);
-  });
-});
-
-
+    <!-- include bootstrap js cdn -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous">
+    </script>
+<script>
+    $(document).ready(function() {
+
+        // ======================
+        // MENU BUTTON TOGGLE
+        // ======================
+        $("#menu-btn").click(function() {
+            if (window.innerWidth < 992) {
+                // Mobile Offcanvas
+                $("#mobile-offcanvas").toggleClass("active");
+            } else {
+                // Desktop Sidebar Toggle
+                $("#sidebar").toggleClass("active");
+
+                if ($("#sidebar").hasClass("active")) {
+                    $("#sidebar").css("left", "0");
+                    $("#main-content").css("margin-left", "230px");
+                } else {
+                    $("#sidebar").css("left", "-230px");
+                    $("#main-content").css("margin-left", "0");
+                }
+            }
+        });
+
+        // ======================
+        // CATEGORY ACCORDION
+        // ======================
+        $(".cat-link").click(function(e) {
+            e.preventDefault();
+
+            let parent = $(this).parent();
+
+            if (parent.hasClass("open")) {
+                return; // একই item আবার hide হবে না
+            }
+
+            $(".cat-item").removeClass("open");
+            $(".submenu").slideUp(200);
+
+            parent.addClass("open");
+            parent.find(".submenu").slideDown(200);
+        });
+
+    });
+</script>
+
 </body>
 
 </html>
