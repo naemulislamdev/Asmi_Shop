@@ -78,7 +78,7 @@
 
     <!-- categories section start -->
     <div class="gs-cate-section ">
-        <div class="container wow-replaced">
+        <div class="container-fluid wow-replaced">
             <div class="home-cate-slider">
                 @foreach ($featured_categories as $fcategory)
                     <div class="col-lg-2">
