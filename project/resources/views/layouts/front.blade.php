@@ -216,7 +216,9 @@
                     <div id="menu-btn" class="menu-icon active">
                         <i class="fa-solid fa-bars-staggered"></i>
                     </div>
-                    <img src="{{ asset('assets/assets/images/icons/logo.png') }}" class="logo" />
+                    <a href="{{ route('front.index') }}">
+                        <img src="{{ asset('assets/images/' . $gs->logo) }}" class="logo" />
+                    </a>
                 </div>
 
                 <div class="search-box d-none d-lg-block">
@@ -267,284 +269,95 @@
         </div>
 
         <!-- MAIN ACCORDION -->
-        <div class="accordion category-menu" id="accordionExample">
+        <div class="product-cat-widget">
+            <ul class="accordion">
+                @foreach ($categories as $category)
+                    @if ($category->subs->count() > 0)
+                        <li>
+                            @php
+                                $isCategoryActive = Request::segment(2) === $category->slug;
+                            @endphp
+                            <div class="d-flex justify-content-between align-items-lg-baseline">
+                                <a href="{{ route('front.category', $category->slug) }}"
+                                    class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}">
+                                    {{ $category->name }}
+                                </a>
 
-            <!-- Food -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#food" aria-expanded="false">
-                        Food
-                    </button>
-                </h2>
+                                <button data-bs-toggle="collapse" data-bs-target="#{{ $category->slug }}_level_2"
+                                    aria-controls="{{ $category->slug }}_level_2"
+                                    aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
+                                    class="{{ $isCategoryActive ? '' : 'collapsed' }}">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                            </div>
 
-                <div id="food" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
+                            @foreach ($category->subs as $subcategory)
+                                @php
+                                    $isSubcategoryActive =
+                                        $isCategoryActive && Request::segment(3) === $subcategory->slug;
+                                @endphp
+                                <ul id="{{ $category->slug }}_level_2"
+                                    class="accordion-collapse collapse ms-3 {{ $isCategoryActive ? 'show' : '' }}">
+                                    <li class="">
+                                        <div class="d-flex justify-content-between align-items-lg-baseline">
+                                            <a href="{{ route('front.category', [$category->slug, $subcategory->slug]) }}"
+                                                class="{{ $isSubcategoryActive ? 'sidebar-active-color' : '' }} "
+                                                @if ($subcategory->childs->count() > 0) data-bs-toggle="collapse"
+                                                                   data-bs-target="#inner{{ $subcategory->slug }}_level_2_1"
+                                                                   aria-controls="inner{{ $subcategory->slug }}_level_2_1"
+                                                                   aria-expanded="{{ $isSubcategoryActive ? 'true' : 'false' }}"
+                                                                   class="{{ $isSubcategoryActive ? '' : 'collapsed' }}" @endif>
+                                                {{ $subcategory->name }}
+                                            </a>
 
-                        <!-- Food Sub Accordion -->
-                        <div class="accordion" id="foodSubAccordion">
-
-                            <!-- Fruits -->
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#fruits">
-                                        Fruits
-                                    </button>
-                                </h2>
-
-                                <div id="fruits" class="accordion-collapse collapse"
-                                    data-bs-parent="#foodSubAccordion">
-                                    <div class="accordion-body">
-
-                                        <!-- Sub accordion for Fruits -->
-                                        <div class="accordion" id="fruitsSubAccordion">
-                                            <ul>
-                                                <li><a href="">Dry Food</a></li>
-                                                <li><a href="">Fresh Fruits</a></li>
-                                            </ul>
-
+                                            @if ($subcategory->childs->count() > 0)
+                                                <button data-bs-toggle="collapse"
+                                                    data-bs-target="#inner{{ $subcategory->slug }}_level_2_1"
+                                                    aria-controls="inner{{ $subcategory->slug }}_level_2_1"
+                                                    aria-expanded="{{ $isSubcategoryActive ? 'true' : 'false' }}"
+                                                    class="{{ $isSubcategoryActive ? '' : 'collapsed' }}">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                    <i class="fa-solid fa-minus"></i>
+                                                </button>
+                                            @endif
                                         </div>
-                                        <!-- fruitsSubAccordion -->
 
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Fruits End -->
+                                        @if ($subcategory->childs->count() > 0)
+                                            <ul id="inner{{ $subcategory->slug }}_level_2_1"
+                                                class="accordion-collapse collapse ms-3 {{ $isSubcategoryActive ? 'show' : '' }}">
+                                                @foreach ($subcategory->childs as $child)
+                                                    @php
+                                                        $isChildActive =
+                                                            $isSubcategoryActive &&
+                                                            Request::segment(4) === $child->slug;
+                                                    @endphp
+                                                    <li>
+                                                        <a href="{{ route('front.category', [$category->slug, $subcategory->slug, $child->slug]) }}"
+                                                            class="{{ $isChildActive ? 'sidebar-active-color' : '' }}">
+                                                            {{ $child->name }}
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </li>
+                                </ul>
+                            @endforeach
 
-                            <!-- Vegetables -->
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#vegetables">
-                                        Vegetables
-                                    </button>
-                                </h2>
-                                <div id="vegetables" class="accordion-collapse collapse"
-                                    data-bs-parent="#foodSubAccordion">
-                                    <div class="accordion-body">
-                                        Potatoes <br>
-                                        Onions <br>
-                                        Carrots <br>
-                                        Spinach <br>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Meat -->
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#meat">
-                                        Meat
-                                    </button>
-                                </h2>
-                                <div id="meat" class="accordion-collapse collapse"
-                                    data-bs-parent="#foodSubAccordion">
-                                    <div class="accordion-body">
-                                        Beef <br>
-                                        Chicken <br>
-                                        Mutton <br>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Fish -->
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#fish">
-                                        Fish
-                                    </button>
-                                </h2>
-                                <div id="fish" class="accordion-collapse collapse"
-                                    data-bs-parent="#foodSubAccordion">
-                                    <div class="accordion-body">
-                                        Hilsa <br>
-                                        Rohu <br>
-                                        Catfish <br>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Eggs -->
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#eggs">
-                                        Eggs
-                                    </button>
-                                </h2>
-                                <div id="eggs" class="accordion-collapse collapse"
-                                    data-bs-parent="#foodSubAccordion">
-                                    <div class="accordion-body">
-                                        Chicken Eggs <br>
-                                        Duck Eggs <br>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <!-- foodSubAccordion -->
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- Baby Food -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#baby">
-                        Baby Food & Care
-                    </button>
-                </h2>
-                <div id="baby" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Baby Formula & Cereal <br>
-                        • Diapers & Wipes <br>
-                        • Baby Lotion & Shampoo
-                    </div>
-                </div>
-            </div>
-
-            <!-- Home Cleaning -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#cleaning">
-                        Home Cleaning
-                    </button>
-                </h2>
-                <div id="cleaning" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Dish Wash & Floor Cleaner <br>
-                        • Bathroom & Toilet Cleaner <br>
-                        • Glass & Surface Cleaner
-                    </div>
-                </div>
-            </div>
-
-            <!-- Beauty & Health -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#beauty">
-                        Beauty & Health
-                    </button>
-                </h2>
-                <div id="beauty" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Skin Care & Face Wash <br>
-                        • Hair Care & Shampoo <br>
-                        • Medicine & Wellness Items
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fashion -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#fashion">
-                        Fashion & Lifestyle
-                    </button>
-                </h2>
-                <div id="fashion" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Men's & Women's Clothing <br>
-                        • Footwear & Bags <br>
-                        • Accessories & Lifestyle Products
-                    </div>
-                </div>
-            </div>
-
-            <!-- Home & Kitchen -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#kitchen">
-                        Home & Kitchen
-                    </button>
-                </h2>
-                <div id="kitchen" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Kitchen Tools <br>
-                        • Storage <br>
-                        • Home Essentials
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stationaries -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#stationaries">
-                        Stationaries
-                    </button>
-                </h2>
-                <div id="stationaries" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Office <br>
-                        • Books <br>
-                        • Pens
-                    </div>
-                </div>
-            </div>
-
-            <!-- Toys -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#toys">
-                        Toys & Sports
-                    </button>
-                </h2>
-                <div id="toys" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Kids Toys <br>
-                        • Outdoor <br>
-                        • Fitness Gadgets
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gadgets -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#gadgets">
-                        Gadgets
-                    </button>
-                </h2>
-                <div id="gadgets" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Headphones <br>
-                        • Smart Watches <br>
-                        • Mobile Gadgets
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grocery -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#grocery">
-                        Grocery
-                    </button>
-                </h2>
-                <div id="grocery" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        • Daily Essentials & Dry Foods <br>
-                        • Beverages & Snacks <br>
-                        • Household Grocery Items
-                    </div>
-                </div>
-            </div>
-
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ route('front.category', $category->slug) }}"
+                                class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
+                                {{ $category->name }}
+                            </a>
+                        </li>
+                    @endif
+                @endforeach
+            </ul>
         </div>
+
     </aside>
     <!-- Desktop Sidebar End -->
 
@@ -598,17 +411,21 @@
 
         <div class="container product-cart-offcanvas position-relative">
             <div class="text-end position-fixed" style="right: 1%; top: 50%">
+                @php
+                    $cartObject = Session::has('cart') ? Session::get('cart') : null;
+                    $cartItems = $cartObject ? $cartObject->items : [];
+                @endphp
 
                 <div class="cart-wrapper  anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
                     aria-controls="offcanvasRight">
                     <div class="cart-top">
                         <img style="height: 21px; width: auto"
                             src="{{ asset('assets/assets/images/icons/bag.png ') }}" alt="" />
-                        <p>10 ITEMS</p>
+                        <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Item</p>
                     </div>
 
                     <div class="cart-bottom">
-                        <p><span>৳</span> 1000</p>
+                        <p>৳ <span class="total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span></p>
                     </div>
                 </div>
 
@@ -620,7 +437,8 @@
                     <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
                         <img style="height: 40px; width: auto"
                             src="{{ asset('assets/assets/images/icons/bag.png ') }}" alt="" />
-                        <span class="cart-total-item">100 ITEMS</span>
+                        <span class="cart-total-item"><span
+                                class="cart-count">{{ $cartItems ? count($cartItems) : 0 }} </span> ITEMS</span>
                     </h5>
 
                     <button type="button" class="close-text-btn btn border-2 btn-outline-light"
@@ -641,84 +459,64 @@
                         <strong style="font-size: 13px; margin-left: 8px">Super Express Delivery</strong>
                     </div>
                     <!-- Cart Items Start  -->
-                    <div class="cart-item border-bottom">
-                        <!-- Quantity -->
-                        <div class="item-qty">
-                            <button class="qty-btn">
-                                <i class="fa-solid fa-chevron-up"></i>
-                            </button>
-                            <p>1</p>
-                            <button class="qty-btn">
-                                <i class="fa-solid fa-chevron-down"></i>
-                            </button>
-                        </div>
+                        @php
+                            $discount = 0;
+                        @endphp
+                        @if ($cartItems)
+                            @foreach ($cartItems as $cartItem)
+                                <div class="cart-item border-bottom">
+                                    <!-- Quantity -->
+                                    <div class="item-qty">
+                                        <button class="qty-btn">
+                                            <i class="fa-solid fa-chevron-up"></i>
+                                        </button>
+                                        <p>{{ $cartItem['qty'] }}</p>
+                                        <button class="qty-btn">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    </div>
 
-                        <!-- Product Image -->
-                        <div class="item-img">
-                            <img src="./img/eggs.webp" alt="" />
-                        </div>
+                                    <!-- Product Image -->
+                                    <div class="item-img">
+                                        <img src="{{ $cartItem['item']['photo'] ? asset('assets/images/products/' . $cartItem['item']['photo']) : asset('assets/images/noimage.png') }}"
+                                            alt="" />
+                                    </div>
 
-                        <!-- Title + Measure -->
-                        <div class="item-info">
-                            <h6>Chicken Eggs (Discounted)</h6>
-                            <p class="item-measure">৳115 / 12 pcs</p>
-                        </div>
+                                    <!-- Title + Measure -->
+                                    <div class="item-info">
+                                        <h6>{{ mb_strlen($cartItem['item']['name'], 'UTF-8') > 35
+                                            ? mb_substr($cartItem['item']['name'], 0, 35, 'UTF-8') . '...'
+                                            : $cartItem['item']['name'] }}
+                                        </h6>
+                                        <p class="item-measure">
+                                            {{ App\Models\Product::convertPrice($cartItem['item_price']) }} per {{ $cartItem['item']['measure'] }} </p>
+                                    </div>
 
-                        <!-- Price -->
-                        <div class="item-price">
-                            <p class="old">৳125</p>
-                            <p class="new">৳115</p>
-                        </div>
+                                    <!-- Price -->
+                                    <div class="item-price">
+                                        @if($cartItem['item']['discount'] > 0)
+                                        <p class="old">{{ $cartItem['item']['discount'] }}</p>
+                                        <p class="new">{{ $cartItem['item']['price'] }}</p>
+                                        @else
+                                        <p class="new">{{ $cartItem['item']['price'] }}</p>
+                                        @endif
+                                    </div>
+                                    <!-- Remove -->
+                                    <div class="item-remove">
+                                        <a href="{{ route('product.cart.remove', $cartItem['unique_key']) }}"><i class="fa-solid fa-xmark"></i></a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                        <!-- Cart Items end -->
 
-                        <!-- Remove -->
-                        <div class="item-remove">
-                            <button><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                    </div>
-                    <!-- Cart Items end -->
-                    <!-- Cart Items Start  -->
-                    <div class="cart-item border-bottom">
-                        <!-- Quantity -->
-                        <div class="item-qty">
-                            <button class="qty-btn">
-                                <i class="fa-solid fa-chevron-up"></i>
-                            </button>
-                            <p>1</p>
-                            <button class="qty-btn">
-                                <i class="fa-solid fa-chevron-down"></i>
-                            </button>
-                        </div>
-
-                        <!-- Product Image -->
-                        <div class="item-img">
-                            <img src="./img/eggs.webp" alt="" />
-                        </div>
-
-                        <!-- Title + Measure -->
-                        <div class="item-info">
-                            <h6>Chicken Eggs (Discounted)</h6>
-                            <p class="item-measure">৳115 / 12 pcs</p>
-                        </div>
-
-                        <!-- Price -->
-                        <div class="item-price">
-                            <p class="old">৳125</p>
-                            <p class="new">৳115</p>
-                        </div>
-
-                        <!-- Remove -->
-                        <div class="item-remove">
-                            <button><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                    </div>
-                    <!-- Cart Items end -->
-                    <!-- cart footer start -->
-                    <button class="order-btn">
-                        <span class="order-text">Place Order</span>
-                        <span class="order-price">৳ 1,545</span>
-                    </button>
-
-                    <!-- cart footer end -->
+                        <!-- Cart Items end -->
+                        <!-- cart footer start -->
+                        <button class="order-btn">
+                            <span class="order-text">Place Order</span>
+                            <span class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
+                        </button>
+                        <!-- cart footer end -->
                 </div>
                 <div class="left-close">
                     <button data-bs-dismiss="offcanvas" title="close">
@@ -791,7 +589,7 @@
         }
     @endphp
     <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
+    {{-- --<script type="text/javascript">
         var Tawk_API = Tawk_API || {},
             Tawk_LoadStart = new Date();
         (function() {
@@ -803,7 +601,7 @@
             s1.setAttribute('crossorigin', '*');
             s0.parentNode.insertBefore(s1, s0);
         })();
-    </script>
+    </script>--- --}}
     <!--End of Tawk.to Script-->
 
     @yield('script')
@@ -939,12 +737,6 @@
         });
     </script>
     <!-- include bootstrap js cdn -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous">
-    </script>
     <script>
         $(document).ready(function() {
             // ======================

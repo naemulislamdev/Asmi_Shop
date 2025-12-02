@@ -244,6 +244,7 @@ class CartController extends Controller
         // Save back to session
         Session::put('cart', $cart);
         $data[0] = count($cart->items);
+        $data[1] = $cart->totalPrice;
         return response()->json($data);
     }
 

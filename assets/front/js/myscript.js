@@ -155,9 +155,12 @@
         } else if (data[0] == 0) {
           toastr.error(lang.cart_out);
         } else {
-          $("#cart-count").html(data[0]);
-          $("#cart-count1").html(data[0]);
-          $("#total-cost").html(data[1]);
+          console.log(data);
+          
+          $(".cart-count").html(data[0]);
+          //$("#cart-count1").html(data[0]);
+          //$("#total-cost").html(data[1]);
+          $(".total_price").html(data[1]);
           $(".cart-popup").load(mainurl + "/carts/view");
           toastr.success(lang.cart_success);
         }
