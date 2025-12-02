@@ -1354,7 +1354,7 @@ p.text-lg {
   -ms-flex-align: center;
   align-items: center;
   position: absolute;
-  top: 16px;
+  top: 0;
   z-index: 5;
 }
 .single-product .img-wrapper .product-badge,
@@ -1365,7 +1365,8 @@ p.text-lg {
   gap: 10px;
   background-color: #1f0300;
   color: #ffffff;
-  left: 16px;
+  left: 0 !important;
+  top: 0 !important;
   font-family: "Poppins", sans-serif;
   font-size: 14px;
 }
@@ -13004,4 +13005,7 @@ ul.tagit li.tagit-choice .tagit-close {
 
 .template-btn.unique_btn:hover {
   background-color: #F8E080;
+}
+.single-product  {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }

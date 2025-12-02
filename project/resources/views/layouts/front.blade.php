@@ -41,11 +41,12 @@
 
         .single-product .content-wrapper,
         .single-product-list-view .content-wrapper {
-            height: 123px;
-            background: #f5f5f5;
+            height: auto;
+            background: #ffff;
             border-bottom-left-radius: 12px;
             border-bottom-right-radius: 12px;
             padding: 14px 13px !important;
+
         }
 
         .gs-breadcrumb-section {
@@ -158,8 +159,8 @@
             width: 70px;
             padding: 3px 6px;
             border-radius: 4px;
-            background: #cf3f00;
-            font-size: 14px;
+            background: #1bb9cb;
+            font-size: 12px;
             font-weight: 600;
         }
 
@@ -178,8 +179,8 @@
 
         .outofstock-box h5 {
             color: #fff;
-            font-size: 20px;
-            background: #cf3f00;
+            font-size: 16px;
+            background: #eb4d4b;
             padding: 5px 10px;
             border-radius: 5px;
         }
@@ -191,6 +192,15 @@
             padding: 5px 5px;
             min-width: 80px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .single-product {
+            border: 1px solid #ddd;
+            border-radius: 10px
+        }
+
+        * .container {
+            padding: 0 20px !important;
         }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -214,7 +224,7 @@
             <div class="d-flex align-items-center justify-content-between px-3 container-fluid">
                 <div class="d-flex align-items-center gap-3 logo_Bar">
                     <div id="menu-btn" class="menu-icon active">
-                        <i class="fa-solid fa-bars-staggered"></i>
+                        <i id="barIcon" class="fa-solid fa-bars-staggered"></i>
                     </div>
                     <img src="{{ asset('assets/assets/images/icons/logo.png') }}" class="logo" />
                 </div>
@@ -597,7 +607,7 @@
         @yield('content')
 
         <div class="container product-cart-offcanvas position-relative">
-            <div class="text-end position-fixed" style="right: 1%; top: 50%">
+            <div class="text-end position-fixed" style="right: 1%; top: 50%; z-index: 999">
 
                 <div class="cart-wrapper  anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
                     aria-controls="offcanvasRight">
@@ -640,6 +650,366 @@
                         <img style="height: 30px; width: auto" src="./img/fast-delivery.png" alt="fast delivery" />
                         <strong style="font-size: 13px; margin-left: 8px">Super Express Delivery</strong>
                     </div>
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- Cart Items Start  -->
+                    <div class="cart-item border-bottom">
+                        <!-- Quantity -->
+                        <div class="item-qty">
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-up"></i>
+                            </button>
+                            <p>1</p>
+                            <button class="qty-btn">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="item-img">
+                            <img src="./img/eggs.webp" alt="" />
+                        </div>
+
+                        <!-- Title + Measure -->
+                        <div class="item-info">
+                            <h6>Chicken Eggs (Discounted)</h6>
+                            <p class="item-measure">৳115 / 12 pcs</p>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="item-price">
+                            <p class="old">৳125</p>
+                            <p class="new">৳115</p>
+                        </div>
+
+                        <!-- Remove -->
+                        <div class="item-remove">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Cart Items end -->
                     <!-- Cart Items Start  -->
                     <div class="cart-item border-bottom">
                         <!-- Quantity -->
@@ -938,22 +1308,29 @@
             });
         });
     </script>
-    <!-- include bootstrap js cdn -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-        integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous">
-    </script>
+
+
     <script>
         $(document).ready(function() {
             // ======================
             // MENU BUTTON TOGGLE
             // ======================
             $("#menu-btn").click(function() {
+
                 if (window.innerWidth < 992) {
-                    // Mobile Offcanvas
+
                     $("#mobile-offcanvas").toggleClass("active");
+                    $("#barIcon").toggleClass("fa-bars-staggered fa-x");
+                    $(window).resize(function() {
+                        if (window.innerWidth >= 992) {
+                            // Reset icon to bar
+                            $("#barIcon").removeClass("fa-x").addClass("fa-bars-staggered");
+
+                            // Offcanvas hide
+                            $("#mobile-offcanvas").removeClass("active");
+                        }
+                    });
+
                 } else {
                     // Desktop Sidebar Toggle
                     $("#sidebar").toggleClass("active");
@@ -967,26 +1344,6 @@
                     }
                 }
             });
-
-            // ======================
-            // CATEGORY ACCORDION
-            // ======================
-            $(".cat-link").click(function(e) {
-                e.preventDefault();
-
-                let parent = $(this).parent();
-
-                if (parent.hasClass("open")) {
-                    return;
-                }
-
-                $(".cat-item").removeClass("open");
-                $(".submenu").slideUp(200);
-
-                parent.addClass("open");
-                parent.find(".submenu").slideDown(200);
-            });
-
         });
     </script>
 
