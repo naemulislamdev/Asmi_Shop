@@ -214,7 +214,6 @@ class CatalogController extends Controller
 
         $products = Product::where('name', 'like', "%{$keyword}%")
             ->orWhere('sku', 'like', "%{$keyword}%")
-            ->take(5)
             ->get(['id', 'name', 'slug', 'price', 'thumbnail']);
 
         return response()->json($products);

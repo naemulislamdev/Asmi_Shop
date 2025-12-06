@@ -222,25 +222,39 @@
                 <div class="search-box d-none d-lg-block">
                     <form action="{{ route('front.search') }}" method="GET">
                         <i class="fas fa-search"></i>
-                        <input type="text" name="search" id="searchInput"
-                            placeholder="Search for products (e.g. milk, rice, potato)" />
+                        <input autocomplete="off" type="text" name="search" class="searchInput"
+                            placeholder="Search for products (e.g. milk, rice, meat, fish)" />
                     </form>
                     <!-- Search Result Box -->
-                    <div id="searchResults"></div>
+                    <div style="
+            display: block;
+            position: absolute;
+            background: white;
+            width: 100%;
+            border-radius: 0 0 10px 10px;
+        "
+                        class="searchResults"></div>
                 </div>
 
+
                 @if (Auth::guard('web')->check())
-                    <a href="{{ route('user-dashboard') }}">@lang('Dashboard')</a>
+                    <a class="btn login-btn" href="{{ route('user-dashboard') }}"><i class="fa fa-user-circle"
+                            aria-hidden="true"></i> @lang('Dashboard')</a>
                 @else
-                    <a href="{{ route('user.login') }}" class="btn login-btn">@lang('Login')</a>
+                    <a href="{{ route('user.login') }}" class="btn login-btn"> <i class="fa fa-sign-in"
+                            aria-hidden="true"></i> @lang('Login')</a>
                 @endif
             </div>
             <!-- Desktop Logo, Menubar, Search  End-->
 
             <!-- mobile search will appear below automatically -->
             <div class="search-box d-lg-none container">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search for products (e.g. milk, rice, potato)" />
+                <form action="{{ route('front.search') }}" method="GET">
+                    <i class="fas fa-search"></i>
+                    <input autocomplete="off" type="text" name="search" class="searchInput"
+                        placeholder="Search for products (e.g. milk, rice, meat, fish)" />
+                </form>
+                <div class="searchResults"></div>
             </div>
         </div>
     </header>
@@ -250,10 +264,14 @@
 
         <!-- Offers Section -->
         <div class="offers-container">
-            <a href="{{ route('front.offers')}}" class="d-flex gap-2 align-items-center mb-2 offers">
+            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center mb-2 offers">
                 <p class="pb-0 mb-0">
                     Offers
-                    {{-- <span class="offer-outline-btn">17</span> --}}
+                    <span class="offer-outline-btn">
+                        {{ App\Models\Product::where('discount', '>', 0)->count() }}
+                    </span>
+                    <img class="ms-3" style="width: 30px; height: auto;"
+                        src="{{ asset('assets/front/images/best-offer.gif') }}" alt="">
                 </p>
             </a>
             {{-- <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
@@ -278,6 +296,94 @@
 
         <!-- MAIN ACCORDION -->
         <div class="product-cat-widget">
+            {{-- <ul class="accordion">
+                @foreach ($categories as $category)
+                    @if ($category->subs->count() > 0)
+                        <li>
+                            @php
+                                $isCategoryActive = Request::segment(2) === $category->slug;
+                            @endphp
+                            <div class="d-flex justify-content-between align-items-lg-baseline">
+                                <a href="{{ route('front.category', $category->slug) }}"
+                                    class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}">
+                                    {{ $category->name }}
+                                </a>
+
+
+                                <button type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#{{ $category->slug }}_level_2"
+                                    aria-controls="{{ $category->slug }}_level_2"
+                                    aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
+                                    class="{{ $isCategoryActive ? '' : 'collapsed' }}">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                            </div>
+
+                            @foreach ($category->subs as $subcategory)
+                                @php
+                                    $isSubcategoryActive =
+                                        $isCategoryActive && Request::segment(3) === $subcategory->slug;
+                                @endphp
+                                <ul id="{{ $category->slug }}_level_2"
+                                    class="accordion-collapse collapse ms-3 {{ $isCategoryActive ? 'show' : '' }}">
+                                    <li class="">
+                                        <div class="d-flex justify-content-between align-items-lg-baseline">
+                                            <a href="{{ route('front.category', [$category->slug, $subcategory->slug]) }}"
+                                                class="{{ $isSubcategoryActive ? 'sidebar-active-color' : '' }} "
+                                                @if ($subcategory->childs->count() > 0) data-bs-toggle="collapse"
+                                                                   data-bs-target="#inner{{ $subcategory->slug }}_level_2_1"
+                                                                   aria-controls="inner{{ $subcategory->slug }}_level_2_1"
+                                                                   aria-expanded="{{ $isSubcategoryActive ? 'true' : 'false' }}"
+                                                                   class="{{ $isSubcategoryActive ? '' : 'collapsed' }}" @endif>
+                                                {{ $subcategory->name }}
+                                            </a>
+
+                                            @if ($subcategory->childs->count() > 0)
+                                                <button data-bs-toggle="collapse"
+                                                    data-bs-target="#inner{{ $subcategory->slug }}_level_2_1"
+                                                    aria-controls="inner{{ $subcategory->slug }}_level_2_1"
+                                                    aria-expanded="{{ $isSubcategoryActive ? 'true' : 'false' }}"
+                                                    class="{{ $isSubcategoryActive ? '' : 'collapsed' }}">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                    <i class="fa-solid fa-minus"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+
+                                        @if ($subcategory->childs->count() > 0)
+                                            <ul id="inner{{ $subcategory->slug }}_level_2_1"
+                                                class="accordion-collapse collapse ms-3 {{ $isSubcategoryActive ? 'show' : '' }}">
+                                                @foreach ($subcategory->childs as $child)
+                                                    @php
+                                                        $isChildActive =
+                                                            $isSubcategoryActive &&
+                                                            Request::segment(4) === $child->slug;
+                                                    @endphp
+                                                    <li>
+                                                        <a href="{{ route('front.category', [$category->slug, $subcategory->slug, $child->slug]) }}"
+                                                            class="{{ $isChildActive ? 'sidebar-active-color' : '' }}">
+                                                            {{ $child->name }}
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </li>
+                                </ul>
+                            @endforeach
+
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ route('front.category', $category->slug) }}"
+                                class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
+                                {{ $category->name }}
+                            </a>
+                        </li>
+                    @endif
+                @endforeach
+            </ul> --}}
             <ul class="accordion">
                 @foreach ($categories as $category)
                     @if ($category->subs->count() > 0)
@@ -369,25 +475,93 @@
     </aside>
     <!-- Desktop Sidebar End -->
 
-
     <!-- Mobile Offcanvas Start-->
-    <div id="mobile-offcanvas" class="mobile-offcanvas shadow">
-        <div class="accordion" id="accordionExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Accordion Item #1
-                    </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                    data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        This is the first item's accordion body.
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="mobile-offcanvas" class="mobile-offcanvas shadow ">
+        <ul class="accordion">
+            @foreach ($categories as $category)
+                @php
+                    $isCategoryActive = Request::segment(2) === $category->slug;
+                    $catId = 'cat_' . $category->slug . '_level_2';
+                @endphp
+
+                <li>
+                    @if ($category->subs->count() > 0)
+                        <div class="d-flex justify-content-between align-items-lg-baseline">
+                            <a href="{{ route('front.category', $category->slug) }}"
+                                class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }} mb-0"
+                                data-collapse="#{{ $catId }}">
+                                {{ $category->name }}
+                            </a>
+
+                            <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
+                                aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
+                                class="{{ $isCategoryActive ? '' : 'collapsed' }}">
+                                <i class="fa-solid fa-plus"></i>
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                        </div>
+
+                        <ul id="{{ $catId }}"
+                            class="accordion-collapse collapse ms-3 {{ $isCategoryActive ? 'show' : '' }}">
+
+                            @foreach ($category->subs as $subcategory)
+                                @php
+                                    $isSubActive = $isCategoryActive && Request::segment(3) === $subcategory->slug;
+                                    $subId = 'sub_' . $subcategory->slug . '_lvl2';
+                                @endphp
+
+                                <li>
+                                    <div class="d-flex justify-content-between align-items-lg-baseline">
+
+                                        <a href="{{ route('front.category', [$category->slug, $subcategory->slug]) }}"
+                                            class="{{ $isSubActive ? 'sidebar-active-color' : '' }}"
+                                            data-collapse="{{ $subcategory->childs->count() > 0 ? '#' . $subId : '' }}">
+                                            {{ $subcategory->name }}
+                                        </a>
+
+                                        @if ($subcategory->childs->count() > 0)
+                                            <button type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#{{ $subId }}"
+                                                aria-expanded="{{ $isSubActive ? 'true' : 'false' }}"
+                                                class="{{ $isSubActive ? '' : 'collapsed' }}">
+                                                <i class="fa-solid fa-plus"></i>
+                                                <i class="fa-solid fa-minus"></i>
+                                            </button>
+                                        @endif
+
+                                    </div>
+
+                                    @if ($subcategory->childs->count() > 0)
+                                        <ul id="{{ $subId }}"
+                                            class="accordion-collapse collapse ms-3 {{ $isSubActive ? 'show' : '' }}">
+                                            @foreach ($subcategory->childs as $child)
+                                                @php
+                                                    $isChildActive =
+                                                        $isSubActive && Request::segment(4) === $child->slug;
+                                                @endphp
+
+                                                <li>
+                                                    <a href="{{ route('front.category', [$category->slug, $subcategory->slug, $child->slug]) }}"
+                                                        class="{{ $isChildActive ? 'sidebar-active-color' : '' }}">
+                                                        {{ $child->name }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <a href="{{ route('front.category', $category->slug) }}"
+                            class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
+                            {{ $category->name }}
+                        </a>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
     </div>
     <!-- Mobile Offcanvas End-->
 
@@ -427,8 +601,8 @@
                 <div class="cart-wrapper  anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
                     aria-controls="offcanvasRight">
                     <div class="cart-top">
-                        <img style="height: 21px; width: auto"
-                            src="{{ asset('assets/assets/images/icons/bag.png ') }}" alt="" />
+                        <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
+                            alt="bag" />
                         <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Item</p>
                     </div>
 
@@ -443,8 +617,8 @@
                 aria-labelledby="offcanvasRightLabel">
                 <div class="offcanvas-header">
                     <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
-                        <img style="height: 40px; width: auto"
-                            src="{{ asset('assets/assets/images/icons/bag.png ') }}" alt="" />
+                        <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
+                            alt="" />
                         <span class="cart-total-item"><span
                                 class="cart-count">{{ $cartItems ? count($cartItems) : 0 }} </span> ITEMS</span>
                     </h5>
@@ -456,15 +630,16 @@
                 </div>
                 <div class="offcanvas-body p-0">
                     <!-- Free Delivery info Message -->
-                    <div class="alert py-1 px-0 my-0 alert-success rounded-0" role="alert">
+                    {{-- <div class="alert py-1 px-0 my-0 alert-success rounded-0" role="alert">
                         <strong style="font-size: 12px; padding-left: 5px">Free Home Delivery on orders over
                             ৳1000!</strong>
                         <i class="fas fa-info-circle ms-2 d-inline-block"></i>
-                    </div>
+                    </div> --}}
                     <!-- Super Express Delivery -->
                     <div style="background-color: #eee" class="p-1">
-                        <img style="height: 30px; width: auto" src="./img/fast-delivery.png" alt="fast delivery" />
-                        <strong style="font-size: 13px; margin-left: 8px">Super Express Delivery</strong>
+                        <img style="height: 40px; width: auto"
+                            src="{{ asset('/assets/front/images/fast-delivery.png') }}" alt="fast delivery" />
+                        <strong style="font-size: 13px; margin-left: 8px">We deliver within 1 to 2 hours.</strong>
                     </div>
                     <!-- Cart Items Start  -->
                     <div class="offCanva-right-cartItems">
@@ -607,65 +782,71 @@
     </script>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
+        const searchInputs = document.querySelectorAll('.searchInput');
 
-        let typingTimer;
-        const typingDelay = 300;
+        searchInputs.forEach(input => {
+            const parentBox = input.parentElement.parentElement;
+            const searchResults = parentBox.querySelector('.searchResults');
 
-        searchInput.addEventListener('keyup', function() {
-            clearTimeout(typingTimer);
-            const query = this.value.trim();
+            let typingTimer;
+            const typingDelay = 300;
 
-            if (query.length < 2) {
-                searchResults.style.display = 'none';
-                return;
-            }
+            input.addEventListener('keyup', function() {
+                clearTimeout(typingTimer);
+                const query = this.value.trim();
 
-            typingTimer = setTimeout(() => {
-                fetch(`{{ route('front.ajax.search') }}?q=${encodeURIComponent(query)}`)
-                    .then(res => res.json())
-                    .then(products => {
-                        if (products.length > 0) {
-                            let html = '';
-                            products.forEach(p => {
-                                const productUrl = `{{ route('front.product', ':slug') }}`
-                                    .replace(':slug', p.slug);
+                if (query.length < 2) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
 
-                                html += `
-        <div class="search-item">
-            <a href="${productUrl}">
-                <div class="d-flex align-items-center">
-                    <img src="{{ asset('/assets/images/thumbnails') }}/${p.thumbnail}" alt="" style="width:40px;height:40px;margin-right:10px;">
-                    <div>
-                        <strong>${p.name}</strong><br>
-                        <span>৳ ${parseFloat(p.price).toFixed(2)}</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-    `;
-                            });
-                            searchResults.innerHTML = html;
-                            searchResults.style.display = 'block';
-                        } else {
-                            searchResults.innerHTML =
-                                `<div class="search-item">No products found</div>`;
-                            searchResults.style.display = 'block';
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        searchResults.style.display = 'none';
-                    });
-            }, typingDelay);
-        });
+                typingTimer = setTimeout(() => {
+                    fetch(`{{ route('front.ajax.search') }}?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(products => {
+                            if (products.length > 0) {
+                                let html = '';
+                                products.forEach(p => {
+                                    const productUrl =
+                                        `{{ route('front.product', ':slug') }}`
+                                        .replace(':slug', p.slug);
 
-        // Hide results when clicked outside
-        document.addEventListener('click', function(e) {
-            if (!searchResults.contains(e.target) && e.target !== searchInput) {
-                searchResults.style.display = 'none';
-            }
+                                    html += `
+                                <div class="search-item">
+                                    <a href="${productUrl}">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ asset('/assets/images/thumbnails') }}/${p.thumbnail}"
+                                            alt="" style="width:40px;height:40px;margin-right:10px;">
+                                            <div>
+                                                <strong>${p.name}</strong><br>
+                                                <span>৳ ${parseFloat(p.price).toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>`;
+                                });
+
+                                searchResults.innerHTML = html;
+                                searchResults.style.display = 'block';
+                            } else {
+                                searchResults.innerHTML =
+                                    `<div class="search-item">No products found</div>`;
+                                searchResults.style.display = 'block';
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            searchResults.style.display = 'none';
+                        });
+                }, typingDelay);
+            });
+
+            // Hide when clicked outside
+            document.addEventListener('click', function(e) {
+                if (!searchResults.contains(e.target) && e.target !== input) {
+                    searchResults.style.display = 'none';
+                }
+            });
         });
     </script>
     <script>
@@ -696,42 +877,44 @@
             });
         });
     </script>
-        <script>
-            $(document).ready(function() {
-                // ======================
-                // MENU BUTTON TOGGLE
-                // ======================
-                $("#menu-btn").click(function() {
+    <script>
+        $(document).ready(function() {
+            // ======================
+            // MENU BUTTON TOGGLE
+            // ======================
+            $("#menu-btn").click(function() {
 
-                    if (window.innerWidth < 992) {
+                if (window.innerWidth < 992) {
 
-                        $("#mobile-offcanvas").toggleClass("active");
-                        $("#barIcon").toggleClass("fa-bars-staggered fa-x");
-                        $(window).resize(function() {
-                            if (window.innerWidth >= 992) {
-                                // Reset icon to bar
-                                $("#barIcon").removeClass("fa-x").addClass("fa-bars-staggered");
+                    $("#mobile-offcanvas").toggleClass("active");
+                    $("#barIcon").toggleClass("fa-bars-staggered fa-x");
+                    $(window).resize(function() {
+                        if (window.innerWidth >= 992) {
+                            // Reset icon to bar
+                            $("#barIcon").removeClass("fa-x").addClass("fa-bars-staggered");
 
-                                // Offcanvas hide
-                                $("#mobile-offcanvas").removeClass("active");
-                            }
-                        });
-
-                    } else {
-                        // Desktop Sidebar Toggle
-                        $("#sidebar").toggleClass("active");
-
-                        if ($("#sidebar").hasClass("active")) {
-                            $("#sidebar").css("left", "0");
-                            $("#main-content").css("margin-left", "230px");
-                        } else {
-                            $("#sidebar").css("left", "-230px");
-                            $("#main-content").css("margin-left", "0");
+                            // Offcanvas hide
+                            $("#mobile-offcanvas").removeClass("active");
                         }
+                    });
+
+                } else {
+                    // Desktop Sidebar Toggle
+                    $("#sidebar").toggleClass("active");
+
+                    if ($("#sidebar").hasClass("active")) {
+                        $("#sidebar").css("left", "0");
+                        $("#main-content").css("margin-left", "230px");
+                    } else {
+                        $("#sidebar").css("left", "-230px");
+                        $("#main-content").css("margin-left", "0");
                     }
-                });
+                }
             });
-        </script>
+        });
+    </script>
+
+
 
 </body>
 

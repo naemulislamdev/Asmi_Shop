@@ -129,7 +129,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         } else {
             $input['tax_location'] = 'Bangladesh'; // Country::findOrFail($input['tax'])->country_name;
         }
-        $input['tax'] = Session::get('current_tax');
+        $input['tax'] = Session::get('current_tax') ?? 0;
 
         $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.']);

@@ -89,7 +89,7 @@
                             @if ($existingQty == 0)
                                 <!-- Condition Here -->
                                     <a href="javascript:;" data-href="{{ route('product.add.to.cart', $product->id) }}"
-                                    data-product-id="{{ $product->id }}" class="add_cart_overlay">
+                                    data-product-id="{{ $product->id }}" class="add_cart_overlay outofstock-box-2 ">
                                     <div class="text-center text-white d-block">
                                         <i class="fa-solid fa-cart-plus"></i>
                                     </div>

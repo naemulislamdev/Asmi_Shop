@@ -1,5 +1,10 @@
 @extends('layouts.front')
-
+<style>
+    .single-product-details-content-wrapper .qty-box,
+    .single-product-details-content-wrapper .add-btn-wrapper {
+        width: 40%;
+    }
+</style>
 @section('content')
 
     <!-- single product details content wrapper start -->
@@ -352,9 +357,9 @@
                         @else
                             @if ($existingQty == 0)
                                 {{-- SHOW ADD TO BAG --}}
-                                <div class="w-100 d-block mt-auto add-btn-wrapper">
+                                <div class="d-block mt-auto add-btn-wrapper">
                                     <button
-                                        class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_details"
+                                        class="btn btn-sm add-cart-btn btn-info d-flex d-block justify-content-center align-items-center add_cart_details"
                                         data-href="{{ route('product.add.to.cart', $productt->id) }}"
                                         data-product-id="{{ $productt->id }}">
                                         <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
@@ -362,7 +367,7 @@
                                 </div>
                             @else
                                 {{-- SHOW QTY BOX --}}
-                                <div class="qty-box mt-auto qty-wrapper" data-product-id="{{ $productt->id }}"
+                                <div  class="qty-box mt-auto qty-wrapper" data-product-id="{{ $productt->id }}"
                                     data-unique-key="{{ $uniqueKey }}">
                                     <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                                     <span class="qty-text">{{ $existingQty }} in Bag</span>

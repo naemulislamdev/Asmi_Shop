@@ -23,52 +23,89 @@ class ProductController extends AdminBaseController
     //*** JSON Request
     public function datatables(Request $request)
     {
-        if ($request->type == 'all') {
-            $datas = Product::query()->whereProductType('normal')->latest('id')->get();
-        } else if ($request->type == 'deactive') {
-            $datas = Product::query()->whereProductType('normal')->whereStatus(0)->latest('id')->get();
+        $query = Product::query()
+            ->whereProductType('normal')
+            ->latest('id');
+
+        if ($request->type == 'deactive') {
+            $query->whereStatus(0);
         }
 
-        //--- Integrating This Collection Into Datatables
-        return DataTables::of($datas)
+        return DataTables::eloquent($query)
             ->editColumn('name', function (Product $data) {
-                //dd($data);
-                $name = mb_strlen($data->name, 'UTF-8') > 50 ? mb_substr($data->name, 0, 50, 'UTF-8') . '...' : $data->name;
+                $name = mb_strlen($data->name, 'UTF-8') > 50
+                    ? mb_substr($data->name, 0, 50, 'UTF-8') . '...'
+                    : $data->name;
+
                 $id = '<small>' . __("ID") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . sprintf("%'.08d", $data->id) . '</a></small>';
-                $id3 = $data->type == 'Physical' ? '<small class="ml-2"> ' . __("SKU") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . $data->sku . '</a>' : '';
-                return $name . '<br>' . $id . $id3 . $data->checkVendor();
+
+                $sku = $data->type == 'Physical'
+                    ? '<small class="ml-2"> ' . __("SKU") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . $data->sku . '</a></small>'
+                    : '';
+
+                return $name . '<br>' . $id . $sku . $data->checkVendor();
             })
+
             ->editColumn('price', function (Product $data) {
                 $price = $data->price * $this->curr->value;
                 return PriceHelper::showAdminCurrencyPrice($price);
             })
+
             ->editColumn('photo', function (Product $data) {
-                $photo = $data->photo ? asset('assets/images/products/' . $data->photo) : asset('assets/images/noimage.png');
-                return '<img src="' . $photo . '" alt="Image" class="img-thumbnail" style="width:80px">';
+                $photo = $data->photo
+                    ? asset('assets/images/products/' . $data->photo)
+                    : asset('assets/images/noimage.png');
+
+                return '<img src="' . $photo . '" class="img-thumbnail" style="width:80px">';
             })
+
             ->editColumn('stock', function (Product $data) {
-                $stck = (string) $data->stock;
-                if ($stck == "0") {
-                    return __("Out Of Stock");
-                } elseif ($stck == null) {
+                if ($data->stock === null) {
                     return __("Unlimited");
-                } else {
-                    return $data->stock;
+                }
+                if ($data->stock == 0) {
+                    return __("Out Of Stock");
                 }
 
+                return $data->stock;
             })
+
             ->addColumn('status', function (Product $data) {
-                $class = $data->status == 1 ? 'drop-success' : 'drop-danger';
-                $s = $data->status == 1 ? 'selected' : '';
-                $ns = $data->status == 0 ? 'selected' : '';
-                return '<div class="action-list"><select class="process select droplinks ' . $class . '"><option data-val="1" value="' . route('admin-prod-status', ['id1' => $data->id, 'id2' => 1]) . '" ' . $s . '>' . __("Activated") . '</option><option data-val="0" value="' . route('admin-prod-status', ['id1' => $data->id, 'id2' => 0]) . '" ' . $ns . '>' . __("Deactivated") . '</option>/select></div>';
+                $class = $data->status ? 'drop-success' : 'drop-danger';
+                return '
+                <div class="action-list">
+                    <select class="process select droplinks ' . $class . '">
+                        <option data-val="1" value="' . route('admin-prod-status', [$data->id, 1]) . '" ' . ($data->status ? 'selected' : '') . '>' . __("Activated") . '</option>
+                        <option data-val="0" value="' . route('admin-prod-status', [$data->id, 0]) . '" ' . (!$data->status ? 'selected' : '') . '>' . __("Deactivated") . '</option>
+                    </select>
+                </div>';
             })
+
             ->addColumn('action', function (Product $data) {
-                $catalog = $data->type == 'Physical' ? ($data->is_catalog == 1 ? '<a href="javascript:;" data-href="' . route('admin-prod-catalog', ['id1' => $data->id, 'id2' => 0]) . '" data-toggle="modal" data-target="#catalog-modal" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Remove Catalog") . '</a>' : '<a href="javascript:;" data-href="' . route('admin-prod-catalog', ['id1' => $data->id, 'id2' => 1]) . '" data-toggle="modal" data-target="#catalog-modal"> <i class="fas fa-plus"></i> ' . __("Add To Catalog") . '</a>') : '';
-                return '<div class="godropdown"><button class="go-dropdown-toggle"> ' . __("Actions") . '<i class="fas fa-chevron-down"></i></button><div class="action-list"><a href="' . route('admin-prod-edit', $data->id) . '"> <i class="fas fa-edit"></i> ' . __("Edit") . '</a><a href="javascript" class="set-gallery" data-toggle="modal" data-target="#setgallery"><input type="hidden" value="' . $data->id . '"><i class="fas fa-eye"></i> ' . __("View Gallery") . '</a>' . $catalog . '<a data-href="' . route('admin-prod-feature', $data->id) . '" class="feature" data-toggle="modal" data-target="#modal2"> <i class="fas fa-star"></i> ' . __("Highlight") . '</a><a href="javascript:;" data-href="' . route('admin-prod-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Delete") . '</a></div></div>';
+                $catalog = '';
+                if ($data->type == 'Physical') {
+                    if ($data->is_catalog) {
+                        $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 0]) . '" data-toggle="modal" data-target="#catalog-modal" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Remove Catalog") . '</a>';
+                    } else {
+                        $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 1]) . '" data-toggle="modal" data-target="#catalog-modal"><i class="fas fa-plus"></i> ' . __("Add To Catalog") . '</a>';
+                    }
+                }
+
+                return '
+                <div class="godropdown">
+                    <button class="go-dropdown-toggle"> ' . __("Actions") . ' <i class="fas fa-chevron-down"></i></button>
+                    <div class="action-list">
+                        <a href="' . route('admin-prod-edit', $data->id) . '"><i class="fas fa-edit"></i> ' . __("Edit") . '</a>
+                        <a href="javascript" class="set-gallery" data-toggle="modal" data-target="#setgallery"><input type="hidden" value="' . $data->id . '"><i class="fas fa-eye"></i> ' . __("View Gallery") . '</a>
+                        ' . $catalog . '
+                        <a data-href="' . route('admin-prod-feature', $data->id) . '" class="feature" data-toggle="modal" data-target="#modal2"><i class="fas fa-star"></i> ' . __("Highlight") . '</a>
+                        <a href="javascript:;" data-href="' . route('admin-prod-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Delete") . '</a>
+                    </div>
+                </div>';
             })
-            ->rawColumns(['name', 'status', 'action','photo'])
-            ->toJson(); //--- Returning Json Data To Client Side
+
+            ->rawColumns(['name', 'status', 'action', 'photo'])
+            ->toJson();
     }
 
     //*** JSON Request
@@ -97,7 +134,6 @@ class ProductController extends AdminBaseController
                 } else {
                     return $data->stock;
                 }
-
             })
             ->addColumn('status', function (Product $data) {
                 $class = $data->status == 1 ? 'drop-success' : 'drop-danger';
@@ -149,7 +185,6 @@ class ProductController extends AdminBaseController
             return view('admin.product.create.license', compact('cats', 'sign'));
         } else if (($slug == 'listing')) {
             return view('admin.product.create.listing', compact('cats', 'sign'));
-
         }
     }
 
@@ -320,7 +355,6 @@ class ProductController extends AdminBaseController
             if ($request->mesasure_check == "") {
                 $input['measure'] = null;
             }
-
         }
 
         if (empty($request->seo_check)) {
@@ -341,7 +375,6 @@ class ProductController extends AdminBaseController
                 $input['license'] = implode(',,', $request->license);
                 $input['license_qty'] = implode(',', $request->license_qty);
             }
-
         }
 
         if (in_array(null, $request->features) || in_array(null, $request->colors)) {
@@ -356,7 +389,7 @@ class ProductController extends AdminBaseController
             $input['tags'] = implode(',', $request->tags);
         }
 
-         $input['price'] = (int) ($input['price'] / $sign->value);
+        $input['price'] = (int) ($input['price'] / $sign->value);
         // $input['previous_price'] = (int) ($input['previous_price'] / $sign->value);
         // if ($request->cross_products) {
         //     $input['cross_products'] = implode(',', $request->cross_products);
@@ -610,11 +643,9 @@ class ProductController extends AdminBaseController
 
                         // Save Data
                         $data->fill($input)->save();
-
                     } else {
                         $log .= "<br>" . __('Row No') . ": " . $i . " - " . __('No Category Found!') . "<br>";
                     }
-
                 } else {
                     $log .= "<br>" . __('Row No') . ": " . $i . " - " . __('Duplicate Product Code!') . "<br>";
                 }
@@ -645,7 +676,6 @@ class ProductController extends AdminBaseController
         } else {
             return view('admin.product.edit.physical', compact('cats', 'data', 'sign'));
         }
-
     }
 
     //*** POST Request
@@ -702,7 +732,7 @@ class ProductController extends AdminBaseController
                 $input['is_flash_deal'] = 1;
                 $input['start_date'] = $request->start_date;
                 $input['end_date'] = $request->end_date;
-            }else{
+            } else {
                 $input['is_flash_deal'] = 0;
                 $input['start_date'] = null;
                 $input['end_date'] = null;
@@ -809,7 +839,6 @@ class ProductController extends AdminBaseController
                     $input['license_qty'] = implode(',', $license_qty);
                 }
             }
-
         }
 
         if (!in_array(null, $request->colors)) {
@@ -994,7 +1023,6 @@ class ProductController extends AdminBaseController
                 }
                 $gal->delete();
             }
-
         }
 
         if ($data->reports->count() > 0) {
@@ -1035,7 +1063,6 @@ class ProductController extends AdminBaseController
                     unlink(public_path() . '/assets/images/products/' . $data->photo);
                 }
             }
-
         }
 
         if (file_exists(public_path() . '/assets/images/thumbnails/' . $data->thumbnail) && $data->thumbnail != "") {
@@ -1053,7 +1080,7 @@ class ProductController extends AdminBaseController
         return response()->json($msg);
         //--- Redirect Section Ends
 
-// PRODUCT DELETE ENDS
+        // PRODUCT DELETE ENDS
     }
 
     public function catalog($id1, $id2)
@@ -1123,5 +1150,4 @@ class ProductController extends AdminBaseController
         $crossProducts = Product::where('category_id', $catId)->where('status', 1)->get();
         return view('load.cross_product', compact('crossProducts'));
     }
-
 }
