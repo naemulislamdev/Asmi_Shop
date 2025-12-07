@@ -1,22 +1,6 @@
 @extends('layouts.front')
 
 @section('content')
-    <section class="gs-breadcrumb-section bg-class"
-        data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
-        <div class="container">
-            <div class="row justify-content-center content-wrapper">
-                <div class="col-12">
-                    <h2 class="breadcrumb-title">@lang('User Register')</h2>
-                    <ul class="bread-menu">
-                        <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
-                        <li><a href="#">@lang('User Register')</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
     <section class="gs-reg-section wow-replaced" data-wow-delay=".1s">
         <div class="container">
             <div class="row">
@@ -31,7 +15,7 @@
                                     placeholder="@lang('Enter your full name')">
                                  @error('name')
                                     <span class="text-danger">{{ $message }}</span>
-                                 @enderror   
+                                 @enderror
                             </div>
                             <div class="form-group">
                                 <label for="email">@lang('Email Address')</label>
@@ -39,7 +23,7 @@
                                     placeholder="@lang('Enter your email address')">
                                     @error('email')
                                     <span class="text-danger">{{ $message }}</span>
-                                 @enderror   
+                                 @enderror
                             </div>
                             <div class="form-group">
                                 <label for="phone">@lang('Phone Number')</label>
@@ -47,7 +31,7 @@
                                     placeholder="@lang('Enter your phone number')">
                                     @error('phone')
                                     <span class="text-danger">{{ $message }}</span>
-                                 @enderror   
+                                 @enderror
                             </div>
                             <div class="form-group">
                                 <label for="address">@lang('Address')</label>
@@ -55,7 +39,7 @@
                                     placeholder="@lang('Enter your address')">
                                     @error('address')
                                     <span class="text-danger">{{ $message }}</span>
-                                 @enderror   
+                                 @enderror
                             </div>
                             <div class="form-group">
 
@@ -124,7 +108,7 @@
                                             stroke="#1F0300" stroke-width="1.33333" stroke-linecap="round"
                                             stroke-linejoin="round" />
                                     </svg>
-                                    
+
                                 </div>
 
                                 @if($gs->is_capcha == 1)
@@ -151,7 +135,6 @@
                 </div>
             </div>
         </div>
-
 
     </section>
 @endsection

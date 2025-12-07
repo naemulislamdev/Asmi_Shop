@@ -34,146 +34,7 @@
                     $discount = 0;
                 @endphp
 
-                <div class="col-lg-8">
-                    <div class="cart-table table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr class="">
-                                    <th scope="col">@lang('Product Name')</th>
-                                    <th scope="col">@lang('Price')</th>
-                                    <th scope="col">@lang('Quantity')</th>
-                                    <th scope="col">@lang('Subtotal')</th>
-                                    <th scope="col">@lang('Action')</th>
-                                </tr>
-                            </thead>
-                            <tbody class="t_body">
-                                @foreach ($products as $product)
-                                    {{-- @php
-
-                                    if ($product['discount'] != 0) {
-                                        $total_itemprice = $product['item_price'] * $product['qty'];
-                                        $tdiscount = ($total_itemprice * $product['discount']) / 100;
-                                        $discount += $tdiscount;
-                                    }
-
-                                @endphp --}}
-                                    <tr class="">
-                                        <td class="cart-product-area">
-                                            <div class="cart-product d-flex">
-                                                <img src="{{ $product['item']['photo'] ? asset('assets/images/products/' . $product['item']['photo']) : asset('assets/images/noimage.png') }}"
-                                                    alt="">
-                                                <div class="cart-product-info">
-
-                                                    <a class="cart-title d-inline-block"
-                                                        href="{{ route('front.product', $product['item']['slug']) }}">{{ mb_strlen($product['item']['name'], 'UTF-8') > 35
-                                                            ? mb_substr($product['item']['name'], 0, 35, 'UTF-8') . '...'
-                                                            : $product['item']['name'] }}</a>
-
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        @if (!empty($product['color']))
-                                                            @lang('Color') : <p
-                                                                class="cart-color d-inline-block rounded-2"
-                                                                style="border: 10px solid #{{ $product['color'] == '' ? 'white' : $product['color'] }};">
-                                                            </p>
-                                                        @endif
-                                                        @if (!empty($product['size']))
-                                                            @lang('Size') : <p class="d-inline-block">
-                                                                {{ $product['size'] }}
-                                                            </p>
-                                                        @endif
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="cart-price">
-                                            {{ App\Models\Product::convertPrice($product['item_price']) }}</td>
-
-                                        @if ($product['item']['type'] == 'Physical')
-                                            <td>
-                                                <div class="cart-quantity">
-                                                    <button type="button"
-                                                        class="cart-quantity-btn quantity-down">-</button>
-                                                    <input type="text"
-                                                        id="qty{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}"
-                                                        value="{{ $product['qty'] }}" class="borderless" readonly>
-                                                    <input type="hidden" class="prodid"
-                                                        value="{{ $product['item']['id'] }}">
-                                                    <input type="hidden" class="itemid"
-                                                        value="{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}">
-                                                    <input type="hidden" class="size_qty"
-                                                        value="{{ $product['size_qty'] }}">
-                                                    <input type="hidden" class="size_price"
-                                                        value="{{ $product['size_price'] }}">
-                                                    <input type="hidden" class="minimum_qty"
-                                                        value="{{ $product['item']['minimum_qty'] == null ? '0' : $product['item']['minimum_qty'] }}">
-                                                    <input type="hidden" class="item_price"
-                                                        value="{{ $product['item_price']}}">
-                                                    <input type="hidden" class="unique_key"
-                                                        value="{{ $product['unique_key'] }}">
-
-                                                    <button type="button"
-                                                        class="cart-quantity-btn quantity-up">+</button>
-                                                </div>
-                                            </td>
-                                        @else
-                                            <td class="product-quantity">
-                                                1
-                                            </td>
-                                        @endif
-
-
-                                        @if ($product['size_qty'])
-                                            <input type="hidden"
-                                                id="stock{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}"
-                                                value="{{ $product['size_qty'] }}">
-                                        @elseif($product['item']['type'] != 'Physical')
-                                            <input type="hidden"
-                                                id="stock{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}"
-                                                value="1">
-                                        @else
-                                            <input type="hidden"
-                                                id="stock{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}"
-                                                value="{{ $product['stock'] }}">
-                                        @endif
-
-
-
-                                        <td class="cart-price"
-                                            id="prc{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}">
-                                            {{ App\Models\Product::convertPrice($product['item_price']) }}
-                                            {{-- @if ($product['discount'] > 0)
-                                                @if ($product['discount_type'] == 'percent')
-                                                    <span class=""> {{ $product['discount'] }}%</span>
-                                                @else
-                                                    <span class="">
-                                                        {{ App\Models\Product::convertPrice($product['discount']) }}</span>
-                                                @endif
-                                            @endif --}}
-
-                                        </td>
-                                        <td>
-                                            <a class="cart-remove-btn"
-                                                ata-class="cremove{{ $product['item']['id'] . $product['size'] . $product['color'] . str_replace(str_split(' ,'), '', $product['values']) }}"
-                                                href="{{ route('product.cart.remove', $product['unique_key']) }}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                    viewBox="0 0 24 24" fill="none">
-                                                    <path
-                                                        d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6M10 10.5V15.5M14 10.5V15.5"
-                                                        stroke="#1F0300" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </svg>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    @php
-                                        $discount += $product['discount'];
-                                    @endphp
-                                @endforeach
-
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="col-lg-7 mx-auto">
                     <div class="gs-checkout-wrapper">
                         <div class="container">
                             <!-- address-->
@@ -372,7 +233,6 @@
                                                 @if ($gt->checkout == 1)
                                                     @if ($gt->type == 'manual')
                                                         @if ($digital == 0)
-
                                                             <!-- single payment input -->
                                                             <div class="gs-radio-wrapper payment"
                                                                 data-show="{{ $gt->showForm() }}"
@@ -442,22 +302,15 @@
                                     </div>
                                 </div>
                             </div>
-
-
-                            @if ($gs->multiple_shipping == 0 && $digital == 0)
-                                <input type="hidden" name="shipping_id" id="multi_shipping_id"
-                                    value="{{ @$shipping_data[0]->id }}">
-                                <input type="hidden" name="packaging_id" id="multi_packaging_id"
-                                    value="{{ @$package_data[0]->id }}">
-                            @endif
-
+                            <div class="cart-summary-btn">
+                                <button type="submit" class="template-btn w-100">@lang('Proceed to Checkout')</button>
+                            </div>
 
                             <input type="hidden" name="dp" value="{{ $digital }}">
                             <input type="hidden" id="input_tax" name="tax" value="">
                             <input type="hidden" id="input_tax_type" name="tax_type" value="">
                             <input type="hidden" name="totalQty" value="{{ $totalQty }}">
-                            <input type="hidden" name="vendor_shipping_id" value="{{ $vendor_shipping_id }}">
-                            <input type="hidden" name="vendor_packing_id" value="{{ $vendor_packing_id }}">
+
                             <input type="hidden" name="currency_sign" value="{{ $curr->sign }}">
                             <input type="hidden" name="currency_name" value="{{ $curr->name }}">
                             <input type="hidden" name="currency_value" value="{{ $curr->value }}">
@@ -491,84 +344,6 @@
                             <input type="hidden" name="user_id" id="user_id"
                                 value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
 
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="cart-summary">
-                        <h4 class="cart-summary-title">@lang('Cart Summary')</h4>
-                        <div class="accordion mb-3" id="accordionExample">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseTwo" aria-expanded="false"
-                                        aria-controls="collapseTwo">
-                                        Have a coupon code?
-                                    </a>
-                                </h2>
-                                <div id="collapseTwo" class="accordion-collapse collapse"
-                                    data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <div class="summary-inner-box">
-                                            <h6 class="summary-title">@lang('Apply Coupon Code')</h6>
-                                            <div class="coupon-wrapper mt-3">
-                                                <div class="input-group mb-3">
-                                                    <input type="text" class="form-control" id="code"
-                                                        placeholder="@lang('Coupon Code')"
-                                                        aria-describedby="basic-addon2">
-                                                    <button type="submit" class="btn btn-outline-secondary"
-                                                        id="check_coupon">@lang('Apply')</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="cart-summary-content">
-                            <div class="cart-summary-item d-flex justify-content-between">
-                                <p class="cart-summary-subtitle">
-                                    @lang('Subtotal')({{ count(Session::get('cart')->items) }}
-                                    @lang('Items'))</p>
-                                <p class="cart-summary-price">
-                                    {{ Session::has('cart') ? App\Models\Product::convertPrice($totalPrice) : '0.00' }}
-                                </p>
-                            </div>
-                            <div class="cart-summary-item d-flex justify-content-between">
-                                <p class="cart-summary-subtitle">@lang('Discount')</p>
-                                <p class="cart-summary-price">{{ App\Models\Product::convertPrice($discount) }}</p>
-                            </div>
-                            <div class="cart-summary-item d-flex justify-content-between">
-                                <p class="cart-summary-subtitle">@lang('Shipping Cost')</p>
-                                <span
-                                    class="right-side shipping_cost_view">{{ App\Models\Product::convertPrice(0) }}</span>
-                            </div>
-                            <div class="cart-summary-item d-flex justify-content-between">
-                                <p class="cart-summary-subtitle">@lang('Total')</p>
-                                @if (Session::has('coupon_total'))
-                                    @if ($gs->currency_format == 0)
-                                        <p class="total-amount" id="final-cost">
-                                            {{ $curr->sign }}{{ $totalPrice }}
-                                        </p>
-                                    @else
-                                        <p class="total-amount" id="final-cost">
-                                            {{ $totalPrice }}{{ $curr->sign }}
-                                        </p>
-                                    @endif
-                                @elseif(Session::has('coupon_total1'))
-                                    <p class="total-amount" id="final-cost">
-                                        {{ Session::get('coupon_total1') }}</p>
-                                @else
-                                    <p class="cart-summary-price total-cart-price total-amount" id="final-cost">
-                                        {{ App\Models\Product::convertPrice($totalPrice) }}</p>
-                                @endif
-
-                            </div>
-                            <div class="cart-summary-btn">
-                                <button type="submit" class="template-btn w-100">@lang('Proceed to Checkout')</button>
-                            </div>
                         </div>
                     </div>
                 </div>

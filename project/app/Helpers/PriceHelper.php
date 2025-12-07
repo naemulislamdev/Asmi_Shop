@@ -135,12 +135,12 @@ class PriceHelper
 
             if ($gs->multiple_shipping == 0) {
 
-                $vendor_shipping_ids = [];
-                $vendor_packing_ids = [];
-                foreach ($vendor_ids as $vendor_id) {
-                    $vendor_shipping_ids[$vendor_id] = isset($input['shipping_id']) && $input['shipping_id'] != 0 ? $input['shipping_id'] : null;
-                    $vendor_packing_ids[$vendor_id] = isset($input['packaging_id']) && $input['packaging_id'] != 0 ? $input['packaging_id'] : null;
-                }
+                // $vendor_shipping_ids = [];
+                // $vendor_packing_ids = [];
+                // foreach ($vendor_ids as $vendor_id) {
+                //     $vendor_shipping_ids[$vendor_id] = isset($input['shipping_id']) && $input['shipping_id'] != 0 ? $input['shipping_id'] : null;
+                //     $vendor_packing_ids[$vendor_id] = isset($input['packaging_id']) && $input['packaging_id'] != 0 ? $input['packaging_id'] : null;
+                // }
 
                 $shipping = isset($input['shipping_id']) && $input['shipping_id'] != 0 ? Shipping::findOrFail($input['shipping_id']) : null;
                 //dd($shipping);
@@ -158,9 +158,9 @@ class PriceHelper
                     'shipping' => $shipping,
                     'packeing' => $packeing,
                     'is_shipping' => 0,
-                    'vendor_shipping_ids' => @json_encode($vendor_shipping_ids),
-                    'vendor_packing_ids' => @json_encode($vendor_packing_ids),
-                    'vendor_ids' => @json_encode($vendor_ids),
+                    // 'vendor_shipping_ids' => @json_encode($vendor_shipping_ids),
+                    // 'vendor_packing_ids' => @json_encode($vendor_packing_ids),
+                    // 'vendor_ids' => @json_encode($vendor_ids),
                     'success' => true,
                 ];
             } else {
@@ -212,9 +212,9 @@ class PriceHelper
                     'packeing' => isset($packeing) ? $packeing : null,
                     'is_shipping' => 1,
                     'tax' => $tax_amount,
-                    'vendor_shipping_ids' => @json_encode($input['shipping']),
-                    'vendor_packing_ids' => @json_encode($input['packeging']),
-                    'vendor_ids' => @json_encode($vendor_ids),
+                    // 'vendor_shipping_ids' => @json_encode($input['shipping']),
+                    // 'vendor_packing_ids' => @json_encode($input['packeging']),
+                    // 'vendor_ids' => @json_encode($vendor_ids),
                     'shipping_cost' => $shipping_cost,
                     'packing_cost' => $packaging_cost,
                     'success' => true,

@@ -45,7 +45,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $oldCart = Session::get('cart');
 
         $cart = new Cart($oldCart);
-        OrderHelper::license_check($cart); // For License Checking
+
         $t_oldCart = Session::get('cart');
         $t_cart = new Cart($t_oldCart);
         $new_cart = [];
@@ -69,9 +69,9 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $shipping = $orderCalculate['shipping'];
             $packeing = $orderCalculate['packeing'];
             $is_shipping = $orderCalculate['is_shipping'];
-            $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-            $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-            $vendor_ids = $orderCalculate['vendor_ids'];
+            // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
+            // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
+            // $vendor_ids = $orderCalculate['vendor_ids'];
 
             $input['shipping_title'] = @$shipping->title;
             $input['vendor_shipping_id'] = @$shipping->id;
@@ -80,9 +80,9 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $input['shipping_cost'] = @$packeing->price ?? 0;
             $input['packing_cost'] = @$packeing->price ?? 0;
             $input['is_shipping'] = $is_shipping;
-            $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-            $input['vendor_packing_ids'] = $vendor_packing_ids;
-            $input['vendor_ids'] = $vendor_ids;
+            // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
+            // $input['vendor_packing_ids'] = $vendor_packing_ids;
+            // $input['vendor_ids'] = $vendor_ids;
         } else {
 
             // multi shipping
@@ -91,23 +91,23 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
             $packeing = $orderCalculate['packeing'];
         $is_shipping = $orderCalculate['is_shipping'];
-            $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-            $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-            $vendor_ids = $orderCalculate['vendor_ids'];
+            // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
+            // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
+            // $vendor_ids = $orderCalculate['vendor_ids'];
             $shipping_cost = $orderCalculate['shipping_cost'];
             $packing_cost = $orderCalculate['packing_cost'];
             //$shipping->id;
             $input['shipping'] = $shipping->id;
-            $input['shipping_title'] = $vendor_shipping_ids;
-            $input['vendor_shipping_id'] = $vendor_shipping_ids;
-            $input['packing_title'] = $vendor_packing_ids;
-            $input['vendor_packing_id'] = $vendor_packing_ids;
+            // $input['shipping_title'] = $vendor_shipping_ids;
+            // $input['vendor_shipping_id'] = $vendor_shipping_ids;
+            // $input['packing_title'] = $vendor_packing_ids;
+            // $input['vendor_packing_id'] = $vendor_packing_ids;
             $input['shipping_cost'] = $shipping_cost;
             $input['packing_cost'] = $packing_cost;
             $input['is_shipping'] = $is_shipping;
-            $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-            $input['vendor_packing_ids'] = $vendor_packing_ids;
-            $input['vendor_ids'] = $vendor_ids;
+            // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
+            // $input['vendor_packing_ids'] = $vendor_packing_ids;
+            // $input['vendor_ids'] = $vendor_ids;
             // unset($input['shipping']);
             // unset($input['packeging']);
         }
@@ -130,26 +130,6 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $input['tax_location'] = 'Bangladesh'; // Country::findOrFail($input['tax'])->country_name;
         }
         $input['tax'] = Session::get('current_tax');
-
-        if (Session::has('affilate')) {
-            $val = $request->total / $this->curr->value;
-            $val = $val / 100;
-            $sub = $val * $this->gs->affilate_charge;
-            if ($temp_affilate_users != null) {
-                $t_sub = 0;
-                if (is_array($temp_affilate_users)) {
-                    foreach ($temp_affilate_users as $t_cost) {
-                        $t_sub += $t_cost['charge'];
-                    }
-                }
-                $sub = $sub - $t_sub;
-            }
-            if ($sub > 0) {
-                OrderHelper::affilate_check(Session::get('affilate'), $sub, $input['dp']); // For Affiliate Checking
-                $input['affilate_user'] = Session::get('affilate');
-                $input['affilate_charge'] = $sub;
-            }
-        }
 
         $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.']);
@@ -194,28 +174,28 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         }
 
         //Sending Email To Buyer
-        $data = [
-            'to' => $order->customer_email,
-            'type' => "new_order",
-            'cname' => $order->customer_name,
-            'oamount' => "",
-            'aname' => "",
-            'aemail' => "",
-            'wtitle' => "",
-            'onumber' => $order->order_number,
-        ];
+        // $data = [
+        //     'to' => $order->customer_email,
+        //     'type' => "new_order",
+        //     'cname' => $order->customer_name,
+        //     'oamount' => "",
+        //     'aname' => "",
+        //     'aemail' => "",
+        //     'wtitle' => "",
+        //     'onumber' => $order->order_number,
+        // ];
 
-        $mailer = new GeniusMailer();
-        $mailer->sendAutoOrderMail($data, $order->id);
+        // $mailer = new GeniusMailer();
+        // $mailer->sendAutoOrderMail($data, $order->id);
 
         //Sending Email To Admin
-        $data = [
-            'to' => $this->ps->contact_email,
-            'subject' => "New Order Recieved!!",
-            'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is " . $order->order_number . ".Please login to your panel to check. <br>Thank you.",
-        ];
-        $mailer = new GeniusMailer();
-        $mailer->sendCustomMail($data);
+        // $data = [
+        //     'to' => $this->ps->contact_email,
+        //     'subject' => "New Order Recieved!!",
+        //     'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is " . $order->order_number . ".Please login to your panel to check. <br>Thank you.",
+        // ];
+        // $mailer = new GeniusMailer();
+        // $mailer->sendCustomMail($data);
 
         return redirect($success_url);
     }

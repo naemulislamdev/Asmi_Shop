@@ -7,6 +7,8 @@ use App\Http\Controllers\Front\FrontendController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
+
 Route::get('/under-maintenance', 'Front\FrontendController@maintenance')->name('front-maintenance');
 
 Route::prefix('admin')->group(function () {
@@ -1616,17 +1618,25 @@ Route::group(['middleware' => 'maintenance'], function () {
 
     // CART SECTION
     Route::get('/carts/view', 'Front\CartController@cartview');
-    Route::get('/carts', 'Front\CartController@cart')->name('front.cart');
+    Route::get('/checkout', 'Front\CartController@cartCheckout')->name('front.checkout');
     Route::get('/addcart/{id}', 'Front\CartController@addcart')->name('product.cart.add');
     Route::post('product/cart/add/{id?}', 'Front\CartController@addcartPost')->name('product.add.to.cart');
-    Route::get('/addtocart/{id}', 'Front\CartController@addtocart')->name('product.cart.quickadd');
-    Route::get('/addnumcart', 'Front\CartController@addnumcart')->name('details.cart');
-    Route::get('/addtonumcart', 'Front\CartController@addtonumcart');
-    Route::get('/addbyone', 'Front\CartController@addbyone');
-    Route::get('/reducebyone', 'Front\CartController@reducebyone');
-    Route::get('/upcolor', 'Front\CartController@upcolor');
     Route::get('/removecart/{id}', 'Front\CartController@removecart')->name('product.cart.remove');
     Route::get('/carts/coupon', 'Front\CouponController@coupon');
+
+    Route::post('/cart/increment', 'Front\CartController@increment');
+    Route::post('/cart/decrement', 'Front\CartController@decrement');
+
+    Route::get('/cart/offcanvas', function () {
+    $cart = Session::get('cart');
+    $cartItems = $cart ? $cart->items : [];
+    $cartObject = $cart;
+    return view('includes.frontend.offcanvas-cart', compact('cartItems', 'cartObject'));
+});
+
+    Route::post('/cart/remove', 'Front\CartController@cartRemove')->name('ajax.cart.remove');
+
+
     // CART SECTION ENDS
 
     // COMPARE SECTION
@@ -1638,7 +1648,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     // CHECKOUT SECTION
     Route::get('/buy-now/{id}', 'Front\CheckoutController@buynow')->name('front.buynow');
     // Checkout
-    Route::get('/checkout', 'Front\CheckoutController@checkout')->name('front.checkout');
+    // Route::get('/checkout', 'Front\CheckoutController@checkout')->name('front.checkout');
     Route::post('/checkout/step1/submit', 'Front\CheckoutController@checkoutStep1')->name('front.checkout.step1.submit');
 
     Route::get('/checkout/step2', 'Front\CheckoutController@checkoutstep2')->name('front.checkout.step2');

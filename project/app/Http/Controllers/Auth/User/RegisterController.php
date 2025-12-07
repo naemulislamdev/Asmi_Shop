@@ -16,10 +16,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-
-       
-    
-
+        //dd($request->all());
         $gs = Generalsetting::findOrFail(1);
 
         if ($gs->is_capcha == 1) {
@@ -42,7 +39,7 @@ class RegisterController extends Controller
             'password' => 'required|confirmed',
         ]);
 
-       
+
         $user = new User;
         $input = $request->all();
         $input['password'] = bcrypt($request['password']);
@@ -50,22 +47,7 @@ class RegisterController extends Controller
         $input['verification_link'] = $token;
         $input['affilate_code'] = md5($request->name . $request->email);
 
-        if (!empty($request->vendor)) {
 
-            $request->validate([
-                'shop_name' => 'unique:users',
-                'shop_number' => 'max:10',
-            ], [
-                'shop_name.unique' => __('This Shop Name has already been taken.'),
-                'shop_number.max' => __('Shop Number Must Be Less Then 10 Digit.'),
-
-            ]);
-
-            $input['is_vendor'] = 1;
-
-        }
-
-        
         $user->fill($input)->save();
 
         if ($gs->is_verification_email == 1) {

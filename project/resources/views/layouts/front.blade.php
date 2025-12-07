@@ -41,11 +41,12 @@
 
         .single-product .content-wrapper,
         .single-product-list-view .content-wrapper {
-            height: 123px;
-            background: #f5f5f5;
+            height: auto;
+            background: #ffff;
             border-bottom-left-radius: 12px;
             border-bottom-right-radius: 12px;
             padding: 14px 13px !important;
+
         }
 
         .gs-breadcrumb-section {
@@ -125,17 +126,6 @@
             font-size: 18px;
         }
 
-        .single-product .img-wrapper,
-        .single-product-list-view .img-wrapper {
-            border: 0px solid #e5e5e5;
-        }
-
-        .single-product .img-wrapper .product-img,
-        .single-product-list-view .img-wrapper .product-img {
-            width: 100%;
-            height: 260px;
-        }
-
         .single-product .add-cart,
         .single-product-list-view .add-cart {
             width: 110px;
@@ -158,8 +148,8 @@
             width: 70px;
             padding: 3px 6px;
             border-radius: 4px;
-            background: #cf3f00;
-            font-size: 14px;
+            background: #1bb9cb;
+            font-size: 12px;
             font-weight: 600;
         }
 
@@ -178,8 +168,8 @@
 
         .outofstock-box h5 {
             color: #fff;
-            font-size: 20px;
-            background: #cf3f00;
+            font-size: 16px;
+            background: #eb4d4b;
             padding: 5px 10px;
             border-radius: 5px;
         }
@@ -191,6 +181,15 @@
             padding: 5px 5px;
             min-width: 80px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .single-product {
+            border: 1px solid #ddd;
+            border-radius: 10px
+        }
+
+        * .container {
+            padding: 0 20px !important;
         }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -214,19 +213,27 @@
             <div class="d-flex align-items-center justify-content-between px-3 container-fluid">
                 <div class="d-flex align-items-center gap-3 logo_Bar">
                     <div id="menu-btn" class="menu-icon active">
-                        <i class="fa-solid fa-bars-staggered"></i>
+                        <i id="barIcon" class="fa-solid fa-bars-staggered"></i>
                     </div>
                     <a href="{{ route('front.index') }}">
                         <img src="{{ asset('assets/images/' . $gs->logo) }}" class="logo" />
                     </a>
                 </div>
-
                 <div class="search-box d-none d-lg-block">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search for products (e.g. milk, rice, potato)" />
+                    <form action="{{ route('front.search') }}" method="GET">
+                        <i class="fas fa-search"></i>
+                        <input type="text" name="search" id="searchInput"
+                            placeholder="Search for products (e.g. milk, rice, potato)" />
+                    </form>
+                    <!-- Search Result Box -->
+                    <div id="searchResults"></div>
                 </div>
 
-                <button class="btn login-btn">Login</button>
+                @if (Auth::guard('web')->check())
+                    <a href="{{ route('user-dashboard') }}">@lang('Dashboard')</a>
+                @else
+                    <a href="{{ route('user.login') }}" class="btn login-btn">@lang('Login')</a>
+                @endif
             </div>
             <!-- Desktop Logo, Menubar, Search  End-->
 
@@ -243,17 +250,18 @@
 
         <!-- Offers Section -->
         <div class="offers-container">
-            <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
+            <a href="{{ route('front.offers')}}" class="d-flex gap-2 align-items-center mb-2 offers">
                 <p class="pb-0 mb-0">
-                    Offers <span class="offer-outline-btn">17</span>
+                    Offers
+                    {{-- <span class="offer-outline-btn">17</span> --}}
                 </p>
             </a>
-            <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
+            {{-- <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
                 <p class="pb-0 mb-0">Egg Club</p>
-            </a>
+            </a> --}}
         </div>
 
-        <div class="ps-3">
+        {{-- <div class="ps-3">
             <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
                 <p class="pb-0 mb-0"><img src="{{ asset('assets/assets/images/icons/favourites.svg') }}" /> Favourites
                 </p>
@@ -266,7 +274,7 @@
                 <p class="pb-0 mb-0"><img src="{{ asset('assets/assets/images/icons/flash-sales.webp') }}" /> Flash
                     Sales</p>
             </a>
-        </div>
+        </div> --}}
 
         <!-- MAIN ACCORDION -->
         <div class="product-cat-widget">
@@ -410,7 +418,7 @@
         @yield('content')
 
         <div class="container product-cart-offcanvas position-relative">
-            <div class="text-end position-fixed" style="right: 1%; top: 50%">
+            <div class="text-end position-fixed" style="right: 1%; top: 50%; z-index: 999">
                 @php
                     $cartObject = Session::has('cart') ? Session::get('cart') : null;
                     $cartItems = $cartObject ? $cartObject->items : [];
@@ -459,64 +467,16 @@
                         <strong style="font-size: 13px; margin-left: 8px">Super Express Delivery</strong>
                     </div>
                     <!-- Cart Items Start  -->
-                        @php
-                            $discount = 0;
-                        @endphp
-                        @if ($cartItems)
-                            @foreach ($cartItems as $cartItem)
-                                <div class="cart-item border-bottom">
-                                    <!-- Quantity -->
-                                    <div class="item-qty">
-                                        <button class="qty-btn">
-                                            <i class="fa-solid fa-chevron-up"></i>
-                                        </button>
-                                        <p>{{ $cartItem['qty'] }}</p>
-                                        <button class="qty-btn">
-                                            <i class="fa-solid fa-chevron-down"></i>
-                                        </button>
-                                    </div>
-
-                                    <!-- Product Image -->
-                                    <div class="item-img">
-                                        <img src="{{ $cartItem['item']['photo'] ? asset('assets/images/products/' . $cartItem['item']['photo']) : asset('assets/images/noimage.png') }}"
-                                            alt="" />
-                                    </div>
-
-                                    <!-- Title + Measure -->
-                                    <div class="item-info">
-                                        <h6>{{ mb_strlen($cartItem['item']['name'], 'UTF-8') > 35
-                                            ? mb_substr($cartItem['item']['name'], 0, 35, 'UTF-8') . '...'
-                                            : $cartItem['item']['name'] }}
-                                        </h6>
-                                        <p class="item-measure">
-                                            {{ App\Models\Product::convertPrice($cartItem['item_price']) }} per {{ $cartItem['item']['measure'] }} </p>
-                                    </div>
-
-                                    <!-- Price -->
-                                    <div class="item-price">
-                                        @if($cartItem['item']['discount'] > 0)
-                                        <p class="old">{{ $cartItem['item']['discount'] }}</p>
-                                        <p class="new">{{ $cartItem['item']['price'] }}</p>
-                                        @else
-                                        <p class="new">{{ $cartItem['item']['price'] }}</p>
-                                        @endif
-                                    </div>
-                                    <!-- Remove -->
-                                    <div class="item-remove">
-                                        <a href="{{ route('product.cart.remove', $cartItem['unique_key']) }}"><i class="fa-solid fa-xmark"></i></a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @endif
-                        <!-- Cart Items end -->
-
-                        <!-- Cart Items end -->
-                        <!-- cart footer start -->
-                        <button class="order-btn">
-                            <span class="order-text">Place Order</span>
-                            <span class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
-                        </button>
-                        <!-- cart footer end -->
+                    <div class="offCanva-right-cartItems">
+                        @include('includes.frontend.offcanvas-cart')
+                    </div>
+                    <!-- Cart Items end -->
+                    <!-- cart footer start -->
+                    <a href="{{ route('front.checkout') }}" class="order-btn">
+                        <span class="order-text">Place Order</span>
+                        <span class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
+                    </a>
+                    <!-- cart footer end -->
                 </div>
                 <div class="left-close">
                     <button data-bs-dismiss="offcanvas" title="close">
@@ -736,51 +696,42 @@
             });
         });
     </script>
-    <!-- include bootstrap js cdn -->
-    <script>
-        $(document).ready(function() {
-            // ======================
-            // MENU BUTTON TOGGLE
-            // ======================
-            $("#menu-btn").click(function() {
-                if (window.innerWidth < 992) {
-                    // Mobile Offcanvas
-                    $("#mobile-offcanvas").toggleClass("active");
-                } else {
-                    // Desktop Sidebar Toggle
-                    $("#sidebar").toggleClass("active");
+        <script>
+            $(document).ready(function() {
+                // ======================
+                // MENU BUTTON TOGGLE
+                // ======================
+                $("#menu-btn").click(function() {
 
-                    if ($("#sidebar").hasClass("active")) {
-                        $("#sidebar").css("left", "0");
-                        $("#main-content").css("margin-left", "230px");
+                    if (window.innerWidth < 992) {
+
+                        $("#mobile-offcanvas").toggleClass("active");
+                        $("#barIcon").toggleClass("fa-bars-staggered fa-x");
+                        $(window).resize(function() {
+                            if (window.innerWidth >= 992) {
+                                // Reset icon to bar
+                                $("#barIcon").removeClass("fa-x").addClass("fa-bars-staggered");
+
+                                // Offcanvas hide
+                                $("#mobile-offcanvas").removeClass("active");
+                            }
+                        });
+
                     } else {
-                        $("#sidebar").css("left", "-230px");
-                        $("#main-content").css("margin-left", "0");
+                        // Desktop Sidebar Toggle
+                        $("#sidebar").toggleClass("active");
+
+                        if ($("#sidebar").hasClass("active")) {
+                            $("#sidebar").css("left", "0");
+                            $("#main-content").css("margin-left", "230px");
+                        } else {
+                            $("#sidebar").css("left", "-230px");
+                            $("#main-content").css("margin-left", "0");
+                        }
                     }
-                }
+                });
             });
-
-            // ======================
-            // CATEGORY ACCORDION
-            // ======================
-            $(".cat-link").click(function(e) {
-                e.preventDefault();
-
-                let parent = $(this).parent();
-
-                if (parent.hasClass("open")) {
-                    return;
-                }
-
-                $(".cat-item").removeClass("open");
-                $(".submenu").slideUp(200);
-
-                parent.addClass("open");
-                parent.find(".submenu").slideDown(200);
-            });
-
-        });
-    </script>
+        </script>
 
 </body>
 

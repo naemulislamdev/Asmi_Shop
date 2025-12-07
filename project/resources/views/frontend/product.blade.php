@@ -79,7 +79,8 @@
                                     </h5>
                                     <h5><del>{{ $productt->price }} ৳</del></h5>
                                 @else
-                                    <h5 class="product-price" data-base-price="{{ $basePrice }}">{{ $productt->price }} ৳</h5>
+                                    <h5 class="product-price" data-base-price="{{ $basePrice }}">{{ $productt->price }}
+                                        ৳</h5>
                                 @endif
 
 
@@ -115,7 +116,8 @@
                                         </select>
                                     </h6>
                                 @endif
-                                    <input type="hidden" id="product-id" data-base-pid="{{ $productt->id }}" value="{{ $productt->id }}">
+                                <input type="hidden" id="product-id" data-base-pid="{{ $productt->id }}"
+                                    value="{{ $productt->id }}">
 
                             </div>
                             @if ($productt->start_date != null && $productt->end_date != null)
@@ -316,25 +318,6 @@
                                 @endif
                             @endif
 
-
-                            <!-- add-qty-wrapper -->
-                            <div class="add-qty-wrapper">
-                                <span class="varition-title">@lang('Quantity :')</span>
-                                <div class="product-input-wrapper">
-                                    <button class="action-btn qtminus" type="button">-</button>
-
-                                    <input class="qty-input qttotal" type="text" readonly id="order-qty"
-                                        value="{{ $productt->minimum_qty == null ? '1' : (int) $productt->minimum_qty }}">
-
-                                    <input class="qty-input" type="hidden" id="affilate_user"
-                                        value="{{ $productt->minimum_qty == null ? '1' : (int) $productt->minimum_qty }}">
-
-                                    <input class="qty-input" type="hidden" id="product_minimum_qty"
-                                        value="{{ $productt->minimum_qty == null ? '1' : (int) $productt->minimum_qty }}">
-                                    <button class="action-btn qtplus" type="button">+</button>
-                                </div>
-                            </div>
-
                         @endif
 
                         <input type="hidden" id="product_price"
@@ -344,6 +327,22 @@
                         <input type="hidden" id="curr_pos" value="{{ $gs->currency_format }}">
                         <input type="hidden" id="curr_sign" value="{{ $curr->sign }}">
 
+                        @php
+                            $cart = Session::has('cart') ? Session::get('cart') : null;
+                            $existingQty = 0;
+                            $uniqueKey = null;
+
+                            if ($cart && $cart->items) {
+                                foreach ($cart->items as $key => $cItem) {
+                                    if ($cItem['item']->id == $productt->id) {
+                                        $existingQty = $cItem['qty'];
+                                        $uniqueKey = $cItem['unique_key'];
+                                        break;
+                                    }
+                                }
+                            }
+                        @endphp
+
 
                         <!-- add to cart buy btn wrapper -->
                         @if ($productt->stock == 0)
@@ -351,16 +350,25 @@
                                 <h5>{{ __('Out of Stock') }}</h5>
                             </div>
                         @else
-                            <div class="row row-cols-2">
-                                <div class="col">
-                                    <a href="javascript:;" data-href="{{ route('product.add.to.cart', $productt->id) }}" class="template-btn dark-btn w-100 add_cart_details">
-                                        @lang('add to cart')
-                                    </a>
+                            @if ($existingQty == 0)
+                                {{-- SHOW ADD TO BAG --}}
+                                <div class="w-100 d-block mt-auto add-btn-wrapper">
+                                    <button
+                                        class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_details"
+                                        data-href="{{ route('product.add.to.cart', $productt->id) }}"
+                                        data-product-id="{{ $productt->id }}">
+                                        <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
+                                    </button>
                                 </div>
-                                <div class="col">
-                                    <button type="button" class="template-btn w-100 buy-now-btn">@lang('buy now')</button>
+                            @else
+                                {{-- SHOW QTY BOX --}}
+                                <div class="qty-box mt-auto qty-wrapper" data-product-id="{{ $productt->id }}"
+                                    data-unique-key="{{ $uniqueKey }}">
+                                    <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
+                                    <span class="qty-text">{{ $existingQty }} in Bag</span>
+                                    <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                                 </div>
-                            </div>
+                            @endif
                         @endif
 
                         <!-- wish-compare-report-wrapper -->

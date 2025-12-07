@@ -1,22 +1,6 @@
 @extends('layouts.front')
 
 @section('content')
-    <section class="gs-breadcrumb-section bg-class"
-        data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
-        <div class="container">
-            <div class="row justify-content-center content-wrapper">
-                <div class="col-12">
-                    <h2 class="breadcrumb-title">@lang('User Login')</h2>
-                    <ul class="bread-menu">
-                        <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
-                        <li><a href="javascript:;">@lang('User Login')</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
     <section class="gs-reg-section wow-replaced" data-wow-delay=".1s">
         <div class="container">
             <div class="row">
@@ -77,7 +61,7 @@
                                     <div class="col d-flex ">
                                         <!-- Checkbox -->
                                         <div class="gs-checkbox-wrapper">
-                                     
+
                                             <input   type="checkbox" value=""
                                                 id="form2Example31">
                                                         <label class="icon-label pb-0 mb-3" for="form2Example31">
