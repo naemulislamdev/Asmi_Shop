@@ -1,5 +1,9 @@
 @extends('layouts.front')
-
+<style>
+    .gs-blog-wrapper {
+        padding: 0 !important;
+    }
+</style>
 @section('content')
     <section class="gs-breadcrumb-section bg-class"
         data-background="
@@ -52,7 +56,7 @@
                     @endphp
 
                     <!-- product nav wrapper -->
-                    <div class=" product-nav-wrapper mb-3">
+                    <div class=" product-nav-wrapper mb-3 rounded-bottom">
                         <h5>@lang('Total Products Found:') {{ $prods->count() }}</h5>
                     </div>
 
@@ -60,15 +64,14 @@
 
                     @if ($prods->count() == 0)
                         <!-- product nav wrapper for no data found -->
-                        <div class="product-nav-wrapper d-flex justify-content-center ">
+                        <div class="product-nav-wrapper rounded-bottom d-flex justify-content-center ">
                             <h5>@lang('No Product Found')</h5>
                         </div>
                     @else
                         <!-- main content -->
                         <div class="tab-content" id="myTabContent">
                             <!-- product list view start  -->
-                            <div class="tab-pane fade show active"
-                                id="layout-grid-pane" role="tabpanel" tabindex="0">
+                            <div class="tab-pane fade show active" id="layout-grid-pane" role="tabpanel" tabindex="0">
                                 <div class="row gy-4 gy-lg-5 mt-20">
                                     @foreach ($prods as $product)
                                         @include('includes.frontend.home_product')

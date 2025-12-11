@@ -206,7 +206,7 @@ $(document).ready(function () {
       {
         breakpoint: 425,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
         },
       },
     ],
@@ -361,8 +361,8 @@ $(document).ready(function () {
   $(".product-cards-slider").slick({
     dots: true,
     infinite: true,
-    slidesToShow: 5,
-    slidesToScroll: 5,
+    slidesToShow: 6,
+    slidesToScroll: 6,
     speed: 1000,
     autoplay: true,
     pauseOnHover:true,

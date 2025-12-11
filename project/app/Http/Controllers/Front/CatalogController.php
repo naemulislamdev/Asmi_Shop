@@ -211,7 +211,6 @@ class CatalogController extends Controller
     public function ajaxSearch(Request $request)
     {
         $keyword = $request->query('q');
-
         $products = Product::where('name', 'like', "%{$keyword}%")
             ->orWhere('sku', 'like', "%{$keyword}%")
             ->get(['id', 'name', 'slug', 'price', 'thumbnail']);

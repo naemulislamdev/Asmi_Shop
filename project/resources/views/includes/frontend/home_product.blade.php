@@ -60,7 +60,7 @@
                     alt="product img">
             </a>
             @if ($product->stock == 0)
-                <div class="outofstock-box">
+                <div class="outofstock-box flex-column align-content-center justify-content-center">
                     <h5>{{ __('Out of Stock !') }}</h5>
                 </div>
             @else
@@ -174,7 +174,7 @@
                             class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
                             data-href="{{ route('product.add.to.cart', $product->id) }}"
                             data-product-id="{{ $product->id }}">
-                            <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
+                            <i class="fa fa-bolt me-2" aria-hidden="true"> </i> Add To Cart
                         </button>
                     </div>
                 @else

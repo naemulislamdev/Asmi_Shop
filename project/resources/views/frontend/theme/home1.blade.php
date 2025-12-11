@@ -63,17 +63,23 @@
             font-size: 14px;
             color: #555;
         }
+
+        .gs-partner-section .col-xl-2 {
+            flex: 0 0 auto;
+            width: 16%;
+        }
+        
     </style>
 
     <!-- hero section start -->
     <section class="hero-slider-wrapper">
 
-            @foreach ($sliders as $slider)
-                <div class="gs-hero-section">
-                    <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
-                        style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
-                </div>
-            @endforeach
+        @foreach ($sliders as $slider)
+            <div class="gs-hero-section">
+                <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
+                    style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
+            </div>
+        @endforeach
 
     </section>
     <!-- hero section end -->
@@ -344,7 +350,7 @@
             <div class="gs-partnerss gy-4 row justify-content-center">
 
                 @foreach (DB::table('partners')->get() as $data)
-                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 wow-replaced" data-wow-delay=".1s">
+                    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 col-6 wow-replaced" data-wow-delay=".1s">
                         <div class="single-partner">
                             <img src="{{ asset('assets/images/partner/' . $data->photo) }}" alt="partner">
                         </div>
@@ -390,9 +396,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                       deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>

@@ -96,7 +96,7 @@ ul {
 }
 
 .sidebar ul li {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     padding: 7px 5px;
 }
 
@@ -542,10 +542,11 @@ ul {
 }
 /* Left Side */
 .order-text {
-  flex: 1;
-  background: #5dd1dd; /* light peach pink */
-  padding: 14px 20px;
-  text-align: center;
+    flex: 1;
+    background: #1bb9cb;
+    padding: 14px 20px;
+    text-align: center;
+    border-right: 1px solid #ddd;
 }
 
 /* Right Side */
@@ -714,4 +715,19 @@ ul {
   border-width: 2px !important;
   background-color: var(--bs-btn-hover-bg);
   border-color: #1bb9cb !important;
+}
+/* When collapsed (closed) → Show plus, hide minus */
+.mobile-offcanvas button.collapsed .fa-plus {
+    display: inline-block;
+}
+.mobile-offcanvas button.collapsed .fa-minus {
+    display: none;
+}
+
+/* When expanded (open) → Show minus, hide plus */
+.mobile-offcanvas button:not(.collapsed) .fa-plus {
+    display: none;
+}
+.mobile-offcanvas button:not(.collapsed) .fa-minus {
+    display: inline-block;
 }
