@@ -79,7 +79,7 @@
         updateCartUI(data);
         reloadOffcanvasCart();
 
-        const uniqueKey = data[2];
+        const uniqueKey = data.unique_key;
 
         // OVERLAY UI
         $(`.overlay-add-btn[data-product-id="${pid}"]`).html(`
@@ -142,7 +142,7 @@
 
         // Change Add button → Qty UI
         const newQtyHTML = `
-                <div class="qty-box mt-auto qty-wrapper" data-product-id="${pid}" data-unique-key="${data[2]}">
+                <div class="qty-box mt-auto qty-wrapper" data-product-id="${pid}" data-unique-key="${data.unique_key}">
                     <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                     <span class="qty-text">1 in Bag</span>
                     <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
@@ -300,8 +300,8 @@
 
 
   function updateCartUI(data) {
-    $(".cart-count").html(data[0]);
-    $(".total_price").html(data[1]);
+    $(".cart-count").html(data.cart_count);
+    $(".total_price").html(data.total_price);
     $(".cart-popup").load(mainurl + "/carts/view");
   }
   function reloadOffcanvasCart() {

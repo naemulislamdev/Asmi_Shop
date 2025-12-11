@@ -1,7 +1,7 @@
 .single-product .img-wrapper .product-img,
 .single-product-list-view .img-wrapper .product-img {
   width: 100%;
-  height: 220px;
+  height: auto;
   object-fit: contain;
 }
 .single-product .add-to-cart,
@@ -66,7 +66,7 @@
 }
 .single-product .content-wrapper,
 .single-product-list-view .content-wrapper {
-  height: 150px;
+  height: 160px;
 }
 .add-cart-btn.btn-info {
   background: #1bb9cb;
@@ -89,20 +89,20 @@
   border-radius: 10px 10px 0 0;
 }
 .outofstock-box-2 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: 10px 10px 0 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    flex-direction: row;
-    z-index: 2;
-    opacity: 0;
-    visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 10px 10px 0 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 2;
+  opacity: 0;
+  visibility: hidden;
 }
 .single-product:hover .outofstock-box-2 {
   visibility: visible;
@@ -153,16 +153,47 @@
   border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 @media (min-width: 1200px) {
-  .col-xl-2 {
+  /* .col-xl-2 {
     flex: 0 0 auto;
     width: 20%;
+  } */
+  .gs-explore-product-section > .col-xl-2 {
+    flex: 0 0 auto;
+    width: 16.66666667%;
   }
 }
 .gs-explore-product-section .explore-tab-navbar li .nav-link {
-    color: #030712;
-    font-family: "Saira", sans-serif;
-    font-size: 17px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 130%;
+  color: #030712;
+  font-family: "Saira", sans-serif;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 130%;
+}
+
+.img-wrapper a {
+  display: inline-block;
+  height: 180px;
+}
+.single-product .img-wrapper,
+.single-product-list-view .img-wrapper {
+  height: 170px;
+}
+
+.single-product:hover {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.gs-single-cat:hover .title {
+  color: #fff;
+}
+.gs-product-details-gallery-wrapper .product-main-slider .main-img{
+  max-width: 100%;
+  object-fit: contain;
+}
+.home-cate-slider .slick-slide {
+  margin: 0 10px; /* total gap = 20px */
+}
+
+.home-cate-slider .slick-list {
+  margin: 0 -10px;
 }

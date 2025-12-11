@@ -191,6 +191,35 @@
         * .container {
             padding: 0 20px !important;
         }
+
+        .searchResults::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .searchResults::-webkit-scrollbar-thumb {
+            background: #cccccc;
+            border-radius: 10px;
+        }
+
+        .mobile-offcanvas button:not(.collapsed) i.fa-plus {
+            display: none;
+        }
+
+        .mobile-offcanvas button:not(.collapsed) i.fa-minus {
+            display: inline-block;
+        }
+
+        .whatsapp_div {
+            position: static;
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp_div {
+                position: relative;
+                left: -30px;
+            }
+
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
@@ -210,29 +239,39 @@
     <header class="header shadow">
         <div class="container-fluid">
             <!-- Desktop Logo, Menubar, Search Start -->
-            <div class="d-flex align-items-center justify-content-between px-3 container-fluid">
-                <div class="d-flex align-items-center gap-3 logo_Bar">
+            <div class="d-flex align-items-center justify-content-between px-2 container-fluid">
+                <div class="d-flex  align-items-center g logo_Bar">
                     <div id="menu-btn" class="menu-icon active">
                         <i id="barIcon" class="fa-solid fa-bars-staggered"></i>
                     </div>
                     <a href="{{ route('front.index') }}">
                         <img src="{{ asset('assets/images/' . $gs->logo) }}" class="logo" />
                     </a>
+                    <div class="whatsapp_div ">
+                        <a class="d-flex align-items-center gap-2"
+                            href="https://wa.me/8801805020340?text=Assalamu%20Alaikum,%20I%20want%20to%20order%20from%20your%20supershop."><img
+                                style="width: 40px; height: auto;"
+                                src="{{ asset('assets/front/images/whatsapp.png') }}" alt="whatsapp"> <span
+                                class="text-success fw-bold d-none d-lg-block">01805020340</span></a>
+                    </div>
                 </div>
+
                 <div class="search-box d-none d-lg-block">
                     <form action="{{ route('front.search') }}" method="GET">
                         <i class="fas fa-search"></i>
-                        <input type="text" name="search" class="searchInput"
+                        <input autocomplete="off" type="search" name="search" class="searchInput"
                             placeholder="Search for products (e.g. milk, rice, meat, fish)" />
                     </form>
                     <!-- Search Result Box -->
-                    <div style="
-            display: block;
-            position: absolute;
-            background: white;
-            width: 100%;
-            border-radius: 0 0 10px 10px;
-        "
+                    <div style="max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    position: absolute;
+    width: 100%;
+    z-index: 9999;"
                         class="searchResults"></div>
                 </div>
 
@@ -250,11 +289,20 @@
             <!-- mobile search will appear below automatically -->
             <div class="search-box d-lg-none container">
                 <form action="{{ route('front.search') }}" method="GET">
-                    <i class="fas fa-search"></i>
-                    <input autocomplete="off" type="text" name="search" class="searchInput"
+
+                    <input autocomplete="off" type="search" name="search" class="searchInput"
                         placeholder="Search for products (e.g. milk, rice, meat, fish)" />
                 </form>
-                <div class="searchResults"></div>
+                <div style="max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    position: absolute;
+    width: 100%;
+    z-index: 9999;"
+                    class="searchResults"></div>
             </div>
         </div>
     </header>
@@ -264,13 +312,13 @@
 
         <!-- Offers Section -->
         <div class="offers-container">
-            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center mb-2 offers">
-                <p class="pb-0 mb-0">
+            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center mb-2 ">
+                <p style="font-size: 15px; color: #1bb9cb;" class="pb-0 mb-0">
                     Offers
                     <span class="offer-outline-btn">
                         {{ App\Models\Product::where('discount', '>', 0)->count() }}
                     </span>
-                    <img class="ms-3" style="width: 30px; height: auto;"
+                    <img class="ms-3" style="width: 100px; height: auto;"
                         src="{{ asset('assets/front/images/best-offer.gif') }}" alt="">
                 </p>
             </a>
@@ -309,10 +357,13 @@
                                 <a href="{{ route('front.category', $category->slug) }}"
                                     class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
                                     data-collapse="#{{ $catId }}">
-                                    {{ $category->name }}
+                                    <img class="rounded me-1" style="width: 30px"
+                                        src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                                        alt=""> {{ $category->name }}
                                 </a>
 
-                                <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
+                                <button type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#{{ $catId }}"
                                     aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
                                     class="{{ $isCategoryActive ? '' : 'collapsed' }}">
                                     <i class="fa-solid fa-plus"></i>
@@ -401,7 +452,9 @@
                             <a href="{{ route('front.category', $category->slug) }}"
                                 class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
                                 data-collapse="#{{ $catId }}">
-                                {{ $category->name }}
+                                <img class="rounded me-1" style="width: 30px"
+                                    src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                                    alt=""> {{ $category->name }}
                             </a>
 
                             <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
@@ -473,6 +526,7 @@
                 </li>
             @endforeach
         </ul>
+
     </div>
     <!-- Mobile Offcanvas End-->
 
@@ -701,7 +755,7 @@
             const searchResults = parentBox.querySelector('.searchResults');
 
             let typingTimer;
-            const typingDelay = 300;
+            const typingDelay = 200;
 
             input.addEventListener('keyup', function() {
                 clearTimeout(typingTimer);

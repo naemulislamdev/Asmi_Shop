@@ -136,10 +136,14 @@ class CartController extends Controller
 
         // Save back to session
         Session::put('cart', $cart);
-        $data[0] = count($cart->items);
-        $data[1] = $cart->totalPrice;
-        $data[2] = $uniqueKey;
-        return response()->json($data);
+        // $data[0] = count($cart->items);
+        // $data[1] = $cart->totalPrice;
+        // $data[2] = $uniqueKey;
+        return response()->json([
+            'cart_count' => count($cart->items),
+            'total_price' => $cart->totalPrice,
+            'unique_key' => $uniqueKey
+        ]);
     }
 
     public function increment(Request $request)

@@ -60,7 +60,7 @@
                     alt="product img">
             </a>
             @if ($product->stock == 0)
-                <div class="outofstock-box">
+                <div class="outofstock-box flex-column align-content-center justify-content-center">
                     <h5>{{ __('Out of Stock !') }}</h5>
                 </div>
             @else
