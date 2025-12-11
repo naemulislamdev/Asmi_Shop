@@ -46,7 +46,7 @@
 
 
 
-//////////// Add cart in product box ///////////////
+  //////////// Add cart in product box ///////////////
   $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -62,7 +62,7 @@
     const measureType = wrap.find(".measure-select").data("measure-type");
     const measureValue = parseFloat(wrap.find(".measure-select").val() || 1);
     const basePrice = parseFloat(wrap.find(".product-price").data("base-price"));
-    let finalPrice = basePrice * measureValue;
+    const finalPrice = basePrice * measureValue;
 
     $.ajax({
       url: $btn.data("href"),
@@ -79,65 +79,37 @@
         updateCartUI(data);
         reloadOffcanvasCart();
 
-        // Change Add button → Qty UI
-        const newQtyHTML = `
-                <div class="qty-box mt-auto qty-wrapper" data-product-id="${pid}" data-unique-key="${data[2]}">
+        const uniqueKey = data[2];
+
+        // OVERLAY UI
+        $(`.overlay-add-btn[data-product-id="${pid}"]`).html(`
+                <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay"
+                    data-product-id="${pid}" data-unique-key="${uniqueKey}">
+                    <button class="btn btn-outline-light border-2 btn-sm qty-minus">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span class="h3 text-white qty-text">1</span>
+                    <button class="btn btn-outline-light border-2 btn-sm qty-plus">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            `);
+
+        // NORMAL UI
+        $(`.add-btn-wrapper[data-product-id="${pid}"]`).html(`
+                <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal"
+                    data-product-id="${pid}" data-unique-key="${uniqueKey}">
                     <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                     <span class="qty-text">1 in Bag</span>
                     <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                 </div>
-            `;
-
-        $btn.closest(".add-btn-wrapper").html(newQtyHTML);
-
+            `);
       }
     });
   });
-  //// add cart on overlay product box /////////////////
-  $(document).on("click", ".add_cart_overlay", function (e) {
-    e.preventDefault();
 
-    const $btn = $(this);
-    const pid = $btn.data("product-id");
-    const wrap = $btn.closest(".single-product");
 
-    const measureType = wrap.find(".measure-select").data("measure-type");
-    const measureValue = parseFloat(wrap.find(".measure-select").val() || 1);
-    const basePrice = parseFloat(wrap.find(".product-price").data("base-price"));
-    let finalPrice = basePrice * measureValue;
-
-    $.ajax({
-      url: $btn.data("href"),
-      method: "POST",
-      data: {
-        product_id: pid,
-        measure_type: measureType,
-        measure_value: measureValue,
-        final_price: finalPrice,
-        quantity: 1
-      },
-      success: function (data) {
-
-        updateCartUI(data);
-        reloadOffcanvasCart();
-
-        // Change Add button → Qty UI
-        const newQtyHTML = `
-               <div class="outofstock-box-2 qty-wrapper" style="flex-direction: row; gap: 20px;" data-product-id="${pid}" data-unique-key="${data[2]}">
-                                    <button class="btn btn-outline-light rounded-circle border-2 btn-sm qty-minus"> <i
-                                            class="fas fa-minus"></i></button>
-                                    <span class="h3 text-white" style="font-weight: 400">1</span>
-                                    <button class="btn btn-outline-light rounded-circle border-2 btn-sm qty-plus"> <i
-                                            class="fas fa-plus"></i></button>
-                                </div>
-            `;
-
-        $btn.closest(".ov-cart-wrapper").html(newQtyHTML);
-
-      }
-    });
-  });
-/////////////// Start product details page cart
+  /////////////// Start product details page cart
   $(document).on("click", ".add_cart_details", function (e) {
     e.preventDefault();
 
@@ -185,57 +157,87 @@
 
   $(document).on("click", ".qty-plus", function () {
 
-    const wrap = $(this).closest(".qty-wrapper");
+    const wrap = $(this).closest("[data-unique-key]");
+    const pid = wrap.data("product-id");
     const unique_key = wrap.data("unique-key");
 
     $.ajax({
       url: mainurl + "/cart/increment",
       method: "POST",
-      data: { unique_key: unique_key },
+      data: { unique_key },
       success: function (data) {
-        updateCartUI(data);
+
+        //const pid = data.product_id;
+        const qty = data.qty;
+
+        $(".cart-count").text(data.cart_count);
+        $(".total_price").text(data.total_price);
         reloadOffcanvasCart();
 
-        wrap.find(".qty-text").text(data[2] + " in Bag");
+        $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`)
+          .text(qty + " in Bag");
+
+        $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`)
+          .text(qty + " in Bag");
       }
     });
-
   });
 
 
   $(document).on("click", ".qty-minus", function () {
 
-    const wrap = $(this).closest(".qty-wrapper");
+    const wrap = $(this).closest("[data-unique-key]");
+    const pid = wrap.data("product-id");
     const unique_key = wrap.data("unique-key");
 
     $.ajax({
       url: mainurl + "/cart/decrement",
       method: "POST",
-      data: { unique_key: unique_key },
+      data: { unique_key },
       success: function (data) {
 
-        $(".total_price").text(data.total_price);
+        const qty = data.qty;
+        const addRoute = getAddToCartRoute(pid);
 
-        // update cart count
-        $(".cart-count").text(data.cart_count);
+        updateCartUI(data);
         reloadOffcanvasCart();
 
-        const pid = data.product_id;
+        if (qty <= 0) {
 
-        if (data.qty <= 0) {
-          // Qty = 0 → Replace qty box with Add To Cart button
-          const addRoute = getAddToCartRoute(pid);
-          wrap.parent().html(`
-                    <div class="w-100 d-block mt-auto add-btn-wrapper">
-                        <button type="button" class="btn btn-sm add-cart-btn btn-info d-flex w-100 justify-content-center align-items-center add_cart_click"
-                            data-href="${addRoute}"
-                            data-product-id="${pid}">
-                            <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
-                        </button>
-                    </div>
-                `);
+          // NORMAL UI RESET
+          $(`.qty-wrapper-normal[data-product-id="${pid}"]`)
+            .parent()
+            .html(`
+                        <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="${pid}">
+                            <button class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
+                                data-href="${addRoute}" data-product-id="${pid}">
+                                <i class="fa fa-bolt mr-2"></i> Add To Cart
+                            </button>
+                        </div>
+                    `);
+
+          // OVERLAY UI RESET
+          $(`.qty-wrapper-overlay[data-product-id="${pid}"]`)
+            .parent()
+            .html(`
+                        <div class="overlay-add-btn" data-product-id="${pid}">
+                            <button type="button" class="outofstock-box-2 add_cart_click"
+                                data-href="${addRoute}" data-product-id="${pid}">
+                                <div class="text-center text-white">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </div>
+                                <p class="text-white">Add to Shopping Bag</p>
+                            </button>
+                        </div>
+                    `);
+
         } else {
-          wrap.find(".qty-text").text(data.qty + " in Bag");
+          // UPDATE BOTH UI
+          $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`)
+            .text(qty + " in Bag");
+
+          $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`)
+            .text(qty + " in Bag");
         }
       }
     });
@@ -243,41 +245,54 @@
 
 
   $(document).on("click", ".remove-item-cart", function () {
-    let key = $(this).data("key");
-    let pid = $(this).data("product-id");
+
+    const key = $(this).data("key");
+    const pid = $(this).data("product-id");
 
     $.ajax({
       url: mainurl + "/cart/remove",
       method: "POST",
-      data: {
-        unique_key: key
-      },
+      data: { unique_key: key },
       success: function (res) {
-        if (res.status) {
 
-          // update offcanvas HTML
-          $(".offCanva-right-cartItems").html(res.html);
+        if (!res.status) return;
 
-          // update total cart price
-          $(".total_price").text(res.total);
+        $(".offCanva-right-cartItems").html(res.html);
+        $(".total_price").text(res.total);
+        $(".cart-count").text(res.count);
 
-          // update cart count
-          $(".cart-count").text(res.count);
-          const addRoute = getAddToCartRoute(pid);
+        const addRoute = getAddToCartRoute(pid);
 
-          $(`.qty-wrapper[data-product-id="${pid}"]`).parent().html(`
-              <div class="w-100 d-block mt-auto add-btn-wrapper">
-                  <button type="button" class="btn btn-sm add-cart-btn btn-info d-flex w-100 justify-content-center align-items-center add_cart_click"
-                      data-href="${addRoute}"
-                      data-product-id="${pid}">
-                      <i class="fa fa-bolt mr-2"></i> Add To Cart
-                  </button>
-              </div>
-          `);
-        }
+        // NORMAL UI RESET
+        $(`.qty-wrapper-normal[data-product-id="${pid}"]`)
+          .parent()
+          .html(`
+                    <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="${pid}">
+                        <button class="btn btn-sm add-cart-btn btn-info d-flex w-100 justify-content-center align-items-center add_cart_click"
+                            data-href="${addRoute}" data-product-id="${pid}">
+                            <i class="fa fa-bolt mr-2"></i> Add To Cart
+                        </button>
+                    </div>
+                `);
+
+        // OVERLAY UI RESET
+        $(`.qty-wrapper-overlay[data-product-id="${pid}"]`)
+          .parent()
+          .html(`
+                    <div class="overlay-add-btn" data-product-id="${pid}">
+                        <button type="button" class="outofstock-box-2 add_cart_click"
+                            data-href="${addRoute}" data-product-id="${pid}">
+                            <div class="text-center text-white">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </div>
+                            <p class="text-white">Add to Shopping Bag</p>
+                        </button>
+                    </div>
+                `);
       }
     });
   });
+
 
   function getAddToCartRoute(pid) {
     return mainurl + "/product/cart/add/" + pid;
@@ -293,7 +308,7 @@
     $(".offCanva-right-cartItems").load(mainurl + "/cart/offcanvas");
   }
 
-  
+
 
   //End add to cart
 })(jQuery);

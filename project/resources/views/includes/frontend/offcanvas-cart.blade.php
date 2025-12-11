@@ -2,7 +2,7 @@
 @if ($cartItems)
     @foreach ($cartItems as $cartItem)
         <div class="cart-item border-bottom">
-            <div class="item-qty qty-wrapper" data-unique-key="{{ $cartItem['unique_key'] }}">
+            <div class="item-qty qty-plus-wrap" data-unique-key="{{ $cartItem['unique_key'] }}" data-product-id="{{ $cartItem['item']['id'] }}">
                 <button class="qty-btn qty-plus">
                     <i class="fa-solid fa-chevron-up"></i>
                 </button>
@@ -26,9 +26,9 @@
             <div class="item-price">
                 @if ($cartItem['item']['discount'] > 0)
                     <p class="old">{{ $cartItem['item']['discount'] }}</p>
-                    <p class="new">{{ $cartItem['item']['price'] }}</p>
+                    <p class="new">{{ $cartItem['item']['price'] * $cartItem['qty'] }}</p>
                 @else
-                    <p class="new">{{ $cartItem['item']['price'] }}</p>
+                    <p class="new">{{ $cartItem['item']['price'] * $cartItem['qty'] }}</p>
                 @endif
             </div>
 

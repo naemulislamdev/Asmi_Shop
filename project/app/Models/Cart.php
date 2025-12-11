@@ -145,6 +145,126 @@ class Cart extends Model
 
     // ************** ADD TO CART MULTIPLE ENDS *****************
 
+    public function addnum($item, $id, $qty, $size, $color, $size_qty, $size_price, $size_key, $keys, $values, $affilate_user)
+    {
+        $size_cost = 0;
+        $color_cost = 0;
+
+        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => $keys, 'values' => $values, 'item_price' => $item->price, 'discount' => 0, 'affilate_user' => 0];
+        if ($item->type == 'Physical') {
+            if ($this->items) {
+                if (array_key_exists($id . $size . $color . str_replace(str_split(' ,'), '', $values), $this->items)) {
+                    $storedItem = $this->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)];
+                }
+            }
+        } else {
+            if ($this->items) {
+                if (array_key_exists($id . $size . $color . str_replace(str_split(' ,'), '', $values), $this->items)) {
+                    $storedItem = $this->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)];
+                }
+            }
+            $storedItem['dp'] = 1;
+        }
+        $storedItem['affilate_user'] = $affilate_user;
+        if (Auth::guard('admin')->check()) {
+            $storedItem['qty'] = $qty;
+        } else {
+            $storedItem['qty'] = $storedItem['qty'] + $qty;
+        }
+        $stck = (string) $item->stock;
+        if ($stck != null) {
+            $storedItem['stock'] = $storedItem['stock'] - $qty;
+        }
+        if (!empty($item->size)) {
+            $storedItem['size'] = $item->size[0];
+        }
+        if (!empty($size)) {
+            $storedItem['size'] = $size;
+        }
+        if (!empty($size_key)) {
+            $storedItem['size_key'] = $size_key;
+        }
+        if (!empty($item->size_qty)) {
+            $storedItem['size_qty'] = $item->size_qty[0];
+        }
+        if (!empty($size_qty)) {
+            $storedItem['size_qty'] = $size_qty;
+        }
+
+
+        if (!empty($item->size_price)) {
+            $storedItem['size_price'] = $item->size_price[0];
+            $size_cost = $item->size_price[0];
+        }
+        if (!empty($size_price)) {
+            $storedItem['size_price'] = $size_price;
+            $size_cost = $size_price;
+        }
+
+        if (!empty($item->color_price)) {
+            $storedItem['color_price'] = $item->color_price[0];
+            $color_cost = $item->color_price[0];
+        }
+        if (!empty($color_price)) {
+            $storedItem['color_price'] = $color_price;
+            $color_cost = $color_price;
+        }
+
+
+        if (!empty($item->color)) {
+            $storedItem['color'] = $item->color[0];
+        }
+        if (!empty($color)) {
+            $storedItem['color'] = $color;
+        }
+        if (!empty($keys)) {
+            $storedItem['keys'] = $keys;
+        }
+        if (!empty($values)) {
+            $storedItem['values'] = $values;
+        }
+
+
+
+        $item->price += $size_cost;
+        $item->price += $color_cost;
+        $storedItem['item_price'] = $item->price;
+        if (!empty($item->whole_sell_qty)) {
+            foreach ($item->whole_sell_qty as $key => $data) {
+                if (($key + 1) != count($item->whole_sell_qty)) {
+                    if (($storedItem['qty'] >= $item->whole_sell_qty[$key]) && ($storedItem['qty'] < $item->whole_sell_qty[$key + 1])) {
+                        $whole_discount[$id . $size . $color . str_replace(str_split(' ,'), '', $values)] = $item->whole_sell_discount[$key];
+                        Session::put('current_discount', $whole_discount);
+                        $storedItem['discount'] = $item->whole_sell_discount[$key];
+                        break;
+                    }
+                } else {
+                    if (($storedItem['qty'] >= $item->whole_sell_qty[$key])) {
+                        $whole_discount[$id . $size . $color . str_replace(str_split(' ,'), '', $values)] = $item->whole_sell_discount[$key];
+                        Session::put('current_discount', $whole_discount);
+                        $storedItem['discount'] = $item->whole_sell_discount[$key];
+                        break;
+                    }
+                }
+            }
+
+            if (Session::has('current_discount')) {
+                $data = Session::get('current_discount');
+                if (array_key_exists($id . $size . $color . str_replace(str_split(' ,'), '', $values), $data)) {
+                    $discount = $item->price * ($data[$id . $size . $color . str_replace(str_split(' ,'), '', $values)] / 100);
+                    $item->price = $item->price - $discount;
+                }
+            }
+        }
+
+        $storedItem['price'] = $item->price * $storedItem['qty'];
+        //$this->recalculateTotals();
+
+
+        $this->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)] = $storedItem;
+        $this->totalQty += $storedItem['qty'];
+    }
+
 
     // ************** REDUCING QUANTITY ENDS *****************
 

@@ -31,7 +31,6 @@ class CheckoutController extends Controller
 
     public function depositloadpayment(Request $request, $slug1, $slug2)
     {
-
         if ($request->has('deposit_number')) {
             $deposit_number = $request->deposit_number;
             $deposit = Deposit::where('deposit_number', $deposit_number)->firstOrFail();

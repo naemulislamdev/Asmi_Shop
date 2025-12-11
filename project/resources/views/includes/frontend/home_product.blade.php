@@ -75,35 +75,36 @@
                                 </div>
                                 <p class="text-white ">{{ __('Add to Shopping Bag') }}</p>
                             </a>
-                        @else
-                            <div class="outofstock-box-2" style="flex-direction: row; gap: 20px">
-                                <button class="btn btn-outline-light rounded-circle border-2 btn-sm"> <i
-                                        class="fas fa-minus    "></i></button> <span class="h3 text-white fw-bold"
-                                    style="font-weight: 400">0</span>
-                                <button class="btn btn-outline-light rounded-circle border-2 btn-sm"> <i
-                                        class="fas fa-plus    "></i></button>
-                            </div>
                         @endif
                     @else
                         @if ($product->type != 'Listing')
-                            @if ($existingQty == 0)
-                                <!-- Condition Here -->
-                                    <a href="javascript:;" data-href="{{ route('product.add.to.cart', $product->id) }}"
-                                    data-product-id="{{ $product->id }}" class="add_cart_overlay outofstock-box-2 ">
-                                    <div class="text-center text-white d-block">
-                                        <i class="fa-solid fa-cart-plus"></i>
+                            <div class="cart-ui overlay-ui">
+                                @if ($existingQty == 0)
+                                    <div class="overlay-add-btn" data-product-id="{{ $product->id }}">
+                                        <button type="button" class="outofstock-box-2 add_cart_click"
+                                            data-href="{{ route('product.add.to.cart', $product->id) }}"
+                                            data-product-id="{{ $product->id }}">
+                                            <div class="text-center text-white">
+                                                <i class="fa-solid fa-cart-plus"></i>
+                                            </div>
+                                            <p class="text-white">Add to Shopping Bag</p>
+                                        </button>
                                     </div>
-                                    <p class="text-white ">{{ __('Add to Shopping Bag') }}</p>
-                                </a>
-                            @else
-                                <div class="outofstock-box-2 ov-qty-wrapper" style="flex-direction: row; gap: 20px;" data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
-                                    <button class="btn btn-outline-light rounded-circle border-2 btn-sm qty-minus"> <i
-                                            class="fas fa-minus"></i></button>
-                                    <span class="h3 text-white qty-text" style="font-weight: 400">{{$existingQty}}</span>
-                                    <button class="btn btn-outline-light rounded-circle border-2 btn-sm qty-plus"> <i
-                                            class="fas fa-plus"></i></button>
-                                </div>
-                            @endif
+                                @else
+                                    <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay"
+                                        data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
+                                        <button class="btn btn-outline-light border-2 btn-sm qty-minus">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+
+                                        <span class="h3 text-white qty-text">{{ $existingQty }}</span>
+
+                                        <button class="btn btn-outline-light border-2 btn-sm qty-plus">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
                         @endif
                     @endif
 
@@ -167,24 +168,26 @@
             @endif
             {{-- add to cart and cart item quantity increment decrement buttons --}}
             @if ($product->stock !== 0)
-                @if ($existingQty == 0)
-                    {{-- SHOW ADD TO BAG --}}
-                    <div class="w-100 d-block mt-auto add-btn-wrapper">
-                        <button
-                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
-                            data-href="{{ route('product.add.to.cart', $product->id) }}"
-                            data-product-id="{{ $product->id }}">
-                            <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
-                        </button>
-                    </div>
-                @else
-                    {{-- SHOW QTY BOX --}}
-                    <div class="qty-box mt-auto qty-wrapper" data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
-                        <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
-                        <span class="qty-text">{{ $existingQty }} in Bag</span>
-                        <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
-                    </div>
-                @endif
+                <div class="cart-ui normal-ui w-100">
+                    @if ($existingQty == 0)
+                        <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
+                            <button
+                                class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
+                                type="button" data-href="{{ route('product.add.to.cart', $product->id) }}"
+                                data-product-id="{{ $product->id }}">
+                                <i class="fa fa-bolt mr-2"></i> Add To Cart
+                            </button>
+                        </div>
+                    @else
+                        <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal" data-product-id="{{ $product->id }}"
+                            data-unique-key="{{ $uniqueKey }}">
+                            <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
+                            <span class="qty-text">{{ $existingQty }} in Bag</span>
+                            <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
+                        </div>
+                    @endif
+                </div>
+
             @endif
         </div>
     </div>

@@ -122,9 +122,9 @@ class CheckoutController extends Controller
                 $shipping = $orderCalculate['shipping'];
                 $packeing = $orderCalculate['packeing'];
                 $is_shipping = $orderCalculate['is_shipping'];
-                $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-                $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-                $vendor_ids = $orderCalculate['vendor_ids'];
+                // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
+                // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
+                // $vendor_ids = $orderCalculate['vendor_ids'];
 
                 $input['shipping_title'] = @$shipping->title;
                 $input['vendor_shipping_id'] = @$shipping->id;
@@ -133,9 +133,9 @@ class CheckoutController extends Controller
                 $input['shipping_cost'] = @$shipping->price ?? 0;
                 $input['packing_cost'] = @$packeing->price ?? 0;
                 $input['is_shipping'] = $is_shipping;
-                $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-                $input['vendor_packing_ids'] = $vendor_packing_ids;
-                $input['vendor_ids'] = $vendor_ids;
+                // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
+                // $input['vendor_packing_ids'] = $vendor_packing_ids;
+                // $input['vendor_ids'] = $vendor_ids;
             } else {
 
 
@@ -145,22 +145,22 @@ class CheckoutController extends Controller
                 $shipping = $orderCalculate['shipping'];
                 $packeing = $orderCalculate['packeing'];
                 $is_shipping = $orderCalculate['is_shipping'];
-                $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-                $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-                $vendor_ids = $orderCalculate['vendor_ids'];
+                // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
+                // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
+                // $vendor_ids = $orderCalculate['vendor_ids'];
                 $shipping_cost = $orderCalculate['shipping_cost'];
                 $packing_cost = $orderCalculate['packing_cost'];
 
-                $input['shipping_title'] = $vendor_shipping_ids;
-                $input['vendor_shipping_id'] = $vendor_shipping_ids;
-                $input['packing_title'] = $vendor_packing_ids;
-                $input['vendor_packing_id'] = $vendor_packing_ids;
+                // $input['shipping_title'] = $vendor_shipping_ids;
+                // $input['vendor_shipping_id'] = $vendor_shipping_ids;
+                // $input['packing_title'] = $vendor_packing_ids;
+                // $input['vendor_packing_id'] = $vendor_packing_ids;
                 $input['shipping_cost'] = $shipping_cost;
                 $input['packing_cost'] = $packing_cost;
                 $input['is_shipping'] = $is_shipping;
-                $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-                $input['vendor_packing_ids'] = $vendor_packing_ids;
-                $input['vendor_ids'] = $vendor_ids;
+                // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
+                // $input['vendor_packing_ids'] = $vendor_packing_ids;
+                // $input['vendor_ids'] = $vendor_ids;
                 unset($input['shipping']);
                 unset($input['packeging']);
             }

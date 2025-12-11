@@ -363,10 +363,8 @@
                                                 </div>
                                                 {{-- <div class="col-lg-1"></div> --}}
                                                 <div class="col-lg-12 hidden" id="measure">
-                                                    {{-- <input name="measure" type="text" id="measurement"
-                                                        class="input-field" placeholder="{{ __('Enter Unit') }}"> --}}
-                                                        <ul id="tags" class="myTags">
-                                                </ul>
+                                                    <input name="measure" type="text" id="measurement"
+                                                        class="input-field" placeholder="{{ __('Enter Unit') }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -537,6 +535,10 @@
                                                     placeholder="e.g 20" value="" min="0">
                                             </div>
                                         </div>
+
+
+
+
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 <div class="left-area">

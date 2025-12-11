@@ -156,9 +156,10 @@ class CartController extends Controller
                 Session::put('cart', $cart);
 
                 return response()->json([
-                    count($cart->items),
-                    $cart->totalPrice,
-                    $cart->items[$key]['qty']
+                    'cart_count' => count($cart->items),
+                    'total_price' => $cart->totalPrice,
+                    'qty' => $cart->items[$key]['qty'],
+                   // 'product_id' => $row['item']['id'],
                 ]);
             }
         }
