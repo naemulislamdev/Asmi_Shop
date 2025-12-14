@@ -83,13 +83,13 @@
 
         // OVERLAY UI
         $(`.overlay-add-btn[data-product-id="${pid}"]`).html(`
-                <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay"
+                <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay flex-row justify-content-evenly align-items-center"
                     data-product-id="${pid}" data-unique-key="${uniqueKey}">
-                    <button class="btn btn-outline-light border-2 btn-sm qty-minus">
+                    <button class="btn btn-outline-light border-2 btn-sm qty-minus rounded-circle">
                         <i class="fas fa-minus"></i>
                     </button>
                     <span class="h3 text-white qty-text">1</span>
-                    <button class="btn btn-outline-light border-2 btn-sm qty-plus">
+                    <button class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle">
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
@@ -100,7 +100,7 @@
                 <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal"
                     data-product-id="${pid}" data-unique-key="${uniqueKey}">
                     <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
-                    <span class="qty-text">1 in Bag</span>
+                    <span class="qty-text">1 </span>
                     <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                 </div>
             `);
@@ -142,9 +142,9 @@
 
         // Change Add button → Qty UI
         const newQtyHTML = `
-                <div class="qty-box mt-auto qty-wrapper" data-product-id="${pid}" data-unique-key="${data.unique_key}">
+                <div class="qty-box mt-auto qty-wrapper flex-row justify-content-evenly align-items-center" data-product-id="${pid}" data-unique-key="${data.unique_key}">
                     <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
-                    <span class="qty-text">1 in Bag</span>
+                    <span class="qty-text">1 </span>
                     <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                 </div>
             `;
@@ -175,16 +175,16 @@
         reloadOffcanvasCart();
 
         $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`)
-          .text(qty + " in Bag");
+          .text(qty + " ");
 
         $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`)
-          .text(qty + " in Bag");
+          .text(qty + " ");
       }
     });
   });
 
 
-  $(document).on("click", ".qty-minus", function () {
+  $(document).on("click", ".qty-minus", function () { 
 
     const wrap = $(this).closest("[data-unique-key]");
     const pid = wrap.data("product-id");
@@ -211,22 +211,20 @@
                         <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="${pid}">
                             <button class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
                                 data-href="${addRoute}" data-product-id="${pid}">
-                                <i class="fa fa-bolt mr-2"></i> Add To Cart
+                                <i class="fa fa-bolt me-2"></i> Add To Cart
                             </button>
                         </div>
                     `);
 
           // OVERLAY UI RESET
-          $(`.qty-wrapper-overlay[data-product-id="${pid}"]`)
-            .parent()
-            .html(`
+          $(`.qty-wrapper-overlay[data-product-id="${pid}"]`).parent().html(`
                         <div class="overlay-add-btn" data-product-id="${pid}">
                             <button type="button" class="outofstock-box-2 add_cart_click"
                                 data-href="${addRoute}" data-product-id="${pid}">
                                 <div class="text-center text-white">
-                                    <i class="fa-solid fa-cart-plus"></i>
+                                    <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                                 </div>
-                                <p class="text-white">Add to Shopping Bag</p>
+                                <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br> Bag</p>
                             </button>
                         </div>
                     `);
@@ -234,10 +232,10 @@
         } else {
           // UPDATE BOTH UI
           $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`)
-            .text(qty + " in Bag");
+            .text(qty + " ");
 
           $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`)
-            .text(qty + " in Bag");
+            .text(qty + " ");
         }
       }
     });
@@ -270,22 +268,20 @@
                     <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="${pid}">
                         <button class="btn btn-sm add-cart-btn btn-info d-flex w-100 justify-content-center align-items-center add_cart_click"
                             data-href="${addRoute}" data-product-id="${pid}">
-                            <i class="fa fa-bolt mr-2"></i> Add To Cart
+                            <i class="fa fa-bolt me-2"></i> Add To Cart
                         </button>
                     </div>
                 `);
 
         // OVERLAY UI RESET
-        $(`.qty-wrapper-overlay[data-product-id="${pid}"]`)
-          .parent()
-          .html(`
+        $(`.qty-wrapper-overlay[data-product-id="${pid}"]`).parent().html(`
                     <div class="overlay-add-btn" data-product-id="${pid}">
                         <button type="button" class="outofstock-box-2 add_cart_click"
                             data-href="${addRoute}" data-product-id="${pid}">
                             <div class="text-center text-white">
-                                <i class="fa-solid fa-cart-plus"></i>
+                               <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                             </div>
-                            <p class="text-white">Add to Shopping Bag</p>
+                           <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br> Bag</p>
                         </button>
                     </div>
                 `);

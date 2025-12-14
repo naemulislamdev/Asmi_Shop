@@ -95,7 +95,7 @@
   border-radius: 10px 10px 0 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -196,4 +196,26 @@
 
 .home-cate-slider .slick-list {
   margin: 0 -10px;
+}
+.hero-slider-wrapper .slick-prev, .slick-next {
+    background-color: #1bb9cb;
+    color: #fff;
+    height: 35px;
+    width: 35px;
+    line-height: 35px;
+    border-radius: 50%;
+    position: absolute;
+    top: 45%;
+    z-index: 999;
+}
+.hero-slider-wrapper .slick-prev {
+    left: 0;
+}
+.hero-slider-wrapper .slick-next {
+    right: 0;
+}
+.hero-slider-wrapper .slick-prev:focus,
+.hero-slider-wrapper .slick-next:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.35);
 }

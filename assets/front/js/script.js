@@ -157,6 +157,15 @@ $(document).ready(function () {
   });
 
   //******  9. HERO SECTION SLIDER ******//
+  // $(".hero-slider-wrapper").slick({
+  //   dots: true,
+  //   infinite: true,
+  //   speed: 500,
+  //   autoplay: true,
+  //   fade: true,
+  //   cssEase: "linear",
+  //   arrows: true,
+  // });
   $(".hero-slider-wrapper").slick({
     dots: true,
     infinite: true,
@@ -164,8 +173,13 @@ $(document).ready(function () {
     autoplay: true,
     fade: true,
     cssEase: "linear",
-    arrows: false,
+    arrows: true,
+    prevArrow:
+      '<button title="Previous" type="button" class="slick-prev"><i class="fa fa-chevron-left"></i></button>',
+    nextArrow:
+      '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
   });
+
 
   //******  10. HOME CATE SLIDER ******//
   $(".home-cate-slider").slick({

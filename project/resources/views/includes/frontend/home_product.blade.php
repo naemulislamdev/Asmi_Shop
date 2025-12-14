@@ -71,9 +71,9 @@
                             <a href="{{ $product->affiliate_link }}" class="outofstock-box-2">
                                 <div class="d-block text-center">
 
-                                    <i class="fa-solid fa-cart-plus"></i>
+                                    <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                                 </div>
-                                <p class="text-white ">{{ __('Add to Shopping Bag') }}</p>
+                                <p style="font-size: 1.3rem" class="text-white ">{{ __('Add to Shopping Bag') }}</p>
                             </a>
                         @endif
                     @else
@@ -85,21 +85,21 @@
                                             data-href="{{ route('product.add.to.cart', $product->id) }}"
                                             data-product-id="{{ $product->id }}">
                                             <div class="text-center text-white">
-                                                <i class="fa-solid fa-cart-plus"></i>
+                                                <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                                             </div>
-                                            <p class="text-white">Add to Shopping Bag</p>
+                                            <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br> Bag</p>
                                         </button>
                                     </div>
                                 @else
                                     <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay"
                                         data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
-                                        <button class="btn btn-outline-light border-2 btn-sm qty-minus">
+                                        <button class="btn btn-outline-light border-2 btn-sm qty-minus rounded-circle">
                                             <i class="fas fa-minus"></i>
                                         </button>
 
                                         <span class="h3 text-white qty-text">{{ $existingQty }}</span>
 
-                                        <button class="btn btn-outline-light border-2 btn-sm qty-plus">
+                                        <button class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle">
                                             <i class="fas fa-plus"></i>
                                         </button>
                                     </div>
@@ -175,7 +175,7 @@
                                 class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
                                 type="button" data-href="{{ route('product.add.to.cart', $product->id) }}"
                                 data-product-id="{{ $product->id }}">
-                                <i class="fa fa-bolt mr-2"></i> Add To Cart
+                                <i class="fa fa-bolt me-2"></i> Add To Cart
                             </button>
                         </div>
                     @else

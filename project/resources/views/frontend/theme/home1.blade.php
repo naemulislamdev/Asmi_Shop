@@ -68,7 +68,7 @@
             flex: 0 0 auto;
             width: 16%;
         }
-        
+
     </style>
 
     <!-- hero section start -->

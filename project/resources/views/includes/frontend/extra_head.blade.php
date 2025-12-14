@@ -18,13 +18,13 @@
     <meta property="og:description"
         content="{{ $productt->meta_description != null ? $productt->meta_description : strip_tags($productt->description) }}" />
     <meta property="og:image" content="{{ asset('assets/images/thumbnails/' . $productt->thumbnail) }}" />
-    <meta name="author" content="GeniusOcean">
+    <meta name="author" content="Asmishop">
     <title>{{ substr($productt->name, 0, 11) . '-' }}{{ $gs->title }}</title>
 @else
     <meta property="og:title" content="{{ $gs->title }}" />
     <meta property="og:image" content="{{ asset('assets/images/' . $gs->logo) }}" />
-    <meta name="keywords" content="{{ $seo->meta_keys }}">
-    <meta name="author" content="GeniusOcean">
+    <meta name="keywords" content="asmi, shop, asmishop, supershop, grocery, online, Dhaka, Bangladesh">
+    <meta name="author" content="Asmishop">
     <title>{{ $gs->title }}</title>
 @endif
 
