@@ -351,9 +351,7 @@ class ProductController extends AdminBaseController
                 }
             }
 
-            if ($request->mesasure_check == "") {
-                $input['measure'] = null;
-            }
+            $input['measure'] = $request->measure_check == 1 ? 1 : 0;
         }
 
         if (empty($request->seo_check)) {
@@ -470,6 +468,21 @@ class ProductController extends AdminBaseController
 
         // Save Data
         $data->fill($input)->save();
+
+        if ($request->measure_check == 1 && $request->has('measures')) {
+            $data->measures()->delete();
+
+            foreach ($request->measures as $measure) {
+
+                if (!empty($measure['value']) && !empty($measure['label'])) {
+                    $data->measures()->create([
+                        'value' => $measure['value'],
+                        'label' => $measure['label'],
+                        'price' => $measure['price'] ?? null,
+                    ]);
+                }
+            }
+        }
 
         // Set SLug
         $prod = Product::find($data->id);
@@ -804,11 +817,7 @@ class ProductController extends AdminBaseController
             }
 
             // Check Measure
-            if ($request->measure_check == "") {
-                $input['measure'] = null;
-            }
-
-            $input['measure'] = $request->measure;
+            $input['measure'] = $request->measure_check == 1 ? 1 : 0;
         }
 
         // Check Seo
@@ -949,6 +958,20 @@ class ProductController extends AdminBaseController
 
         $data->update($input);
         //-- Logic Section Ends
+
+        if ($request->measure_check == 1 && $request->has('measures')) {
+
+            $data->measures()->delete();
+            foreach ($request->measures as $measure) {
+                if (!empty($measure['value']) && !empty($measure['label'])) {
+                    $data->measures()->create([
+                        'value' => $measure['value'],
+                        'label' => $measure['label'],
+                        'price' => $measure['price'] ?? null,
+                    ]);
+                }
+            }
+        }
 
         //--- Redirect Section
         $msg = __("Product Updated Successfully.") . '<a href="' . route('admin-prod-index') . '">' . __("View Product Lists.") . '</a>';

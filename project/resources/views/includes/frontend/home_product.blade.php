@@ -87,7 +87,8 @@
                                             <div class="text-center text-white">
                                                 <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                                             </div>
-                                            <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br> Bag</p>
+                                            <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br>
+                                                Bag</p>
                                         </button>
                                     </div>
                                 @else
@@ -137,25 +138,16 @@
                 @endif
                 <br>
 
-                @if ($product->measure)
-                    <h6 class="measure-product">
-                        / Per
-                        <select class="measure-select" data-measure-type="{{ $product->measure }}">
-                            @if ($product->measure == 'KG')
-                                <option value="1">1kg</option>
-                                <option value="0.5">500gm</option>
-                                <option value="0.25">250gm</option>
-                            @elseif($product->measure == 'LTR')
-                                <option value="1">1L</option>
-                                <option value="0.5">500ml</option>
-                                <option value="0.25">250ml</option>
-                            @elseif($product->measure == 'PCS')
-                                <option value="1">1p</option>
-                                <option value="5">5p</option>
-                                <option value="10">10p</option>
-                            @endif
-                        </select>
-                    </h6>
+                @if ($product->measure == 1 && $product->measures->count() > 0)
+                    <h6 class="measure-product">/ Per</h6> <br>
+                    <select class="measure-select" class="form-control">
+                        @foreach ($product->measures as $measure)
+                            <option value="{{ $measure->value }}" data-price="{{ $measure->price }}">
+                                {{ $measure->label }}
+                            </option>
+                        @endforeach
+                    </select>
+
                 @endif
             </div>
             @if ($product->start_date != null && $product->end_date != null)
@@ -179,8 +171,8 @@
                             </button>
                         </div>
                     @else
-                        <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal" data-product-id="{{ $product->id }}"
-                            data-unique-key="{{ $uniqueKey }}">
+                        <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal"
+                            data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
                             <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                             <span class="qty-text">{{ $existingQty }} in Bag</span>
                             <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>

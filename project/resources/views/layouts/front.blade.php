@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-  
+
     <!--Essential css files-->
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/all.css">
@@ -579,8 +579,7 @@
             </div>
 
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
-                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false"
-     data-bs-scroll="true">
+                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false" data-bs-scroll="true">
                 <div class="offcanvas-header">
                     <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
                         <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
@@ -817,32 +816,40 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const selects = document.querySelectorAll('.measure-select');
 
-            selects.forEach(select => {
+            document.querySelectorAll('.measure-select').forEach(select => {
+
                 select.addEventListener('change', function() {
-                    const measureType = this.dataset.measureType;
-                    const selectedValue = parseFloat(this.value);
-                    const priceElement = this.closest('.price-wrapper').querySelector(
-                        '.product-price');
+
+                    const selectedOption = this.options[this.selectedIndex];
+
+                    const measureValue = parseFloat(selectedOption.value || 1);
+                    const measurePrice = parseFloat(selectedOption.dataset.price || 0);
+
+                    const wrapper = this.closest('.price-wrapper');
+                    const priceElement = wrapper.querySelector('.product-price');
+
                     const basePrice = parseFloat(priceElement.dataset.basePrice);
 
-                    let newPrice = basePrice;
+                    let finalPrice = 0;
 
-                    // Custom calculation rules
-                    if (measureType === 'KG' || measureType === 'LTR') {
-                        // smaller quantity = divide
-                        newPrice = basePrice * selectedValue;
-                    } else if (measureType === 'PCS') {
-                        // more pieces = multiply
-                        newPrice = basePrice * selectedValue;
+                    // 1️⃣ If admin set price per measure → use it
+                    if (measurePrice > 0) {
+                        finalPrice = measurePrice;
+                    }
+                    // 2️⃣ Otherwise calculate from base price
+                    else {
+                        finalPrice = basePrice * measureValue;
                     }
 
-                    priceElement.textContent = newPrice.toFixed(2) + '৳';
+                    priceElement.textContent = finalPrice.toFixed(2) + '৳';
                 });
+
             });
+
         });
     </script>
+
     <script>
         $(document).ready(function() {
             // ======================
