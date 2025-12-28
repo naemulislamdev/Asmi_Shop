@@ -15,7 +15,7 @@
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-6">
-                    <h4 class="heading">{{ __('All Orders') }}</h4>
+                    <h4 class="heading">{{ __('Today Orders') }}</h4>
                     <ul class="links">
                         <li>
                             <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
@@ -284,7 +284,7 @@
                 ordering: false,
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('admin-order-datatables', 'none') }}',
+                ajax: '{{ route('admin-order-datatables','today-orders') }}',
                 columns: [{
                         data: 'customer_name',
                         name: 'customer_name'

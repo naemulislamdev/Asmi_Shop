@@ -350,6 +350,39 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-12">
+                                                    <table class="table" id="measureTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Value</th>
+                                                                <th>Label</th>
+                                                                <th>Price (optional)</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><input type="number" name="measures[0][value]"
+                                                                        class="input-field measure-value"
+                                                                        placeholder="Value" step="0.01"
+                                                                        min="0"></td>
+                                                                <td><input type="text" name="measures[0][label]"
+                                                                        class="input-field measure-label"
+                                                                        placeholder="Label (eg. KG, Gram)">
+                                                                </td>
+                                                                <td><input type="number" name="measures[0][price]"
+                                                                        class="input-field measure-price"
+                                                                        placeholder="Price" step="0.01"
+                                                                        min="0"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                        id="addMeasure">
+                                                        + Add Measure
+                                                    </button>
+                                                </div>
+                                                {{-- <div class="col-lg-12">
                                                     <select id="product_measure">
                                                         <option value="">{{ __('None') }}</option>
                                                         <option value="Gram">{{ __('Gram') }}</option>
@@ -361,14 +394,12 @@
                                                         <option value="Custom">{{ __('Custom') }}</option>
                                                     </select>
                                                 </div>
-                                                {{-- <div class="col-lg-1"></div> --}}
                                                 <div class="col-lg-12 hidden" id="measure">
                                                     <input name="measure" type="text" id="measurement"
                                                         class="input-field" placeholder="{{ __('Enter Unit') }}">
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
-
 
                                         <div class="row">
                                             <div class="col-lg-12">
@@ -484,7 +515,7 @@
                                                                     <input type="text" name="size[]"
                                                                         class="input-field tsize"
                                                                         placeholder="{{ __('Enter Product Size') }}"
-                                                                        value="" >
+                                                                        value="">
                                                                 </div>
                                                                 <div class="col-md-4 col-sm-4">
                                                                     <label>
@@ -675,8 +706,7 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="price" type="number" class="input-field"
-                                                    placeholder="{{ __('e.g 20') }}" required=""
-                                                    min="0">
+                                                    placeholder="{{ __('e.g 20') }}" required="" step="any" min="0">
                                             </div>
                                         </div>
 
@@ -688,8 +718,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
-                                                <input name="discount" type="number"
-                                                    class="input-field" placeholder="Enter discount amount" value="0">
+                                                <input name="discount" type="number" class="input-field"
+                                                    placeholder="Enter discount amount" value="0">
                                             </div>
                                         </div>
                                         <div class="row">
@@ -835,6 +865,92 @@
     <script src="{{ asset('assets/admin/js/jquery.Jcrop.js') }}"></script>
     <script src="{{ asset('assets/admin/js/jquery.SimpleCropper.js') }}"></script>
     <script src="{{ asset('assets/admin/js/select2.js') }}"></script>
+    <script>
+        let index = 1;
+
+        // Add row
+        document.getElementById('addMeasure').addEventListener('click', function() {
+            let row = `
+        <tr>
+            <td>
+                <input type="number" step="0.001" name="measures[${index}][value]"
+                    class="input-field measure-value" readonly>
+            </td>
+            <td>
+                <input type="text" name="measures[${index}][label]"
+                    class="input-field measure-label"
+                    placeholder="eg. 250g, 1kg, 500ml, 1L, 2pcs">
+            </td>
+            <td>
+                <input type="number" step="0.01" name="measures[${index}][price]"
+                    class="input-field measure-price">
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm remove"><i class="fas fa-trash-alt"></i></button>
+            </td>
+        </tr>
+        `;
+            document.querySelector('#measureTable tbody').insertAdjacentHTML('beforeend', row);
+            index++;
+        });
+
+        // Remove row
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        // Auto calculate value & price
+        document.addEventListener('input', function(e) {
+
+            if (!e.target.classList.contains('measure-label')) return;
+
+            let label = e.target.value.toLowerCase(); // keep spaces
+            let row = e.target.closest('tr');
+
+            let valueInput = row.querySelector('.measure-value');
+            let priceInput = row.querySelector('.measure-price');
+
+            let basePrice = parseFloat(document.querySelector('input[name="price"]').value || 0);
+            let value = 0;
+
+            // ===== WEIGHT =====
+            let kgMatch = label.match(/([\d.]+)\s*kg/);
+            let gMatch = label.match(/([\d.]+)\s*(g|gm)/);
+            let lbMatch = label.match(/([\d.]+)\s*(lb|pound)/);
+
+            if (kgMatch) value += parseFloat(kgMatch[1]);
+            if (gMatch) value += parseFloat(gMatch[1]) / 1000;
+            if (lbMatch) value += parseFloat(lbMatch[1]) * 0.453592;
+
+            // ===== LIQUID =====
+            let lMatch = label.match(/([\d.]+)\s*(l|ltr)/);
+            let mlMatch = label.match(/([\d.]+)\s*ml/);
+
+            if (lMatch) value += parseFloat(lMatch[1]);
+            if (mlMatch) value += parseFloat(mlMatch[1]) / 1000;
+
+            // ===== PIECES =====
+            let pcsMatch = label.match(/([\d.]+)\s*(pcs|pc|piece)/);
+            if (pcsMatch) value += parseFloat(pcsMatch[1]);
+
+            if (value > 0) {
+                valueInput.value = value.toFixed(3);
+
+                // Auto price calculation
+                if (basePrice > 0) {
+                    priceInput.value = (basePrice * value).toFixed(2);
+                }
+            } else {
+                valueInput.value = '';
+                priceInput.value = '';
+            }
+        });
+    </script>
+
+
+
 
     <script type="text/javascript">
         (function($) {

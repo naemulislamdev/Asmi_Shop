@@ -54,7 +54,7 @@
                                             <div class="col-lg-12">
                                                 <input type="text" class="input-field"
                                                     placeholder="{{ __(" Enter Product
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            												Name") }}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    												Name") }}"
                                                     name="name" required="" value="{{ $data->name }}">
                                             </div>
                                         </div>
@@ -384,7 +384,7 @@
                                                                                         value="{{ !empty(
                                                                                             $selectedAttrs[
                                                                                                 "
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        																		$inName"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        																		$inName"
                                                                                             ]['prices'][$i]
                                                                                         ) && $checked == 1
                                                                                             ? round($selectedAttrs["$inName"]['prices'][$i] * $sign->value, 2)
@@ -407,21 +407,80 @@
                                             @endif
                                         </div>
                                         {{-- Attributes of child category ends --}}
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
 
-                                        <div class="{{ !empty($data->size) ? ' showbox' : '' }}" id="stckprod">
-                                            <div class="row">
-
-                                                <div class="col-lg-12">
-                                                    <div class="checkbox-wrapper">
-                                                        <input type="checkbox" name="measure_check" class="checkclick1"
-                                                            id="allowProductMeasurement" value="1"
-                                                            {{ $data->measure == null ? '' : 'checked' }}>
-                                                        <label
-                                                            for="allowProductMeasurement">{{ __('Allow Product Measurement') }}</label>
-                                                    </div>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="measure_check" type="checkbox"
+                                                            id="measure_check" value="1"
+                                                            {{ $data->measure == 1 ? 'checked' : '' }}>
+                                                        <label
+                                                            for="measure_check">{{ __('Allow Product Measurement') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class=" {{ $data->measure == 1 ? '' : 'showbox' }}">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Product Measurement') }}*</h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <table class="table" id="measureTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Value</th>
+                                                                <th>Label</th>
+                                                                <th>Price (optional)</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($data->measures as $index => $measure)
+                                                                <tr>
+                                                                    <td>
+                                                                        <input type="number"
+                                                                            name="measures[{{ $index }}][value]"
+                                                                            class="input-field measure-value" step="0.01"
+                                                                            value="{{ $measure->value }}">
+                                                                    </td>
 
+                                                                    <td>
+                                                                        <input type="text"
+                                                                            name="measures[{{ $index }}][label]"
+                                                                            class="input-field measure-label"
+                                                                            value="{{ $measure->label }}">
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <input type="number"
+                                                                            name="measures[{{ $index }}][price]"
+                                                                            class="input-field measure-price" step="0.01"
+                                                                            value="{{ $measure->price }}">
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <button type="button"
+                                                                            class="btn btn-danger btn-sm remove"><i class="fas fa-trash-alt"></i></button>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                        id="addMeasure">
+                                                        + Add Measure
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="row">
@@ -582,11 +641,10 @@
                                             <div class="col-lg-12">
                                                 <ul class="list">
                                                     <li>
-                                                        <input class="checkclick1" name="is_flash_deal"
-                                                            type="checkbox" id="flash" value="1"
+                                                        <input class="checkclick1" name="is_flash_deal" type="checkbox"
+                                                            id="flash" value="1"
                                                             {{ $data->is_flash_deal != 0 ? 'checked' : '' }}>
-                                                        <label
-                                                            for="flash">{{ __('Allow Flash Deal') }}</label>
+                                                        <label for="flash">{{ __('Allow Flash Deal') }}</label>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -637,84 +695,45 @@
 
                                         @php
 
-
-
-
                                         @endphp
-                                        <div class="{{is_array($data->color_all) ? '' : ' showbox' }}">
+                                        <div class="{{ is_array($data->color_all) ? '' : ' showbox' }}">
                                             <div class="row">
 
                                                 <div class="col-lg-12">
                                                     <div class="select-input-color" id="color-section">
                                                         @if (is_array($data->color_all))
 
-                                                        @foreach ($data->color_all as $key => $color)
-                                                        <div class="size-area">
-                                                            <span class="remove size-remove"><i
-                                                                    class="fas fa-times"></i></span>
-                                                            <div class="row">
-                                                                <div class="col-md-12 col-sm-12">
-                                                                    <label>
-                                                                        {{ __('Color') }} :
-                                                                    </label>
-                                                                    <div class="color-area">
-                                                                        <div
-                                                                            class="input-group colorpicker-component cp">
-                                                                            <input type="text" name="color_all[]"
-                                                                                value="{{ $color }}"
-                                                                                class="input-field cp tcolor" />
-                                                                            <span
-                                                                                class="input-group-addon"><i></i></span>
+                                                            @foreach ($data->color_all as $key => $color)
+                                                                <div class="size-area">
+                                                                    <span class="remove size-remove"><i
+                                                                            class="fas fa-times"></i></span>
+                                                                    <div class="row">
+                                                                        <div class="col-md-12 col-sm-12">
+                                                                            <label>
+                                                                                {{ __('Color') }} :
+                                                                            </label>
+                                                                            <div class="color-area">
+                                                                                <div
+                                                                                    class="input-group colorpicker-component cp">
+                                                                                    <input type="text"
+                                                                                        name="color_all[]"
+                                                                                        value="{{ $color }}"
+                                                                                        class="input-field cp tcolor" />
+                                                                                    <span
+                                                                                        class="input-group-addon"><i></i></span>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
+
                                                                     </div>
                                                                 </div>
-
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
+                                                            @endforeach
 
                                                         @endif
 
                                                     </div>
                                                     <a href="javascript:;" id="color-btn" class="add-more mt-4 mb-3"><i
                                                             class="fas fa-plus"></i>{{ __('Add More Color') }} </a>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-
-                                        <div class="">
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="left-area">
-                                                        <h4 class="heading">{{ __('Product Measurement') }}*</h4>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12">
-                                                    <select id="product_measure" name="measure">
-                                                        <option value=""
-                                                            {{ $data->measure == null ? 'selected' : '' }}>
-                                                            {{ __('None') }}</option>
-                                                        <option value="Gram"
-                                                            {{ $data->measure == 'Gram' ? 'selected' : '' }}>
-                                                            {{ __('Gram') }}</option>
-                                                        <option value="KG"
-                                                            {{ $data->measure == 'KG' ? 'selected' : '' }}>
-                                                            {{ __('Kilogram') }}</option>
-                                                        <option value="LTR"
-                                                            {{ $data->measure == 'LTR' ? 'selected' : '' }}>
-                                                            {{ __('Litre') }}</option>
-                                                        <option value="POUND"
-                                                            {{ $data->measure == 'POUND' ? 'selected' : '' }}>
-                                                            {{ __('Pound') }}</option>
-                                                        <option value="PCS"
-                                                            {{ $data->measure == 'PCS' ? 'selected' : '' }}>
-                                                            {{ __('Pieces') }}</option>
-                                                        <option value="ML"
-                                                            {{ $data->measure == 'ML' ? 'selected' : '' }}>
-                                                            {{ __('ML') }}</option>
-                                                    </select>
                                                 </div>
 
                                             </div>
@@ -756,11 +775,11 @@
 
 
                                         @php
-                                        if(is_array($data->size)){
-                                            $sizes = $data->size;
-                                        }else{
-                                            $sizes = array_filter(explode(',', $data->size));
-                                        }
+                                            if (is_array($data->size)) {
+                                                $sizes = $data->size;
+                                            } else {
+                                                $sizes = array_filter(explode(',', $data->size));
+                                            }
                                         @endphp
 
                                         <div class="{{ !empty($sizes) ? '' : ' showbox' }}" id="size-display">
@@ -963,9 +982,7 @@
                                         </div>
 
                                         <div
-                                            class="{{ $data->meta_tag == null && strip_tags($data->meta_description) == null
-                                                ? "showbox"
-                                                : '' }}">
+                                            class="{{ $data->meta_tag == null && strip_tags($data->meta_description) == null ? 'showbox' : '' }}">
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <div class="left-area">
@@ -1064,8 +1081,8 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="price" type="number" class="input-field"
-                                                    placeholder="e.g 20" step="0.1" min="0"
-                                                    value="{{ round($data->price * $sign->value, 2) }}" required="">
+                                                    placeholder="e.g 20" step="any"
+                                                    value="{{$data->price }}">
                                             </div>
                                         </div>
 
@@ -1077,7 +1094,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
-                                                <input name="discount" type="number" value="{{ round($data->discount * $sign->value, 2) }}"
+                                                <input name="discount" type="number"
+                                                    value="{{ round($data->discount * $sign->value, 2) }}"
                                                     class="input-field" placeholder="{{ __('e.g 20') }}"
                                                     min="0">
                                             </div>
@@ -1091,8 +1109,10 @@
                                             <div class="col-lg-12">
                                                 <select class="form-control" name="discount_type">
                                                     <option selected disabled>{{ __('Select Type') }}</option>
-                                                    <option {{ $data->discount_type == 'flat' ? 'selected' : '' }} value="flat">{{ __('Flat') }}</option>
-                                                    <option {{ $data->discount_type == 'percent' ? 'selected' : '' }} value="percent">{{ __('Percentage') }}</option>
+                                                    <option {{ $data->discount_type == 'flat' ? 'selected' : '' }}
+                                                        value="flat">{{ __('Flat') }}</option>
+                                                    <option {{ $data->discount_type == 'percent' ? 'selected' : '' }}
+                                                        value="percent">{{ __('Percentage') }}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -1263,6 +1283,89 @@
 @endsection
 
 @section('scripts')
+    <script>
+        let index = {{ $data->measures->count() }};
+
+         document.getElementById('addMeasure').addEventListener('click', function() {
+            let row = `
+        <tr>
+            <td>
+                <input type="number" step="0.001" name="measures[${index}][value]"
+                    class="input-field measure-value" readonly>
+            </td>
+            <td>
+                <input type="text" name="measures[${index}][label]"
+                    class="input-field measure-label"
+                    placeholder="eg. 250g, 1kg, 500ml, 1L, 2pcs">
+            </td>
+            <td>
+                <input type="number" step="0.01" name="measures[${index}][price]"
+                    class="input-field measure-price">
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm remove"><i class="fas fa-trash-alt"></i></button>
+            </td>
+        </tr>
+        `;
+            document.querySelector('#measureTable tbody').insertAdjacentHTML('beforeend', row);
+            index++;
+        });
+
+        // Remove row
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        // Auto calculate value & price
+        document.addEventListener('input', function(e) {
+
+            if (!e.target.classList.contains('measure-label')) return;
+
+            let label = e.target.value.toLowerCase(); // keep spaces
+            let row = e.target.closest('tr');
+
+            let valueInput = row.querySelector('.measure-value');
+            let priceInput = row.querySelector('.measure-price');
+
+            let basePrice = parseFloat(document.querySelector('input[name="price"]').value || 0);
+            let value = 0;
+
+            // ===== WEIGHT =====
+            let kgMatch = label.match(/([\d.]+)\s*kg/);
+            let gMatch = label.match(/([\d.]+)\s*(g|gm)/);
+            let lbMatch = label.match(/([\d.]+)\s*(lb|pound)/);
+
+            if (kgMatch) value += parseFloat(kgMatch[1]);
+            if (gMatch) value += parseFloat(gMatch[1]) / 1000;
+            if (lbMatch) value += parseFloat(lbMatch[1]) * 0.453592;
+
+            // ===== LIQUID =====
+            let lMatch = label.match(/([\d.]+)\s*(l|ltr)/);
+            let mlMatch = label.match(/([\d.]+)\s*ml/);
+
+            if (lMatch) value += parseFloat(lMatch[1]);
+            if (mlMatch) value += parseFloat(mlMatch[1]) / 1000;
+
+            // ===== PIECES =====
+            let pcsMatch = label.match(/([\d.]+)\s*(pcs|pc|piece)/);
+            if (pcsMatch) value += parseFloat(pcsMatch[1]);
+
+            if (value > 0) {
+                valueInput.value = value.toFixed(3);
+
+                // Auto price calculation
+                if (basePrice > 0) {
+                    priceInput.value = (basePrice * value).toFixed(2);
+                }
+            } else {
+                valueInput.value = '';
+                priceInput.value = '';
+            }
+        });
+    </script>
+
     <script type="text/javascript">
         // Gallery Section Update
 

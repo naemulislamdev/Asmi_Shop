@@ -12,6 +12,7 @@ use Illuminate\{
 };
 
 use App\Models\Font;
+use App\Models\Order;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
@@ -22,30 +23,43 @@ class AppServiceProvider extends ServiceProvider
     {
         Cache::flush();
         Paginator::useBootstrap();
-        view()->composer('*', function ($settings) {
+        view()->composer('*', function ($view) {
 
-            $settings->with('gs', DB::table('generalsettings')->first());
+            $view->with('gs', DB::table('generalsettings')->first());
 
-            $settings->with('ps', DB::table('pagesettings')->first());
+            $view->with('ps', DB::table('pagesettings')->first());
 
-            $settings->with('seo',DB::table('seotools')->first());
-            $settings->with('socialsetting', DB::table('socialsettings')->first());
+            $view->with('seo', DB::table('seotools')->first());
+            $view->with('socialsetting', DB::table('socialsettings')->first());
 
-            $settings->with('default_font', Font::whereIsDefault(1)->first());
+            $view->with('default_font', Font::whereIsDefault(1)->first());
 
             if (Session::has('currency')) {
-                $settings->with('curr', Currency::find(Session::get('currency')));
+                $view->with('curr', Currency::find(Session::get('currency')));
             } else {
-                $settings->with('curr', Currency::where('is_default', '=', 1)->first());
+                $view->with('curr', Currency::where('is_default', '=', 1)->first());
             }
 
             if (Session::has('language')) {
-                $settings->with('langg', Language::find(Session::get('language')));
+                $view->with('langg', Language::find(Session::get('language')));
             } else {
-                $settings->with('langg', Language::where('is_default', '=', 1)->first());
+                $view->with('langg', Language::where('is_default', '=', 1)->first());
             }
 
-     
+            $orderCounts = Order::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+            SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
+            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+            SUM(CASE WHEN status = 'declined' THEN 1 ELSE 0 END) as declined
+        ")->first();
+
+            $todayOrders = Order::whereDate('created_at', today())->where('status', 'pending')->count();
+
+            $view->with([
+                'orderCounts' => $orderCounts,
+                'todayOrders' => $todayOrders,
+            ]);
         });
     }
 

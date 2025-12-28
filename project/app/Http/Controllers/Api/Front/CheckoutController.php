@@ -169,6 +169,7 @@ class CheckoutController extends Controller
             $order = new Order;
 
             $input['user_id'] = $request->user_id ? $request->user_id : null;
+            $input['order_source'] = 'Mobile Apps';
 
             $input['cart'] = $new_cart;
             $input['affilate_users'] = $affilate_users;

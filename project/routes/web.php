@@ -121,11 +121,13 @@ Route::prefix('admin')->group(function () {
         Route::post('/order/track/update/{id}', 'Admin\OrderTrackController@update')->name('admin-order-track-update');
         Route::delete('/order/track/delete/{id}', 'Admin\OrderTrackController@delete')->name('admin-order-track-delete');
 
-
-
-
         // Order Tracking Ends
 
+    });
+
+    Route::group(['middleware' => 'permissions:reports'], function () {
+        Route::get('/orders/report', 'Admin\ReportController@orderReportIndex')->name('admin-order-report-index');
+        Route::get('/orders/report/filter', 'Admin\ReportController@orderReportFilter')->name('admin-order-report-filter');
     });
 
     //------------ ADMIN ORDER SECTION ENDS------------
