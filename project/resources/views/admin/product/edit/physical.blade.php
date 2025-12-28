@@ -1081,8 +1081,8 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="price" type="number" class="input-field"
-                                                    placeholder="e.g 20" step="0.1" min="0"
-                                                    value="{{ round($data->price * $sign->value, 2) }}" required="">
+                                                    placeholder="e.g 20" step="any"
+                                                    value="{{$data->price }}">
                                             </div>
                                         </div>
 

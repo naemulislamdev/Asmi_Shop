@@ -17,9 +17,8 @@ use Illuminate\{
 };
 
 use Carbon\Carbon;
-use Validator;
-use Datatables;
-
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class UserController extends AdminBaseController
 {
@@ -28,7 +27,7 @@ class UserController extends AdminBaseController
         {
              $datas = User::latest('id')->get();
              //--- Integrating This Collection Into Datatables
-             return Datatables::of($datas)
+             return DataTables::of($datas)
                                 ->addColumn('action', function(User $data) {
                                     $class = $data->ban == 0 ? 'drop-success' : 'drop-danger';
                                     $s = $data->ban == 1 ? 'selected' : '';
@@ -37,16 +36,8 @@ class UserController extends AdminBaseController
                 '<option data-val="0" value="'. route('admin-user-ban',['id1' => $data->id, 'id2' => 1]).'" '.$s.'>'.__("Block").'</option>'.
                 '<option data-val="1" value="'. route('admin-user-ban',['id1' => $data->id, 'id2' => 0]).'" '.$ns.'>'.__("UnBlock").'</option></select>';
 
-                                    $vendor = $data->is_vendor != 2 ? '<a href="javascript:;" data-toggle="modal" data-target="#modal1" class="make-vendor" data-href="' . route('admin-user-vendor',$data->id) . '" > 
-                                    <i class="fas fa-users"></i> '.__("Make Vendor").'
-                                    </a>' : '<a href="javascript:;"> 
-                                    <i class="fas fa-users"></i> '.__("Vendor").'
-                                    </a>';
-                                    return '<div class="action-list">
-                                            <a href="javascript:;" data-toggle="modal" data-target="#modal1" class="deposit" data-href="' . route('admin-user-deposit',$data->id) . '" > 
-                                            <i class="fas fa-dollar-sign"></i> '.__("Manage Deposit").'
-                                            </a>'
-                                            .$vendor.
+
+                                    return '<div class="action-list">'.
                                             '<a href="' . route('admin-user-show',$data->id) . '" >
                                             <i class="fas fa-eye"></i> '.__("Details").'
                                             </a>
@@ -61,7 +52,7 @@ class UserController extends AdminBaseController
                                             <i class="fas fa-trash-alt"></i>
                                             </a>
                                             </div>';
-                                }) 
+                                })
                                 ->rawColumns(['action'])
                                 ->toJson(); //--- Returning Json Data To Client Side
         }
@@ -105,7 +96,7 @@ class UserController extends AdminBaseController
                     ];
 
             $validator = Validator::make($request->all(), $rules);
-            
+
             if ($validator->fails()) {
               return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
             }
@@ -134,13 +125,13 @@ class UserController extends AdminBaseController
 				'onumber' => "",
 			];
 			$mailer = new GeniusMailer();
-			$mailer->sendAutoMail($data);  
+			$mailer->sendAutoMail($data);
 
             $msg = __('New Customer Added Successfully.');
-            return response()->json($msg);   
+            return response()->json($msg);
         }
 
-        //*** GET Request    
+        //*** GET Request
         public function edit($id)
         {
             $data = User::findOrFail($id);
@@ -157,7 +148,7 @@ class UserController extends AdminBaseController
                  ];
 
             $validator = Validator::make($request->all(), $rules);
-            
+
             if ($validator->fails()) {
               return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
             }
@@ -186,7 +177,7 @@ class UserController extends AdminBaseController
 
             $user->update($data);
             $msg = __('Customer Information Updated Successfully.');
-            return response()->json($msg);   
+            return response()->json($msg);
         }
 
         //*** GET Request Delete
@@ -359,7 +350,7 @@ class UserController extends AdminBaseController
 // PRODUCT ENDS
 
         }
-// OTHER SECTION 
+// OTHER SECTION
 
         if($user->senders->count() > 0)
         {
@@ -444,20 +435,20 @@ class UserController extends AdminBaseController
             //If Photo Doesn't Exist
             if($user->photo == null){
                 $user->delete();
-                //--- Redirect Section     
+                //--- Redirect Section
                 $msg = __('Data Deleted Successfully.');
-                return response()->json($msg);      
-                //--- Redirect Section Ends 
+                return response()->json($msg);
+                //--- Redirect Section Ends
             }
             //If Photo Exist
             if (file_exists(public_path().'/assets/images/users/'.$user->photo)) {
                     unlink(public_path().'/assets/images/users/'.$user->photo);
                  }
             $user->delete();
-            //--- Redirect Section     
+            //--- Redirect Section
             $msg = __('Data Deleted Successfully.');
-            return response()->json($msg);      
-            //--- Redirect Section Ends    
+            return response()->json($msg);
+            //--- Redirect Section Ends
         }
 
         //*** JSON Request
@@ -471,20 +462,20 @@ class UserController extends AdminBaseController
                                 ->addColumn('email', function(Withdraw $data) {
                                     $email = $data->user->email;
                                     return $email;
-                                }) 
+                                })
                                 ->addColumn('phone', function(Withdraw $data) {
                                     $phone = $data->user->phone;
                                     return $phone;
-                                }) 
+                                })
                                 ->editColumn('status', function(Withdraw $data) {
                                     $status = ucfirst($data->status);
                                     return $status;
-                                }) 
+                                })
                                 ->editColumn('amount', function(Withdraw $data) {
                                     $sign = $this->curr;
                                     $amount = $data->amount * $sign->value;
                                     return \PriceHelper::showAdminCurrencyPrice($amount);;
-                                }) 
+                                })
                                 ->addColumn('action', function(Withdraw $data) {
                                     $action = '<div class="action-list"><a data-href="' . route('admin-withdraw-show',$data->id) . '" class="view details-width" data-toggle="modal" data-target="#modal1"> <i class="fas fa-eye"></i> '.__("Details").'</a>';
                                     if($data->status == "pending") {
@@ -492,13 +483,13 @@ class UserController extends AdminBaseController
                                     }
                                     $action .= '</div>';
                                     return $action;
-                                }) 
+                                })
                                 ->rawColumns(['name','action'])
                                 ->toJson(); //--- Returning Json Data To Client Side
         }
 
 
-        //*** GET Request       
+        //*** GET Request
         public function withdrawdetails($id)
         {
             $sign = $this->curr;
@@ -506,19 +497,19 @@ class UserController extends AdminBaseController
             return view('admin.user.withdraw-details',compact('withdraw','sign'));
         }
 
-        //*** GET Request   
+        //*** GET Request
         public function accept($id)
         {
             $withdraw = Withdraw::findOrFail($id);
             $data['status'] = "completed";
             $withdraw->update($data);
-            //--- Redirect Section     
+            //--- Redirect Section
             $msg = __('Withdraw Accepted Successfully.');
-            return response()->json($msg);      
-            //--- Redirect Section Ends   
+            return response()->json($msg);
+            //--- Redirect Section Ends
         }
 
-        //*** GET Request   
+        //*** GET Request
         public function reject($id)
         {
             $withdraw = Withdraw::findOrFail($id);
@@ -527,10 +518,10 @@ class UserController extends AdminBaseController
             $account->update();
             $data['status'] = "rejected";
             $withdraw->update($data);
-            //--- Redirect Section     
+            //--- Redirect Section
             $msg = __('Withdraw Rejected Successfully.');
-            return response()->json($msg);      
-            //--- Redirect Section Ends   
+            return response()->json($msg);
+            //--- Redirect Section Ends
         }
 
 
@@ -566,7 +557,7 @@ class UserController extends AdminBaseController
             $transaction->type = $request->type;
             $transaction->save();
             $msg = __('Data Updated Successfully.');
-            return response()->json($msg);   
+            return response()->json($msg);
         }
 
 
@@ -590,7 +581,7 @@ class UserController extends AdminBaseController
                 ];
 
             $validator = Validator::make($request->all(), $rules);
-            
+
             if ($validator->fails()) {
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
             }
@@ -599,13 +590,13 @@ class UserController extends AdminBaseController
 
             // Logic Section
 
-            $user = User::findOrFail($id);    
+            $user = User::findOrFail($id);
             $subs = Subscription::findOrFail($request->subs_id);
             $today = Carbon::now()->format('Y-m-d');
-            $input = $request->all();  
+            $input = $request->all();
             $user->is_vendor = 2;
             $user->date = date('Y-m-d', strtotime($today.' + '.$subs->days.' days'));
-            $user->mail_sent = 1;    
+            $user->mail_sent = 1;
             $user->update($input);
 
             $sub = new UserSubscription;
@@ -625,7 +616,7 @@ class UserController extends AdminBaseController
             $sub->save();
 
             $msg = __('Successfully Created Vendor');
-            return response()->json($msg); 
+            return response()->json($msg);
 
             // Logic Section Ends
 

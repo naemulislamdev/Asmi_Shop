@@ -41,6 +41,8 @@ class OrderController extends AdminBaseController
             return view('admin.order.completed');
         } else if ($request->status == 'declined') {
             return view('admin.order.declined');
+        } else if ($request->status == 'today-orders') {
+            return view('admin.order.today_orders', compact('categories', 'branchs'));
         } else {
             return view('admin.order.index', compact('categories', 'branchs'));
         }
@@ -72,6 +74,10 @@ class OrderController extends AdminBaseController
                 $datas = Order::where('status', '=', 'completed')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
             } elseif ($status == 'declined') {
                 $datas = Order::where('status', '=', 'declined')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            } elseif ($status == 'today-orders') {
+                $from = date('Y-m-d') . " 00:00:00";
+                $to   = date('Y-m-d') . " 23:59:59";
+                $datas = Order::whereBetween('created_at', [$from, $to])->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
             } else {
                 $datas = Order::where('branch_id', auth()->user()->branch_id)->latest('id')->get();
             }
@@ -84,6 +90,11 @@ class OrderController extends AdminBaseController
                 $datas = Order::where('status', '=', 'completed')->latest('id')->get();
             } elseif ($status == 'declined') {
                 $datas = Order::where('status', '=', 'declined')->latest('id')->get();
+            } elseif ($status == 'today-orders') {
+                $from = date('Y-m-d') . " 00:00:00";
+                $to   = date('Y-m-d') . " 23:59:59";
+                $datas = Order::whereBetween('created_at', [$from, $to])->where('branch_id', auth()->user()->branch_id)
+                ->where('status', 'pending')->latest('id')->get();
             } else {
                 $datas = Order::latest()->get();
             }
@@ -91,9 +102,9 @@ class OrderController extends AdminBaseController
 
         //--- Integrating This Collection Into Datatables
         return DataTables::of($datas)
-        ->editColumn('date', function(Order $data){
-            return \Carbon\Carbon::parse($data->created_at)->format('d M Y');
-        })
+            ->editColumn('date', function (Order $data) {
+                return \Carbon\Carbon::parse($data->created_at)->format('d M Y');
+            })
             ->editColumn('branch', function (Order $data) {
                 if ($data->branch_id) {
                     return '<a href="javascript:;" class="select-branch badge badge-success"
@@ -113,11 +124,46 @@ class OrderController extends AdminBaseController
             ->editColumn('pay_amount', function (Order $data) {
                 return PriceHelper::showOrderCurrencyPrice((($data->pay_amount + $data->wallet_price) * $data->currency_value), $data->currency_sign);
             })
+            ->editColumn('status', function (Order $data) {
+                if ($data->status == 'completed') {
+                    $badge = 'success';
+                    $source = __('Completed');
+                } elseif ($data->status == 'pending') {
+                    $badge = 'warning';
+                    $source = __('Pending');
+                } elseif ($data->status == 'processing') {
+                    $badge = 'info';
+                    $source = __('Processing');
+                } elseif ($data->status == 'on delivery') {
+                    $badge = 'primary';
+                    $source = __('On Delivery');
+                } elseif ($data->status == 'declined') {
+                    $badge = 'danger';
+                    $source = __('Declined');
+                } else {
+                    $badge = 'dark';
+                    $source = __('Unknown');
+                }
+                return '<span class="badge badge-' . $badge . '">' . $source . '</span>';
+            })
+            ->editColumn('order_source', function (Order $data) {
+                if ($data->order_source == 'Website') {
+                    $badge = 'primary';
+                    $source = __('Web');
+                } elseif ($data->order_source == 'Mobile Apps') {
+                    $badge = 'success';
+                    $source = __('App');
+                } else {
+                    $badge = 'dark';
+                    $source = __('Unknown');
+                }
+                return '<span class="badge badge-' . $badge . '">' . $source . '</span>';
+            })
             ->addColumn('action', function (Order $data) {
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
-                return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '<i class="fas fa-chevron-down"></i></button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . '</div></div>';
+                return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '</button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . '</div></div>';
             })
-            ->rawColumns(['date','branch', 'id', 'action'])
+            ->rawColumns(['date', 'branch', 'id', 'status', 'order_source', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
@@ -201,7 +247,7 @@ class OrderController extends AdminBaseController
     //*** POST Request
     public function update(Request $request, $id)
     {
-       // dd($request->all());
+        // dd($request->all());
         //--- Logic Section
         $data = Order::findOrFail($id);
 
@@ -212,8 +258,7 @@ class OrderController extends AdminBaseController
             $data->status = $input['status'];
             $data->update();
             $msg = __('Status Updated Successfully.');
-                return response()->json($msg);
-
+            return response()->json($msg);
         }
         if ($request->has('status') == 'test') {
             if ($data->status == "completed") {

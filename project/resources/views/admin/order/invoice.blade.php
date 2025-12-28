@@ -47,7 +47,7 @@
                         <span><strong>{{  __('Order ID')}} :</strong> {{ $order->order_number }}</span><br>
                         @if($order->dp == 0)
                         <span> <strong>{{ __('Shipping Method') }} :</strong>
-                            {{$order->shippingMethod->title}}
+                            {{$order->shippingMethod->title ?? ''}}
                         </span><br>
                         @endif
                         <span> <strong>{{ __('Payment Method') }} :</strong> {{$order->method}}</span>

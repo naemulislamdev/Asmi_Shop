@@ -706,7 +706,7 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="price" type="number" class="input-field"
-                                                    placeholder="{{ __('e.g 20') }}" required="" min="0">
+                                                    placeholder="{{ __('e.g 20') }}" required="" step="any" min="0">
                                             </div>
                                         </div>
 

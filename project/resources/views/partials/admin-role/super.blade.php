@@ -1,21 +1,37 @@
 <li>
     <a href="#order" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
-            class="fas fa-hand-holding-usd"></i>{{ __('Orders') }}</a>
+            class="fas fa-hand-holding-usd"></i>{{ __('Orders') }}
+        </a>
     <ul class="collapse list-unstyled" id="order" data-parent="#accordion">
         <li>
-            <a href="{{ route('admin-orders-all') }}"> {{ __('All Orders') }}</a>
+            <a href="{{ route('admin-orders-all') }}"> {{ __('All Orders') }}
+                <span class="badge badge-dark float-right">{{ $orderCounts->total ?? 0 }}</span>
+            </a>
         </li>
         <li>
-            <a href="{{ route('admin-orders-all') }}?status=pending"> {{ __('Pending Orders') }}</a>
+            <a href="{{ route('admin-orders-all') }}?status=today-orders"> {{ __('Today Orders') }}
+                <span class="badge badge-info float-right">{{ $todayOrders ?? 0 }}</span>
+            </a>
         </li>
         <li>
-            <a href="{{ route('admin-orders-all') }}?status=processing"> {{ __('Processing Orders') }}</a>
+            <a href="{{ route('admin-orders-all') }}?status=pending"> {{ __('Pending Orders') }}
+                <span class="badge badge-warning float-right">{{ $orderCounts->pending ?? 0 }}</span>
+            </a>
         </li>
         <li>
-            <a href="{{ route('admin-orders-all') }}?status=completed"> {{ __('Completed Orders') }}</a>
+            <a href="{{ route('admin-orders-all') }}?status=processing"> {{ __('Processing Orders') }}
+                <span class="badge badge-primary float-right">{{ $orderCounts->processing ?? 0 }}</span>
+            </a>
         </li>
         <li>
-            <a href="{{ route('admin-orders-all') }}?status=declined"> {{ __('Declined Orders') }}</a>
+            <a href="{{ route('admin-orders-all') }}?status=completed"> {{ __('Completed Orders') }}
+                <span class="badge badge-success float-right">{{ $orderCounts->completed ?? 0 }}</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin-orders-all') }}?status=declined"> {{ __('Canceled Orders') }}
+                <span class="badge badge-danger float-right">{{ $orderCounts->declined ?? 0 }}</span>
+            </a>
         </li>
         <li>
             <a href="{{ route('admin-bulk-upload-custome-order') }}"> {{ __('Bulk Upload Custome Order') }}</a>
@@ -23,6 +39,19 @@
         <li>
             <a href="{{ route('admin-order-create') }}"> {{ __('Pos') }}</a>
         </li>
+
+    </ul>
+</li>
+<li>
+    <a href="#all_reports" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
+            class="fas fa-hand-holding-usd"></i>{{ __('Reports') }}</a>
+    <ul class="collapse list-unstyled" id="all_reports" data-parent="#accordion">
+        <li>
+            <a href="{{ route('admin-order-report-index') }}"> {{ __('Order Reports') }}</a>
+        </li>
+        {{-- <li>
+            <a href=""> {{ __('Sales Reports') }}</a>
+        </li> --}}
 
     </ul>
 </li>

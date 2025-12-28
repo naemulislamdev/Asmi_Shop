@@ -48,7 +48,7 @@
                                             <option value="completed" {{ $data->status == 'completed' ? 'selected' : '' }}>
                                                 {{ __('Completed') }}</option>
                                             <option value="declined" {{ $data->status == 'declined' ? 'selected' : '' }}>
-                                                {{ __('Declined') }}</option>
+                                                {{ __('Cancel') }}</option>
                                         </select>
                                     </div>
                                 </div>

@@ -115,7 +115,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
         $order = new Order;
         $success_url = route('front.payment.return');
-
+        $input['order_source'] = 'Website';
         $input['user_id'] = Auth::check() ? Auth::user()->id : null;
         $input['cart'] = $new_cart;
         $input['affilate_users'] = $affilate_users;
