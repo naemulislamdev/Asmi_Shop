@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-  
+
     <!--Essential css files-->
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/all.css">
@@ -248,11 +248,17 @@
                         <img src="{{ asset('assets/images/' . $gs->logo) }}" class="logo" />
                     </a>
                     <div class="whatsapp_div ">
-                        <a class="d-flex align-items-center gap-2"
-                            href="https://wa.me/8801805020340?text=Assalamu%20Alaikum,%20I%20want%20to%20order%20from%20your%20supershop."><img
-                                style="width: 40px; height: auto;"
-                                src="{{ asset('assets/front/images/whatsapp.png') }}" alt="whatsapp"> <span
-                                class="text-success fw-bold d-none d-lg-block">01805020340</span></a>
+                        <div class="d-flex align-items-center gap-2"><img style="width: 40px; height: auto;"
+                                src="{{ asset('assets/front/images/whatsapp.png') }}" alt="whatsapp">
+                            <div>
+                                <a href="https://wa.me/8801805020340?text=Assalamu%20Alaikum,%20I%20want%20to%20order%20from%20your%20supershop."
+                                    class="text-success fw-bold d-none d-lg-block">
+                                    01805020340
+                                </a>
+                                <a class="text-success fw-bold d-none d-lg-block"
+                                    href="https://wa.me/8801805020346?text=Assalamu%20Alaikum,%20I%20want%20to%20order%20from%20your%20supershop.">01805020346</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -579,8 +585,7 @@
             </div>
 
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
-                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false"
-     data-bs-scroll="true">
+                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false" data-bs-scroll="true">
                 <div class="offcanvas-header">
                     <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
                         <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"

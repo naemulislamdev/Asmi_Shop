@@ -69,18 +69,58 @@
             width: 16%;
         }
 
+        .slider-section .card img {
+            border-radius: 10px !important;
+        }
+
+        .hero-slider-wrapper .slick-prev {
+            left: 17%;
+        }
+        .hero-slider-wrapper .slick-next {
+            right: 17%;
+        }
     </style>
 
     <!-- hero section start -->
-    <section class="hero-slider-wrapper">
+    <section class="slider-section">
+        <div class="hero-slider-wrapper">
+            @foreach ($sliders as $slider)
+                <div class="gs-hero-section" style="height: auto;">
+                    <div class="row my-lg-3">
+                        <div class="col-lg-2 left-promo d-none d-lg-block">
+                            <div class="d-flex flex-column gap-3">
+                                <div class="card shadow border-0 ">
+                                    <img class="card-img-top slider-side-img"
+                                        src="{{ asset('assets/front/images/banner-side-3.png') }}" alt="Title" />
+                                </div>
+                                <div class="card shadow  border-0 ">
+                                    <img class="card-img-top slider-side-img"
+                                        src="{{ asset('assets/front/images/banner-side-4.png') }}" alt="Title" />
+                                </div>
+                            </div>
 
-        @foreach ($sliders as $slider)
-            <div class="gs-hero-section">
-                <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
-                    style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
-            </div>
-        @endforeach
-
+                        </div>
+                        <div class="col-lg-8">
+                            <img class="home-slider" style="max-width: 100%"
+                                src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
+                                style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
+                        </div>
+                        <div class="col-lg-2 right-promo d-none d-lg-block">
+                            <div class="d-flex flex-column gap-3">
+                                <div class="card shadow border-0 ">
+                                    <img class="card-img-top slider-side-img"
+                                        src="{{ asset('assets/front/images/banner-side-1.png') }}" alt="Title" />
+                                </div>
+                                <div class="card shadow border-0 ">
+                                    <img class="card-img-top slider-side-img"
+                                        src="{{ asset('assets/front/images/banner-side-2.png') }}" alt="Title" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
     </section>
     <!-- hero section end -->
 
@@ -396,9 +436,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                       deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>

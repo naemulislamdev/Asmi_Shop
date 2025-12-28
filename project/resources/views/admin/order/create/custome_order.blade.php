@@ -87,30 +87,9 @@
                                             </div> --}}
 
                                         </div>
-                                        <div>
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Product Name</th>
-                                                        <th>Measured</th>
-                                                        <th>Price</th>
-                                                        <th>Quantity</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($custome_products as $custome_product)
-                                                        <tr>
-                                                            <td>{{ $custome_product->name }}</td>
-                                                            <td>{{ $custome_product->measurement }}</td>
-                                                            <td>{{ $custome_product->price }}</td>
-                                                            <td>{{ $custome_product->quantity }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div id="custome-order" class="py-4 px-4 my-2 mx-4 border">
-                                            <table>
+
+                                        <div  class="py-4 px-4 my-2 mx-4 border">
+                                            <table id="custome-order">
                                                 <thead>
                                                     <tr>
                                                         <th>Product Name</th>
@@ -122,7 +101,6 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
                                                     <tr>
                                                         <td>
                                                             <input type="text" class="form-control" id="product_name"
@@ -155,7 +133,7 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <a href="javascript:;" class="btn btn-primary btn-sm addOrder">Add</a>
+                                            <button type="button" class="btn btn-primary btn-sm addOrder">Add</button>
                                         </div>
                                     </div>
                                 </div>
@@ -201,16 +179,14 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
+         <script>
+$(document).ready(function () {
 
-            // Add new row
-            $(document).on('click', '.addOrder', function() {
+    $(document).on('click', '.addOrder', function () {
 
-                let newRow = `
+        let newRow = `
         <tr>
-            <td>
-                <input type="text" class="form-control product_name" placeholder="Product Name">
-            </td>
+            <td><input type="text" class="form-control product_name"></td>
             <td>
                 <select class="form-control mt-2 measured_type">
                     <option value="kg">Kg</option>
@@ -218,43 +194,32 @@
                     <option value="gm">Gm</option>
                     <option value="ltr">Ltr</option>
                 </select>
-                <input type="text" class="form-control measured" placeholder="Measured">
+                <input type="text" class="form-control measured">
             </td>
-            <td>
-                <input type="text" class="form-control product_price" placeholder="Product Price">
-            </td>
-            <td>
-                <input type="text" class="form-control product_quantity" placeholder="Product Quantity">
-            </td>
-            <td>
-                <input type="text" class="form-control subtotal" placeholder="Subtotal">
-            </td>
-            <td>
-                <a href="javascript:;" class="btn btn-danger btn-sm removeOrder">Remove</a>
-            </td>
+            <td><input type="text" class="form-control product_price"></td>
+            <td><input type="text" class="form-control product_quantity"></td>
+            <td><input type="text" class="form-control subtotal" readonly></td>
+            <td><a href="javascript:;" class="btn btn-danger btn-sm removeOrder">Remove</a></td>
         </tr>
         `;
-                $("#custome-order tbody").append(newRow);
-            });
 
-            // Remove row
-            $(document).on('click', '.removeOrder', function() {
-                $(this).closest('tr').remove();
-            });
+        $('#custome-order tbody').append(newRow);
+    });
 
-            // Auto calculate subtotal (price * qty)
-            $(document).on('keyup change', '.product_price, .product_quantity', function() {
-                let row = $(this).closest('tr');
+    $(document).on('click', '.removeOrder', function () {
+        $(this).closest('tr').remove();
+    });
 
-                let price = parseFloat(row.find('.product_price').val()) || 0;
-                let qty = parseFloat(row.find('.product_quantity').val()) || 0;
+    $(document).on('keyup change', '.product_price, .product_quantity', function () {
+        let row = $(this).closest('tr');
+        let price = parseFloat(row.find('.product_price').val()) || 0;
+        let qty = parseFloat(row.find('.product_quantity').val()) || 0;
+        row.find('.subtotal').val((price * qty).toFixed(2));
+    });
 
-                let subtotal = price * qty;
+});
+</script>
 
-                row.find('.subtotal').val(subtotal.toFixed(2));
-            });
-
-        });
     </script>
     <script>
         $(document).on("click", "#printInvoiceBtn", function() {

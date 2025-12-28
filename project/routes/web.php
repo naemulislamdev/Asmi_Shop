@@ -3,6 +3,7 @@
 // ************************************ ADMIN SECTION **********************************************
 
 use App\Http\Controllers\Admin\OrderExportController;
+use App\Http\Controllers\Front\FeedController;
 use App\Http\Controllers\Front\FrontendController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +11,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 Route::get('/under-maintenance', 'Front\FrontendController@maintenance')->name('front-maintenance');
+
+// facebook feed route
+Route::get('/feed/facebook', [FeedController::class, 'facebookFeed']);
 
 Route::prefix('admin')->group(function () {
 
