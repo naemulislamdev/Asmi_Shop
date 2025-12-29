@@ -179,6 +179,74 @@ $(document).ready(function () {
     nextArrow:
       '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
   });
+  $(".left-promo").slick({
+    dots: true,
+    infinite: false,
+    speed: 1000,
+    autoplay: true,
+    autoplaySpeed: 20000,
+    fade: true,
+    cssEase: "linear",
+    arrows: false,
+    centerMode: false, // best
+    centerPadding: "0px",
+    // prevArrow:
+    //   '<button title="Previous" type="button" class="slick-prev"><i class="fa fa-chevron-left"></i></button>',
+    // nextArrow:
+    //   '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
+  });
+  $(".right-promo").slick({
+    dots: true,
+    infinite: true,
+    speed: 1000,
+    autoplay: true,
+    autoplaySpeed: 20000,
+    fade: true,
+    cssEase: "linear",
+    arrows: false,
+    centerMode: false, // best
+    centerPadding: "0px",
+    // prevArrow:
+    //   '<button title="Previous" type="button" class="slick-prev"><i class="fa fa-chevron-left"></i></button>',
+    // nextArrow:
+    //   '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
+  });
+
+  /* 
+  ===================================
+  Home  Coupon Slider
+  ===================================
+  */
+
+   $(".home-coupon-slider").slick({
+     slidesToShow: 3, // LG device
+     slidesToScroll: 1,
+     autoplay: true,
+     autoplaySpeed: 3000,
+     arrows: true,
+     dots: false,
+     // Custom arrows
+     prevArrow:
+       '<button type="button" class="slick-prev"><i class="fa fa-angle-left"></i></button>',
+     nextArrow:
+       '<button type="button" class="slick-next"><i class="fa fa-angle-right"></i></button>',
+
+     responsive: [
+       {
+         breakpoint: 1024, // MD (tablet)
+         settings: {
+           slidesToShow: 2,
+         },
+       },
+       {
+         breakpoint: 768, // SM (mobile)
+         settings: {
+           slidesToShow: 1,
+         },
+       },
+     ],
+   });
+  
 
 
   //******  10. HOME CATE SLIDER ******//

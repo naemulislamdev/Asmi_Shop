@@ -14,6 +14,7 @@ use App\Models\Generalsetting;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Rating;
+use App\Models\Slider;
 use App\Models\Subcategory;
 use App\Models\Subscriber;
 use Carbon\Carbon;
@@ -74,6 +75,15 @@ class FrontendController extends Controller
             ->orderBy('order', 'asc')
             ->where('type', 'web')
             ->get();
+        $promoOffers = Slider::where('type', 'promo_offer')
+            ->orderBy('order', 'asc')
+            ->get();
+
+        $total = $promoOffers->count();
+        $half  = ceil($total / 2); // odd হলে left এ extra যাবে
+
+        $data['left_promo_offers']  = $promoOffers->take($half);
+        $data['right_promo_offers'] = $promoOffers->slice($half);
 
         $data['featured_categories'] = Category::withCount('products')->where('is_featured', 1)->get();
 
