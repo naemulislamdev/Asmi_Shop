@@ -73,11 +73,18 @@
             border-radius: 10px !important;
         }
 
+        /* hero slider change styel */
         .hero-slider-wrapper .slick-prev {
             left: 17%;
         }
+
         .hero-slider-wrapper .slick-next {
             right: 17%;
+        }
+
+        .slider-section .left-promo .card,
+        .slider-section .right-promo .card {
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
         }
     </style>
 
@@ -89,13 +96,17 @@
                     <div class="row my-lg-3">
                         <div class="col-lg-2 left-promo d-none d-lg-block">
                             <div class="d-flex flex-column gap-3">
-                                <div class="card shadow border-0 ">
-                                    <img class="card-img-top slider-side-img"
+                                <div class="card border-0 ">
+                                    <a href="">
+                                        <img class="card-img-top slider-side-img"
                                         src="{{ asset('assets/front/images/banner-side-3.png') }}" alt="Title" />
+                                    </a>
                                 </div>
-                                <div class="card shadow  border-0 ">
-                                    <img class="card-img-top slider-side-img"
+                                <div class="card border-0 ">
+                                    <a href="">
+                                        <img class="card-img-top slider-side-img"
                                         src="{{ asset('assets/front/images/banner-side-4.png') }}" alt="Title" />
+                                    </a>
                                 </div>
                             </div>
 
@@ -107,13 +118,17 @@
                         </div>
                         <div class="col-lg-2 right-promo d-none d-lg-block">
                             <div class="d-flex flex-column gap-3">
-                                <div class="card shadow border-0 ">
-                                    <img class="card-img-top slider-side-img"
+                                <div class="card border-0 ">
+                                    <a href="">
+                                        <img class="card-img-top slider-side-img"
                                         src="{{ asset('assets/front/images/banner-side-1.png') }}" alt="Title" />
+                                    </a>
                                 </div>
-                                <div class="card shadow border-0 ">
-                                    <img class="card-img-top slider-side-img"
+                                <div class="card border-0 ">
+                                    <a href="">
+                                        <img class="card-img-top slider-side-img"
                                         src="{{ asset('assets/front/images/banner-side-2.png') }}" alt="Title" />
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -123,6 +138,10 @@
         </div>
     </section>
     <!-- hero section end -->
+
+    {{-- Coupon slider section start--}}
+    
+    {{-- Coupon slider section end --}}
 
     <!-- categories section start -->
     <div class="gs-cate-section ">
@@ -436,9 +455,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>
