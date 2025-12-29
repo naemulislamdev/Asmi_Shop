@@ -79,6 +79,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/order/edit/{id}', 'Admin\OrderController@edit')->name('admin-order-edit');
         Route::post('/order/update/{id}', 'Admin\OrderController@update')->name('admin-order-update');
         Route::get('/order/{id}/show', 'Admin\OrderController@show')->name('admin-order-show');
+        Route::post("admin-multinote", 'Admin\OrderController@multipleOrderNote')->name("admin-order-mulitple-note");
         Route::get('/order/{id}/invoice', 'Admin\OrderController@invoice')->name('admin-order-invoice');
         Route::get('/order/{id}/print', 'Admin\OrderController@printpage')->name('admin-order-print');
         Route::get('/order/{id1}/status/{status}', 'Admin\OrderController@status')->name('admin-order-status');
