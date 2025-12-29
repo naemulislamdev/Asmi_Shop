@@ -120,7 +120,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $input['cart'] = $new_cart;
         $input['affilate_users'] = $affilate_users;
         $input['pay_amount'] = $orderTotal;
-        $input['order_number'] = Str::random(4) . time();
+        $input['order_number'] ='w'. rand(10000, 99999);
         $input['wallet_price'] = $request->wallet_price / $this->curr->value;
         $input['customer_country'] = 'Bangladesh';
 

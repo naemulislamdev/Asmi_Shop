@@ -49,9 +49,10 @@ class AppServiceProvider extends ServiceProvider
             $orderCounts = Order::selectRaw("
             COUNT(*) as total,
             SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+            SUM(CASE WHEN status = 'hold' THEN 1 ELSE 0 END) as hold,
             SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
             SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-            SUM(CASE WHEN status = 'declined' THEN 1 ELSE 0 END) as declined
+            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled
         ")->first();
 
             $todayOrders = Order::whereDate('created_at', today())->where('status', 'pending')->count();

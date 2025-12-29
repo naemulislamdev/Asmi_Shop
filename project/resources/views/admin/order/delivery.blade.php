@@ -40,6 +40,8 @@
                                         <select name="status" required="">
                                             <option value="pending" {{ $data->status == 'pending' ? 'selected' : '' }}>
                                                 {{ __('Pending') }}</option>
+                                            <option value="hold" {{ $data->status == 'hold' ? 'selected' : '' }}>
+                                                {{ __('Hold') }}</option>
                                             <option value="processing" {{ $data->status == 'processing' ? 'selected' : '' }}>
                                                 {{ __('Processing') }}</option>
                                             <option value="on delivery"
@@ -47,7 +49,7 @@
                                                 {{ __('On Delivery') }}</option>
                                             <option value="completed" {{ $data->status == 'completed' ? 'selected' : '' }}>
                                                 {{ __('Completed') }}</option>
-                                            <option value="declined" {{ $data->status == 'declined' ? 'selected' : '' }}>
+                                            <option value="cancelled" {{ $data->status == 'cancelled' ? 'selected' : '' }}>
                                                 {{ __('Cancel') }}</option>
                                         </select>
                                     </div>
@@ -61,7 +63,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-7">
-                                        <textarea class="input-field" required name="track_text" placeholder="{{ __('Enter Track Note Here') }}"></textarea>
+                                        <textarea class="input-field" name="track_text" placeholder="{{ __('Enter Track Note Here') }}"></textarea>
                                     </div>
                                 </div>
 

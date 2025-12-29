@@ -190,45 +190,45 @@
                                 <tr>
                                     <th width="45%">{{ __('Email') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->customer_email}}</td>
+                                    <td width="45%">{{$order->customer_email ?? 'Empty'}}</td>
                                 </tr>
                                 <tr>
                                     <th width="45%">{{ __('Phone') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->customer_phone}}</td>
+                                    <td width="45%">{{$order->customer_phone ?? ''}}</td>
                                 </tr>
                                 <tr>
                                     <th width="45%">{{ __('Address') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->customer_address}}</td>
+                                    <td width="45%">{{$order->customer_address ?? ''}}</td>
                                 </tr>
                                 <tr>
                                     <th width="45%">{{ __('Country') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->customer_country}}</td>
+                                    <td width="45%">{{$order->customer_country ?? ''}}</td>
                                 </tr>
                                 @if($order->customer_state != null)
                                 <tr>
                                     <th width="45%">{{ __('State') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->customer_state}}</td>
+                                    <td width="45%">{{$order->customer_state ?? ''}}</td>
                                 </tr>
                                 @endif
                                 <tr>
                                     <th width="45%">{{ __('City') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->customer_city}}</td>
+                                    <td width="45%">{{$order->customer_city ?? ''}}</td>
                                 </tr>
                                 <tr>
                                     <th width="45%">{{ __('Postal Code') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->customer_zip}}</td>
+                                    <td width="45%">{{$order->customer_zip ?? ''}}</td>
                                 </tr>
                                 @if($order->coupon_code != null)
                                 <tr>
                                     <th width="45%">{{ __('Coupon Code') }}</th>
                                     <th width="10%">:</th>
-                                    <td width="45%">{{$order->coupon_code}}</td>
+                                    <td width="45%">{{$order->coupon_code ?? ''}}</td>
                                 </tr>
                                 @endif
                                 @if($order->coupon_discount != null)
@@ -371,6 +371,7 @@
                                 <tr>
                                     <th>{{ __('Product ID#') }}</th>
                                     <th>{{ __('Shop Name') }}</th>
+                                    <th>{{ __('Image') }}</th>
                                     <th>{{ __('Product Title') }}</th>
                                     <th>{{ __('Details') }}</th>
                                     <th>{{ __('Total Price') }}</th>
@@ -404,6 +405,11 @@
                                         <a href="javascript:;">{{ App\Models\Admin::find(1)->shop_name }}</a>
                                         @endif
 
+                                    </td>
+                                    <td>
+                                        <img class="img-thumbnail"
+                                            src="{{ $product['item']['photo'] ? asset('assets/images/products/'.$product['item']['photo']) : asset('assets/images/noimage.png') }}"
+                                            alt="No Image" width="80px">
                                     </td>
                                     <td>
                                         <input type="hidden" value="{{ $product['license'] }}">

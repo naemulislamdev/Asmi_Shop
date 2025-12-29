@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderTrack extends Model
 {
-	protected $fillable = ['order_id', 'title','text'];
+    protected $guarded = ['id'];
 
     public function order()
     {

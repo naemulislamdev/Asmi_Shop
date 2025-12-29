@@ -1,194 +1,288 @@
-@extends('layouts.admin') 
+@extends('layouts.admin')
 
-@section('content')  
+@section('content')
+    <input type="hidden" id="headerdata" value="{{ __('ORDER') }}">
 
-<input type="hidden" id="headerdata" value="{{ __('ORDER') }}">
-
-                    <div class="content-area">
-                        <div class="mr-breadcrumb">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                        <h4 class="heading">{{ __('Processing Orders') }}</h4>
-                                        <ul class="links">
-                                            <li>
-                                                <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:;">{{ __('Orders') }}</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{ route('admin-orders-all') }}?status=processing">{{ __('Processing Orders') }}</a>
-                                            </li>
-                                        </ul>
-                                </div>
+    <div class="content-area">
+        <div class="mr-breadcrumb">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 class="heading">{{ __('Processing Orders') }}</h4>
+                    <ul class="links">
+                        <li>
+                            <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">{{ __('Orders') }}</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin-orders-all') }}?status=processing">{{ __('Processing Orders') }}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="product-area">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="mr-table allproduct">
+                        @include('alerts.admin.form-success')
+                        <div class="table-responsive">
+                            <div class="gocover"
+                                style="background: url({{ asset('assets/images/' . $gs->admin_loader) }}) no-repeat scroll center center rgba(45, 45, 45, 0.5);">
                             </div>
+                            <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Address') }}</th>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Branch') }}</th>
+                                        <th>{{ __('Order Number') }}</th>
+                                        <th>{{ __('Total Qty') }}</th>
+                                        <th>{{ __('Total Cost') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th>{{ __('Order Source') }}</th>
+                                        <th>{{ __('Options') }}</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
-                        <div class="product-area">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- ORDER MODAL --}}
+
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="submit-loader">
+                    <img src="{{ asset('assets/images/' . $gs->admin_loader) }}" alt="">
+                </div>
+                <div class="modal-header d-block text-center">
+                    <h4 class="modal-title d-inline-block">{{ __('Update Status') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <p class="text-center">{{ __("You are about to update the order's Status.") }}</p>
+                    <p class="text-center">{{ __('Do you want to proceed?') }}</p>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <a class="btn btn-success btn-ok order-btn">{{ __('Proceed') }}</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    {{-- ORDER MODAL ENDS --}}
+
+
+    {{-- MESSAGE MODAL --}}
+    <div class="sub-categori">
+        <div class="modal" id="vendorform" tabindex="-1" role="dialog" aria-labelledby="vendorformLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="vendorformLabel">{{ __('Send Email') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid p-0">
                             <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="mr-table allproduct">
-                                        @include('alerts.admin.form-success') 
-                                        <div class="table-responsive">
-                                        <div class="gocover" style="background: url({{asset('assets/images/'.$gs->admin_loader)}}) no-repeat scroll center center rgba(45, 45, 45, 0.5);"></div>
-                                                <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>{{ __('Customer Email') }}</th>
-                                                            <th>{{ __('Order Number') }}</th>
-                                                            <th>{{ __('Total Qty') }}</th>
-                                                            <th>{{ __('Total Cost') }}</th>
-                                                            <th>{{ __('Options') }}</th>
-                                                        </tr>
-                                                    </thead>
-                                                </table>
-                                        </div>
+                                <div class="col-md-12">
+                                    <div class="contact-form">
+                                        <form id="emailreply">
+                                            {{ csrf_field() }}
+                                            <ul>
+                                                <li>
+                                                    <input type="email" class="input-field eml-val" id="eml"
+                                                        name="to" placeholder="{{ __('Email') }} *" value=""
+                                                        required="">
+                                                </li>
+                                                <li>
+                                                    <input type="text" class="input-field" id="subj" name="subject"
+                                                        placeholder="{{ __('Subject') }} *" required="">
+                                                </li>
+                                                <li>
+                                                    <textarea class="input-field textarea" name="message" id="msg" placeholder="{{ __('Your Message') }} *"
+                                                        required=""></textarea>
+                                                </li>
+                                            </ul>
+                                            <button class="submit-btn" id="emlsub"
+                                                type="submit">{{ __('Send Email') }}</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
-{{-- ORDER MODAL --}}
-
-<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-                                                <div class="submit-loader">
-                                                        <img  src="{{asset('assets/images/'.$gs->admin_loader)}}" alt="">
-                                                </div>
-    <div class="modal-header d-block text-center">
-        <h4 class="modal-title d-inline-block">{{ __('Update Status') }}</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-    </div>
-
-      <!-- Modal body -->
-      <div class="modal-body">
-        <p class="text-center">{{ __("You are about to update the order's Status.") }}</p>
-        <p class="text-center">{{ __('Do you want to proceed?') }}</p>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer justify-content-center">
-            <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
-            <a class="btn btn-success btn-ok order-btn">{{ __('Proceed') }}</a>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-{{-- ORDER MODAL ENDS --}}
-
-
-{{-- MESSAGE MODAL --}}
-<div class="sub-categori">
-    <div class="modal" id="vendorform" tabindex="-1" role="dialog" aria-labelledby="vendorformLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="vendorformLabel">{{ __('Send Email') }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                 </div>
-            <div class="modal-body">
-                <div class="container-fluid p-0">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="contact-form">
-                                <form id="emailreply">
-                                    {{csrf_field()}}
-                                    <ul>
-                                        <li>
-                                            <input type="email" class="input-field eml-val" id="eml" name="to" placeholder="{{ __('Email') }} *" value="" required="">
-                                        </li>
-                                        <li>
-                                            <input type="text" class="input-field" id="subj" name="subject" placeholder="{{ __('Subject') }} *" required="">
-                                        </li>
-                                        <li>
-                                            <textarea class="input-field textarea" name="message" id="msg" placeholder="{{ __('Your Message') }} *" required=""></textarea>
-                                        </li>
-                                    </ul>
-                                    <button class="submit-btn" id="emlsub" type="submit">{{ __('Send Email') }}</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             </div>
         </div>
     </div>
-</div>
 
-{{-- MESSAGE MODAL ENDS --}}
-
-{{-- ADD / EDIT MODAL --}}
-
-                <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
-                                        
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                                                <div class="submit-loader">
-                                                        <img  src="{{asset('assets/images/'.$gs->admin_loader)}}" alt="">
-                                                </div>
-                                            <div class="modal-header">
-                                            <h5 class="modal-title"></h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            </div>
-                                            <div class="modal-body">
-
-                                            </div>
-                                            <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                                            </div>
+    {{-- MESSAGE MODAL ENDS --}}
+    <!-- Branch Modal -->
+    <div class="modal fade" id="branchModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <form id="branchForm">
+                @csrf
+                <input type="hidden" name="order_id" id="branch_order_id">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('Select Branch') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>{{ __('Branch') }}</label>
+                            <select name="branch_id" class="form-control" required>
+                                <option selected disabled>{{ __('Choose Branch') }}</option>
+                                @foreach ($branchs as $branch)
+                                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--End Branch modal -->
+
+    {{-- ADD / EDIT MODAL --}}
+
+    <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="submit-loader">
+                    <img src="{{ asset('assets/images/' . $gs->admin_loader) }}" alt="">
+                </div>
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
 
-{{-- ADD / EDIT MODAL ENDS --}}
+    </div>
 
-@endsection    
+    {{-- ADD / EDIT MODAL ENDS --}}
+@endsection
 
 @section('scripts')
-
-{{-- DATA TABLE --}}
+    {{-- DATA TABLE --}}
 
     <script type="text/javascript">
+        (function($) {
+            "use strict";
 
-(function($) {
-		"use strict";
-
-        var table = $('#geniustable').DataTable({
-               ordering: false,
-               processing: true,
-               serverSide: true,
-               ajax: '{{ route('admin-order-datatables','processing') }}',
-               columns: [
-                        { data: 'customer_email', name: 'customer_email' },
-                        { data: 'id', name: 'id' },
-                        { data: 'totalQty', name: 'totalQty' },
-                        { data: 'pay_amount', name: 'pay_amount' },
-                        { data: 'action', searchable: false, orderable: false }
-                     ],
-               language : {
-                    processing: '<img src="{{asset('assets/images/'.$gs->admin_loader)}}">'
+            var table = $('#geniustable').DataTable({
+                ordering: false,
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('admin-order-datatables', 'processing') }}',
+                columns: [{
+                        data: 'customer_name',
+                        name: 'customer_name'
+                    },
+                    {
+                        data: 'customer_address',
+                        name: 'customer_address'
+                    },
+                    {
+                        data: 'date',
+                        name: 'date'
+                    },
+                    {
+                        data: 'branch',
+                        name: 'branch'
+                    },
+                    {
+                        data: 'id',
+                        name: 'id'
+                    },
+                    {
+                        data: 'totalQty',
+                        name: 'totalQty'
+                    },
+                    {
+                        data: 'pay_amount',
+                        name: 'pay_amount'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
+                        data: 'order_source',
+                        name: 'order_source'
+                    },
+                    {
+                        data: 'action',
+                        searchable: false,
+                        orderable: false
+                    }
+                ],
+                language: {
+                    processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">'
                 },
-                drawCallback : function( settings ) {
-                        $('.select').niceSelect();  
+                drawCallback: function(settings) {
+                    $('.select').niceSelect();
                 }
             });
 
-    })(jQuery);          
-
+        })(jQuery);
     </script>
+    {{-- DATA TABLE --}}
+    <script>
+        $(document).on('click', '.select-branch', function() {
+            var orderId = $(this).data('id');
+            $('#branch_order_id').val(orderId);
+        });
 
-{{-- DATA TABLE --}}
-    
-@endsection   
+        $('#branchForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "{{ route('admin-order-assign-branch') }}",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function(res) {
+                    $('#branchModal').modal('hide');
+                    $('#geniustable').DataTable().ajax.reload(); // reload datatable
+                    toastr.success(res.message);
+                },
+                error: function(err) {
+                    toastr.error('Something went wrong');
+                }
+            });
+        });
+    </script>
+@endsection

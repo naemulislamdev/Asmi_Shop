@@ -19,6 +19,11 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin-orders-all') }}?status=hold"> {{ __('Hold Orders') }}
+                <span class="badge badge-secondary float-right">{{ $orderCounts->hold ?? 0 }}</span>
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin-orders-all') }}?status=processing"> {{ __('Processing Orders') }}
                 <span class="badge badge-primary float-right">{{ $orderCounts->processing ?? 0 }}</span>
             </a>
@@ -29,8 +34,8 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('admin-orders-all') }}?status=declined"> {{ __('Canceled Orders') }}
-                <span class="badge badge-danger float-right">{{ $orderCounts->declined ?? 0 }}</span>
+            <a href="{{ route('admin-orders-all') }}?status=cancelled"> {{ __('Cancelled Orders') }}
+                <span class="badge badge-danger float-right">{{ $orderCounts->cancelled ?? 0 }}</span>
             </a>
         </li>
         <li>

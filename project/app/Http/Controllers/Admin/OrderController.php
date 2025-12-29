@@ -34,13 +34,15 @@ class OrderController extends AdminBaseController
         $branchs = Branch::where('status', 1)->get();
 
         if ($request->status == 'pending') {
-            return view('admin.order.pending');
+            return view('admin.order.pending', compact('categories', 'branchs'));
+        } else if ($request->status == 'hold') {
+            return view('admin.order.hold', compact('categories', 'branchs'));
         } else if ($request->status == 'processing') {
-            return view('admin.order.processing');
+            return view('admin.order.processing', compact('categories', 'branchs'));
         } else if ($request->status == 'completed') {
-            return view('admin.order.completed');
-        } else if ($request->status == 'declined') {
-            return view('admin.order.declined');
+            return view('admin.order.completed', compact('categories', 'branchs'));
+        } else if ($request->status == 'cancelled') {
+            return view('admin.order.cancelled', compact('categories', 'branchs'));
         } else if ($request->status == 'today-orders') {
             return view('admin.order.today_orders', compact('categories', 'branchs'));
         } else {
@@ -48,32 +50,19 @@ class OrderController extends AdminBaseController
         }
     }
 
-    public function processing()
-    {
-        return view('admin.order.processing');
-    }
-
-    public function completed()
-    {
-        return view('admin.order.completed');
-    }
-
-    public function declined()
-    {
-        return view('admin.order.declined');
-    }
-
     public function datatables($status)
     {
         if (auth()->user()->role_id != 0) {
             if ($status == 'pending') {
                 $datas = Order::where('status', '=', 'pending')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            } elseif ($status == 'hold') {
+                $datas = Order::where('status', '=', 'hold')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
             } elseif ($status == 'processing') {
                 $datas = Order::where('status', '=', 'processing')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
             } elseif ($status == 'completed') {
                 $datas = Order::where('status', '=', 'completed')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            } elseif ($status == 'declined') {
-                $datas = Order::where('status', '=', 'declined')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
+            } elseif ($status == 'cancelled') {
+                $datas = Order::where('status', '=', 'cancelled')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
             } elseif ($status == 'today-orders') {
                 $from = date('Y-m-d') . " 00:00:00";
                 $to   = date('Y-m-d') . " 23:59:59";
@@ -84,17 +73,19 @@ class OrderController extends AdminBaseController
         } else {
             if ($status == 'pending') {
                 $datas = Order::where('status', '=', 'pending')->latest('id')->get();
+            } elseif ($status == 'hold') {
+                $datas = Order::where('status', '=', 'hold')->latest('id')->get();
             } elseif ($status == 'processing') {
                 $datas = Order::where('status', '=', 'processing')->latest('id')->get();
             } elseif ($status == 'completed') {
                 $datas = Order::where('status', '=', 'completed')->latest('id')->get();
-            } elseif ($status == 'declined') {
-                $datas = Order::where('status', '=', 'declined')->latest('id')->get();
+            } elseif ($status == 'cancelled') {
+                $datas = Order::where('status', '=', 'cancelled')->latest('id')->get();
             } elseif ($status == 'today-orders') {
                 $from = date('Y-m-d') . " 00:00:00";
                 $to   = date('Y-m-d') . " 23:59:59";
                 $datas = Order::whereBetween('created_at', [$from, $to])->where('branch_id', auth()->user()->branch_id)
-                ->where('status', 'pending')->latest('id')->get();
+                    ->where('status', 'pending')->latest('id')->get();
             } else {
                 $datas = Order::latest()->get();
             }
@@ -103,7 +94,9 @@ class OrderController extends AdminBaseController
         //--- Integrating This Collection Into Datatables
         return DataTables::of($datas)
             ->editColumn('date', function (Order $data) {
-                return \Carbon\Carbon::parse($data->created_at)->format('d M Y');
+                $date = \Carbon\Carbon::parse($data->created_at)->format('d M Y');
+                $time = \Carbon\Carbon::parse($data->created_at)->format('h:i A');
+                return $date . '<br><small>' . $time . '</small>';
             })
             ->editColumn('branch', function (Order $data) {
                 if ($data->branch_id) {
@@ -131,15 +124,18 @@ class OrderController extends AdminBaseController
                 } elseif ($data->status == 'pending') {
                     $badge = 'warning';
                     $source = __('Pending');
+                } elseif ($data->status == 'hold') {
+                    $badge = 'secondary';
+                    $source = __('Hold');
                 } elseif ($data->status == 'processing') {
                     $badge = 'info';
                     $source = __('Processing');
                 } elseif ($data->status == 'on delivery') {
                     $badge = 'primary';
                     $source = __('On Delivery');
-                } elseif ($data->status == 'declined') {
+                } elseif ($data->status == 'cancelled') {
                     $badge = 'danger';
-                    $source = __('Declined');
+                    $source = __('Cancelled');
                 } else {
                     $badge = 'dark';
                     $source = __('Unknown');
@@ -257,9 +253,27 @@ class OrderController extends AdminBaseController
             $data->payment_status = $input['payment_status'];
             $data->status = $input['status'];
             $data->update();
+
+            if ($request->track_text) {
+                $title = ucwords($request->status);
+                $ck = OrderTrack::where('order_id', '=', $id)->where('title', '=', $title)->first();
+                if ($ck) {
+                    $ck->order_id = $id;
+                    $ck->title = $title;
+                    $ck->text = $request->track_text;
+                    $ck->update();
+                } else {
+                    $data = new OrderTrack;
+                    $data->order_id = $id;
+                    $data->title = $title;
+                    $data->text = $request->track_text;
+                    $data->save();
+                }
+            }
             $msg = __('Status Updated Successfully.');
             return response()->json($msg);
         }
+
         if ($request->has('status') == 'test') {
             if ($data->status == "completed") {
                 $input['status'] = "completed";
@@ -405,23 +419,6 @@ class OrderController extends AdminBaseController
                 }
 
                 $data->update($input);
-
-                if ($request->track_text) {
-                    $title = ucwords($request->status);
-                    $ck = OrderTrack::where('order_id', '=', $id)->where('title', '=', $title)->first();
-                    if ($ck) {
-                        $ck->order_id = $id;
-                        $ck->title = $title;
-                        $ck->text = $request->track_text;
-                        $ck->update();
-                    } else {
-                        $data = new OrderTrack;
-                        $data->order_id = $id;
-                        $data->title = $title;
-                        $data->text = $request->track_text;
-                        $data->save();
-                    }
-                }
 
                 $msg = __('Status Updated Successfully.');
                 return response()->json($msg);
