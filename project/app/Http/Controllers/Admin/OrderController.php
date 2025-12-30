@@ -157,10 +157,15 @@ class OrderController extends AdminBaseController
             })
             ->addColumn('action', function (Order $data) {
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
-                return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '</button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . '</div></div>';
+                $deleteBtn = '<a href="javascript:;"
+        class="delete-order"
+        data-href="' . route('admin-order-delete', $data->id) . '">
+        <i class="fas fa-trash"></i> ' . __('Delete') . '</a>';
+
+                return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '</button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . $deleteBtn . '</div></div>';
             })
             ->rawColumns(['date', 'branch', 'id', 'status', 'order_source', 'action'])
-            ->toJson(); //--- Returning Json Data To Client Side
+            ->toJson();
     }
 
     public function assignBranch(Request $request)
@@ -177,11 +182,51 @@ class OrderController extends AdminBaseController
         return response()->json(['message' => 'Branch assigned successfully.']);
     }
 
+    public function orderDelete($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->delete();
+
+        $msg = __('Order Deleted Successfully.');
+        return response()->json(['message' => $msg]);
+    }
+
     public function show($id)
     {
         $order = Order::findOrFail($id);
         $cart = json_decode($order->cart, true);
         return view('admin.order.details', compact('order', 'cart'));
+    }
+    public function multipleOrderNote(Request $request)
+    {
+
+        $order = Order::findOrFail($request->id);
+
+        // existing notes
+        $existingNotes = json_decode($order->multiple_note, true) ?? [];
+
+        // new notes with date & time
+        $newNotes = [];
+
+        foreach ($request->multiple_note as $note) {
+            $newNotes[] = [
+                'note' => $note,
+                'time' => now()->format('d M Y h:i A'),
+                'user' => auth('admin')->user()->name
+            ];
+        }
+
+        // merge old + new
+        $mergedNotes = array_merge($existingNotes, $newNotes);
+
+        // save as json
+        $order->multiple_note = json_encode($mergedNotes);
+        $order->save();
+
+        return response()->json([
+            'status' => true,
+            'note' => end($newNotes)
+        ]);
     }
 
     public function invoice($id)

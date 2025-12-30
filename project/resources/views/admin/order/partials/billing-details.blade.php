@@ -1,5 +1,5 @@
 <div class="modal fade" id="billing-details-edit" tabindex="-1" role="dialog" aria-labelledby="billing-details-edit" aria-hidden="true">
-										
+
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="submit-loader">
@@ -80,7 +80,7 @@
                                             </div>
                                         </div>
 
-                                        
+
                                         <div class="row">
                                             <div class="col-lg-4">
                                                 <div class="left-area">
@@ -105,7 +105,7 @@
                                                     @foreach (DB::table('countries')->get() as $data)
                                                         <option value="{{ $data->country_name }}" {{ $order->customer_country == $data->country_name ? 'selected' : '' }}>
                                                             {{ $data->country_name }}
-                                                        </option>		
+                                                        </option>
                                                      @endforeach
                                                 </select>
                                             </div>
@@ -128,7 +128,7 @@
                                         <div class="row">
                                             <div class="col-lg-4">
                                                 <div class="left-area">
-                                                    
+
                                                 </div>
                                             </div>
                                             <div class="col-lg-7">

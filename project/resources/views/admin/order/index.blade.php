@@ -368,4 +368,45 @@
         });
     </script>
     {{-- DATA TABLE --}}
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(document).on('click', '.delete-order', function () {
+
+    let url = $(this).data('href');
+
+    Swal.fire({
+        title: "{{ __('Are you sure?') }}",
+        text: "{{ __('This order will be permanently deleted') }}",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: "{{ __('Yes, delete it!') }}",
+        cancelButtonText: "{{ __('Cancel') }}"
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (res) {
+                    Swal.fire(
+                        "{{ __('Deleted!') }}",
+                        res.message,
+                        'success'
+                    );
+
+                    $('#geniustable').DataTable().ajax.reload(null, false);
+                }
+            });
+        }
+    });
+});
+</script>
+
 @endsection

@@ -17,6 +17,7 @@ use App\Models\Rating;
 use App\Models\Slider;
 use App\Models\Subcategory;
 use App\Models\Subscriber;
+use App\Models\UserInfo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -929,5 +930,29 @@ class FrontendController extends Controller
     public function success(Request $request, $get)
     {
         return view('frontend.thank', compact('get'));
+    }
+    public function autoSaveUserInfo(Request $request)
+    {
+        //Save user info based on session ID for guest users
+        $sessionId = $request->input('session_id');
+        $identifier = ['session_id' => $sessionId];
+
+       $cartObject = Session::has('cart') ? Session::get('cart') : null;
+        $cartItems = $cartObject ? $cartObject->items : [];
+
+
+        $userInfo = UserInfo::updateOrCreate(
+            $identifier, // Search by authenticated user ID
+            [
+                'name' => $request->customer_name,
+                'email' => $request->customer_email,
+                'phone' => $request->customer_phone,
+                'address' => $request->customer_address,
+                'order_process' => 'pending',
+                'product_details' => json_encode($cartItems),
+            ]
+        );
+
+        return response()->json(['success' => true]);
     }
 }

@@ -177,7 +177,7 @@ class CheckoutController extends Controller
             $input['currency_sign'] = $curr->sign;
             $input['currency_value'] = $curr->value;
             $input['pay_amount'] = $orderTotal / $curr->value;
-            $input['order_number'] = Str::random(4) . time();
+            $input['order_number'] ='a'. rand(10000, 99999);
             $input['wallet_price'] = $request->wallet_price / $curr->value;
 
             if (@$input['tax_type'] == 'state_tax') {

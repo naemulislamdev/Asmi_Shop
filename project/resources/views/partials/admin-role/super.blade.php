@@ -1,7 +1,7 @@
 <li>
     <a href="#order" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
             class="fas fa-hand-holding-usd"></i>{{ __('Orders') }}
-        </a>
+    </a>
     <ul class="collapse list-unstyled" id="order" data-parent="#accordion">
         <li>
             <a href="{{ route('admin-orders-all') }}"> {{ __('All Orders') }}
@@ -53,6 +53,19 @@
     <ul class="collapse list-unstyled" id="all_reports" data-parent="#accordion">
         <li>
             <a href="{{ route('admin-order-report-index') }}"> {{ __('Order Reports') }}</a>
+        </li>
+        {{-- <li>
+            <a href=""> {{ __('Sales Reports') }}</a>
+        </li> --}}
+
+    </ul>
+</li>
+<li>
+    <a href="#all_user_infos" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
+            class="fas fa-hand-holding-usd"></i>{{ __('User Infos') }}</a>
+    <ul class="collapse list-unstyled" id="all_user_infos" data-parent="#accordion">
+        <li>
+            <a href="{{ route('admin-user-info-index') }}"> {{ __('All User Infos') }}</a>
         </li>
         {{-- <li>
             <a href=""> {{ __('Sales Reports') }}</a>
@@ -264,7 +277,8 @@
                 href="{{ route('admin-vendor-subs', 'completed') }}"><span>{{ __('Completed Subscriptions') }}</span></a>
         </li>
         <li>
-            <a href="{{ route('admin-vendor-subs', 'pending') }}"><span>{{ __('Pending Subscriptions') }}</span></a>
+            <a
+                href="{{ route('admin-vendor-subs', 'pending') }}"><span>{{ __('Pending Subscriptions') }}</span></a>
         </li>
     </ul>
 </li>
@@ -506,7 +520,7 @@
 <li>
     <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
             class="fas fa-user-secret"></i>{{ __('Manage
-                                            Staffs') }}</a>
+                                                                    Staffs') }}</a>
 </li>
 
 <li>
@@ -528,7 +542,7 @@
 <li>
     <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
             class="fas fa-list-alt"></i>{{ __('Addon
-                                            Manager') }}</a>
+                                                                    Manager') }}</a>
 </li>
 
 <li>

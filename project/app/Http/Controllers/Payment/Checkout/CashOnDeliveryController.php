@@ -8,6 +8,8 @@ use App\Models\Country;
 use App\Models\Order;
 use App\Models\Reward;
 use App\Models\State;
+use App\Models\User;
+use App\Models\UserInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -134,6 +136,12 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $order->fill($input)->save();
         $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.']);
         $order->notifications()->create();
+
+        $sessionId = $input['session_id'];
+        $userInfo = UserInfo::where('session_id', $sessionId)->where('phone', $input['customer_phone'])->first();
+        if ($userInfo) {
+            $userInfo->delete();
+        }
 
         if ($input['coupon_id'] != "") {
             OrderHelper::coupon_check($input['coupon_id']); // For Coupon Checking

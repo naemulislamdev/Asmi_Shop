@@ -79,6 +79,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/order/edit/{id}', 'Admin\OrderController@edit')->name('admin-order-edit');
         Route::post('/order/update/{id}', 'Admin\OrderController@update')->name('admin-order-update');
         Route::get('/order/{id}/show', 'Admin\OrderController@show')->name('admin-order-show');
+        Route::post("admin-multinote", 'Admin\OrderController@multipleOrderNote')->name("admin-order-mulitple-note");
         Route::get('/order/{id}/invoice', 'Admin\OrderController@invoice')->name('admin-order-invoice');
         Route::get('/order/{id}/print', 'Admin\OrderController@printpage')->name('admin-order-print');
         Route::get('/order/{id1}/status/{status}', 'Admin\OrderController@status')->name('admin-order-status');
@@ -93,6 +94,7 @@ Route::prefix('admin')->group(function () {
         // Order Tracking
         Route::get('/orders/export', [OrderExportController::class, 'export'])->name('orders.export');
         Route::post('order/assign-branch', 'Admin\OrderController@assignBranch')->name('admin-order-assign-branch');
+        Route::delete('order/delete/{id}', 'Admin\OrderController@orderDelete')->name('admin-order-delete');
 
         // CREATE ORDER
 
@@ -129,6 +131,14 @@ Route::prefix('admin')->group(function () {
         Route::get('/orders/report', 'Admin\ReportController@orderReportIndex')->name('admin-order-report-index');
         Route::get('/orders/report/filter', 'Admin\ReportController@orderReportFilter')->name('admin-order-report-filter');
     });
+    Route::as('admin-')->group(function () {
+        Route::get('/user-info/index', 'Admin\UserInfoController@index')->name('user-info-index');
+        Route::get('/user-info/datatable', 'Admin\UserInfoController@datatable')->name('user-info-datatables');
+
+        Route::get('/userinfo/status/edit/{id}', 'Admin\UserInfoController@statusEdit')->name('userinfo-status-edit');
+        Route::post('/userinfo/status/update/{id}', 'Admin\UserInfoController@statusUpdate')->name('userinfo-status-update');
+    });
+
 
     //------------ ADMIN ORDER SECTION ENDS------------
 
@@ -1571,6 +1581,7 @@ Route::group(['middleware' => 'maintenance'], function () {
 
     // FAQ SECTION
     Route::get('/faq', 'Front\FrontendController@faq')->name('front.faq');
+    Route::post('/auto-save/userinfo', 'Front\FrontendController@autoSaveUserInfo')->name('front.save.user.info');
     // FAQ SECTION ENDS
 
     // CONTACT SECTION

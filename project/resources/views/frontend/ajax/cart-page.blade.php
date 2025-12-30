@@ -1,5 +1,7 @@
-<form class="address-wrapper checkoutform" method="POST">
+<form class="address-wrapper checkoutform" method="POST" id="userInfoForm">
     @csrf
+
+    <input type="hidden" name="session_id" value="{{ session()->getId() }}">
     <div class="container gs-cart-container">
 
         <div class="row gs-cart-row">
@@ -53,7 +55,7 @@
                                                     <div class="input-wrapper">
                                                         <label class="label-cls" for="customer_name">@lang('Name')
                                                             <span class="text-danger">*</span></label>
-                                                        <input class="input-cls" id="customer_name" type="text"
+                                                        <input class="input-cls auto-save" id="customer_name" type="text"
                                                             name="customer_name" placeholder="@lang('Full Name')"
                                                             value="{{ Auth::check() ? Auth::user()->name : '' }}">
                                                         @error('customer_name')
@@ -67,7 +69,7 @@
                                                         <label class="label-cls" for="phone">
                                                             @lang('Phone Number') <span class="text-danger">*</span>
                                                         </label>
-                                                        <input class="input-cls" id="phone" type="tel"
+                                                        <input class="input-cls auto-save" id="phone" type="tel"
                                                             placeholder="@lang('Phone Number')" name="customer_phone"
                                                             value="{{ Auth::check() ? Auth::user()->phone : '' }}">
                                                         <span id="phoneFeedback" class="small text-danger"></span>
@@ -80,7 +82,7 @@
                                                     <div class="input-wrapper">
                                                         <label class="label-cls" for="email">@lang('Email')
                                                             (Optional)</label>
-                                                        <input class="input-cls" id="email" type="email"
+                                                        <input class="input-cls auto-save" id="email" type="email"
                                                             name="customer_email" placeholder="@lang('Enter Your Email')"
                                                             value="{{ Auth::check() ? Auth::user()->email : '' }}"
                                                             {{ Auth::check() ? 'readonly' : '' }}>
@@ -94,7 +96,7 @@
                                                         <label class="label-cls" for="address">
                                                             @lang('Address') <span class="text-danger">*</span>
                                                         </label>
-                                                        <input class="input-cls" id="address" type="text"
+                                                        <input class="input-cls auto-save" id="address" type="text"
                                                             placeholder="@lang('Address')" name="customer_address"
                                                             value="{{ Auth::check() ? Auth::user()->address : '' }}">
                                                         @error('customer_address')
@@ -652,6 +654,38 @@
                 phoneFeedback.textContent = 'Phone number is required';
             } else if (!regex.test(phoneInput)) {
                 phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
+            }
+        });
+    </script>
+     <script>
+        $(document).ready(function() {
+            let typingTimer;
+            let doneTypingInterval = 1000; // Time in milliseconds (1 second)
+
+            $(".auto-save").on("input", function() {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(saveUserData, doneTypingInterval);
+            });
+
+            function saveUserData() {
+                let formData = $("#userInfoForm").serialize();
+
+                $.ajax({
+                    url: "{{ route('front.save.user.info') }}",
+                    type: "POST",
+                    data: formData,
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.success) {
+                            console.log("Data auto-saved successfully!");
+                        } else {
+                            console.log("Failed to save data.");
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log("Error: ", xhr.responseText);
+                    }
+                });
             }
         });
     </script>
