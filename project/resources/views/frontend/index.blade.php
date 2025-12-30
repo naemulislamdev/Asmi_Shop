@@ -190,7 +190,7 @@
     <section class="slider-section">
 
         <div class="row ">
-            <div class="col-lg-2 d-none d-lg-block p-0">
+            <div class="@if($promoOffers->count() > 0) col-lg-2  @endif d-none d-lg-block p-0">
                 <div class="left-promo">
 
                     @foreach ($left_promo_offers->chunk(2) as $chunk)
@@ -212,7 +212,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-8 px-0">
+            <div class="@if($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
                 <div class="hero-slider-wrapper ">
                     @foreach ($sliders as $slider)
                         <div class="gs-hero-section">
@@ -223,7 +223,7 @@
                     @endforeach
                 </div>
             </div>
-            <div class="col-lg-2 d-none d-lg-block ps-0">
+            <div class="@if($promoOffers->count() > 0) col-lg-2  @endif d-none d-lg-block ps-0">
                 <div class="right-promo">
 
                     @foreach ($right_promo_offers->chunk(2) as $chunk)

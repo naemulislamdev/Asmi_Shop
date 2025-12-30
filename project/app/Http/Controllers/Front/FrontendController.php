@@ -75,8 +75,10 @@ class FrontendController extends Controller
         $data['sliders'] = DB::table('sliders')
             ->orderBy('order', 'asc')
             ->where('type', 'web')
+            ->where('published', 1)
             ->get();
         $promoOffers = Slider::where('type', 'promo_offer')
+            ->where('published', 1)
             ->orderBy('order', 'asc')
             ->get();
 
@@ -255,7 +257,7 @@ class FrontendController extends Controller
             ->latest()->first();
 
         $data['blogs'] = Blog::latest()->take(2)->get();
-
+        $data['promoOffers'] = $promoOffers;
         return view('frontend.index', $data);
     }
 
