@@ -221,6 +221,7 @@
                                             <option selected disabled>{{ __('Select slider type') }}</option>
                                             <option {{$data->type == 'web'? 'selected':''}} value="web">{{ __('Web Slider') }}</option>
                                             <option {{$data->type == 'mobile'? 'selected':''}} value="mobile">{{ __('Mobile Slider') }}</option>
+                                            <option {{$data->type == 'promo_offer'? 'selected':''}} value="promo_offer">{{ __('Promo Offer') }}</option>
                                         </select>
                                     </div>
                                 </div>

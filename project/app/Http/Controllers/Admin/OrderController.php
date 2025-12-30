@@ -105,10 +105,10 @@ class OrderController extends AdminBaseController
                 data-toggle="modal"
                 data-target="#branchModal">' . $data->branch->name . '</a>';
                 }
-                return '<a href="javascript:;" class="select-branch"
+                return '<a href="javascript:;" class="select-branch btn btn-sm btn-primary"
                 data-id="' . $data->id . '"
                 data-toggle="modal"
-                data-target="#branchModal">' . __('Select') . '</a>';
+                data-target="#branchModal">' . __('Add') . '</a>';
             })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
@@ -142,6 +142,22 @@ class OrderController extends AdminBaseController
                 }
                 return '<span class="badge badge-' . $badge . '">' . $source . '</span>';
             })
+            ->editColumn('custom_note', function (Order $data) {
+                if ($data->tracks->isNotEmpty()) {
+                    $note = e(optional($data->tracks->last())->text);
+                    return "
+            <button
+                style='font-size: 13px;'
+                class='btn btn-info btn-sm note-view-btn d-inline-block'
+                data-note='{$note}'
+            >
+                <i class='fa fa-eye'></i> View
+            </button>
+        ";
+                }
+                return 'N/A';
+            })
+
             ->editColumn('order_source', function (Order $data) {
                 if ($data->order_source == 'Website') {
                     $badge = 'primary';
@@ -159,7 +175,7 @@ class OrderController extends AdminBaseController
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
                 return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '</button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . '</div></div>';
             })
-            ->rawColumns(['date', 'branch', 'id', 'status', 'order_source', 'action'])
+            ->rawColumns(['date', 'branch', 'id', 'status', 'custom_note', 'order_source', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
@@ -183,7 +199,8 @@ class OrderController extends AdminBaseController
         $cart = json_decode($order->cart, true);
         return view('admin.order.details', compact('order', 'cart'));
     }
-    public function multipleOrderNote(Request $request) {
+    public function multipleOrderNote(Request $request)
+    {
 
         $order = Order::findOrFail($request->id);
 
@@ -210,7 +227,7 @@ class OrderController extends AdminBaseController
 
         return response()->json([
             'status' => true,
-            'note' => end($newNotes) 
+            'note' => end($newNotes)
         ]);
     }
 

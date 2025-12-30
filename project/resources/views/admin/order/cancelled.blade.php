@@ -1,5 +1,109 @@
 @extends('layouts.admin')
 
+<style>
+     .note-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all .25s ease;
+            z-index: 9999;
+        }
+
+        .note-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .note-modal-box {
+            background: #ffffff;
+            width: 450px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+            transform: scale(.85) translateY(10px);
+            transition: all .25s ease;
+            overflow: hidden;
+        }
+
+        .note-modal-overlay.active .note-modal-box {
+            transform: scale(1) translateY(0);
+        }
+
+        .note-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #f7f9fc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .note-modal-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .note-modal-close {
+            font-size: 22px;
+            cursor: pointer;
+            color: #666;
+            transition: color .2s;
+        }
+
+        .note-modal-close:hover {
+            color: #000;
+        }
+
+        .note-modal-body {
+            padding: 18px;
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .note-modal-footer {
+            padding: 12px 18px;
+            text-align: right;
+            border-top: 1px solid #e5e7eb;
+            background: #fafafa;
+        }
+
+        .note-ok-btn {
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            padding: 6px 18px;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .note-ok-btn:hover {
+            background: #0b5ed7;
+        }
+        .note-modal-close{
+            color: #dc3545;
+            transition: all 0.3s ease-in-out
+        }
+        .note-modal-close:hover {
+            background: #dc3545;
+            color: #fff ;
+        }
+
+        table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
+        table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
+            top: 77% !important;
+        }
+</style>
+
 @section('content')
     <input type="hidden" id="headerdata" value="{{ __('ORDER') }}">
 
@@ -7,7 +111,7 @@
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-12">
-                    <h4 class="heading">{{ __('Declined Orders') }}</h4>
+                    <h4 class="heading">{{ __('Cancelled Orders') }}</h4>
                     <ul class="links">
                         <li>
                             <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
@@ -42,6 +146,7 @@
                                         <th>{{ __('Total Qty') }}</th>
                                         <th>{{ __('Total Cost') }}</th>
                                         <th>{{ __('Status') }}</th>
+                                           <th>{{ __('Status Note') }}</th>
                                         <th>{{ __('Order Source') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
@@ -196,6 +301,26 @@
     </div>
 
     {{-- ADD / EDIT MODAL ENDS --}}
+     {{-- order status note modal --}}
+    <div id="noteModal" class="note-modal-overlay">
+        <div class="note-modal-box">
+
+            <div class="note-modal-header">
+                <span class="note-modal-title">📄 Status Note</span>
+                <span style="height: 30px; width: 30px; text-align: center;line-height: 30px" title="Close"
+                    class="note-modal-close border rounded-circle border-danger ">&times;</span>
+            </div>
+
+            <div class="note-modal-body" id="noteContent">
+                <!-- note text here -->
+            </div>
+
+            <div class="note-modal-footer">
+                <button class="note-ok-btn">OK</button>
+            </div>
+
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -209,7 +334,7 @@
                 ordering: false,
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('admin-order-datatables', 'declined') }}',
+                ajax: '{{ route('admin-order-datatables', 'cancelled') }}',
                 columns: [{
                         data: 'customer_name',
                         name: 'customer_name'
@@ -241,6 +366,10 @@
                     {
                         data: 'status',
                         name: 'status'
+                    },
+                     {
+                        data: 'custom_note',
+                        name: 'custom_note'
                     },
                     {
                         data: 'order_source',
@@ -284,6 +413,24 @@
                     toastr.error('Something went wrong');
                 }
             });
+        });
+    </script>
+
+    <script>
+        $(document).on('click', '.note-view-btn', function() {
+            let note = $(this).data('note');
+            $('#noteContent').text(note);
+            $('#noteModal').addClass('active');
+        });
+
+        $(document).on('click', '.note-modal-close, .note-ok-btn', function() {
+            $('#noteModal').removeClass('active');
+        });
+
+        $(document).on('click', '#noteModal', function(e) {
+            if (e.target.id === 'noteModal') {
+                $('#noteModal').removeClass('active');
+            }
         });
     </script>
 @endsection

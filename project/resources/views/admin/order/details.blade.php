@@ -164,23 +164,25 @@
                                         <th width="10%">:</th>
                                         <td width="45%">{{ $order->order_note }}</td>
                                     @endif
+                                    <i class="fa fa-eye" aria-hidden="true"></i>
                                     @if ($order->tracks->count() > 0)
                                         <tr>
-                                            <th width="45%">{{ __('Track Note') }}</th>
+                                            <th width="45%">{{ __('Track Note') }} </th>
                                             <th width="10%">:</th>
                                             <td width="45%">
+
                                                 @foreach ($order->tracks as $track)
-                                                    @if ($order->status == 'completed')
-                                                        <span class="badge badge-success">{{ $track->text }}</span>
-                                                    @elseif($order->status == 'pending')
-                                                        <span class="badge badge-warning">{{ $track->text }}</span>
-                                                    @elseif($order->status == 'hold')
-                                                        <span class="badge badge-secondary">{{ $track->text }}</span>
-                                                    @elseif($order->status == 'processing')
-                                                        <span class="badge badge-info">{{ $track->text }}</span>
-                                                    @elseif($order->status == 'on delivery')
-                                                        <span class="badge badge-primary">{{ $track->text }}</span>
-                                                    @elseif($order->status == 'cancelled')
+                                                    @if ($track->title == 'Completed')
+                                                        <span class="badge badge-success">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                    @elseif($track->title == 'Pending')
+                                                        <span class="badge badge-warning">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                    @elseif($track->title == 'Hold')
+                                                        <span class="badge badge-secondary">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                    @elseif($track->title == 'Processing')
+                                                        <span class="badge badge-info">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                    @elseif($track->title == 'on delivery')
+                                                        <span class="badge badge-primary">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                    @elseif($track->title == 'Cancelled')
                                                         <span class="badge badge-danger">{{ $track->text }}</span>
                                                     @endif
                                                 @endforeach
@@ -384,7 +386,7 @@
                                 <ul id="noteList" class="list-unstyled d-flex flex-column">
                                     @if ($order->multiple_note)
                                         @foreach (json_decode($order->multiple_note, true) as $note)
-                                            <li style="text-align: left;  text-wrap: wrap; line-height: 20px"
+                                            <li style="text-align: left;  text-wrap: wrap; line-height: 20px; font-size: 15px;"
                                                 class="badge badge-info mb-2 py-2">
                                                 {{ $note['note'] }}
                                                 <span class="text-white">({{ $note['time'] }} -> Note by:
@@ -1075,7 +1077,7 @@
                     if (res.status) {
 
                         $('#noteList').append(`
-                    <li style="text-align:left; line-height:20px; text-wrap: wrap;"
+                    <li style="text-align:left; line-height:20px; text-wrap: wrap; font-size: 15px;"
                         class="badge badge-info d-inline-block mb-2 py-2">
                         ${res.note.note}
                         <span class="text-white">
