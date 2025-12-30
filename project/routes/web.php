@@ -637,7 +637,7 @@ Route::prefix('admin')->group(function () {
 
     });
 
-    //------------ ADMIN GENERAL SETTINGS SECTION ENDS ------------
+    //------------ ADMIN GENERAL SETTINGS SECTION ENDS ------------slider
 
     //------------ ADMIN HOME PAGE SETTINGS SECTION ------------
 
@@ -654,6 +654,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/slider/edit/{id}', 'Admin\SliderController@edit')->name('admin-sl-edit');
         Route::post('/slider/edit/{id}', 'Admin\SliderController@update')->name('admin-sl-update');
         Route::delete('/slider/delete/{id}', 'Admin\SliderController@destroy')->name('admin-sl-delete');
+        Route::get('/slider/status/{id1}/{id2}', 'Admin\SliderController@status')->name('admin-sl-status');
+
 
         //------------ ADMIN SLIDER SECTION ENDS ------------
 

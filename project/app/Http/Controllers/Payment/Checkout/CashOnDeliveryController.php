@@ -134,7 +134,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $input['tax'] = Session::get('current_tax') ?? 0;
 
         $order->fill($input)->save();
-        $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.']);
+     
         $order->notifications()->create();
 
         $sessionId = $input['session_id'];

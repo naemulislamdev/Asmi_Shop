@@ -35,6 +35,7 @@
                                         <th>{{ __('Featured Image') }}</th>
                                         <th width="40%">{{ __('Order') }}</th>
                                         <th>{{ __('Type') }}</th>
+                                        <th>{{ __('Published') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
                                 </thead>
@@ -142,6 +143,10 @@
                         name: 'type'
                     },
                     {
+                        data: 'published',
+                        name: 'published'
+                    },
+                    {
                         data: 'action',
                         searchable: false,
                         orderable: false
@@ -166,4 +171,35 @@
 
         })(jQuery);
     </script>
+    {{-- <script>
+           $(document).on('change', '.publishedStatus', function() {
+            var id = $(this).attr("id");
+            if ($(this).prop("checked") == true) {
+                var status = 1;
+            } else if ($(this).prop("checked") == false) {
+                var status = 0;
+            }
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('admin-sl-status') }}",
+                method: 'POST',
+                data: {
+                    id: id,
+                    status: status
+                },
+                success: function(data) {
+                    if (data == 1) {
+
+                    } else {
+
+                    }
+                }
+            });
+        });
+    </script> --}}
 @endsection

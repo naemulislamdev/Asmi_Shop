@@ -24,10 +24,16 @@ class SliderController extends AdminBaseController
             //     $title = mb_strlen(strip_tags($data->title), 'UTF-8') > 250 ? mb_substr(strip_tags($data->title), 0, 250, 'UTF-8') . '...' : strip_tags($data->title);
             //     return  $title;
             // })
+            ->editColumn('published', function (Slider $data) {
+                $class = $data->published == 1 ? 'drop-success' : 'drop-danger';
+                $s = $data->published == 1 ? 'selected' : '';
+                $ns = $data->published == 0 ? 'selected' : '';
+                return '<div class="action-list"><select class="process select droplinks ' . $class . '"><option data-val="1" value="' . route('admin-sl-status', ['id1' => $data->id, 'id2' => 1]) . '" ' . $s . '>' . __("Activated") . '</option><option data-val="0" value="' . route('admin-sl-status', ['id1' => $data->id, 'id2' => 0]) . '" ' . $ns . '>' . __("Deactivated") . '</option>/select></div>';
+            })
             ->addColumn('action', function (Slider $data) {
                 return '<div class="action-list"><a href="' . route('admin-sl-edit', $data->id) . '"> <i class="fas fa-edit"></i>' . __('Edit') . '</a><a href="javascript:;" data-href="' . route('admin-sl-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i></a></div>';
             })
-            ->rawColumns(['photo', 'action'])
+            ->rawColumns(['photo', 'published', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
@@ -36,11 +42,22 @@ class SliderController extends AdminBaseController
         return view('admin.slider.index');
     }
 
+
     public function create()
     {
         return view('admin.slider.create');
     }
 
+    public function status($id1, $id2)
+    {
+        $data = Slider::findOrFail($id1);
+        $data->published = $id2;
+        $data->update();
+        //--- Redirect Section
+        $msg = __('Status Updated Successfully.');
+        return response()->json($msg);
+        //--- Redirect Section Ends
+    }
     //*** POST Request
     public function store(Request $request)
     {
