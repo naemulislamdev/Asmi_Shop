@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
 @section('content')
-    <input type="hidden" id="headerdata" value="{{ __('SLIDER') }}">
+    <input type="hidden" id="headerdata" value="{{ __('COUPON_SLIDER') }}">
     <div class="content-area">
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-12">
-                    <h4 class="heading">{{ __('Sliders') }}</h4>
+                    <h4 class="heading">{{ __('Coupon Offer Sliders') }}</h4>
                     <ul class="links">
                         <li>
                             <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
@@ -15,7 +15,7 @@
                             <a href="javascript:;">{{ __('Home Page Settings') }} </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin-sl-index') }}">{{ __('Sliders') }}</a>
+                            <a href="{{ route('admin-coupon-slider-index') }}">{{ __('Coupon-Sliders') }}</a>
                         </li>
                     </ul>
                 </div>
@@ -32,9 +32,8 @@
                             <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>{{ __('Featured Image') }}</th>
+                                        <th>{{ __('Image') }}</th>
                                         <th width="40%">{{ __('Order') }}</th>
-                                        <th>{{ __('Type') }}</th>
                                         <th>{{ __('Published') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
@@ -126,10 +125,10 @@
                 ordering: false,
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('admin-sl-datatables') }}',
+                ajax: '{{ route('admin-coupon-slider-datatables') }}',
                 columns: [{
-                        data: 'photo',
-                        name: 'photo',
+                        data: 'image',
+                        name: 'image',
                         searchable: false,
                         orderable: false
                     },
@@ -137,10 +136,7 @@
                         data: 'order',
                         name: 'order'
                     },
-                    {
-                        data: 'type',
-                        name: 'type'
-                    },
+
                     {
                         data: 'published',
                         name: 'published'
@@ -159,7 +155,7 @@
 
             $(function() {
                 $(".btn-area").append('<div class="col-sm-4 table-contents">' +
-                    '<a class="add-btn" href="{{ route('admin-sl-create') }}">' +
+                    '<a class="add-btn" href="{{ route('admin-coupon-slider-store') }}">' +
                     '<i class="fas fa-plus"></i> {{ __('Add New Slider') }}' +
                     '</a>' +
                     '</div>');

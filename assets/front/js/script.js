@@ -190,10 +190,7 @@ $(document).ready(function () {
     arrows: false,
     centerMode: false, // best
     centerPadding: "0px",
-    // prevArrow:
-    //   '<button title="Previous" type="button" class="slick-prev"><i class="fa fa-chevron-left"></i></button>',
-    // nextArrow:
-    //   '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
+    
   });
   $(".right-promo").slick({
     dots: true,
@@ -206,10 +203,7 @@ $(document).ready(function () {
     arrows: false,
     centerMode: false, // best
     centerPadding: "0px",
-    // prevArrow:
-    //   '<button title="Previous" type="button" class="slick-prev"><i class="fa fa-chevron-left"></i></button>',
-    // nextArrow:
-    //   '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
+   
   });
 
   /* 

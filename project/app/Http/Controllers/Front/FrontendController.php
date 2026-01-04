@@ -10,6 +10,7 @@ use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\Category;
 use App\Models\Childcategory;
+use App\Models\CouponSlider;
 use App\Models\Generalsetting;
 use App\Models\Order;
 use App\Models\Product;
@@ -83,7 +84,7 @@ class FrontendController extends Controller
             ->get();
 
         $total = $promoOffers->count();
-        $half  = ceil($total / 2); // odd হলে left এ extra যাবে
+        $half  = ceil($total / 2); 
 
         $data['left_promo_offers']  = $promoOffers->take($half);
         $data['right_promo_offers'] = $promoOffers->slice($half);
@@ -258,6 +259,7 @@ class FrontendController extends Controller
 
         $data['blogs'] = Blog::latest()->take(2)->get();
         $data['promoOffers'] = $promoOffers;
+        $data['coupon_sliders'] = CouponSlider::where('published', 1)->get();
         return view('frontend.index', $data);
     }
 

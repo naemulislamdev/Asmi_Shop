@@ -75,6 +75,7 @@ Route::prefix('admin')->group(function () {
     Route::group(['middleware' => 'permissions:orders'], function () {
 
         Route::get('/orders/datatables/{slug}', 'Admin\OrderController@datatables')->name('admin-order-datatables'); //JSON REQUEST
+        Route::get('/orders/datatables/{slug}', 'Admin\OrderController@datatables')->name('admin-order-datatables'); //JSON REQUEST
         Route::get('/orders', 'Admin\OrderController@orders')->name('admin-orders-all');
         Route::get('/order/edit/{id}', 'Admin\OrderController@edit')->name('admin-order-edit');
         Route::post('/order/update/{id}', 'Admin\OrderController@update')->name('admin-order-update');
@@ -658,6 +659,17 @@ Route::prefix('admin')->group(function () {
 
 
         //------------ ADMIN SLIDER SECTION ENDS ------------
+        //------------ ADMIN Offer Coupon SLIDER SECTION START------------
+        Route::get('/coupon-slider/datatables', 'Admin\CouponSliderController@datatables')->name('admin-coupon-slider-datatables'); //JSON REQUEST
+        Route::get('/coupon-slider', 'Admin\CouponSliderController@index')->name('admin-coupon-slider-index');
+        Route::get('/coupon-slider/create', 'Admin\CouponSliderController@create')->name('admin-coupon-slider-create');
+        Route::post('/coupon-slider/create', 'Admin\CouponSliderController@store')->name('admin-coupon-slider-store');
+        Route::get('/coupon-slider/edit/{id}', 'Admin\CouponSliderController@edit')->name('admin-coupon-slider-edit');
+        Route::post('/coupon-slider/edit/{id}', 'Admin\CouponSliderController@update')->name('admin-coupon-slider-update');
+        Route::delete('/coupon-slider/delete/{id}', 'Admin\CouponSliderController@destroy')->name('admin-coupon-slider-delete');
+        Route::get('/coupon-slider/status/{id1}/{id2}', 'Admin\CouponSliderController@status')->name('admin-coupon-slider-status');
+        
+        //------------ ADMIN Offer Coupon SLIDER SECTION ENDS ------------
 
         Route::get('/arrival/datatables', 'Admin\ArrivalsectionController@datatables')->name('admin-arrival-datatables');
         Route::get('/arrival', 'Admin\ArrivalsectionController@index')->name('admin-arrival-index');

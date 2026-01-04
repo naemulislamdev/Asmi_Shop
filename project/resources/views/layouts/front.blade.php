@@ -240,7 +240,7 @@
         <div class="container-fluid">
             <!-- Desktop Logo, Menubar, Search Start -->
             <div class="d-flex align-items-center justify-content-between px-2 container-fluid">
-                <div class="d-flex  align-items-center g logo_Bar">
+                <div class="d-flex justify-content-between gap-4 align-items-center g logo_Bar">
                     <div id="menu-btn" class="menu-icon active">
                         <i id="barIcon" class="fa-solid fa-bars-staggered"></i>
                     </div>
@@ -280,6 +280,13 @@
     z-index: 9999;"
                         class="searchResults"></div>
                 </div>
+
+
+                <a class="d-none d-lg-block" href="https://asmishop.com/" target="_blank"><img
+                        style="width: 60px; height: auto;" src="{{ asset('assets/front/images/szbd_logo.png') }}"
+                        alt="Shopping Zone BD logo" data-toggle="tooltip" data-placement="top"
+                        title="Go Our Clothing Brand"></a>
+
 
 
                 @if (Auth::guard('web')->check())
@@ -444,8 +451,8 @@
     <!-- Desktop Sidebar End -->
 
     <!-- Mobile Offcanvas Start-->
-    <div id="mobile-offcanvas" class="mobile-offcanvas shadow ">
-        <ul class="accordion">
+    <div id="mobile-offcanvas" class="mobile-offcanvas shadow position-relative" style="height: 90vh">
+        <ul class="accordion ">
             @foreach ($categories as $category)
                 @php
                     $isCategoryActive = Request::segment(2) === $category->slug;
@@ -531,8 +538,14 @@
                     @endif
                 </li>
             @endforeach
-        </ul>
 
+        </ul>
+        <div class="position-absolute border border-t w-100" style="left: 0; bottom: 50px">
+              <a class="mt-2" href="https://asmishop.com/" target="_blank"><img
+                        style="max-width: 100%; height: auto;" src="{{ asset('assets/front/images/szbd_long.png') }}"
+                        alt="Shopping Zone BD logo" data-toggle="tooltip" data-placement="top"
+                        title="Go Our Clothing Brand"> </a>
+        </div>
     </div>
     <!-- Mobile Offcanvas End-->
 
@@ -932,7 +945,7 @@
 
         });
     </script> --}}
-   
+
 
 
 </body>

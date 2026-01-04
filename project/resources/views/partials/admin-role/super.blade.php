@@ -387,6 +387,9 @@
         <li>
             <a href="{{ route('admin-sl-index') }}"><span>{{ __('Sliders') }}</span></a>
         </li>
+        <li>
+            <a href="{{route('admin-coupon-slider-index')}}"><span>{{ __('Coupon Offer Sliders') }}</span></a>
+        </li>
 
         <li>
             <a href="{{ route('admin-arrival-index') }}"><span>{{ __('Best Month Offer') }}</span></a>

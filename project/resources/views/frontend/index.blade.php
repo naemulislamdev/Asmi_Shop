@@ -187,96 +187,87 @@
     </style>
 
     <!-- hero section start -->
-    <section class="slider-section">
 
-        <div class="row ">
-            <div class="@if($promoOffers->count() > 0) col-lg-2  @endif d-none d-lg-block p-0">
-                <div class="left-promo">
+        <section class="slider-section">
+            <div class="row ">
+                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
+                    <div class="left-promo">
 
-                    @foreach ($left_promo_offers->chunk(2) as $chunk)
-                        {{-- ONE SLIDE --}}
-                        <div class="left-promo-wrapper d-flex flex-column gap-3">
+                        @foreach ($left_promo_offers->chunk(2) as $chunk)
+                            {{-- ONE SLIDE --}}
+                            <div class="left-promo-wrapper d-flex flex-column gap-3">
 
-                            @foreach ($chunk as $item)
-                                <div class="card border-0">
-                                    <a href="{{ $item->link }}">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                    </a>
-                                </div>
-                            @endforeach
+                                @foreach ($chunk as $item)
+                                    <div class="card border-0">
+                                        <a href="{{ $item->link }}">
+                                            <img class="card-img-top slider-side-img"
+                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                        </a>
+                                    </div>
+                                @endforeach
 
-                        </div>
-                    @endforeach
+                            </div>
+                        @endforeach
 
+                    </div>
                 </div>
+
+                <div class="@if ($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
+                    <div class="hero-slider-wrapper ">
+                        @foreach ($sliders as $slider)
+                            <div class="gs-hero-section">
+                                <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}"
+                                    alt="Slider Image" style="cursor: pointer; max-width: 100%"
+                                    data-href="{{ $slider->link ?? '#' }}">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block ps-0">
+                    <div class="right-promo">
+
+                        @foreach ($right_promo_offers->chunk(2) as $chunk)
+                            {{-- ONE SLIDE --}}
+                            <div class="right-promo-wrapper d-flex flex-column gap-3">
+
+                                @foreach ($chunk as $item)
+                                    <div class="card border-0">
+                                        <a href="{{ $item->link }}">
+                                            <img class="card-img-top slider-side-img"
+                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                        </a>
+                                    </div>
+                                @endforeach
+
+                            </div>
+                        @endforeach
+
+                    </div>
+                </div>
+
             </div>
 
-            <div class="@if($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
-                <div class="hero-slider-wrapper ">
-                    @foreach ($sliders as $slider)
-                        <div class="gs-hero-section">
-                            <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}"
-                                alt="Slider Image" style="cursor: pointer; max-width: 100%"
-                                data-href="{{ $slider->link ?? '#' }}">
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            <div class="@if($promoOffers->count() > 0) col-lg-2  @endif d-none d-lg-block ps-0">
-                <div class="right-promo">
+        </section>
 
-                    @foreach ($right_promo_offers->chunk(2) as $chunk)
-                        {{-- ONE SLIDE --}}
-                        <div class="right-promo-wrapper d-flex flex-column gap-3">
-
-                            @foreach ($chunk as $item)
-                                <div class="card border-0">
-                                    <a href="{{ $item->link }}">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                    </a>
-                                </div>
-                            @endforeach
-
-                        </div>
-                    @endforeach
-
-                </div>
-            </div>
-
-        </div>
-
-    </section>
     <!-- hero section end -->
 
     {{-- Coupon slider section start --}}
-    <section class="mt-4">
-        <div class="container-fluid">
-            <div class="home-coupon-slider">
-                <div class="coupon-item">
-                    <a href="">
-                        <img src="{{ asset('assets/front/images/coupon-1.png') }}" alt="">
-                    </a>
-                </div>
-                <div class="coupon-item">
-                    <a href="">
-                        <img src="{{ asset('assets/front/images/coupon-2.png') }}" alt="">
-                    </a>
-                </div>
-                <div class="coupon-item">
-                    <a href="">
-                        <img src="{{ asset('assets/front/images/coupon-3.png') }}" alt="">
-                    </a>
-                </div>
-                <div class="coupon-item">
-                    <a href="">
-                        <img src="{{ asset('assets/front/images/coupon-3.png') }}" alt="">
-                    </a>
+      @if($coupon_sliders->count() > 0)
+        <section class="mt-4">
+            <div class="container-fluid">
+                <div class="home-coupon-slider">
+                    @foreach($coupon_sliders as $slider)
+                    <div class="coupon-item">
+                        <a href="{{$slider->link}}">
+                            <img src="{{ asset('assets/images/sliders/coupon/' . $slider->image) }}" alt="coupon image">
+                        </a>
+                    </div>
+                    @endforeach
+
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
     {{-- Coupon slider section end --}}
 
     <!-- categories section start -->
@@ -591,9 +582,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>
