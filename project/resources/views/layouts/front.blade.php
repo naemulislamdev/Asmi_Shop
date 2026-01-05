@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <!--Essential css files-->
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/all.css">
@@ -191,25 +190,55 @@
         * .container {
             padding: 0 20px !important;
         }
+    
+       .searchResults::-webkit-scrollbar {
+   			 width: 3px;
+		}
+		.searchResults::-webkit-scrollbar-thumb {
+    		background: #1bb9cb;
+    		border-radius: 10px;
+		}
+        .gs-partner-section .single-partner img {
+    	object-fit: contain;
+	}
+    .single-product .img-wrapper {
+    	background: #fff;
+    }
+      .mobile-offcanvas button:not(.collapsed) i.fa-plus {
+    display: none;
+}
+.mobile-offcanvas button:not(.collapsed) i.fa-minus {
+    display: inline-block;
+}
+.product-cat-widget {
+    padding-top: 24px;
+    padding-bottom: 90px !important;
+}
+.single-product:hover {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.gs-single-cat:hover .title {
+    color: #fff;
+}
+.gs-single-cat .title {
+    font-size: 16px !important;
+}
+.gs-single-cat .cate-img {
+    object-fit: contain;
+    max-width: 100%;
+    height: auto;
+}
+.home-cate-slider .slick-slide {
+  margin: 0 10px; /* total gap = 20px */
+}
 
-        .searchResults::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .searchResults::-webkit-scrollbar-thumb {
-            background: #cccccc;
-            border-radius: 10px;
-        }
-
-        .mobile-offcanvas button:not(.collapsed) i.fa-plus {
-            display: none;
-        }
-
-        .mobile-offcanvas button:not(.collapsed) i.fa-minus {
-            display: inline-block;
-        }
-
-        .whatsapp_div {
+.home-cate-slider .slick-list {
+  margin: 0 -10px;
+}
+.col-lg-2 {
+    padding: 0 4px !important;
+}
+ .whatsapp_div {
             position: static;
         }
 
@@ -220,13 +249,30 @@
             }
 
         }
+
+.outofstock-box-2 {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/customize.css">
+    <!-- Meta Pixel Code -->
+
+    <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NGVKWTDQ');</script>
+<!-- End Google Tag Manager -->
 </head>
 
 <body class="overflow-auto" style="overflow: auto !important;">
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NGVKWTDQ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
     @php
         $categories = App\Models\Category::with('subs')->where('status', 1)->get();
@@ -239,15 +285,15 @@
     <header class="header shadow">
         <div class="container-fluid">
             <!-- Desktop Logo, Menubar, Search Start -->
-            <div class="d-flex align-items-center justify-content-between px-2 container-fluid">
-                <div class="d-flex justify-content-between gap-4 align-items-center g logo_Bar">
+            <div class="d-flex align-items-center justify-content-between px-1 px-lg-3 container-fluid">
+                <div class="d-flex align-items-center gap-3 logo_Bar">
                     <div id="menu-btn" class="menu-icon active">
                         <i id="barIcon" class="fa-solid fa-bars-staggered"></i>
                     </div>
                     <a href="{{ route('front.index') }}">
                         <img src="{{ asset('assets/images/' . $gs->logo) }}" class="logo" />
                     </a>
-                    <div class="whatsapp_div ">
+   					  <div class="whatsapp_div ">
                         <div class="d-flex align-items-center gap-2"><img style="width: 40px; height: auto;"
                                 src="{{ asset('assets/front/images/whatsapp.png') }}" alt="whatsapp">
                             <div>
@@ -261,15 +307,14 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="search-box d-none d-lg-block">
                     <form action="{{ route('front.search') }}" method="GET">
-                        <i class="fas fa-search"></i>
-                        <input autocomplete="off" type="search" name="search" class="searchInput"
+                      
+                        <input autocomplete="off" type="text" name="search" class="searchInput"
                             placeholder="Search for products (e.g. milk, rice, meat, fish)" />
                     </form>
                     <!-- Search Result Box -->
-                    <div style="max-height: 300px;
+                    <div style=" min-height: 0; max-height: 300px;      
     overflow-y: auto;
     overflow-x: hidden;
     background: #fff;
@@ -280,13 +325,6 @@
     z-index: 9999;"
                         class="searchResults"></div>
                 </div>
-
-
-                <a class="d-none d-lg-block" href="https://asmishop.com/" target="_blank"><img
-                        style="width: 60px; height: auto;" src="{{ asset('assets/front/images/szbd_logo.png') }}"
-                        alt="Shopping Zone BD logo" data-toggle="tooltip" data-placement="top"
-                        title="Go Our Clothing Brand"></a>
-
 
 
                 @if (Auth::guard('web')->check())
@@ -302,9 +340,9 @@
             <!-- mobile search will appear below automatically -->
             <div class="search-box d-lg-none container">
                 <form action="{{ route('front.search') }}" method="GET">
-
-                    <input autocomplete="off" type="search" name="search" class="searchInput"
-                        placeholder="Search for products (e.g. milk, rice, meat, fish)" />
+                    
+                    <input autocomplete="off" type="text" name="search" class="searchInput"
+                        placeholder="Search for products " />
                 </form>
                 <div style="max-height: 300px;
     overflow-y: auto;
@@ -313,9 +351,8 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     position: absolute;
-    width: 100%;
-    z-index: 9999;"
-                    class="searchResults"></div>
+    width: 89%;
+    z-index: 9999;" class="searchResults"></div>
             </div>
         </div>
     </header>
@@ -326,13 +363,13 @@
         <!-- Offers Section -->
         <div class="offers-container">
             <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center mb-2 ">
-                <p style="font-size: 15px; color: #1bb9cb;" class="pb-0 mb-0">
+                <p style="font-size: 15px; color: #1bb9cb" class="pb-0 mb-0">
                     Offers
                     <span class="offer-outline-btn">
                         {{ App\Models\Product::where('discount', '>', 0)->count() }}
                     </span>
                     <img class="ms-3" style="width: 100px; height: auto;"
-                        src="{{ asset('assets/front/images/best-offer.gif') }}" alt="">
+                        src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
                 </p>
             </a>
             {{-- <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
@@ -367,16 +404,13 @@
                     <li>
                         @if ($category->subs->count() > 0)
                             <div class="d-flex justify-content-between align-items-lg-baseline">
-                                <a href="{{ route('front.category', $category->slug) }}"
+                                <a  style="font-size: 16px;" href="{{ route('front.category', $category->slug) }}"
                                     class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
                                     data-collapse="#{{ $catId }}">
-                                    <img class="rounded me-1" style="width: 30px"
-                                        src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
-                                        alt=""> {{ $category->name }}
+                                   <img class="rounded me-1" style="width: 30px" src="{{asset('assets/images/categories')}}/{{$category->image}}" alt=""> {{ $category->name }}
                                 </a>
 
-                                <button type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#{{ $catId }}"
+                                <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
                                     aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
                                     class="{{ $isCategoryActive ? '' : 'collapsed' }}">
                                     <i class="fa-solid fa-plus"></i>
@@ -385,7 +419,7 @@
                             </div>
 
                             <ul id="{{ $catId }}"
-                                class="accordion-collapse collapse ms-3 {{ $isCategoryActive ? 'show' : '' }}">
+                                class="accordion-collapse collapse ms-3 mt-2 {{ $isCategoryActive ? 'show' : '' }}">
 
                                 @foreach ($category->subs as $subcategory)
                                     @php
@@ -416,7 +450,7 @@
 
                                         @if ($subcategory->childs->count() > 0)
                                             <ul id="{{ $subId }}"
-                                                class="accordion-collapse collapse ms-3 {{ $isSubActive ? 'show' : '' }}">
+                                                class="accordion-collapse collapse ms-3 mt-2 {{ $isSubActive ? 'show' : '' }}">
                                                 @foreach ($subcategory->childs as $child)
                                                     @php
                                                         $isChildActive =
@@ -450,9 +484,9 @@
     </aside>
     <!-- Desktop Sidebar End -->
 
-    <!-- Mobile Offcanvas Start-->
-    <div id="mobile-offcanvas" class="mobile-offcanvas shadow position-relative" style="height: 90vh">
-        <ul class="accordion ">
+   <!-- Mobile Offcanvas Start-->
+    <div id="mobile-offcanvas" class="mobile-offcanvas shadow ">
+        <ul class="accordion">
             @foreach ($categories as $category)
                 @php
                     $isCategoryActive = Request::segment(2) === $category->slug;
@@ -462,13 +496,11 @@
                 <li>
                     @if ($category->subs->count() > 0)
                         <div class="d-flex justify-content-between align-items-lg-baseline">
-                            <a href="{{ route('front.category', $category->slug) }}"
-                                class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
-                                data-collapse="#{{ $catId }}">
-                                <img class="rounded me-1" style="width: 30px"
-                                    src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
-                                    alt=""> {{ $category->name }}
-                            </a>
+                           <a style="font-size: 16px;" href="{{ route('front.category', $category->slug) }}"
+                                    class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
+                                    data-collapse="#{{ $catId }}">
+                                   <img class="rounded me-1" style="width: 30px" src="{{asset('assets/images/categories')}}/{{$category->image}}" alt=""> {{ $category->name }}
+                                </a>
 
                             <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
                                 aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
@@ -538,16 +570,11 @@
                     @endif
                 </li>
             @endforeach
-
         </ul>
-        <div class="position-absolute border border-t w-100" style="left: 0; bottom: 50px">
-              <a class="mt-2" href="https://asmishop.com/" target="_blank"><img
-                        style="max-width: 100%; height: auto;" src="{{ asset('assets/front/images/szbd_long.png') }}"
-                        alt="Shopping Zone BD logo" data-toggle="tooltip" data-placement="top"
-                        title="Go Our Clothing Brand"> </a>
-        </div>
+
     </div>
     <!-- Mobile Offcanvas End-->
+
 
 
     <!-- if route is user panel then show vendor.mobile-header else show frontend.mobile_menu -->
@@ -598,7 +625,8 @@
             </div>
 
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
-                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false" data-bs-scroll="true">
+                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false"
+     data-bs-scroll="true">
                 <div class="offcanvas-header">
                     <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
                         <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
@@ -833,7 +861,7 @@
             });
         });
     </script>
-    <script>
+   <script>
         document.addEventListener('DOMContentLoaded', function() {
 
             document.querySelectorAll('.measure-select').forEach(select => {
@@ -868,7 +896,6 @@
 
         });
     </script>
-
     <script>
         $(document).ready(function() {
             // ======================
@@ -905,7 +932,6 @@
             });
         });
     </script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -926,28 +952,6 @@
             });
         });
     </script>
-    {{-- <script>
-        function readURL(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function(e) {
-                    $('#viewer').attr('src', e.target.result);
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        $("#customFileEg").change(function() {
-            readURL(this);
-            console.log('dfdfd');
-
-        });
-    </script> --}}
-
-
-
 </body>
 
 </html>
