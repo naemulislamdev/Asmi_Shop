@@ -23,8 +23,6 @@ $(document).ready(function () {
          
     */
 
-
-
   //****** 1. DATA BACKGROUND SET ******//
   $("[data-color-code]").each(function () {
     $(this).css("background-color", $(this).attr("data-color-code"));
@@ -72,7 +70,6 @@ $(document).ready(function () {
     $overlay.addClass("active");
   });
 
-
   //******  5. NICE SELECT ******//
   $(".nice-select").niceSelect();
 
@@ -95,7 +92,6 @@ $(document).ready(function () {
     $eyeOnIcon.hide();
     $eyeOffIcon.show();
   });
-
 
   // change pass input
   const $confirmPasswordInput = $("#confirm-password");
@@ -190,7 +186,6 @@ $(document).ready(function () {
     arrows: false,
     centerMode: false, // best
     centerPadding: "0px",
-    
   });
   $(".right-promo").slick({
     dots: true,
@@ -203,7 +198,6 @@ $(document).ready(function () {
     arrows: false,
     centerMode: false, // best
     centerPadding: "0px",
-   
   });
 
   /* 
@@ -212,36 +206,34 @@ $(document).ready(function () {
   ===================================
   */
 
-   $(".home-coupon-slider").slick({
-     slidesToShow: 3, // LG device
-     slidesToScroll: 1,
-     autoplay: true,
-     autoplaySpeed: 3000,
-     arrows: true,
-     dots: false,
-     // Custom arrows
-     prevArrow:
-       '<button type="button" class="slick-prev"><i class="fa fa-angle-left"></i></button>',
-     nextArrow:
-       '<button type="button" class="slick-next"><i class="fa fa-angle-right"></i></button>',
+  $(".home-coupon-slider").slick({
+    slidesToShow: 3, // LG device
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    dots: false,
+    // Custom arrows
+    prevArrow:
+      '<button type="button" class="slick-prev"><i class="fa fa-angle-left"></i></button>',
+    nextArrow:
+      '<button type="button" class="slick-next"><i class="fa fa-angle-right"></i></button>',
 
-     responsive: [
-       {
-         breakpoint: 1024, // MD (tablet)
-         settings: {
-           slidesToShow: 2,
-         },
-       },
-       {
-         breakpoint: 768, // SM (mobile)
-         settings: {
-           slidesToShow: 1,
-         },
-       },
-     ],
-   });
-  
-
+    responsive: [
+      {
+        breakpoint: 1024, // MD (tablet)
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 768, // SM (mobile)
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  });
 
   //******  10. HOME CATE SLIDER ******//
   $(".home-cate-slider").slick({
@@ -367,7 +359,6 @@ $(document).ready(function () {
           slidesToShow: 2,
         },
       },
- 
     ],
   });
 
@@ -388,9 +379,9 @@ $(document).ready(function () {
     });
     $("#amount").val(
       "৳ " +
-      $("#slider-range").slider("values", 0) +
-      " - ৳ " +
-      $("#slider-range").slider("values", 1)
+        $("#slider-range").slider("values", 0) +
+        " - ৳ " +
+        $("#slider-range").slider("values", 1)
     );
   });
 
@@ -441,7 +432,7 @@ $(document).ready(function () {
     slidesToScroll: 6,
     speed: 1000,
     autoplay: true,
-    pauseOnHover:true,
+    pauseOnHover: true,
     fade: false,
     cssEase: "linear",
     arrows: false,
@@ -463,8 +454,8 @@ $(document).ready(function () {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
+          slidesToShow: 2,
+          slidesToScroll: 2,
         },
       },
     ],
@@ -477,14 +468,12 @@ $(document).ready(function () {
   });
 
   //******  18. CHANGE FILE NAME OF FILE INPUT  ******//
-  $('.input-file').on("change", function () {
-    var filename = $(this).val().split('\\').pop(); // Get the filename only
-    $(this).siblings('.fileName').text(filename || "No file chosen"); // Update the corresponding label text
+  $(".input-file").on("change", function () {
+    var filename = $(this).val().split("\\").pop(); // Get the filename only
+    $(this)
+      .siblings(".fileName")
+      .text(filename || "No file chosen"); // Update the corresponding label text
   });
-
-
-
-
 
   //****** 19. TOGGLING ADD PRODUCT FORM  BASED ON SELECTED PRODUCT TYPE ******//
   const $physicalProductInputesWrapper = $(".physical-product-inputes-wrapper");
@@ -567,30 +556,27 @@ $(document).ready(function () {
   // var chart = new ApexCharts($("#chart")[0], options);
   // chart.render();
 
-
   // Hide all other collapses
   $(".has-sub-menu a").on("click", function () {
     $(".collapse").not($(this).next(".collapse")).collapse("hide");
   });
 
-  // vendor notification 
+  // vendor notification
   $("#toggle-vendor-noti").on("click", function () {
     $(".gs-vendor-header-noti").toggleClass("active");
-  
   });
 
   $(document).on("click", function (event) {
-    if (!$(event.target).closest(".gs-vendor-header-noti, #toggle-vendor-noti").length) {
+    if (
+      !$(event.target).closest(".gs-vendor-header-noti, #toggle-vendor-noti")
+        .length
+    ) {
       $(".gs-vendor-header-noti").removeClass("active");
     }
   });
 
-
-
-  $(window).on('resize', function() {
+  $(window).on("resize", function () {
     $(".nicEdit-panelContain").parent().width("100%");
     $(".nicEdit-panelContain").parent().next().width("99.6%");
-}); 
-
-
+  });
 });

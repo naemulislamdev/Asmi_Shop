@@ -1,4 +1,5 @@
-<div class="{{ isset($class) ? $class : 'col-md-3 col-lg-2 col-xl-2' }}">
+<div
+    class="{{ isset($class) ? $class : 'col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-3' }} {{ request()->is('search') ? 'mb-3' : '' }} ">
 
     <div class="single-product">
         <div class="img-wrapper">
@@ -73,7 +74,8 @@
 
                                     <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                                 </div>
-                                <p style="font-size: 1.3rem" class="text-white ">{{ __('Add to Shopping Bag') }}</p>
+                                <p style="font-size: 1rem; margin-bottom: 0;" class="text-white ">
+                                    {{ __('Add to Shopping Bag') }}</p>
                             </a>
                         @endif
                     @else
@@ -87,7 +89,8 @@
                                             <div class="text-center text-white">
                                                 <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                                             </div>
-                                            <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br>
+                                            <p style="font-size: 1rem; margin-bottom: 0;" class="text-white">Add to <br>
+                                                Shopping <br>
                                                 Bag</p>
                                         </button>
                                     </div>
