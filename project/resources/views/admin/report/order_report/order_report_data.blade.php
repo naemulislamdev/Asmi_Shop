@@ -1,3 +1,4 @@
+{{-- @dd($results) --}}
 <div class="col-md-12 col-lg-6 col-xl-4">
     <div class="mycard bg4">
         <div class="left">
@@ -90,8 +91,25 @@
         </div>
         <div class="right d-flex align-self-center">
             <div class="icon">
-               <i class="icofont-clock-time"></i>
+                <i class="icofont-clock-time"></i>
             </div>
         </div>
     </div>
 </div>
+<div class="col-md-12 col-lg-6 col-xl-4">
+    <div class="mycard bg2">
+        <div class="left">
+            <h5 class="title">{{ __('Top Selling Product:') }}</h5>
+            <span class="number">{{ $results->top_selling_product ?? 0 }}</span>
+
+            <a href="{{ route('admin-orders-all') }}" class="link">{{ __('View All') }}</a>
+        </div>
+        <div class="right d-flex align-self-center">
+            <div class="icon">
+                <i class="icofont-clock-time"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+

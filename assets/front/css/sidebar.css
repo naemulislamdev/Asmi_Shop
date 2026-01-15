@@ -731,3 +731,6 @@ ul {
 .mobile-offcanvas button:not(.collapsed) .fa-minus {
     display: inline-block;
 }
+.order-btn {
+    margin-left: 6px;
+}

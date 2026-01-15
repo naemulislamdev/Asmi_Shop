@@ -2,277 +2,330 @@
 @section('styles')
     {{-- <link href="{{ asset('assets/admin/css/jquery-ui.css') }}" rel="stylesheet" type="text/css"> --}}
     <style>
-.print-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: Arial, sans-serif;
-}
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+        }
 
-.print-table th {
-    background: #f1f1f1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    text-align: left;
-    font-weight: bold;
-}
+        .print-table th {
+            background: #f1f1f1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            text-align: left;
+            font-weight: bold;
+        }
 
-.print-table td {
-    padding: 8px;
-    border: 1px solid #ddd;
-}
-</style>
+        .print-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+    </style>
 @endsection
 @section('content')
     <div class="content-area">
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-12">
-                    <h4 class="heading">{{ __('Create An Order') }}</h4>
-                    <ul class="links">
-                        <li>
-                            <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
-                        </li>
-                        <li>
-                            <a href="javascript:;">{{ __('Orders') }} </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin-order-create') }}">{{ __('Create An Order') }}</a>
-                        </li>
-                    </ul>
+                    <h4 class="heading">Create An Order</h4>
                 </div>
             </div>
         </div>
 
         <div class="add-product-content1 add-product-content2">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="product-description">
-                        <form action="{{ route('admin.order.create.view') }}" method="POST">
-                            @csrf
-                            <div class="gocover"
-                                style="background: url({{ asset('assets/images/' . $gs->admin_loader) }}) no-repeat scroll center center rgba(45, 45, 45, 0.5);">
-                            </div>
+            <form>
+                <div class="product-area">
+                    <div class="row">
+                        <div class="col-lg-12">
 
-                            @include('alerts.admin.form-both')
-
-
-                            <div class="product-area">
+                            {{-- USER DETAILS --}}
+                            <div class="py-4 px-4 my-2 mx-4 border">
+                                <h4 class="text-center">User Details</h4>
+                                <hr>
                                 <div class="row">
-                                    <div class="col-lg-12">
-
-                                        <div class="py-4 px-4 my-2 mx-4 border">
-                                            <div class="text-center">
-                                                <h3>User Details</h3>
-                                            </div>
-                                            <hr>
-                                            <div class="row mt-2">
-                                                <div class="col-md-6 col-sm-6">
-                                                    <label for="name">Name *</label>
-                                                    <input type="text" class="form-control" required name="customer_name"
-                                                        id="name" placeholder="Name">
-                                                </div>
-                                                <div class="col-md-6 col-sm-6">
-                                                    <label for="phone">Phone *</label>
-                                                    <input type="text" class="form-control" required
-                                                        name="customer_phone" id="phone" placeholder="Phone">
-                                                </div>
-                                                <div class="col-md-12 col-sm-12">
-                                                    <label for="customer_address">Address *</label>
-                                                    <input type="text" class="form-control" required
-                                                        name="customer_address" id="customer_address" placeholder="Address">
-                                                </div>
-                                            </div>
-                                            {{-- <div id="order_create_user_address">
-                                                @include('admin.order.create.address_form')
-                                            </div> --}}
-
-                                        </div>
-
-                                        <div  class="py-4 px-4 my-2 mx-4 border">
-                                            <table id="custome-order">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Product Name</th>
-                                                        <th>Measured</th>
-                                                        <th>Price</th>
-                                                        <th>Quantity</th>
-                                                        <th>Subtotal</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <input type="text" class="form-control" id="product_name"
-                                                                value="" placeholder="Product Name">
-                                                        </td>
-                                                        <td>
-                                                            <select class="form-control mt-2" id="measured_type">
-                                                                <option value="kg">Kg</option>
-                                                                <option value="pcs">Pcs</option>
-                                                                <option value="gm">Gm</option>
-                                                                <option value="ltr">Ltr</option>
-                                                            </select>
-                                                            <input type="text" class="form-control" id="measured"
-                                                                value="" placeholder="Measured">
-                                                        </td>
-                                                        <td>
-                                                            <input type="text" class="form-control product_price"
-                                                                id="product_price" value=""
-                                                                placeholder="Product Price">
-                                                        </td>
-                                                        <td>
-                                                            <input type="text" class="form-control product_quantity"
-                                                                id="product_quantity" value=""
-                                                                placeholder="Product Quantity">
-                                                        </td>
-                                                        <td>
-                                                            <input type="text" class="form-control subtotal"
-                                                                id="subtotal" value="" placeholder="Subtotal">
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-primary btn-sm addOrder">Add</button>
-                                        </div>
+                                    <div class="col-md-6">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control" name="customer_name">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Phone</label>
+                                        <input type="text" class="form-control" name="customer_phone">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>Order Number</label>
+                                        <input type="text" class="form-control" name="order_number">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label>Address</label>
+                                        <input type="text" class="form-control" name="customer_address">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label>Note</label>
+                                        <input type="text" class="form-control" name="note">
                                     </div>
                                 </div>
                             </div>
-                        </form>
+
+                            {{-- ORDER TABLE --}}
+                            <div class="py-4 px-4 my-2 mx-4 border">
+                                <table class="table table-bordered" id="orderTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Measure Label</th>
+                                            <th>Unit Price</th>
+                                            <th>Qty</th>
+                                            <th>Subtotal</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="text" class="form-control product_name"></td>
+                                            <td>
+                                                <input type="text" class="form-control measure_label"
+                                                    placeholder="eg: 1kg, 500g, 1.5kg, 2pcs">
+                                            </td>
+                                            <td><input type="number" step="0.01" class="form-control unit_price"></td>
+                                            <td><input type="number" step="0.001" class="form-control quantity"></td>
+                                            <td><input type="number" step="0.01" class="form-control subtotal" readonly>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <button type="button" class="btn btn-primary btn-sm addOrder">
+                                    + Add Product
+                                </button>
+
+                                <!-- PRINT BUTTON -->
+                                <button type="button" class="btn btn-success btn-sm float-end" id="printInvoice">
+                                    🖨 Print Invoice
+                                </button>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-12">
-                    <div class="text-center float-end">
-                        <button class="btn btn-primary" type="button"
-                            id="printInvoiceBtn">{{ __('Print Order Invoice') }}</button>
-                    </div>
-                </div>
-            </div>
-            <div id="printArea" style="display:none;">
-                <h2 style="text-align:center;">Order Invoice</h2>
-                <hr>
+            </form>
+        </div>
+    </div>
 
-                <h4>User Details</h4>
-                <p>Name: <span id="p_name"></span></p>
-                <p>Phone: <span id="p_phone"></span></p>
-                <p>Address: <span id="p_address"></span></p>
-
-                <h4>Order Items</h4>
-                <table border="1" width="100%" cellpadding="6" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Measured</th>
-                            <th>Price</th>
-                            <th>Qty</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody id="printTableBody"></tbody>
-                </table>
-            </div>
-
+    <!-- ================= INVOICE PRINT AREA (HIDDEN) ================= -->
+    <div id="invoiceArea" style="display:none;">
+        <div style="text-align:center;">
+            <img id="inv_logo" src="" style="max-height:80px;">
+            <h2>Order Invoice</h2>
+            <p>Date: <span id="inv_date"></span></p>
         </div>
 
+        <hr>
+
+        <p><strong>Order Number:</strong> <span id="inv_order_number"></span></p>
+        <p><strong>Name:</strong> <span id="inv_name"></span></p>
+        <p><strong>Phone:</strong> <span id="inv_phone"></span></p>
+        <p><strong>Address:</strong> <span id="inv_address"></span></p>
+        <p><strong>Note:</strong> <span id="inv_note"></span></p>
+
+        <table width="100%" border="1" cellspacing="0" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Measure</th>
+                    <th>Unit Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceBody"></tbody>
+        </table>
+
+        <h3 style="text-align:right;margin-top:10px;">
+            Total: <span id="invoiceTotal"></span>
+        </h3>
     </div>
 @endsection
 
 @push('scripts')
     <script>
-         <script>
-$(document).ready(function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
-    $(document).on('click', '.addOrder', function () {
+            // ================= ADD ROW =================
+            document.querySelector('.addOrder').addEventListener('click', function() {
 
-        let newRow = `
+                let row = `
         <tr>
             <td><input type="text" class="form-control product_name"></td>
             <td>
-                <select class="form-control mt-2 measured_type">
-                    <option value="kg">Kg</option>
-                    <option value="pcs">Pcs</option>
-                    <option value="gm">Gm</option>
-                    <option value="ltr">Ltr</option>
-                </select>
-                <input type="text" class="form-control measured">
+                <input type="text" class="form-control measure_label"
+                       placeholder="eg: 1kg, 500g, 2pcs">
             </td>
-            <td><input type="text" class="form-control product_price"></td>
-            <td><input type="text" class="form-control product_quantity"></td>
-            <td><input type="text" class="form-control subtotal" readonly></td>
-            <td><a href="javascript:;" class="btn btn-danger btn-sm removeOrder">Remove</a></td>
+            <td><input type="number" step="0.01" class="form-control unit_price"></td>
+            <td><input type="number" step="0.001" class="form-control quantity"></td>
+            <td><input type="number" step="0.01" class="form-control subtotal" readonly></td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm removeOrder">Remove</button>
+            </td>
         </tr>
         `;
 
-        $('#custome-order tbody').append(newRow);
-    });
+                document.querySelector('#orderTable tbody')
+                    .insertAdjacentHTML('beforeend', row);
+            });
 
-    $(document).on('click', '.removeOrder', function () {
-        $(this).closest('tr').remove();
-    });
+            // ================= REMOVE ROW =================
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('removeOrder')) {
+                    e.target.closest('tr').remove();
+                }
+            });
 
-    $(document).on('keyup change', '.product_price, .product_quantity', function () {
-        let row = $(this).closest('tr');
-        let price = parseFloat(row.find('.product_price').val()) || 0;
-        let qty = parseFloat(row.find('.product_quantity').val()) || 0;
-        row.find('.subtotal').val((price * qty).toFixed(2));
-    });
+            // ================= LABEL → AUTO QTY =================
+            document.addEventListener('input', function(e) {
 
-});
-</script>
+                if (!e.target.classList.contains('measure_label')) return;
 
+                let row = e.target.closest('tr');
+                let label = e.target.value.toLowerCase();
+                let qty = 0;
+
+                // Weight
+                let kg = label.match(/([\d.]+)\s*kg/);
+                let g = label.match(/([\d.]+)\s*(g|gm)/);
+                let lb = label.match(/([\d.]+)\s*(lb|pound)/);
+
+                if (kg) qty += parseFloat(kg[1]);
+                if (g) qty += parseFloat(g[1]) / 1000;
+                if (lb) qty += parseFloat(lb[1]) * 0.453592;
+
+                // Liquid
+                let l = label.match(/([\d.]+)\s*(l|ltr)/);
+                let ml = label.match(/([\d.]+)\s*ml/);
+
+                if (l) qty += parseFloat(l[1]);
+                if (ml) qty += parseFloat(ml[1]) / 1000;
+
+                // Pieces
+                let pcs = label.match(/([\d.]+)\s*(pcs|pc|piece)/);
+                if (pcs) qty += parseFloat(pcs[1]);
+
+                if (qty > 0) {
+                    row.querySelector('.quantity').value = qty.toFixed(3);
+                    calculateSubtotal(row);
+                }
+            });
+
+            // ================= QTY OR PRICE → SUBTOTAL =================
+            document.addEventListener('input', function(e) {
+
+                if (
+                    e.target.classList.contains('quantity') ||
+                    e.target.classList.contains('unit_price')
+                ) {
+                    let row = e.target.closest('tr');
+                    calculateSubtotal(row);
+                }
+            });
+
+            // ================= SUBTOTAL FUNCTION =================
+            function calculateSubtotal(row) {
+                let qty = parseFloat(row.querySelector('.quantity').value) || 0;
+                let price = parseFloat(row.querySelector('.unit_price').value) || 0;
+
+                if (qty > 0 && price > 0) {
+                    row.querySelector('.subtotal').value = (qty * price).toFixed(2);
+                } else {
+                    row.querySelector('.subtotal').value = '';
+                }
+            }
+
+        });
     </script>
+
     <script>
-        $(document).on("click", "#printInvoiceBtn", function() {
+        document.getElementById('printInvoice').addEventListener('click', function() {
 
-            // Get user details
-            let name = $("input[name='customer_name']").val();
-            let phone = $("input[name='customer_phone']").val();
-            let address = $("textarea[name='customer_address']").val();
+            /* ================= USER DETAILS ================= */
+            document.getElementById('inv_name').innerText =
+                document.querySelector('input[name="customer_name"]').value || '';
 
-            $("#p_name").text(name);
-            $("#p_phone").text(phone);
-            $("#p_address").text(address);
+            document.getElementById('inv_phone').innerText =
+                document.querySelector('input[name="customer_phone"]').value || '';
 
-            // Clear old rows
-            $("#printTableBody").html("");
+            document.getElementById('inv_order_number').innerText =
+                document.querySelector('input[name="order_number"]').value || '';
 
-            // Loop through each order row
-            $("#custome-order tbody tr").each(function() {
-                let product = $(this).find("#product_name").val();
-                let measuredType = $(this).find("#measured_type").val();
-                let measured = $(this).find("#measured").val();
-                let price = $(this).find(".product_price").val();
-                let qty = $(this).find(".product_quantity").val();
-                let subtotal = $(this).find(".subtotal").val();
+            document.getElementById('inv_address').innerText =
+                document.querySelector('input[name="customer_address"]').value || '';
+            document.getElementById('inv_note').innerText =
+                document.querySelector('input[name="note"]').value || '';
 
-                if (product !== "") {
-                    $("#printTableBody").append(`
+            /* ================= CURRENT DATE ================= */
+            let today = new Date();
+            let formattedDate = today.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+            document.getElementById('inv_date').innerText = formattedDate;
+
+            /* ================= LOGO ================= */
+            document.getElementById('inv_logo').src =
+                "{{ asset('assets/images/' . $gs->logo) }}";
+
+            /* ================= ORDER ITEMS ================= */
+            let tbody = document.getElementById('invoiceBody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            document.querySelectorAll('#orderTable tbody tr').forEach(row => {
+
+                let product = row.querySelector('.product_name')?.value || '';
+                let label = row.querySelector('.measure_label')?.value || '';
+                let price = parseFloat(row.querySelector('.unit_price')?.value) || 0;
+                let qty = parseFloat(row.querySelector('.quantity')?.value) || 0;
+                let subtotal = parseFloat(row.querySelector('.subtotal')?.value) || 0;
+
+                if (product !== '') {
+                    total += subtotal;
+
+                    tbody.insertAdjacentHTML('beforeend', `
                 <tr>
                     <td>${product}</td>
-                    <td>${measured} ${measuredType}</td>
-                    <td>${price}</td>
-                    <td>${qty}</td>
-                    <td>${subtotal}</td>
+                    <td>${label}</td>
+                    <td>${price.toFixed(2)}</td>
+                    <td>${qty.toFixed(3)}</td>
+                    <td>${subtotal.toFixed(2)}</td>
                 </tr>
             `);
                 }
             });
 
-            // Print Function
-            let printContents = document.getElementById("printArea").innerHTML;
-            let printWindow = window.open("", "", "width=900,height=600");
-            printWindow.document.write(`
+            document.getElementById('invoiceTotal').innerText = total.toFixed(2);
+
+            /* ================= OPEN NEW WINDOW ================= */
+            let win = window.open('', '', 'width=900,height=650');
+
+            win.document.write(`
         <html>
-            <head>
-                <title>Order Invoice</title>
-            </head>
-            <body>${printContents}</body>
+        <head>
+            <title>Order Invoice</title>
+            <style>
+                body { font-family: Arial; padding: 20px; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+            </style>
+        </head>
+        <body>
+            ${document.getElementById('invoiceArea').innerHTML}
+        </body>
         </html>
     `);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
+
+            win.document.close();
+            win.focus();
+            win.print(); // Save as PDF
         });
     </script>
 @endpush

@@ -184,7 +184,7 @@
   });
 
 
-  $(document).on("click", ".qty-minus", function () { 
+  $(document).on("click", ".qty-minus", function () {
 
     const wrap = $(this).closest("[data-unique-key]");
     const pid = wrap.data("product-id");
@@ -219,12 +219,12 @@
           // OVERLAY UI RESET
           $(`.qty-wrapper-overlay[data-product-id="${pid}"]`).parent().html(`
                         <div class="overlay-add-btn" data-product-id="${pid}">
-                            <button type="button" class="outofstock-box-2 add_cart_click"
+                            <button style="flex-direction: column !important;" type="button" class="outofstock-box-2 add_cart_click d-flex flex-column"
                                 data-href="${addRoute}" data-product-id="${pid}">
                                 <div class="text-center text-white">
                                     <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                                 </div>
-                                <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br> Bag</p>
+                                <p style="font-size: 1rem; margin-bottom: 0;" class="text-white">Add to <br> Shopping <br> Bag</p>
                             </button>
                         </div>
                     `);
@@ -276,12 +276,12 @@
         // OVERLAY UI RESET
         $(`.qty-wrapper-overlay[data-product-id="${pid}"]`).parent().html(`
                     <div class="overlay-add-btn" data-product-id="${pid}">
-                        <button type="button" class="outofstock-box-2 add_cart_click"
+                        <button type="button" class="outofstock-box-2 add_cart_click d-flex flex-column"
                             data-href="${addRoute}" data-product-id="${pid}">
                             <div class="text-center text-white">
                                <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
                             </div>
-                           <p style="font-size: 1.3rem" class="text-white">Add to <br> Shopping <br> Bag</p>
+                           <p style="font-size: 1rem; margin-bottom: 0;" class="text-white">Add to <br> Shopping <br> Bag</p>
                         </button>
                     </div>
                 `);

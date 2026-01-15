@@ -59,7 +59,7 @@
                     src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/noimage.png') }}"
                     alt="product img">
             </a>
-            @if ($product->stock == 0)
+            @if ($product->stock <= 0)
                 <div class="outofstock-box flex-column align-content-center justify-content-center">
                     <h5>{{ __('Out of Stock !') }}</h5>
                 </div>
@@ -159,7 +159,7 @@
                 </div>
             @endif
             {{-- add to cart and cart item quantity increment decrement buttons --}}
-            @if ($product->stock !== 0)
+            @if ($product->stock > 0)
                 <div class="cart-ui normal-ui w-100">
                     @if ($existingQty == 0)
                         <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">

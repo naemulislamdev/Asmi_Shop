@@ -131,9 +131,12 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <!-----Export button dropdown----->
                     <div class="btn-group float-right">
+                        <a href="{{ route('admin-order-create') }}" class="btn btn-primary mr-2" data-toggle="modal" data-target="#exportModal">
+                            {{ __('Create Custome Order') }}
+                        </a>
                         <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exportModal">
                             {{ __('Export') }}
                         </a>

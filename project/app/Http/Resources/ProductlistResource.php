@@ -30,6 +30,7 @@ class ProductlistResource extends JsonResource
             'current_price' => (string)$this->ApishowPrice(),
             'previous_price' => (string)$discounted,
             'sale_end_date' => $this->when($this->is_discount == 1, $this->discount_date),
+            'stock' => $this->stock,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

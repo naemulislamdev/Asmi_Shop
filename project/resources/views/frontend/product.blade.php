@@ -350,7 +350,7 @@
 
 
                         <!-- add to cart buy btn wrapper -->
-                        @if ($productt->stock == 0)
+                        @if ($productt->stock < 0)
                             <div class="outofstock">
                                 <h5>{{ __('Out of Stock') }}</h5>
                             </div>

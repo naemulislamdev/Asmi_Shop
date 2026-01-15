@@ -86,6 +86,7 @@ class ReportController extends AdminBaseController
         ")
             ->whereBetween('created_at', [$from, $to])
             ->first();
+
         // Convert USD → BDT
         $results->pay_amount        = $results->pay_amount ?? 0;
         $results->pending_amount      = $results->pending_amount ?? 0;
@@ -93,6 +94,44 @@ class ReportController extends AdminBaseController
         $results->declined_amount     = $results->declined_amount ?? 0;
         $results->processing_amount   = $results->processing_amount ?? 0;
         $results->on_delivery_amount  = $results->on_delivery_amount ?? 0;
+
+        // top selling product
+        $ordersCart = Order::where('status', 'completed')
+            ->pluck('cart');
+
+        // dd($ordersCart);
+
+        $productSales = [];
+
+        foreach ($ordersCart as $cartJson) {
+            $cart = json_decode($cartJson, true);
+            // dd($cart);
+
+            if (!isset($cart['items'])) continue;
+
+            foreach ($cart['items'] as $productId => $item) {
+                $qty  = $item['qty'] ?? 0;
+                $name = $item['item']['name'] ?? 'Unknown';
+
+                if (!isset($productSales[$productId])) {
+                    $productSales[$productId] = [
+                        'name' => $name,
+                        'qty'  => 0
+                    ];
+                }
+
+                $productSales[$productId]['qty'] += $qty;
+            }
+        }
+
+        // Sort by qty desc
+        uasort($productSales, fn($a, $b) => $b['qty'] <=> $a['qty']);
+
+        $topSellingProduct = reset($productSales);
+
+        $results->top_selling_product = $topSellingProduct
+            ? $topSellingProduct['name'] . ' Sell Quantity:' . ' (' . $topSellingProduct['qty'] . ')'
+            : 'N/A';
         return view('admin.report.order_report.index', compact('results'));
     }
 
@@ -114,10 +153,51 @@ class ReportController extends AdminBaseController
                 SUM(CASE WHEN status='processing' THEN 1 END) as processing_qty,
                 SUM(CASE WHEN status='processing' THEN pay_amount END) as processing_amount,
                 SUM(CASE WHEN status='on delivery' THEN 1 END) as on_delivery_qty,
-                SUM(CASE WHEN status='on delivery' THEN pay_amount END) as on_delivery_amount
+                SUM(CASE WHEN status='on delivery' THEN pay_amount END) as on_delivery_amount,
+
         ")
             ->whereBetween('created_at', [$from, $to])
             ->first();
+
+        //top selling product
+        // Top selling product logic
+        $ordersCarts = Order::whereBetween('created_at', [$from, $to])
+            ->where('status', 'completed')
+            ->pluck('carts');
+        // dd($ordersCarts);
+
+        $productSales = [];
+
+        foreach ($ordersCarts as $cartJson) {
+            $cart = json_decode($cartJson, true);
+
+            if (!isset($cart['items'])) continue;
+
+            foreach ($cart['items'] as $productId => $item) {
+                $qty  = $item['qty'] ?? 0;
+                $name = $item['item']['name'] ?? 'Unknown';
+
+                if (!isset($productSales[$productId])) {
+                    $productSales[$productId] = [
+                        'name' => $name,
+                        'qty'  => 0
+                    ];
+                }
+
+                $productSales[$productId]['qty'] += $qty;
+            }
+        }
+
+        uasort($productSales, fn($a, $b) => $b['qty'] <=> $a['qty']);
+
+        $topSellingProduct = reset($productSales);
+
+        $results->top_selling_products = $topSellingProduct
+            ? $topSellingProduct['name'] . ' (' . $topSellingProduct['qty'] . ')'
+            : 'N/A';
+
+
+
         // Convert USD → BDT
         $results->pay_amount        = $results->pay_amount ?? 0;
         $results->pending_amount      = $results->pending_amount ?? 0;
@@ -125,6 +205,8 @@ class ReportController extends AdminBaseController
         $results->declined_amount     = $results->declined_amount ?? 0;
         $results->processing_amount   = $results->processing_amount ?? 0;
         $results->on_delivery_amount  = $results->on_delivery_amount ?? 0;
+
+        // dd($results);
         // Return the updated card HTML
         $html = view('admin.report.order_report.order_report_data', compact('results'))->render();
 

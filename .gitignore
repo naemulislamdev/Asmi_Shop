@@ -3,3 +3,4 @@
 /project/.env
 project/.env.example
 *.zip
+assets/images

@@ -157,16 +157,8 @@ $(document).ready(function () {
   });
 
   //******  9. HERO SECTION SLIDER ******//
-  // $(".hero-slider-wrapper").slick({
-  //   dots: true,
-  //   infinite: true,
-  //   speed: 500,
-  //   autoplay: true,
-  //   fade: true,
-  //   cssEase: "linear",
-  //   arrows: true,
-  // });
-  $(".hero-slider-wrapper").slick({
+
+ $(".hero-slider-wrapper").slick({
     dots: true,
     infinite: true,
     speed: 500,
@@ -179,7 +171,8 @@ $(document).ready(function () {
     nextArrow:
       '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
   });
-  $(".left-promo").slick({
+
+$(".left-promo").slick({
     dots: true,
     infinite: false,
     speed: 1000,
@@ -206,7 +199,7 @@ $(document).ready(function () {
    
   });
 
-  /* 
+ /* 
   ===================================
   Home  Coupon Slider
   ===================================
@@ -242,12 +235,11 @@ $(document).ready(function () {
    });
   
 
-
   //******  10. HOME CATE SLIDER ******//
   $(".home-cate-slider").slick({
     dots: false,
     infinite: true,
-    slidesToShow: 6,
+    slidesToShow: 5,
     slidesToScroll: 1,
     speed: 500,
     autoplay: true,
@@ -319,7 +311,7 @@ $(document).ready(function () {
       {
         breakpoint: 425,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
         },
       },
     ],
@@ -437,8 +429,8 @@ $(document).ready(function () {
   $(".product-cards-slider").slick({
     dots: true,
     infinite: true,
-    slidesToShow: 6,
-    slidesToScroll: 6,
+    slidesToShow: 5,
+    slidesToScroll: 5,
     speed: 1000,
     autoplay: true,
     pauseOnHover:true,
@@ -463,8 +455,8 @@ $(document).ready(function () {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
+          slidesToShow: 2,
+          slidesToScroll: 2,
         },
       },
     ],
