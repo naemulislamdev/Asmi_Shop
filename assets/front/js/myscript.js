@@ -44,13 +44,11 @@
     $("#rating").val($(this).data("val"));
   });
 
-
-
   //////////// Add cart in product box ///////////////
   $.ajaxSetup({
     headers: {
-      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
+      "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+    },
   });
   $(document).on("click", ".add_cart_click", function (e) {
     e.preventDefault();
@@ -61,7 +59,9 @@
 
     const measureType = wrap.find(".measure-select").data("measure-type");
     const measureValue = parseFloat(wrap.find(".measure-select").val() || 1);
-    const basePrice = parseFloat(wrap.find(".product-price").data("base-price"));
+    const basePrice = parseFloat(
+      wrap.find(".product-price").data("base-price")
+    );
     const finalPrice = basePrice * measureValue;
 
     $.ajax({
@@ -72,10 +72,9 @@
         measure_type: measureType,
         measure_value: measureValue,
         final_price: finalPrice,
-        quantity: 1
+        quantity: 1,
       },
       success: function (data) {
-
         updateCartUI(data);
         reloadOffcanvasCart();
 
@@ -104,10 +103,9 @@
                     <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                 </div>
             `);
-      }
+      },
     });
   });
-
 
   /////////////// Start product details page cart
   $(document).on("click", ".add_cart_details", function (e) {
@@ -125,7 +123,6 @@
     let finalPrice = basePrice * selectedMeasureValue;
     console.log(finalPrice);
 
-
     $.ajax({
       url: $btn.data("href"),
       method: "POST",
@@ -134,7 +131,7 @@
         measure_value: selectedMeasureValue,
         measure_type: measureType,
         final_price: finalPrice,
-        quantity: 1
+        quantity: 1,
       },
       success: function (data) {
         updateCartUI(data);
@@ -156,7 +153,6 @@
   ////end product details cart
 
   $(document).on("click", ".qty-plus", function () {
-
     const wrap = $(this).closest("[data-unique-key]");
     const pid = wrap.data("product-id");
     const unique_key = wrap.data("unique-key");
@@ -166,7 +162,6 @@
       method: "POST",
       data: { unique_key },
       success: function (data) {
-
         //const pid = data.product_id;
         const qty = data.qty;
 
@@ -174,12 +169,14 @@
         $(".total_price").text(data.total_price);
         reloadOffcanvasCart();
 
-        $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`)
-          .text(qty + " ");
+        $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`).text(
+          qty + " "
+        );
 
-        $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`)
-          .text(qty + " ");
-      }
+        $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`).text(
+          qty + " "
+        );
+      },
     });
   });
 
@@ -195,7 +192,6 @@
       method: "POST",
       data: { unique_key },
       success: function (data) {
-
         const qty = data.qty;
         const addRoute = getAddToCartRoute(pid);
 
@@ -203,11 +199,8 @@
         reloadOffcanvasCart();
 
         if (qty <= 0) {
-
           // NORMAL UI RESET
-          $(`.qty-wrapper-normal[data-product-id="${pid}"]`)
-            .parent()
-            .html(`
+          $(`.qty-wrapper-normal[data-product-id="${pid}"]`).parent().html(`
                         <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="${pid}">
                             <button class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
                                 data-href="${addRoute}" data-product-id="${pid}">
@@ -228,22 +221,21 @@
                             </button>
                         </div>
                     `);
-
         } else {
           // UPDATE BOTH UI
-          $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`)
-            .text(qty + " ");
+          $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`).text(
+            qty + " "
+          );
 
-          $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`)
-            .text(qty + " ");
+          $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`).text(
+            qty + " "
+          );
         }
-      }
+      },
     });
   });
 
-
   $(document).on("click", ".remove-item-cart", function () {
-
     const key = $(this).data("key");
     const pid = $(this).data("product-id");
 
@@ -252,7 +244,6 @@
       method: "POST",
       data: { unique_key: key },
       success: function (res) {
-
         if (!res.status) return;
 
         $(".offCanva-right-cartItems").html(res.html);
@@ -262,9 +253,7 @@
         const addRoute = getAddToCartRoute(pid);
 
         // NORMAL UI RESET
-        $(`.qty-wrapper-normal[data-product-id="${pid}"]`)
-          .parent()
-          .html(`
+        $(`.qty-wrapper-normal[data-product-id="${pid}"]`).parent().html(`
                     <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="${pid}">
                         <button class="btn btn-sm add-cart-btn btn-info d-flex w-100 justify-content-center align-items-center add_cart_click"
                             data-href="${addRoute}" data-product-id="${pid}">
@@ -285,15 +274,13 @@
                         </button>
                     </div>
                 `);
-      }
+      },
     });
   });
-
 
   function getAddToCartRoute(pid) {
     return mainurl + "/product/cart/add/" + pid;
   }
-
 
   function updateCartUI(data) {
     $(".cart-count").html(data.cart_count);
@@ -303,8 +290,6 @@
   function reloadOffcanvasCart() {
     $(".offCanva-right-cartItems").load(mainurl + "/cart/offcanvas");
   }
-
-
 
   //End add to cart
 })(jQuery);

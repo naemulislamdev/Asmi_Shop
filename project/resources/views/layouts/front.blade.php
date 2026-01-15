@@ -190,55 +190,69 @@
         * .container {
             padding: 0 20px !important;
         }
-    
-       .searchResults::-webkit-scrollbar {
-   			 width: 3px;
-		}
-		.searchResults::-webkit-scrollbar-thumb {
-    		background: #1bb9cb;
-    		border-radius: 10px;
-		}
-        .gs-partner-section .single-partner img {
-    	object-fit: contain;
-	}
-    .single-product .img-wrapper {
-    	background: #fff;
-    }
-      .mobile-offcanvas button:not(.collapsed) i.fa-plus {
-    display: none;
-}
-.mobile-offcanvas button:not(.collapsed) i.fa-minus {
-    display: inline-block;
-}
-.product-cat-widget {
-    padding-top: 24px;
-    padding-bottom: 90px !important;
-}
-.single-product:hover {
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-}
-.gs-single-cat:hover .title {
-    color: #fff;
-}
-.gs-single-cat .title {
-    font-size: 16px !important;
-}
-.gs-single-cat .cate-img {
-    object-fit: contain;
-    max-width: 100%;
-    height: auto;
-}
-.home-cate-slider .slick-slide {
-  margin: 0 10px; /* total gap = 20px */
-}
 
-.home-cate-slider .slick-list {
-  margin: 0 -10px;
-}
-.col-lg-2 {
-    padding: 0 4px !important;
-}
- .whatsapp_div {
+        .searchResults::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .searchResults::-webkit-scrollbar-thumb {
+            background: #1bb9cb;
+            border-radius: 10px;
+        }
+
+        .gs-partner-section .single-partner img {
+            object-fit: contain;
+        }
+
+        .single-product .img-wrapper {
+            background: #fff;
+        }
+
+        .mobile-offcanvas button:not(.collapsed) i.fa-plus {
+            display: none;
+        }
+
+        .mobile-offcanvas button:not(.collapsed) i.fa-minus {
+            display: inline-block;
+        }
+
+        .product-cat-widget {
+            padding-top: 24px;
+            padding-bottom: 90px !important;
+        }
+
+        .single-product:hover {
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+
+        .gs-single-cat:hover .title {
+            color: #fff;
+        }
+
+        .gs-single-cat .title {
+            font-size: 16px !important;
+        }
+
+        .gs-single-cat .cate-img {
+            object-fit: contain;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .home-cate-slider .slick-slide {
+            margin: 0 10px;
+            /* total gap = 20px */
+        }
+
+        .home-cate-slider .slick-list {
+            margin: 0 -10px;
+        }
+
+        .col-lg-2 {
+            padding: 0 4px !important;
+        }
+
+        .whatsapp_div {
             position: static;
         }
 
@@ -250,9 +264,39 @@
 
         }
 
-.outofstock-box-2 {
-  background: rgba(0, 0, 0, 0.6) !important;
-}
+        .outofstock-box-2 {
+            background: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        @media (max-width: 768px) {
+            .gs-partner-section .col-xl-2 {
+                flex: 0 0 auto;
+                width: 33% !important;
+            }
+
+            .single-product .img-wrapper,
+            .single-product-list-view .img-wrapper {
+                overflow: hidden;
+                position: relative;
+                height: 127px !important;
+                object-fit: contain !important;
+            }
+
+            .single-product .img-wrapper a {
+                display: block;
+                height: 100%;
+                width: 100%;
+
+            }
+
+            .single-product .img-wrapper .product-img,
+            .single-product-list-view .img-wrapper .product-img {
+                width: 100%;
+                height: 100% !important;
+                object-fit: contain;
+            }
+
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
@@ -260,19 +304,30 @@
     <!-- Meta Pixel Code -->
 
     <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NGVKWTDQ');</script>
-<!-- End Google Tag Manager -->
+    <script>
+        (function(w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({
+                'gtm.start': new Date().getTime(),
+                event: 'gtm.js'
+            });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != 'dataLayer' ? '&l=' + l : '';
+            j.async = true;
+            j.src =
+                'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+            f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-NGVKWTDQ');
+    </script>
+    <!-- End Google Tag Manager -->
 </head>
 
 <body class="overflow-auto" style="overflow: auto !important;">
     <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NGVKWTDQ"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NGVKWTDQ" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     @php
         $categories = App\Models\Category::with('subs')->where('status', 1)->get();
@@ -293,7 +348,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <a href="{{ route('front.index') }}">
                         <img src="{{ asset('assets/images/' . $gs->logo) }}" class="logo" />
                     </a>
-   					  <div class="whatsapp_div ">
+                    <div class="whatsapp_div ">
                         <div class="d-flex align-items-center gap-2"><img style="width: 40px; height: auto;"
                                 src="{{ asset('assets/front/images/whatsapp.png') }}" alt="whatsapp">
                             <div>
@@ -309,12 +364,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div class="search-box d-none d-lg-block">
                     <form action="{{ route('front.search') }}" method="GET">
-                      
+
                         <input autocomplete="off" type="text" name="search" class="searchInput"
                             placeholder="Search for products (e.g. milk, rice, meat, fish)" />
                     </form>
                     <!-- Search Result Box -->
-                    <div style=" min-height: 0; max-height: 300px;      
+                    <div style=" min-height: 0; max-height: 300px;
     overflow-y: auto;
     overflow-x: hidden;
     background: #fff;
@@ -340,7 +395,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <!-- mobile search will appear below automatically -->
             <div class="search-box d-lg-none container">
                 <form action="{{ route('front.search') }}" method="GET">
-                    
+
                     <input autocomplete="off" type="text" name="search" class="searchInput"
                         placeholder="Search for products " />
                 </form>
@@ -352,7 +407,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     border-radius: 4px;
     position: absolute;
     width: 89%;
-    z-index: 9999;" class="searchResults"></div>
+    z-index: 9999;"
+                    class="searchResults"></div>
             </div>
         </div>
     </header>
@@ -404,13 +460,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <li>
                         @if ($category->subs->count() > 0)
                             <div class="d-flex justify-content-between align-items-lg-baseline">
-                                <a  style="font-size: 16px;" href="{{ route('front.category', $category->slug) }}"
+                                <a style="font-size: 16px;" href="{{ route('front.category', $category->slug) }}"
                                     class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
                                     data-collapse="#{{ $catId }}">
-                                   <img class="rounded me-1" style="width: 30px" src="{{asset('assets/images/categories')}}/{{$category->image}}" alt=""> {{ $category->name }}
+                                    <img class="rounded me-1" style="width: 30px"
+                                        src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                                        alt=""> {{ $category->name }}
                                 </a>
 
-                                <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
+                                <button type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#{{ $catId }}"
                                     aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
                                     class="{{ $isCategoryActive ? '' : 'collapsed' }}">
                                     <i class="fa-solid fa-plus"></i>
@@ -484,7 +543,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </aside>
     <!-- Desktop Sidebar End -->
 
-   <!-- Mobile Offcanvas Start-->
+    <!-- Mobile Offcanvas Start-->
     <div id="mobile-offcanvas" class="mobile-offcanvas shadow ">
         <ul class="accordion">
             @foreach ($categories as $category)
@@ -496,11 +555,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <li>
                     @if ($category->subs->count() > 0)
                         <div class="d-flex justify-content-between align-items-lg-baseline">
-                           <a style="font-size: 16px;" href="{{ route('front.category', $category->slug) }}"
-                                    class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
-                                    data-collapse="#{{ $catId }}">
-                                   <img class="rounded me-1" style="width: 30px" src="{{asset('assets/images/categories')}}/{{$category->image}}" alt=""> {{ $category->name }}
-                                </a>
+                            <a style="font-size: 16px;" href="{{ route('front.category', $category->slug) }}"
+                                class="{{ $isCategoryActive ? 'sidebar-active-color' : '' }}"
+                                data-collapse="#{{ $catId }}">
+                                <img class="rounded me-1" style="width: 30px"
+                                    src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                                    alt=""> {{ $category->name }}
+                            </a>
 
                             <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
                                 aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
@@ -625,8 +686,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
 
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
-                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false"
-     data-bs-scroll="true">
+                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false" data-bs-scroll="true">
                 <div class="offcanvas-header">
                     <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
                         <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
@@ -861,7 +921,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
         });
     </script>
-   <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
 
             document.querySelectorAll('.measure-select').forEach(select => {
