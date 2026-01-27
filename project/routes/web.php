@@ -2,9 +2,12 @@
 
 // ************************************ ADMIN SECTION **********************************************
 
+use App\Http\Controllers\Admin\JobApplicationController;
 use App\Http\Controllers\Admin\OrderExportController;
 use App\Http\Controllers\Front\FeedController;
 use App\Http\Controllers\Front\FrontendController;
+use App\Http\Controllers\Admin\JobController;
+use App\Http\Controllers\Admin\JobDepartmentController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
@@ -35,6 +38,10 @@ Route::prefix('admin')->group(function () {
     //------------ ADMIN FORGOT SECTION ENDS ------------
 
     //------------ ADMIN NOTIFICATION SECTION ------------
+
+    // all notification show in datatable
+    Route::get("/notification/all/view", 'Admin\NotificationController@viewAllNotification')->name('allNotificationView');
+    Route::get("/notification/datatables", 'Admin\NotificationController@datatables')->name('admin-notification-datatables');
 
     // Notification Count
     Route::get('/all/notf/count', 'Admin\NotificationController@all_notf_count')->name('all-notf-count');
@@ -74,7 +81,6 @@ Route::prefix('admin')->group(function () {
 
     Route::group(['middleware' => 'permissions:orders'], function () {
 
-        Route::get('/orders/datatables/{slug}', 'Admin\OrderController@datatables')->name('admin-order-datatables'); //JSON REQUEST
         Route::get('/orders/datatables/{slug}', 'Admin\OrderController@datatables')->name('admin-order-datatables'); //JSON REQUEST
         Route::get('/orders', 'Admin\OrderController@orders')->name('admin-orders-all');
         Route::get('/order/edit/{id}', 'Admin\OrderController@edit')->name('admin-order-edit');
@@ -238,6 +244,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('/subcategory/delete/{id}', 'Admin\SubCategoryController@destroy')->name('admin-subcat-delete');
         Route::get('/subcategory/status/{id1}/{id2}', 'Admin\SubCategoryController@status')->name('admin-subcat-status');
         Route::get('/load/subcategories/{id}/', 'Admin\SubCategoryController@load')->name('admin-subcat-load'); //JSON REQUEST
+        Route::get('/subcategory/featured/{id1}/{id2}', 'Admin\SubCategoryController@featured')->name('admin-subcat-featured');
 
         // SUBCATEGORY SECTION ENDS------------
 
@@ -252,6 +259,8 @@ Route::prefix('admin')->group(function () {
         Route::delete('/childcategory/delete/{id}', 'Admin\ChildCategoryController@destroy')->name('admin-childcat-delete');
         Route::get('/childcategory/status/{id1}/{id2}', 'Admin\ChildCategoryController@status')->name('admin-childcat-status');
         Route::get('/load/childcategories/{id}/', 'Admin\ChildCategoryController@load')->name('admin-childcat-load'); //JSON REQUEST
+        Route::get('/childcategory/featured/{id1}/{id2}', 'Admin\ChildCategoryController@featured')->name('admin-childcat-featured');
+
 
         // CHILDCATEGORY SECTION ENDS------------
 
@@ -410,6 +419,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/user/deposit/{id}', 'Admin\UserController@depositUpdate')->name('admin-user-deposit-update');
         Route::get('/users/vendor/{id}', 'Admin\UserController@vendor')->name('admin-user-vendor');
         Route::post('/user/vendor/{id}', 'Admin\UserController@setVendor')->name('admin-user-vendor-update');
+        Route::get('/user/export', 'Admin\UserController@exportUser')->name('admin-user-export');
+
+
 
         //USER WITHDRAW SECTION
 
@@ -584,6 +596,43 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN BLOG SECTION ENDS ------------
 
+    //------------ ADMIN CAREER SECTION ------------
+
+    Route::prefix('career')->name('career.')->controller(JobController::class)->group(function () {
+        Route::get('/jobs', 'index')->name('jobs');
+        Route::get('/jobs/datatables', 'datatables')->name('job-datatables');
+        Route::get('/jobs/create', 'create')->name('job-create');
+        Route::post('/jobs/store', 'store')->name('job-store');
+        Route::get('/jobs/edit/{id}', 'edit')->name('job-edit');
+        Route::post('/jobs/update/{id}', 'update')->name('job-update');
+        Route::get('/jobs/details/{id}', 'show')->name('job-details');
+        Route::get('/jobs/status/{id1}/{id2}', 'status')->name('job-status');
+        Route::delete('/jobs/delete/{id}', 'delete')->name('job-delete');
+    });
+    Route::prefix('career')->name('career.')->controller(JobDepartmentController::class)->group(function () {
+        Route::get('/departments', 'index')->name('departments');
+        Route::get('/department/datatables', 'departmentDatatables')->name('department-datatables');
+        Route::get('/department/status/{id1}/{id2}', 'status')->name('department-status');
+
+        Route::post('/department/store', 'store')->name('department-store');
+        Route::post('/department/update', 'update')->name('department-update');
+        Route::delete('/department/delete/{id}', 'delete')->name('department-delete');
+    });
+    Route::prefix('career')->name('career.')->controller(JobApplicationController::class)->group(function () {
+        Route::get('/applications', 'index')->name('applications');
+        Route::get('/application/datatables', 'datatable')->name('application-datatables');
+        Route::post('/application/status', 'status')->name('application-status');
+        Route::delete('/application/delete/{id}', 'delete')->name('application-delete');
+        // Route::delete('/application/details/{id}', 'delete')->name('application-delete');
+
+        // Route::post('/application/store', 'store')->name('application-store');
+        // Route::post('/application/update', 'update')->name('application-update');
+        // Route::delete('/application/delete/{id}', 'delete')->name('application-delete');
+    });
+
+
+    //------------ ADMIN CAREER SECTION ENDS ------------
+
     //------------ ADMIN GENERAL SETTINGS SECTION ------------
 
     Route::group(['middleware' => 'permissions:general_settings'], function () {
@@ -668,7 +717,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/coupon-slider/edit/{id}', 'Admin\CouponSliderController@update')->name('admin-coupon-slider-update');
         Route::delete('/coupon-slider/delete/{id}', 'Admin\CouponSliderController@destroy')->name('admin-coupon-slider-delete');
         Route::get('/coupon-slider/status/{id1}/{id2}', 'Admin\CouponSliderController@status')->name('admin-coupon-slider-status');
-        
+
         //------------ ADMIN Offer Coupon SLIDER SECTION ENDS ------------
 
         Route::get('/arrival/datatables', 'Admin\ArrivalsectionController@datatables')->name('admin-arrival-datatables');
@@ -784,12 +833,11 @@ Route::prefix('admin')->group(function () {
         Route::post('/groupemailpost', 'Admin\EmailController@groupemailpost')->name('admin-group-submit');
     });
 
-    if(addon("otp")){
+    if (addon("otp")) {
 
-    Route::group(['middleware' => 'permissions:otp_setting'], function () {
-        Route::get('/opt/config', 'Admin\GeneralSettingController@otpConfig')->name('admin-otp-config');
-    });
-
+        Route::group(['middleware' => 'permissions:otp_setting'], function () {
+            Route::get('/opt/config', 'Admin\GeneralSettingController@otpConfig')->name('admin-otp-config');
+        });
     }
 
     //------------ ADMIN EMAIL SETTINGS SECTION ENDS ------------
@@ -1576,7 +1624,7 @@ Route::group(['middleware' => 'maintenance'], function () {
 
     Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
 
-    Route::get('/', [FrontendController::class,'index'])->name('front.index');
+    Route::get('/', [FrontendController::class, 'index'])->name('front.index');
     Route::get('/view', 'Front\CartController@view_cart')->name('front.cart-view');
     Route::get('/extras', 'Front\FrontendController@extraIndex')->name('front.extraIndex');
 
@@ -1659,11 +1707,11 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::post('/cart/decrement', 'Front\CartController@decrement');
 
     Route::get('/cart/offcanvas', function () {
-    $cart = Session::get('cart');
-    $cartItems = $cart ? $cart->items : [];
-    $cartObject = $cart;
-    return view('includes.frontend.offcanvas-cart', compact('cartItems', 'cartObject'));
-});
+        $cart = Session::get('cart');
+        $cartItems = $cart ? $cart->items : [];
+        $cartObject = $cart;
+        return view('includes.frontend.offcanvas-cart', compact('cartItems', 'cartObject'));
+    });
 
     Route::post('/cart/remove', 'Front\CartController@cartRemove')->name('ajax.cart.remove');
 
@@ -1854,11 +1902,11 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/{slug}', 'Front\VendorController@index')->name('front.vendor');
 
     Route::get('/cache/clear', function () {
-            Artisan::call('cache:clear');
-            Artisan::call('config:clear');
-            Artisan::call('route:clear');
-            Artisan::call('view:clear');
-            return 'Cache Cleared Successfully';
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('route:clear');
+        Artisan::call('view:clear');
+        return 'Cache Cleared Successfully';
     });
 
     // VENDOR AND PAGE SECTION ENDS

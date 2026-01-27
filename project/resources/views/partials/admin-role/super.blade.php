@@ -193,6 +193,23 @@
 </li>
 
 <li>
+    <a href="#menuCareer" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false">
+        <i class="icofont-bag-alt"></i>{{ __('Career Management') }}
+    </a>
+    <ul class="collapse list-unstyled" id="menuCareer" data-parent="#accordion">
+        <li>
+            <a href="{{ route('career.jobs') }}"><span>{{ __('Job Posts') }}</span></a>
+        </li>
+        <li>
+            <a href="{{ route('career.applications') }}"><span>{{ __('Applications') }}</span></a>
+        </li>
+        <li>
+            <a href="{{ route('career.departments') }}"><span>{{ __('Departments') }}</span></a>
+        </li>
+    </ul>
+</li>
+
+<li>
     <a href="{{ route('admin-branch-index') }}" class=" wave-effect"><i
             class="fas fa-sitemap"></i>{{ __('Branch') }}</a>
 </li>
@@ -388,7 +405,7 @@
             <a href="{{ route('admin-sl-index') }}"><span>{{ __('Sliders') }}</span></a>
         </li>
         <li>
-            <a href="{{route('admin-coupon-slider-index')}}"><span>{{ __('Coupon Offer Sliders') }}</span></a>
+            <a href="{{ route('admin-coupon-slider-index') }}"><span>{{ __('Coupon Offer Sliders') }}</span></a>
         </li>
 
         <li>
@@ -523,7 +540,7 @@
 <li>
     <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
             class="fas fa-user-secret"></i>{{ __('Manage
-                                                                    Staffs') }}</a>
+                                                                                                                                                                                                                                            Staffs') }}</a>
 </li>
 
 <li>
@@ -545,7 +562,7 @@
 <li>
     <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
             class="fas fa-list-alt"></i>{{ __('Addon
-                                                                    Manager') }}</a>
+                                                                                                                                                                                                                                            Manager') }}</a>
 </li>
 
 <li>

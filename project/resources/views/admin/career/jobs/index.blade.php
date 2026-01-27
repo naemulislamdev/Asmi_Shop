@@ -1,21 +1,20 @@
 @extends('layouts.admin')
 
 @section('content')
-    <input type="hidden" id="headerdata" value="{{ __('CHILD CATEGORY') }}">
-    <input type="hidden" id="attribute_data" value="{{ __('ADD NEW ATTRIBUTE') }}">
+    <input type="hidden" id="headerdata" value="{{ __('Career') }}">
     <div class="content-area">
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-12">
-                    <h4 class="heading">{{ __('Child Categories') }}</h4>
+                    <h4 class="heading">{{ __('Jobs') }}</h4>
                     <ul class="links">
                         <li>
                             <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
                         </li>
-                        <li><a href="javascript:;">{{ __('Manage Categories') }}</a></li>
                         <li>
-                            <a href="{{ route('admin-childcat-index') }}">{{ __('Child Categories') }}</a>
+                            <a href="javascript:;">{{ __('Jobs') }} </a>
                         </li>
+
                     </ul>
                 </div>
             </div>
@@ -24,19 +23,18 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="mr-table allproduct">
-
                         @include('alerts.admin.form-success')
 
                         <div class="table-responsive">
                             <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>{{ __('Category') }}</th>
-                                        <th>{{ __('Sub Category') }}</th>
-                                        <th>{{ __('Name') }}</th>
-                                        <th>{{ __('Slug') }}</th>
-                                        <th>{{ __('Featured') }}</th>
-                                        <th width="20%">{{ __('Attributes') }}</th>
+                                        <th>{{ __('SL#') }}</th>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Department') }}</th>
+                                        <th>{{ __('Experience') }}</th>
+                                        <th>{{ __('Circular Date') }}</th>
+                                        <th>{{ __('Deadline') }}</th>
                                         <th>{{ __('Status') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
@@ -48,61 +46,6 @@
             </div>
         </div>
     </div>
-
-    {{-- ADD / EDIT MODAL --}}
-
-    <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
-
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="submit-loader">
-                    <img src="{{ asset('assets/images/' . $gs->admin_loader) }}" alt="">
-                </div>
-                <div class="modal-header">
-                    <h5 class="modal-title"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- ADD / EDIT MODAL ENDS --}}
-
-    {{-- ATTRIBUTE MODAL --}}
-
-    <div class="modal fade" id="attribute" tabindex="-1" role="dialog" aria-labelledby="attribute" aria-hidden="true">
-
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="submit-loader">
-                    <img src="{{ asset('assets/images/' . $gs->admin_loader) }}" alt="">
-                </div>
-                <div class="modal-header">
-                    <h5 class="modal-title"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- ATTRIBUTE MODAL ENDS --}}
-
 
     {{-- DELETE MODAL --}}
 
@@ -119,9 +62,7 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <p class="text-center">
-                        {{ __('You are about to delete this Child Category. Everything under this category will be deleted.') }}
-                    </p>
+                    <p class="text-center">{{ __('You are about to delete this Job.') }}</p>
                     <p class="text-center">{{ __('Do you want to proceed?') }}</p>
                 </div>
 
@@ -142,7 +83,6 @@
     {{-- DELETE MODAL ENDS --}}
 @endsection
 
-
 @section('scripts')
     {{-- DATA TABLE --}}
 
@@ -154,34 +94,31 @@
                 ordering: false,
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('admin-childcat-datatables') }}',
+                ajax: '{{ route('career.job-datatables') }}?type=all',
                 columns: [{
-                        data: 'category',
+                        data: 'DT_RowIndex',
                         searchable: false,
                         orderable: false
                     },
                     {
-                        data: 'subcategory',
-                        searchable: false,
-                        orderable: false
+                        data: 'title',
+                        name: 'title'
                     },
                     {
-                        data: 'name',
-                        name: 'name'
+                        data: 'department_id',
+                        name: 'department_id'
                     },
                     {
-                        data: 'slug',
-                        name: 'slug'
+                        data: 'experience',
+                        name: 'experience'
                     },
                     {
-                        data: 'featured',
-                        name: 'Featured'
+                        data: 'circular_date',
+                        name: 'circular_date'
                     },
                     {
-                        data: 'attributes',
-                        name: 'attributes',
-                        searchable: false,
-                        orderable: false
+                        data: 'deadline',
+                        name: 'deadline'
                     },
                     {
                         data: 'status',
@@ -193,6 +130,7 @@
                         searchable: false,
                         orderable: false
                     }
+
                 ],
                 language: {
                     processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">'
@@ -204,12 +142,14 @@
 
             $(function() {
                 $(".btn-area").append('<div class="col-sm-4 table-contents">' +
-                    '<a class="add-btn" data-href="{{ route('admin-childcat-create') }}" id="add-data" data-toggle="modal" data-target="#modal1">' +
-                    '<i class="fas fa-plus"></i> <span class="remove-mobile">{{ __('Add New') }}<span>' +
+                    '<a class="add-btn" href="{{ route('career.job-create') }}">' +
+                    '<i class="fas fa-plus"></i> <span class="remove-mobile">{{ __('Add Job') }}<span>' +
                     '</a>' +
                     '</div>');
             });
 
         })(jQuery);
     </script>
+
+    {{-- DATA TABLE ENDS --}}
 @endsection

@@ -34,6 +34,7 @@
                                         <th>{{ __('Main Category') }}</th>
                                         <th>{{ __('Sub Category') }}</th>
                                         <th>{{ __('Slug') }}</th>
+                                        <th>{{ __('Featured') }}</th>
                                         <th>{{ __('Attributes') }}</th>
                                         <th>{{ __('Status') }}</th>
                                         <th>{{ __('Options') }}</th>
@@ -165,6 +166,10 @@
                     {
                         data: 'slug',
                         name: 'slug'
+                    },
+                    {
+                        data: 'featured',
+                        name: 'Featured'
                     },
                     {
                         data: 'attributes',

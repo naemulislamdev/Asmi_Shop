@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Exports;
 
 use App\Models\Order;
@@ -31,7 +32,7 @@ class OrdersExport implements FromCollection, WithHeadings
         if ($this->status !== 'all') {
             $query->where('status', $this->status);
         }
-        return $query->get(['order_number', 'customer_name','customer_phone', 'customer_address', 'totalQty', 'pay_amount', 'created_at']);
+        return $query->get(['order_number', 'customer_name', 'customer_phone', 'customer_address', 'totalQty', 'pay_amount', 'created_at']);
     }
 
     public function headings(): array

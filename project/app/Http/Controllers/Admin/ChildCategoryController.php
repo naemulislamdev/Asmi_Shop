@@ -22,6 +22,12 @@ class ChildCategoryController extends AdminBaseController
             ->addColumn('category', function (Childcategory $data) {
                 return $data->subcategory->category->name;
             })
+            ->addColumn('featured', function (Childcategory $data) {
+                $class = $data->featured == 1 ? 'drop-success' : 'drop-danger';
+                $s = $data->featured == 1 ? 'selected' : '';
+                $ns = $data->featured == 0 ? 'selected' : '';
+                return '<div class="action-list"><select class="process select droplinks ' . $class . '"><option data-val="1" value="' . route('admin-childcat-featured', ['id1' => $data->id, 'id2' => 1]) . '" ' . $s . '>' . __("Activated") . '</option><option data-val="0" value="' . route('admin-childcat-featured', ['id1' => $data->id, 'id2' => 0]) . '" ' . $ns . '>' . __("Deactivated") . '</option>/select></div>';
+            })
             ->addColumn('subcategory', function (Childcategory $data) {
                 return $data->subcategory->name;
             })
@@ -43,7 +49,7 @@ class ChildCategoryController extends AdminBaseController
             ->addColumn('action', function (Childcategory $data) {
                 return '<div class="action-list"><a data-href="' . route('admin-childcat-edit', $data->id) . '" class="edit" data-toggle="modal" data-target="#modal1"> <i class="fas fa-edit"></i>' . __('Edit') . '</a><a href="javascript:;" data-href="' . route('admin-childcat-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i></a></div>';
             })
-            ->rawColumns(['status', 'attributes', 'action'])
+            ->rawColumns(['status', 'featured', 'attributes', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
@@ -51,6 +57,18 @@ class ChildCategoryController extends AdminBaseController
     {
         return view('admin.childcategory.index');
     }
+
+    public function featured($id1, $id2)
+    {
+        $data = Childcategory::findOrFail($id1);
+        $data->featured  = $id2;
+        $data->update();
+        //--- Redirect Section
+        $msg = __('Featured Status Updated Successfully.');
+        return response()->json($msg);
+        //--- Redirect Section Ends
+    }
+
 
     //*** GET Request
     public function create()
