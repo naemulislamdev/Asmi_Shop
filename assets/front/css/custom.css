@@ -26,7 +26,10 @@
 #securityCode,
 #expirationDate {
   height: 60px;
-  transition: color 0.25s, background-color 0.25s, border-color 0.25s;
+  transition:
+    color 0.25s,
+    background-color 0.25s,
+    border-color 0.25s;
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   background-color: #fff;

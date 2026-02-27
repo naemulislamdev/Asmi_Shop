@@ -99,13 +99,13 @@
                                 <div class="card border-0 ">
                                     <a href="">
                                         <img class="card-img-top slider-side-img"
-                                        src="{{ asset('assets/front/images/banner-side-3.png') }}" alt="Title" />
+                                            src="{{ asset('assets/front/images/banner-side-3.png') }}" alt="Title" />
                                     </a>
                                 </div>
                                 <div class="card border-0 ">
                                     <a href="">
                                         <img class="card-img-top slider-side-img"
-                                        src="{{ asset('assets/front/images/banner-side-4.png') }}" alt="Title" />
+                                            src="{{ asset('assets/front/images/banner-side-4.png') }}" alt="Title" />
                                     </a>
                                 </div>
                             </div>
@@ -121,13 +121,13 @@
                                 <div class="card border-0 ">
                                     <a href="">
                                         <img class="card-img-top slider-side-img"
-                                        src="{{ asset('assets/front/images/banner-side-1.png') }}" alt="Title" />
+                                            src="{{ asset('assets/front/images/banner-side-1.png') }}" alt="Title" />
                                     </a>
                                 </div>
                                 <div class="card border-0 ">
                                     <a href="">
                                         <img class="card-img-top slider-side-img"
-                                        src="{{ asset('assets/front/images/banner-side-2.png') }}" alt="Title" />
+                                            src="{{ asset('assets/front/images/banner-side-2.png') }}" alt="Title" />
                                     </a>
                                 </div>
                             </div>
@@ -139,8 +139,8 @@
     </section>
     <!-- hero section end -->
 
-    {{-- Coupon slider section start--}}
-    
+    {{-- Coupon slider section start --}}
+
     {{-- Coupon slider section end --}}
 
     <!-- categories section start -->
@@ -455,9 +455,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>

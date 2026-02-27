@@ -10,7 +10,7 @@ use App\{
     Classes\GeniusMailer,
     Models\UserSubscription
 };
-
+use App\Exports\UserExport;
 use Illuminate\{
     Http\Request,
     Support\Str
@@ -18,6 +18,7 @@ use Illuminate\{
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class UserController extends AdminBaseController
@@ -68,6 +69,11 @@ class UserController extends AdminBaseController
     public function withdraws()
     {
         return view('admin.user.withdraws');
+    }
+
+    public function exportUser()
+    {
+        return Excel::download(new UserExport(), 'users.xlsx');
     }
 
     //*** GET Request

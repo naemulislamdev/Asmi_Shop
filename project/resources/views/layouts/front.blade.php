@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--Essential css files-->
+
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/all.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/slick.css">
@@ -15,6 +16,10 @@
     <link rel="stylesheet" href="{{ asset('assets/front/css/all.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/front/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/datatables.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/glightbox.min.css">
+
+    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/pharmacy.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/style.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/custom.css">
 
@@ -108,9 +113,8 @@
         .gs-single-cat .cate-img {
             width: 190px;
             height: 190px;
-            padding: 2px;
+            border-radius: 0;
             border: 0px solid #858585;
-            border-radius: 23px;
             margin-bottom: 4px;
         }
 
@@ -297,6 +301,37 @@
             }
 
         }
+
+        .chat-item {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .social-item {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 22px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .chat-item:hover {
+            transform: scale(1.1);
+            color: #fff;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
@@ -400,14 +435,14 @@
                         placeholder="Search for products " />
                 </form>
                 <div style="max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    position: absolute;
-    width: 89%;
-    z-index: 9999;"
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        background: #fff;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        position: absolute;
+                        width: 89%;
+                        z-index: 9999;"
                     class="searchResults"></div>
             </div>
         </div>
@@ -418,6 +453,16 @@
 
         <!-- Offers Section -->
         <div class="offers-container">
+            @foreach ($categories as $category)
+                @if ($category->name == 'Family Pack')
+                    <a style="font-size: 15px; color: #1bb9cb" href="{{ route('front.category', $category->slug) }}">
+
+                        {{ $category->name }}
+                        <img class="rounded ms-3" style="width: 50px"
+                            src="{{ asset('assets/images/categories') }}/{{ $category->image }}" alt="">
+                    </a>
+                @endif
+            @endforeach
             <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center mb-2 ">
                 <p style="font-size: 15px; color: #1bb9cb" class="pb-0 mb-0">
                     Offers
@@ -428,6 +473,7 @@
                         src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
                 </p>
             </a>
+            <a class="btn btn-sm btn-success mb-3" href="{{ route('pharmacy') }}">Pharmacy 🩺</a>
             {{-- <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
                 <p class="pb-0 mb-0">Egg Club</p>
             </a> --}}
@@ -532,6 +578,10 @@
                         @else
                             <a href="{{ route('front.category', $category->slug) }}"
                                 class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
+
+                                <img class="rounded me-1" style="width: 30px"
+                                    src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                                    alt="">
                                 {{ $category->name }}
                             </a>
                         @endif
@@ -545,6 +595,19 @@
 
     <!-- Mobile Offcanvas Start-->
     <div id="mobile-offcanvas" class="mobile-offcanvas shadow ">
+        <div class="offers-container mb-0">
+            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center">
+                <p style="font-size: 15px; color: #1bb9cb" class="pb-0 mb-0">
+                    Offers
+                    <span class="offer-outline-btn">
+                        {{ App\Models\Product::where('discount', '>', 0)->count() }}
+                    </span>
+                    <img class="ms-3" style="width: 80px; height: auto;"
+                        src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
+                </p>
+            </a>
+
+        </div>
         <ul class="accordion">
             @foreach ($categories as $category)
                 @php
@@ -626,6 +689,7 @@
                     @else
                         <a href="{{ route('front.category', $category->slug) }}"
                             class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
+
                             {{ $category->name }}
                         </a>
                     @endif
@@ -659,84 +723,120 @@
 
     <div class="overlay"></div>
     <!-- Main Content -->
-    <main id="main-content" class="main-content">
+    <main id="main-content" class="main-content ">
 
         @yield('content')
 
-        <div class="container product-cart-offcanvas position-relative">
-            <div class="text-end position-fixed" style="right: 1%; top: 50%; z-index: 999">
-                @php
-                    $cartObject = Session::has('cart') ? Session::get('cart') : null;
-                    $cartItems = $cartObject ? $cartObject->items : [];
-                @endphp
+        @if (!request()->is('career/*'))
+            <div class="container product-cart-offcanvas position-relative">
+                <div class="text-end position-fixed" style="right: 1%; top: 50%; z-index: 999">
+                    @php
+                        $cartObject = Session::has('cart') ? Session::get('cart') : null;
+                        $cartItems = $cartObject ? $cartObject->items : [];
+                    @endphp
 
-                <div class="cart-wrapper  anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-                    aria-controls="offcanvasRight">
-                    <div class="cart-top">
-                        <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
-                            alt="bag" />
-                        <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Item</p>
+                    <div class="cart-wrapper  anim" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+                        aria-controls="offcanvasRight">
+                        <div class="cart-top">
+                            <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
+                                alt="bag" />
+                            <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Item</p>
+                        </div>
+
+                        <div class="cart-bottom">
+                            <p>৳ <span class="total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span></p>
+                        </div>
                     </div>
 
-                    <div class="cart-bottom">
-                        <p>৳ <span class="total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span></p>
+                </div>
+
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
+                    aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false" data-bs-scroll="true">
+                    <div class="offcanvas-header">
+                        <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
+                            <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
+                                alt="" />
+                            <span class="cart-total-item"><span
+                                    class="cart-count">{{ $cartItems ? count($cartItems) : 0 }} </span> ITEMS</span>
+                        </h5>
+
+                        <button type="button" class="close-text-btn btn border-2 btn-outline-light"
+                            data-bs-dismiss="offcanvas">
+                            Close
+                        </button>
                     </div>
-                </div>
-
-            </div>
-
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
-                aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false" data-bs-scroll="true">
-                <div class="offcanvas-header">
-                    <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
-                        <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
-                            alt="" />
-                        <span class="cart-total-item"><span
-                                class="cart-count">{{ $cartItems ? count($cartItems) : 0 }} </span> ITEMS</span>
-                    </h5>
-
-                    <button type="button" class="close-text-btn btn border-2 btn-outline-light"
-                        data-bs-dismiss="offcanvas">
-                        Close
-                    </button>
-                </div>
-                <div class="offcanvas-body p-0">
-                    <!-- Free Delivery info Message -->
-                    {{-- <div class="alert py-1 px-0 my-0 alert-success rounded-0" role="alert">
+                    <div class="offcanvas-body p-0">
+                        <!-- Free Delivery info Message -->
+                        {{-- <div class="alert py-1 px-0 my-0 alert-success rounded-0" role="alert">
                         <strong style="font-size: 12px; padding-left: 5px">Free Home Delivery on orders over
                             ৳1000!</strong>
                         <i class="fas fa-info-circle ms-2 d-inline-block"></i>
                     </div> --}}
-                    <!-- Super Express Delivery -->
-                    <div style="background-color: #eee" class="p-1">
-                        <img style="height: 40px; width: auto"
-                            src="{{ asset('/assets/front/images/fast-delivery.png') }}" alt="fast delivery" />
-                        <strong style="font-size: 13px; margin-left: 8px">We deliver within 1 to 2 hours.</strong>
+                        <!-- Super Express Delivery -->
+                        <div style="background-color: #eee" class="p-1">
+                            <img style="height: 40px; width: auto"
+                                src="{{ asset('/assets/front/images/fast-delivery.png') }}" alt="fast delivery" />
+                            <strong style="font-size: 13px; margin-left: 8px">We deliver within 1 to 2 hours.</strong>
+                        </div>
+                        <!-- Cart Items Start  -->
+                        <div class="offCanva-right-cartItems">
+                            @include('includes.frontend.offcanvas-cart')
+                        </div>
+                        <!-- Cart Items end -->
+                        <!-- cart footer start -->
+                        <a href="{{ route('front.checkout') }}" class="order-btn">
+                            <span class="order-text">Place Order</span>
+                            <span
+                                class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
+                        </a>
+                        <!-- cart footer end -->
                     </div>
-                    <!-- Cart Items Start  -->
-                    <div class="offCanva-right-cartItems">
-                        @include('includes.frontend.offcanvas-cart')
+                    <div class="left-close">
+                        <button data-bs-dismiss="offcanvas" title="close">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
-                    <!-- Cart Items end -->
-                    <!-- cart footer start -->
-                    <a href="{{ route('front.checkout') }}" class="order-btn">
-                        <span class="order-text">Place Order</span>
-                        <span class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
-                    </a>
-                    <!-- cart footer end -->
-                </div>
-                <div class="left-close">
-                    <button data-bs-dismiss="offcanvas" title="close">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
                 </div>
             </div>
-        </div>
-        <!-- cart offcanvas End -->
+            <!-- cart offcanvas End -->
+        @endif
 
         <!-- footer section -->
         @include('includes.frontend.footer')
         <!-- footer section -->
+
+        {{-- Mobile bottom Shortcut Offer --}}
+        <div style="position: fixed; left: 0; bottom: -2px; width: 100%; height: auto; z-index: 9999; box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;"
+            class="bottom-bar bg-white shadow rounded-top d-block d-md-none">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+                <div class="container mb-0 border-0 d-flex justify-content-between ">
+                    @foreach ($categories as $category)
+                        @if ($category->name == 'Family Pack')
+                            <a class="d-flex align-items-center mb-0" style="font-size: 14px; color: #1bb9cb"
+                                href="{{ route('front.category', $category->slug) }}">
+                                {{ $category->name }}
+                                <img class="rounded ms-2" style="width: 50px"
+                                    src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                                    alt="">
+                            </a>
+                        @endif
+                    @endforeach
+                    <a href="{{ route('front.offers') }}" class=" ms-5 d-flex align-items-center p-0">
+                        <p style="font-size: 14px; color: #1bb9cb" class="pb-0 mb-0 d-flex">
+                            Offers
+                            <span class="ms-2 offer-outline-btn">
+                                {{ App\Models\Product::where('discount', '>', 0)->count() }}
+                            </span>
+
+                        </p>
+                        <img class="ms-2" style="width: 50px; height: auto;"
+                            src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
+                    </a>
+
+
+                </div>
+            </div>
+        </div>
     </main>
 
 
@@ -744,6 +844,8 @@
     <!--Esential Js Files-->
     <script src="{{ asset('assets/front') }}/js/jquery.min.js"></script>
     <script src="{{ asset('assets/front') }}/js/slick.js"></script>
+    <script src="{{ asset('assets/front') }}/js/swiper-bundle.min.js"></script>
+    <script src="{{ asset('assets/front') }}/js/glightbox.min.js"></script>
     <script src="{{ asset('assets/front') }}/js/jquery-ui.js"></script>
     <script src="{{ asset('assets/front') }}/js/nice-select.js"></script>
 
@@ -754,6 +856,17 @@
     <script src="{{ asset('assets/front') }}/js/script.js"></script>
     <script src="{{ asset('assets/front/js/myscript.js') }}"></script>
 
+
+    <script>
+        const lightbox = GLightbox({
+            selector: '.glightbox:not(.swiper-slide-duplicate)',
+            touchNavigation: true,
+            loop: true,
+            zoomable: true,
+            keyboardNavigation: true
+
+        });
+    </script>
 
     <script>
         "use strict";
@@ -813,6 +926,135 @@
 
     @yield('script')
     @stack('scripts')
+    <script>
+        // pharmacy hero slider
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            spaceBetween: 10,
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: false
+        });
+        var heroSlider = new Swiper(".heroSlider", {
+            slidesPerView: 1,
+            spaceBetween: 10,
+            loop: true,
+            speed: 600,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        var cateSlider = new Swiper(".home-category-slider", {
+            slidesPerView: 6,
+            spaceBetween: 10,
+            loop: true,
+            speed: 500,
+            autoplay: {
+                delay: 2000,
+                disableOnInteraction: false,
+            },
+
+
+
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        // for pharmacy product swiper
+        document.querySelectorAll(".product-swiper").forEach((swiperContainer) => {
+            const nextBtn = swiperContainer.querySelector(".swiper-button-next");
+            const prevBtn = swiperContainer.querySelector(".swiper-button-prev");
+
+            const swiper = new Swiper(swiperContainer, {
+                slidesPerView: 2,
+                spaceBetween: 15,
+                autoplay: false,
+                loop: false,
+                grabCursor: true,
+
+                navigation: {
+                    nextEl: nextBtn,
+                    prevEl: prevBtn
+                },
+
+                breakpoints: {
+                    768: {
+                        slidesPerView: 4
+                    },
+                    1200: {
+                        slidesPerView: 4
+                    },
+                    1600: {
+                        slidesPerView: 6
+                    },
+                },
+
+                on: {
+                    init() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    },
+                    resize() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    },
+                    slideChange() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    }
+                }
+            });
+        });
+
+        function updateNavState(swiper, prevBtn, nextBtn) {
+
+            // PREV
+            if (swiper.isBeginning) {
+                prevBtn.setAttribute('disabled', 'true');
+                prevBtn.style.visibility = 'hidden'; // চাইলে remove করতে পারো
+            } else {
+                prevBtn.removeAttribute('disabled');
+                prevBtn.style.visibility = 'visible';
+            }
+
+            // NEXT
+            if (swiper.isEnd) {
+                nextBtn.setAttribute('disabled', 'true');
+            } else {
+                nextBtn.removeAttribute('disabled');
+            }
+
+            // total slides <= visible slides
+            const totalSlides = swiper.slides.length;
+            const visibleSlides = swiper.params.slidesPerView;
+
+            if (totalSlides <= visibleSlides) {
+                prevBtn.setAttribute('disabled', 'true');
+                nextBtn.setAttribute('disabled', 'true');
+                prevBtn.style.visibility = 'hidden';
+            }
+        }
+    </script>
+
+
     <script>
         $(function() {
             $(".countdown").each(function() {

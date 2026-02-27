@@ -7,9 +7,17 @@
   position: fixed;
   width: 100%;
   top: 0;
-  z-index: 9999999 !important;
+  z-index: 10000 !important;
   padding: 10px 0;
 }
+.gs-career-section {
+  z-index: 99999999;
+}
+.job-card {
+  position: relative;
+  z-index: 9999 !important;
+}
+
 body * {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -78,7 +86,6 @@ ul {
   padding-left: 17px !important;
 }
 
-
 /* sidebar scrollbar thin */
 .sidebar::-webkit-scrollbar {
   width: 3px;
@@ -96,8 +103,8 @@ ul {
 }
 
 .sidebar ul li {
-    margin-bottom: 10px;
-    padding: 7px 5px;
+  margin-bottom: 10px;
+  padding: 7px 5px;
 }
 
 .sidebar ul li a {
@@ -312,7 +319,8 @@ ul {
   display: inline-block;
   background-color: #1bb9cb;
   border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
+  box-shadow:
+    rgba(0, 0, 0, 0.3) 0px 19px 38px,
     rgba(0, 0, 0, 0.22) 0px 15px 12px;
   cursor: pointer;
   border-radius: 100%;
@@ -438,13 +446,13 @@ ul {
 /* Product cart item design */
 
 .cart-item {
-    max-width: 100%;
-    display: grid;
-    grid-template-columns: 30px 60px 1fr 45px 13px;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 5px;
-    overflow: hidden;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 30px 60px 1fr 45px 13px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 5px;
+  overflow: hidden;
 }
 .item-qty {
   display: flex;
@@ -526,27 +534,27 @@ ul {
 
 /* cart footer bottom */
 .order-btn {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: none;
-    border-radius: 8px;
-    overflow: hidden;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    position: fixed;
-    left: 0;
-    bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  position: fixed;
+  left: 0;
+  bottom: 0;
 }
 /* Left Side */
 .order-text {
-    flex: 1;
-    background: #1bb9cb;
-    padding: 14px 20px;
-    text-align: center;
-    border-right: 1px solid #ddd;
+  flex: 1;
+  background: #1bb9cb;
+  padding: 14px 20px;
+  text-align: center;
+  border-right: 1px solid #ddd;
 }
 
 /* Right Side */
@@ -587,9 +595,9 @@ ul {
 /* =========================== Responsive ================= */
 
 @media (max-width: 768px) {
-.product-cart-offcanvas .offcanvas {
+  .product-cart-offcanvas .offcanvas {
     top: var(--header-height, 115px);
-}
+  }
   .logo_Bar {
     gap: 45px !important;
   }
@@ -604,12 +612,12 @@ ul {
   }
   .cart-item {
     grid-template-columns: 40px 60px 2fr 44px 30px;
-}
-.order-btn {
+  }
+  .order-btn {
     position: fixed;
     left: 0;
     bottom: 34px;
-}
+  }
 }
 
 @media (max-width: 992px) {
@@ -676,29 +684,27 @@ ul {
 }
 .offCanva-right-cartItems {
   padding-bottom: 56px !important;
-
 }
-.remove-item-cart{
+.remove-item-cart {
   color: #1bb9cb;
 }
-.single-product .img-wrapper, .single-product-list-view .img-wrapper {
-    border-radius: 10px 10px 0 0;
+.single-product .img-wrapper,
+.single-product-list-view .img-wrapper {
+  border-radius: 10px 10px 0 0;
 }
-.cart-item:last-child{
+.cart-item:last-child {
   padding-bottom: 60px;
 }
 /* mobile offcanvas */
 .mobile-offcanvas .accordion li {
-    margin-bottom: 10px;
-
+  margin-bottom: 10px;
 }
-.mobile-offcanvas .accordion li a{
-   color: #414141;
-
+.mobile-offcanvas .accordion li a {
+  color: #414141;
 }
 .mobile-offcanvas.active {
-    left: 0;
-    padding-left: 0;
+  left: 0;
+  padding-left: 0;
 }
 /* .product-cat-widget ul li button[aria-expanded="true"] {
     color: var(--primary-color);
@@ -718,18 +724,18 @@ ul {
 }
 /* When collapsed (closed) → Show plus, hide minus */
 .mobile-offcanvas button.collapsed .fa-plus {
-    display: inline-block;
+  display: inline-block;
 }
 .mobile-offcanvas button.collapsed .fa-minus {
-    display: none;
+  display: none;
 }
 
 /* When expanded (open) → Show minus, hide plus */
 .mobile-offcanvas button:not(.collapsed) .fa-plus {
-    display: none;
+  display: none;
 }
 .mobile-offcanvas button:not(.collapsed) .fa-minus {
-    display: inline-block;
+  display: inline-block;
 }
 .order-btn {
     margin-left: 6px;

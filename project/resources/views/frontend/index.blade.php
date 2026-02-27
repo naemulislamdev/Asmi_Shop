@@ -21,7 +21,7 @@
         }
 
         .gs-hero-section {
-            height: 341px;
+            height: auto;
         }
 
         /* Mobile responsiveness */
@@ -184,84 +184,193 @@
         .right-promo .slick-dots li.slick-active button {
             width: 30px;
         }
+
+        /* 22 Feb 26 */
+        .hero-slider .swiper-horizontal>.swiper-pagination-bullets,
+        .hero-slider .swiper-pagination-bullets.swiper-pagination-horizontal,
+        .hero-slider .swiper-pagination-custom,
+        .hero-slider .swiper-pagination-fraction {
+            bottom: -1px !important;
+        }
+
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .category-item {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+            text-align: center;
+            padding-bottom: 0;
+        }
+
+        .category-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px 8px 0 0;
+        }
+
+        /* wrapper stretch */
+        .home-category-slider .swiper-wrapper {
+            align-items: stretch;
+        }
+
+        /* slide full height */
+        .home-category-slider .swiper-slide {
+            height: auto;
+            display: flex;
+        }
+
+        /* link full height */
+        .slide-link {
+            display: flex;
+            width: 100%;
+        }
+
+        /* card full height */
+        .gs-single-cat {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+
+            background: #fff;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+        }
+
+        /* image fixed height */
+        .cate-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        /* title bottom align */
+        .cate-title {
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .swiper-pagination-bullet {
+            width: var(--swiper-pagination-bullet-width,
+                    var(--swiper-pagination-bullet-size, 12px));
+            height: var(--swiper-pagination-bullet-height,
+                    var(--swiper-pagination-bullet-size, 12px));
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #1bb9cb !important;
+        }
     </style>
 
     <!-- hero section start -->
 
-        <section class="slider-section">
-            <div class="row ">
-                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
-                    <div class="left-promo">
+    <section class="slider-section">
+        <div class="row ">
+            <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
+                <div class="left-promo">
 
-                        @foreach ($left_promo_offers->chunk(2) as $chunk)
-                            {{-- ONE SLIDE --}}
-                            <div class="left-promo-wrapper d-flex flex-column gap-3">
+                    @foreach ($left_promo_offers->chunk(2) as $chunk)
+                        {{-- ONE SLIDE --}}
+                        <div class="left-promo-wrapper d-flex flex-column gap-3">
 
-                                @foreach ($chunk as $item)
-                                    <div class="card border-0">
-                                        <a href="{{ $item->link }}">
-                                            <img class="card-img-top slider-side-img"
-                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                        </a>
-                                    </div>
-                                @endforeach
+                            @foreach ($chunk as $item)
+                                <div class="card border-0">
+                                    <a href="{{ $item->link }}">
+                                        <img class="card-img-top slider-side-img"
+                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                    </a>
+                                </div>
+                            @endforeach
 
-                            </div>
-                        @endforeach
+                        </div>
+                    @endforeach
 
-                    </div>
                 </div>
-
-                <div class="@if ($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
-                    <div class="hero-slider-wrapper ">
-                        @foreach ($sliders as $slider)
-                            <div class="gs-hero-section">
-                                <img class="home-slider" src="{{ asset('assets/images/sliders/' . $slider->photo) }}"
-                                    alt="Slider Image" style="cursor: pointer; max-width: 100%"
-                                    data-href="{{ $slider->link ?? '#' }}">
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block ps-0">
-                    <div class="right-promo">
-
-                        @foreach ($right_promo_offers->chunk(2) as $chunk)
-                            {{-- ONE SLIDE --}}
-                            <div class="right-promo-wrapper d-flex flex-column gap-3">
-
-                                @foreach ($chunk as $item)
-                                    <div class="card border-0">
-                                        <a href="{{ $item->link }}">
-                                            <img class="card-img-top slider-side-img"
-                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                        </a>
-                                    </div>
-                                @endforeach
-
-                            </div>
-                        @endforeach
-
-                    </div>
-                </div>
-
             </div>
 
-        </section>
+            <div class="@if ($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
+                <div class=" ">
+
+                    <div class="hero-slider">
+                        <div class="container">
+                            <!-- Swiper -->
+                            <div class="swiper heroSlider" style="">
+                                <div class="swiper-wrapper">
+                                    @foreach ($sliders as $slider)
+                                        <div class="swiper-slide rounded">
+                                            <a href="{{ $slider->link ?? '#' }}" target="_blank" rel="noopener noreferrer">
+                                                <img style="max-width: 100%; height: auto;" class="rounded"
+                                                    src="{{ asset('assets/images/sliders/' . $slider->photo) }}"
+                                                    alt="slider image">
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <!-- Pagination -->
+                                <div class="swiper-pagination"></div>
+
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block ps-0">
+                <div class="right-promo">
+
+                    @foreach ($right_promo_offers->chunk(2) as $chunk)
+                        {{-- ONE SLIDE --}}
+                        <div class="right-promo-wrapper d-flex flex-column gap-3">
+
+                            @foreach ($chunk as $item)
+                                <div class="card border-0">
+                                    <a href="{{ $item->link }}">
+                                        <img class="card-img-top slider-side-img"
+                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                    </a>
+                                </div>
+                            @endforeach
+
+                        </div>
+                    @endforeach
+
+                </div>
+            </div>
+
+        </div>
+
+    </section>
 
     <!-- hero section end -->
 
     {{-- Coupon slider section start --}}
-      @if($coupon_sliders->count() > 0)
+    @if ($coupon_sliders->count() > 0)
         <section class="mt-4">
-            <div class="container-fluid">
+            <div class="container">
                 <div class="home-coupon-slider">
-                    @foreach($coupon_sliders as $slider)
-                    <div class="coupon-item">
-                        <a href="{{$slider->link}}">
-                            <img src="{{ asset('assets/images/sliders/coupon/' . $slider->image) }}" alt="coupon image">
-                        </a>
-                    </div>
+                    @foreach ($coupon_sliders as $slider)
+                        <div class="coupon-item">
+                            <a href="{{ $slider->link }}">
+                                <img src="{{ asset('assets/images/sliders/coupon/' . $slider->image) }}" alt="coupon image">
+                            </a>
+                        </div>
                     @endforeach
 
                 </div>
@@ -271,23 +380,61 @@
     {{-- Coupon slider section end --}}
 
     <!-- categories section start -->
-    <div class="gs-cate-section ">
-        <div class="container wow-replaced">
-            <div class="home-cate-slider">
-                @foreach ($featured_categories as $fcategory)
-                    <div class="col-lg-2">
-                        <a href="{{ route('front.category', $fcategory->slug) }}">
-                            <div class="gs-single-cat">
+    <div class="gs-cate-section py-2">
+        <div class="container">
+            <!-- title box -->
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="gs-title-box text-center">
+                        <h2 class="title wow-replaced">
+                            @lang('Categories') </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="d-none d-lg-block">
+                <div class="swiper home-category-slider">
+                    <div class="swiper-wrapper">
+
+                        @foreach ($featured_categories as $fcategory)
+                            <div class="swiper-slide">
+                                <a href="{{ route('front.category', $fcategory->slug) }}" class="slide-link">
+
+                                    <div class="gs-single-cat">
+                                        <img class="cate-img"
+                                            src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
+                                            alt="category img">
+                                        <div class="cate-title">
+                                            <h6 class="title text-dark">{{ $fcategory->name }}</h6>
+                                        </div>
+                                    </div>
+
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+            </div>
+            {{-- for mobile and tablet --}}
+            <div class="d-block d-lg-none">
+                <div class="row">
+                    @foreach ($featured_categories as $fcategory)
+                        <div class="col-4 col-sm-4 d-flex mb-3 px-1">
+                            <a href="{{ route('front.category', $fcategory->slug) }}"
+                                class="category-item w-100 position-relative">
+
                                 <img class="cate-img" src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
                                     alt="category img">
-                                <div class="cate-title">
-                                    <h6 class="title">{{ $fcategory->name }}</h6>
+
+                                <div class="cate-title py-2 w-100">
+                                    <h6 class="title mb-0 mt-2 text-dark">{{ $fcategory->name }}</h6>
                                 </div>
-                                {{-- <h6>({{ $fcategory->products_count }})</h6> --}}
-                            </div>
-                        </a>
-                    </div>
-                @endforeach
+
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
@@ -302,7 +449,7 @@
 
         if ($flashDeal) {
             $ProductsId = json_decode($flashDeal->products);
-            $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->get();
+            $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->where('status', 1)->get();
             $flashDealExpired = Carbon::now()->gt(Carbon::parse($flashDeal->end_date));
         }
     @endphp
@@ -582,9 +729,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>

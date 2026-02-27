@@ -113,6 +113,11 @@
                         </li>
                     @endif
 
+                    <li class="wow-replaced" data-wow-delay=".1s">
+                        <a href="{{ route('front.career') }}">{{ __('Career') }}</a>
+                    </li>
+
+
 
                 </ul>
             </div>
@@ -121,12 +126,14 @@
                 <ul class="footer-category-links">
                     <li class="wow-replaced" data-wow-delay=".1s">
                         <a href="https://play.google.com/store/apps/details?id=com.asmishop.android" target="_blank">
-                            <img src="{{ asset('assets/front/images/google_app.png') }}" alt="Google Play Store" width="100%">
+                            <img src="{{ asset('assets/front/images/google_app.png') }}" alt="Google Play Store"
+                                width="100%">
                         </a>
                     </li>
                     <li class="wow-replaced" data-wow-delay=".1s">
                         <a href="https://apps.apple.com/app/asmi-shop/id6751156113" target="_blank">
-                            <img src="{{ asset('assets/front/images/apple_app.png') }}" alt="Apple App Store" width="100%">
+                            <img src="{{ asset('assets/front/images/apple_app.png') }}" alt="Apple App Store"
+                                width="100%">
                         </a>
                     </li>
                 </ul>
@@ -138,7 +145,8 @@
             <div class="row">
                 <div class="col-12">
                     <div class="footer-bottom-content">
-                        <p>{{$gs->copyright}} <a href="https://evertechit.com/" target="_blank" style="color: #47e7ff;"> Developed By Evertech IT</a></p>
+                        <p>{{ $gs->copyright }} <a href="https://evertechit.com/" target="_blank"
+                                style="color: #47e7ff;"> Developed By Evertech IT</a></p>
                     </div>
                 </div>
             </div>
