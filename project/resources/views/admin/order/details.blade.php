@@ -416,7 +416,6 @@
                     </div>
                 </div>
             </div>
-
             @php
                 foreach ($cart['items'] as $key => $item) {
                     $userId = $item['user_id'];
@@ -444,7 +443,7 @@
                         <div class="mr-table">
                             <h4 class="title">
                                 <a href="javascript:;" data-toggle="modal" vendor="{{ $key1 }}"
-                                    vendor-store="{{ $vendor->shop_name }}" class="mybtn1 pl-2 show_add_product"
+                                    vendor-store="{{ $vendor->shop_name }}" class="mybtn1 pl-2 show_add_produc"
                                     data-target="#add-product"><i class="fas fa-plus"></i>{{ __('Add Product') }}</a>
                                 {{ __('Products Ordered By') }} - <strong>{{ $vendor->shop_name }}</strong>
 
@@ -477,7 +476,7 @@
                                                         value="{{ $key1 }}">{{ $product['item']['id'] }}</td>
 
                                                 <td>
-                                                    {{ $product['item']['sku'] }}
+                                                    {{ $product['item']['sku'] ?? '' }}
                                                 </td>
                                                 <td>
                                                     <img class="img-thumbnail"
@@ -520,30 +519,12 @@
 
                                                 </td>
                                                 <td>
-                                                    @if ($product['size'])
-                                                        <p>
-                                                            <strong>{{ __('Size') }} :</strong>
-                                                            {{ str_replace(
-                                                                '-',
-                                                                '
-                                                                                                                                                                                                                                                                                            ',
-                                                                $product['size'],
-                                                            ) }}
-                                                        </p>
-                                                    @endif
-                                                    @if ($product['color'])
-                                                        <p>
-                                                            <strong>{{ __('color') }} :</strong> <span
-                                                                style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; border-radius: 50%; background: #{{ $product['color'] }};"></span>
-                                                        </p>
-                                                    @endif
                                                     <p>
                                                         <strong>{{ __('Price') }} :</strong>
                                                         {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
                                                     </p>
                                                     <p>
                                                         <strong>{{ __('Qty') }} :</strong> {{ $product['qty'] }}
-                                                        {{ $product['item']['measure'] }}
                                                     </p>
                                                     @if (!empty($product['keys']))
                                                         @foreach (array_combine(explode(',', $product['keys']), explode(',', $product['values'])) as $key => $value)
@@ -907,7 +888,7 @@
             "use strict";
 
 
-            $(document).on('click', '.show_add_product', function() {
+            $(document).on('click', '.show_add_produc', function() {
                 let vendor_id = $(this).attr('vendor');
                 $('#add_vendor_id').val(vendor_id);
                 let message =

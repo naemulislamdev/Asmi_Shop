@@ -19,23 +19,14 @@ class RegisterController extends Controller
         //dd($request->all());
         $gs = Generalsetting::findOrFail(1);
 
-        if ($gs->is_capcha == 1) {
-            $request->validate(
-                [
-                    'g-recaptcha-response' => 'required',
-                ],
-                [
-                    'g-recaptcha-response.required' => 'Captcha is required.',
-                ]
-            );
-
-        }
-
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            "phone" => "required|unique:users,phone",
-            "address" => "required",
+            'name' => 'required|string|max:100',
+            'phone' => [
+                'required',
+                'regex:/^(\+8801[3-9][0-9]{8}|01[3-9][0-9]{8})$/',
+                'unique:users,phone'
+            ],
+            "address" => "nullable|string|max:200",
             'password' => 'required|confirmed',
         ]);
 
@@ -43,10 +34,10 @@ class RegisterController extends Controller
         $user = new User;
         $input = $request->all();
         $input['password'] = bcrypt($request['password']);
-        $token = md5(time() . $request->name . $request->email);
+        $token = md5(time() . $request->name . $request->phone);
         $input['verification_link'] = $token;
-        $input['affilate_code'] = md5($request->name . $request->email);
-
+        $input['affilate_code'] = md5($request->name . $request->phone);
+        $input['email'] = rand(1000, 9999) . 'bd@gmail.com';
 
         $user->fill($input)->save();
 

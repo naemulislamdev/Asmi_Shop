@@ -38,12 +38,12 @@
                 <span class="badge badge-danger float-right">{{ $orderCounts->cancelled ?? 0 }}</span>
             </a>
         </li>
-        <li>
-            <a href="{{ route('admin-bulk-upload-custome-order') }}"> {{ __('Bulk Upload Custome Order') }}</a>
+         <li>
+            <a href="{{ route('admin-create-orders') }}"> {{ __('Create Orders') }}</a>
         </li>
-        <li>
+       {{-- <li>
             <a href="{{ route('admin-order-create') }}"> {{ __('Pos') }}</a>
-        </li>
+        </li> --}}
 
     </ul>
 </li>
@@ -155,6 +155,9 @@
 
         <li>
             <a href="{{ route('admin-gs-prod-settings') }}"><span>{{ __('Product Settings') }}</span></a>
+        </li>
+        <li>
+            <a href="{{ route('admin-bulk-update-price') }}"><span>{{ __('Bulk Update Price') }}</span></a>
         </li>
     </ul>
 </li>

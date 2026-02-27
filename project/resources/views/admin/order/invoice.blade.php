@@ -137,7 +137,7 @@
                                                         <strong>{{ __('Price') }} :</strong>{{ \PriceHelper::showCurrencyPrice(($product['item_price'] ) * $order->currency_value) }}
                                                 </p>
                                                <p>
-                                                    <strong>{{ __('Qty') }} :</strong> {{$product['qty']}} {{ $product['item']['measure'] }}
+                                                    <strong>{{ __('Qty') }} :</strong> {{$product['qty']}}
                                                </p>
 
                                                     @if(!empty($product['keys']))

@@ -125,9 +125,11 @@ class CartController extends Controller
         $cart->add($prod, $prod->id, $finalPrice, $uniqueKey, $measureValue, $quantity);
 
         // Use the same uniqueKey to inspect the cart row
-        if ($cart->items[$uniqueKey]['stock'] < 0) {
-            return response()->json(0);
-        }
+
+        // if ($cart->items[$uniqueKey]['stock'] < 0) {
+        //     return response()->json(0);
+        // }
+
         if (!empty($cart->items[$uniqueKey]['size_qty'])) {
             if ($cart->items[$uniqueKey]['qty'] > $cart->items[$uniqueKey]['size_qty']) {
                 return response()->json(0);

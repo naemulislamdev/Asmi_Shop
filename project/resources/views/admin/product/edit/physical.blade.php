@@ -54,7 +54,7 @@
                                             <div class="col-lg-12">
                                                 <input type="text" class="input-field"
                                                     placeholder="{{ __(" Enter Product
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    												Name") }}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        												Name") }}"
                                                     name="name" required="" value="{{ $data->name }}">
                                             </div>
                                         </div>
@@ -384,7 +384,7 @@
                                                                                         value="{{ !empty(
                                                                                             $selectedAttrs[
                                                                                                 "
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        																		$inName"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                																		$inName"
                                                                                             ]['prices'][$i]
                                                                                         ) && $checked == 1
                                                                                             ? round($selectedAttrs["$inName"]['prices'][$i] * $sign->value, 2)
@@ -448,8 +448,8 @@
                                                                     <td>
                                                                         <input type="number"
                                                                             name="measures[{{ $index }}][value]"
-                                                                            class="input-field measure-value" step="0.01"
-                                                                            value="{{ $measure->value }}">
+                                                                            class="input-field measure-value"
+                                                                            step="0.01" value="{{ $measure->value }}">
                                                                     </td>
 
                                                                     <td>
@@ -462,13 +462,14 @@
                                                                     <td>
                                                                         <input type="number"
                                                                             name="measures[{{ $index }}][price]"
-                                                                            class="input-field measure-price" step="0.01"
-                                                                            value="{{ $measure->price }}">
+                                                                            class="input-field measure-price"
+                                                                            step="0.01" value="{{ $measure->price }}">
                                                                     </td>
 
                                                                     <td>
                                                                         <button type="button"
-                                                                            class="btn btn-danger btn-sm remove"><i class="fas fa-trash-alt"></i></button>
+                                                                            class="btn btn-danger btn-sm remove"><i
+                                                                                class="fas fa-trash-alt"></i></button>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -738,7 +739,19 @@
 
                                             </div>
                                         </div>
-
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input name="pre_order" class="stock-check" type="checkbox"
+                                                            id="pre-order" value="1"
+                                                            {{ $data->pre_order == 1 ? 'checked' : '' }}>
+                                                        <label for="pre-order"
+                                                            class="stock-text">{{ __('Make This Product on Pre Order') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
 
                                         <div class="row">
                                             <div class="col-lg-12">
@@ -758,6 +771,7 @@
                                                 </ul>
                                             </div>
                                         </div>
+
 
                                         <div class="row {{ !empty($data->size) ? ' d-none' : '' }}" id="default_stock">
                                             <div class="col-lg-12">
@@ -1081,8 +1095,7 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="price" type="number" class="input-field"
-                                                    placeholder="e.g 20" step="any"
-                                                    value="{{$data->price }}">
+                                                    placeholder="e.g 20" step="any" value="{{ $data->price }}">
                                             </div>
                                         </div>
 
@@ -1286,7 +1299,7 @@
     <script>
         let index = {{ $data->measures->count() }};
 
-         document.getElementById('addMeasure').addEventListener('click', function() {
+        document.getElementById('addMeasure').addEventListener('click', function() {
             let row = `
         <tr>
             <td>

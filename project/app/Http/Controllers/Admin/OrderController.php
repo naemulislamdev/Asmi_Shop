@@ -112,7 +112,8 @@ class OrderController extends AdminBaseController
             })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
-                return $id;
+                $viewbtn = '<a href="' . route('admin-order-show', $data->id) . '" class="btn btn-sm btn-primary">Details</a>';
+                return $id . $viewbtn;
             })
             ->editColumn('pay_amount', function (Order $data) {
                 return PriceHelper::showOrderCurrencyPrice((($data->pay_amount + $data->wallet_price) * $data->currency_value), $data->currency_sign);
@@ -165,6 +166,9 @@ class OrderController extends AdminBaseController
                 } elseif ($data->order_source == 'Mobile Apps') {
                     $badge = 'success';
                     $source = __('App');
+                } elseif ($data->order_source == 'POS') {
+                    $badge = 'info';
+                    $source = __('POS');
                 } else {
                     $badge = 'dark';
                     $source = __('Unknown');
@@ -517,6 +521,7 @@ class OrderController extends AdminBaseController
     public function addcart($id)
     {
         $order = Order::find($id);
+        //dd($order);
         $id = $_GET['id'];
         $qty = $_GET['qty'];
         $size = str_replace(' ', '-', $_GET['size']);
@@ -534,7 +539,17 @@ class OrderController extends AdminBaseController
         $keys = $keys == "" ? '' : implode(',', $keys);
         $values = $values == "" ? '' : implode(',', $values);
         $size_price = ($size_price / $order->currency_value);
-        $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes', 'minimum_qty']);
+       // dd($id);
+        $prod = Product::where('id', '=', $id)->first();
+
+        if ($prod->discount > 0) {
+            $finalPriceFromRequest = (float) \App\Helpers\PriceHelper::discountPrice($prod->price, $prod->discount, $prod->discount_type);
+        } else {
+            $finalPriceFromRequest = (float) $prod->price;
+        }
+        $finalPrice = (float) $finalPriceFromRequest;
+
+        $prod->price = $finalPrice;
 
         if ($prod->user_id != 0) {
             $prc = $prod->price + $this->gs->fixed_commission + ($prod->price / 100) * $this->gs->percentage_commission;
@@ -547,6 +562,7 @@ class OrderController extends AdminBaseController
                 }
             }
         }
+        //dd($prod);
 
         if (!empty($prod->license_qty)) {
             $lcheck = 1;
@@ -560,19 +576,6 @@ class OrderController extends AdminBaseController
             }
             if ($lcheck == 0) {
                 return 0;
-            }
-        }
-
-        if (empty($size)) {
-            if (!empty($prod->size)) {
-                $size = trim($prod->size[0]);
-            }
-            $size = str_replace(' ', '-', $size);
-        }
-
-        if (empty($color)) {
-            if (!empty($prod->color)) {
-                $color = $prod->color[0];
             }
         }
 
@@ -603,7 +606,7 @@ class OrderController extends AdminBaseController
             }
         }
         $color_price = isset($request->color_price) ? (float) $_GET['color_price'] : 0;
-        $cart->addnum($prod, $prod->id, $qty, $size, $color, $size_qty, $size_price, $color_price, $size_key, $keys, $values, $affilate_user);
+        $cart->addnum($prod, $prod->id,  $finalPrice, $qty, $size, $color, $size_qty, $size_price, $color_price, $size_key, $keys, $values, $affilate_user);
 
         if ($cart->items[$id . $size . $color . str_replace(str_split(' ,'), '', $values)]['dp'] == 1) {
             return redirect()->back()->with('unsuccess', __('This item is already in the cart.'));

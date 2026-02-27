@@ -10,7 +10,7 @@
                         <form action="{{ route('user-register-submit') }}" method="POST">
                             @csrf
                             <div class="form-group">
-                                <label for="name">@lang('Full Name')</label>
+                                <label for="name">@lang('Full Name') <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name"
                                     placeholder="@lang('Enter your full name')">
                                  @error('name')
@@ -18,21 +18,22 @@
                                  @enderror
                             </div>
                             <div class="form-group">
+                                <label for="phone">@lang('Phone Number') <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="phone" name="phone"
+                                    placeholder="@lang('Enter your phone number')">
+                                    <span id="phoneFeedback" class="small text-danger"></span>
+                                    @error('phone')
+                                    <span class="text-danger">{{ $message }}</span>
+                                 @enderror
+                            </div>
+                            {{-- <div class="form-group">
                                 <label for="email">@lang('Email Address')</label>
                                 <input type="email" class="form-control" id="email" name="email"
                                     placeholder="@lang('Enter your email address')">
                                     @error('email')
                                     <span class="text-danger">{{ $message }}</span>
                                  @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">@lang('Phone Number')</label>
-                                <input type="text" class="form-control" id="phone" name="phone"
-                                    placeholder="@lang('Enter your phone number')">
-                                    @error('phone')
-                                    <span class="text-danger">{{ $message }}</span>
-                                 @enderror
-                            </div>
+                            </div> --}}
                             <div class="form-group">
                                 <label for="address">@lang('Address')</label>
                                 <input type="text" class="form-control" id="address" name="address"
@@ -43,7 +44,7 @@
                             </div>
                             <div class="form-group">
 
-                                <label for="create-password">@lang('Create Password')</label>
+                                <label for="create-password">@lang('Create Password') <span class="text-danger">*</span></label>
                                 <div class="pass-wrapper">
                                     <input type="password" name="password" class="form-control" id="create-password"
                                         placeholder="@lang('Enter your password')">
@@ -78,7 +79,7 @@
                             </div>
                             <div class="form-group">
 
-                                <label for="confirm-password">@lang('Confirm Password')</label>
+                                <label for="confirm-password">@lang('Confirm Password') <span class="text-danger">*</span></label>
 
 
                                 <div class="pass-wrapper">
@@ -111,7 +112,7 @@
 
                                 </div>
 
-                                @if($gs->is_capcha == 1)
+                                {{-- @if($gs->is_capcha == 1)
                                 <div class="form-group mt-3">
                                      {!! NoCaptcha::display() !!}
                                      {!! NoCaptcha::renderJs() !!}
@@ -119,7 +120,7 @@
                                         <span class="text-danger">{{ $message }}</span>
                                      @enderror
                                  </div>
-                                 @endif
+                                 @endif --}}
 
 
                             </div>
@@ -140,4 +141,35 @@
 @endsection
 
 @section('script')
+<script>
+        document.getElementById('phone').addEventListener('input', function() {
+            const phoneInput = this.value;
+            const phoneFeedback = document.getElementById('phoneFeedback');
+            const regex = /^(01[3-9]\d{8})$/;
+
+            if (phoneInput === '') {
+                phoneFeedback.textContent = '';
+            } else if (!regex.test(phoneInput)) {
+                phoneFeedback.classList.add('text-danger');
+                phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
+            } else {
+                phoneFeedback.textContent = 'Valid phone number!';
+                phoneFeedback.classList.remove('text-danger');
+                phoneFeedback.classList.add('text-success');
+            }
+        });
+
+        // Also validate when the field loses focus
+        document.getElementById('phone').addEventListener('blur', function() {
+            const phoneInput = this.value;
+            const phoneFeedback = document.getElementById('phoneFeedback');
+            const regex = /^(01[3-9]\d{8})$/;
+
+            if (phoneInput === '') {
+                phoneFeedback.textContent = 'Phone number is required';
+            } else if (!regex.test(phoneInput)) {
+                phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
+            }
+        });
+    </script>
 @endsection

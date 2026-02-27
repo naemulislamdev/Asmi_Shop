@@ -145,12 +145,12 @@ class Cart extends Model
 
     // ************** ADD TO CART MULTIPLE ENDS *****************
 
-    public function addnum($item, $id, $qty, $size, $color, $size_qty, $size_price, $size_key, $keys, $values, $affilate_user)
+    public function addnum($item, $id,  $finalPrice, $qty, $size, $color, $size_qty, $size_price, $size_key, $keys, $values, $affilate_user)
     {
         $size_cost = 0;
         $color_cost = 0;
 
-        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => $keys, 'values' => $values, 'item_price' => $item->price, 'discount' => 0, 'affilate_user' => 0];
+        $storedItem = ['user_id' => $item->user_id, 'qty' => 0, 'size_key' => 0, 'size_qty' => $item->size_qty, 'size_price' => $item->size_price, 'size' => $item->size, 'color' => $item->color, 'stock' => $item->stock, 'price' => $item->price, 'item' => $item, 'license' => '', 'dp' => '0', 'keys' => $keys, 'values' => $values, 'item_price' => $finalPrice, 'discount' => 0, 'affilate_user' => 0];
         if ($item->type == 'Physical') {
             if ($this->items) {
                 if (array_key_exists($id . $size . $color . str_replace(str_split(' ,'), '', $values), $this->items)) {
@@ -171,9 +171,10 @@ class Cart extends Model
         } else {
             $storedItem['qty'] = $storedItem['qty'] + $qty;
         }
-        $stck = (string) $item->stock;
-        if ($stck != null) {
-            $storedItem['stock'] = $storedItem['stock'] - $qty;
+        $stock = (int) $item->stock;
+
+        if ($stock > 0 && $stock >= $qty) {
+            $storedItem['stock'] = $stock - $qty;
         }
         if (!empty($item->size)) {
             $storedItem['size'] = $item->size[0];
@@ -257,7 +258,7 @@ class Cart extends Model
             }
         }
 
-        $storedItem['price'] = $item->price * $storedItem['qty'];
+        $storedItem['price'] = $storedItem['item_price'] * $storedItem['qty'];
         //$this->recalculateTotals();
 
 

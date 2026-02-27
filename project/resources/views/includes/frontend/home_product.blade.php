@@ -62,7 +62,11 @@
             </a>
             @if ($product->stock <= 0)
                 <div class="outofstock-box flex-column align-content-center justify-content-center">
-                    <h5>{{ __('Out of Stock !') }}</h5>
+                    @if ($product->preordered == 2)
+                        <h5>{{ __('Make a Pre Order !') }}</h5>
+                    @else
+                        <h5>{{ __('Out of Stock !') }}</h5>
+                    @endif
                 </div>
             @else
                 <div>
@@ -162,7 +166,7 @@
                 </div>
             @endif
             {{-- add to cart and cart item quantity increment decrement buttons --}}
-            @if ($product->stock > 0)
+            @if ($product->stock > 0 || $product->preordered == 2)
                 <div class="cart-ui normal-ui w-100">
                     @if ($existingQty == 0)
                         <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">

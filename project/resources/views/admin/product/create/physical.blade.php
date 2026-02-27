@@ -80,6 +80,19 @@
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 <div class="left-area">
+                                                    <h4 class="heading">{{ __('Product Type') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select id="cat" name="product_type" required="">
+                                                    <option value="normal">Normal</option>
+                                                    <option value="combo_offer">Combo Offer</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
                                                     <h4 class="heading">{{ __('Category') }}*</h4>
                                                 </div>
                                             </div>

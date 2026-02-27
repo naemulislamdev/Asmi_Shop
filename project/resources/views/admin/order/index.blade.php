@@ -134,7 +134,7 @@
                 <div class="col-lg-4">
                     <!-----Export button dropdown----->
                     <div class="btn-group float-right">
-                        <a href="{{ route('admin-order-create') }}" class="btn btn-primary mr-2" data-toggle="modal" data-target="#exportModal">
+                        <a href="{{ route('admin-order-create') }}" class="btn btn-primary mr-2">
                             {{ __('Create Custome Order') }}
                         </a>
                         <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exportModal">
@@ -299,7 +299,7 @@
     <!-- Button trigger modal -->
     <!--Branch modal -->
     <!-- Branch Modal -->
-    <div class="modal fade" id="branchModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <form id="branchForm">
                 @csrf

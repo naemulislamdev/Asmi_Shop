@@ -16,11 +16,14 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'phone' => [
+                'required',
+                'regex:/^(\+8801[3-9][0-9]{8}|01[3-9][0-9]{8})$/'
+            ],
             'password' => 'required',
         ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::attempt(['phone' => $request->phone, 'password' => $request->password])) {
             if (Auth::guard('web')->user()->email_verified == 'No') {
                 Auth::guard('web')->logout();
                 return back()->with('unsuccess', __('Your Email is not Verified!'));
@@ -35,7 +38,7 @@ class LoginController extends Controller
                 return redirect()->route('vendor.dashboard');
             }
 
-            
+
 
             return redirect()->route('user-dashboard');
         }

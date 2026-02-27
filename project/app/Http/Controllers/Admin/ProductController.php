@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helpers\PriceHelper;
+use App\Imports\ProductPriceImport;
 use App\Models\Attribute;
 use App\Models\AttributeOption;
 use App\Models\Category;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Image;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends AdminBaseController
@@ -290,6 +292,9 @@ class ProductController extends AdminBaseController
                 return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
             }
 
+            if ($request->product_type == "combo_offer") {
+                $input['product_type'] = $request->product_type;
+            }
             if ($request->product_condition_check == "") {
                 $input['product_condition'] = 0;
             }
@@ -693,6 +698,7 @@ class ProductController extends AdminBaseController
     //*** POST Request
     public function update(Request $request, $id)
     {
+        //dd($request->all());
         // return $request;
         //--- Validation Section
         $rules = [
@@ -955,6 +961,7 @@ class ProductController extends AdminBaseController
             $input['cross_products'] = implode(',', $request->cross_products);
         }
         $data->slug = Str::slug($data->name, '-') . '-' . strtolower($data->sku);
+        $input['pre_order'] = $request->pre_order == 1 ? 1 : 0;
 
         $data->update($input);
         //-- Logic Section Ends
@@ -1171,5 +1178,29 @@ class ProductController extends AdminBaseController
     {
         $crossProducts = Product::where('category_id', $catId)->where('status', 1)->get();
         return view('load.cross_product', compact('crossProducts'));
+    }
+    public function bulkPrice()
+    {
+        return view('admin.product.bulk_price_update');
+    }
+    public function bulkPriceUpdate(Request $request)
+    {
+       // $request->dd();
+        $request->validate([
+            'csvfile' => 'required|file|mimes:csv,txt'
+        ]);
+        if ($file = $request->file('csvfile')) {
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->move('assets/temp_files', $filename);
+        }
+        $tempFilePath = public_path('assets/temp_files/' . $filename);
+        //dd($tempFilePath);
+
+        Excel::import(new ProductPriceImport, $tempFilePath);
+
+        unlink($tempFilePath);
+
+        $msg = session('updated_count') . ' products updated successfully!';
+        return response()->json($msg);
     }
 }

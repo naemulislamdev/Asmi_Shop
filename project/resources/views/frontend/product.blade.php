@@ -352,9 +352,14 @@
                         <!-- add to cart buy btn wrapper -->
                         @if ($productt->stock < 0)
                             <div class="outofstock">
-                                <h5>{{ __('Out of Stock') }}</h5>
+                                @if ($productt->preordered == 2)
+                                    <h5>{{ __('Make a Pre Order !') }}</h5>
+                                @else
+                                    <h5>{{ __('Out of Stock !') }}</h5>
+                                @endif
                             </div>
-                        @else
+                        @endif
+                        @if ($productt->stock > 0 || $productt->preordered == 2)
                             @if ($existingQty == 0)
                                 {{-- SHOW ADD TO BAG --}}
                                 <div class="d-block mt-auto add-btn-wrapper">
@@ -367,9 +372,10 @@
                                 </div>
                             @else
                                 {{-- SHOW QTY BOX --}}
-                                <div  class="qty-box mt-auto qty-wrapper" data-product-id="{{ $productt->id }}"
+                                <div class="qty-box mt-auto qty-wrapper" data-product-id="{{ $productt->id }}"
                                     data-unique-key="{{ $uniqueKey }}">
-                                    <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="qty-btn qty-minus"><i
+                                            class="fas fa-minus"></i></button>
                                     <span class="qty-text">{{ $existingQty }} in Bag</span>
                                     <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                                 </div>

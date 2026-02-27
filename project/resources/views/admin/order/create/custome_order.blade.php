@@ -40,7 +40,7 @@
 
                             {{-- USER DETAILS --}}
                             <div class="py-4 px-4 my-2 mx-4 border">
-                                <h4 class="text-center">User Details</h4>
+                                <h4 class="text-center">Customer Details</h4>
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -73,8 +73,8 @@
                                         <tr>
                                             <th>Product</th>
                                             <th>Measure Label</th>
-                                            <th>Unit Price</th>
                                             <th>Qty</th>
+                                            <th>Unit Price</th>
                                             <th>Subtotal</th>
                                             <th>Action</th>
                                         </tr>
@@ -86,8 +86,8 @@
                                                 <input type="text" class="form-control measure_label"
                                                     placeholder="eg: 1kg, 500g, 1.5kg, 2pcs">
                                             </td>
-                                            <td><input type="number" step="0.01" class="form-control unit_price"></td>
                                             <td><input type="number" step="0.001" class="form-control quantity"></td>
+                                            <td><input type="number" step="0.01" class="form-control unit_price"></td>
                                             <td><input type="number" step="0.01" class="form-control subtotal" readonly>
                                             </td>
                                             <td></td>
@@ -96,12 +96,11 @@
                                 </table>
 
                                 <button type="button" class="btn btn-primary btn-sm addOrder">
-                                    + Add Product
+                                    <i class="fa fa-plus-circle"></i> Add Product
                                 </button>
 
                                 <!-- PRINT BUTTON -->
-                                <button type="button" class="btn btn-success btn-sm float-end" id="printInvoice">
-                                    🖨 Print Invoice
+                                <button type="button" class="btn btn-success btn-sm float-end" id="printInvoice"> <i class="fa fa-print"></i> Print Invoice
                                 </button>
                             </div>
 
@@ -133,8 +132,8 @@
                 <tr>
                     <th>Product</th>
                     <th>Measure</th>
-                    <th>Unit Price</th>
                     <th>Qty</th>
+                    <th>Unit Price</th>
                     <th>Subtotal</th>
                 </tr>
             </thead>
@@ -161,11 +160,11 @@
                 <input type="text" class="form-control measure_label"
                        placeholder="eg: 1kg, 500g, 2pcs">
             </td>
-            <td><input type="number" step="0.01" class="form-control unit_price"></td>
             <td><input type="number" step="0.001" class="form-control quantity"></td>
+            <td><input type="number" step="0.01" class="form-control unit_price"></td>
             <td><input type="number" step="0.01" class="form-control subtotal" readonly></td>
             <td>
-                <button type="button" class="btn btn-danger btn-sm removeOrder">Remove</button>
+                <button type="button" class="btn btn-danger btn-sm removeOrder"><i class="fa fa-trash"></i></button>
             </td>
         </tr>
         `;
@@ -181,7 +180,7 @@
                 }
             });
 
-            // ================= LABEL → AUTO QTY =================
+            // ================= LABEL â†’ AUTO QTY =================
             document.addEventListener('input', function(e) {
 
                 if (!e.target.classList.contains('measure_label')) return;
@@ -211,12 +210,12 @@
                 if (pcs) qty += parseFloat(pcs[1]);
 
                 if (qty > 0) {
-                    row.querySelector('.quantity').value = qty.toFixed(3);
+                    row.querySelector('.quantity').value = parseFloat(qty.toFixed(3));
                     calculateSubtotal(row);
                 }
             });
 
-            // ================= QTY OR PRICE → SUBTOTAL =================
+            // ================= QTY OR PRICE â†’ SUBTOTAL =================
             document.addEventListener('input', function(e) {
 
                 if (
@@ -234,7 +233,7 @@
                 let price = parseFloat(row.querySelector('.unit_price').value) || 0;
 
                 if (qty > 0 && price > 0) {
-                    row.querySelector('.subtotal').value = (qty * price).toFixed(2);
+                   row.querySelector('.subtotal').value = parseFloat((qty * price).toFixed(2));
                 } else {
                     row.querySelector('.subtotal').value = '';
                 }
@@ -283,8 +282,8 @@
 
                 let product = row.querySelector('.product_name')?.value || '';
                 let label = row.querySelector('.measure_label')?.value || '';
-                let price = parseFloat(row.querySelector('.unit_price')?.value) || 0;
                 let qty = parseFloat(row.querySelector('.quantity')?.value) || 0;
+                let price = parseFloat(row.querySelector('.unit_price')?.value) || 0;
                 let subtotal = parseFloat(row.querySelector('.subtotal')?.value) || 0;
 
                 if (product !== '') {
@@ -294,9 +293,9 @@
                 <tr>
                     <td>${product}</td>
                     <td>${label}</td>
-                    <td>${price.toFixed(2)}</td>
-                    <td>${qty.toFixed(3)}</td>
-                    <td>${subtotal.toFixed(2)}</td>
+					<td>${parseFloat(qty.toFixed(3))}</td>
+                   <td>${parseFloat(price.toFixed(2))}</td>
+					<td>${parseFloat(subtotal.toFixed(2))}</td>
                 </tr>
             `);
                 }
