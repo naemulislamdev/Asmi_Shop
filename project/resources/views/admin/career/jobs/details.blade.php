@@ -34,7 +34,7 @@
 
                                 <!-- Back Button -->
                                 <div class="mb-3 d-flex justify-content-start">
-                                    <a href="" class="btn btn-primary btn-sm">← Back</a>
+                                    <a href="{{ route('career.jobs') }}" class="btn btn-primary btn-sm">← Back</a>
                                 </div>
 
                                 <!-- Job Details -->
@@ -49,7 +49,7 @@
                                     <!-- Department -->
                                     <div class="col-md-6 d-flex justify-content-between border-bottom py-2">
                                         <strong>Department:</strong>
-                                        <span>{{ $job->department ?? 'N/A' }}</span>
+                                        <span>{{ $job->department->name ?? 'N/A' }}</span>
                                     </div>
 
                                     <!-- Job Type -->
@@ -67,13 +67,13 @@
                                     <!-- Post Date -->
                                     <div class="col-md-6 d-flex justify-content-between border-bottom py-2">
                                         <strong>Post Date:</strong>
-                                        <span>{{ $job->circular_date ?? 'N/A' }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($job->circular_date)->format('d M Y') ?? 'N/A' }}</span>
                                     </div>
 
                                     <!-- Deadline -->
                                     <div class="col-md-6 d-flex justify-content-between border-bottom py-2">
                                         <strong>Deadline:</strong>
-                                        <span>{{ $job->deadline ?? 'N/A' }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($job->deadline)->format('d M Y') ?? 'N/A' }}</span>
                                     </div>
 
                                     <!-- Experience -->

@@ -78,11 +78,12 @@ class CatalogController extends Controller
             })
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
-            ->orderByDesc('stock')
+            // ->orderBy('updated_at', 'desc')
+            // ->orderByDesc('stock')
             ->take(5)
             ->get();
 
-        $prods = Product::with('user')->orderByDesc('stock')->when($cat, function ($query, $cat) {
+        $prods = Product::with('user')->orderBy('updated_at', 'Desc')->orderByDesc('stock')->when($cat, function ($query, $cat) {
             return $query->where('category_id', $cat->id);
         })
             ->when($subcat, function ($query, $subcat) {
@@ -201,8 +202,11 @@ class CatalogController extends Controller
     {
         $keyword = $request->search;
 
-        $products = Product::where('name', 'like', "%{$keyword}%")
-            ->orWhere('sku', 'like', "%{$keyword}%") // for SKU
+        $products = Product::where('status', 1)
+            ->where(function ($query) use ($keyword) {
+                $query->where('name', 'like', "%{$keyword}%")
+                    ->orWhere('sku', 'like', "%{$keyword}%");
+            })
             ->paginate(20);
 
         return view('frontend.search', compact('products', 'keyword'));
@@ -211,8 +215,11 @@ class CatalogController extends Controller
     public function ajaxSearch(Request $request)
     {
         $keyword = $request->query('q');
-        $products = Product::where('name', 'like', "%{$keyword}%")
-            ->orWhere('sku', 'like', "%{$keyword}%")
+        $products = Product::where('status', 1)
+            ->where(function ($query) use ($keyword) {
+                $query->where('name', 'like', "%{$keyword}%")
+                    ->orWhere('sku', 'like', "%{$keyword}%");
+            })
             ->get(['id', 'name', 'slug', 'price', 'thumbnail']);
 
         return response()->json($products);

@@ -3,10 +3,56 @@
     .gs-blog-wrapper {
         padding: 0 !important;
     }
+
+    .bg-class {
+        background-size: contain !important;
+        background-position: center;
+        -o-object-fit: cover;
+        object-fit: contain;
+    }
+
+    .gs-breadcrumb-section {
+        padding: 0 !important;
+        position: relative;
+        height: 328px;
+    }
+
+    @media (max-width: 992px) {
+        .gs-breadcrumb-section {
+            height: 166px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .gs-breadcrumb-section {
+            height: 160px;
+        }
+
+        .bg-class {
+            background-size: cover !important;
+            background-position: center;
+            -o-object-fit: cover;
+            object-fit: contain;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .gs-breadcrumb-section {
+            height: 100px;
+        }
+
+        .bg-class {
+            background-size: contain !important;
+            background-position: center;
+            object-fit: contain;
+        }
+    }
 </style>
 @section('content')
-    <section class="gs-breadcrumb-section bg-class"
-        data-background="
+    <section class="category_banner" style="background: #EDEDED;">
+        <div class="container">
+            <div class="gs-breadcrumb-section bg-class "
+                data-background="
         @if (!empty($cat->name) && !empty($subcat->name) && !empty($childcat->name)) {{ $childcat->banner ? asset('assets/images/childcategories/' . $childcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
                         @elseif (!empty($cat->name) && !empty($subcat->name))
                             {{ $subcat->banner ? asset('assets/images/subcategories/' . $subcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
@@ -16,7 +62,7 @@
                            {{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }} @endif
 
          ">
-        {{-- <div class="container">
+                {{-- <div class="container">
             <div class="row justify-content-center content-wrapper">
                 <div class="col-12">
                     <h2 class="breadcrumb-title">
@@ -37,11 +83,13 @@
                 </div>
             </div>
         </div> --}}
+            </div>
+        </div>
     </section>
     <!-- breadcrumb end -->
 
     <!-- product wrapper start -->
-    <div class="gs-blog-wrapper" style="background: #ededed">
+    <div class="gs-blog-wrapper pt-3" style="background: #ededed">
         <div class="container">
             <div class="row flex-column-reverse flex-lg-row">
 
@@ -55,10 +103,10 @@
                         }
                     @endphp
 
-                    <!-- product nav wrapper -->
+                    {{-- <!-- product nav wrapper -->
                     <div class=" product-nav-wrapper mb-3 rounded-bottom">
                         <h5>@lang('Total Products Found:') {{ $prods->count() }}</h5>
-                    </div>
+                    </div> --}}
 
 
 
@@ -91,7 +139,6 @@
 
     <input type="hidden" id="update_min_price" value="">
     <input type="hidden" id="update_max_price" value="">
-
 @endsection
 
 

@@ -40,13 +40,13 @@ class FeedController extends Controller
             if (!empty($product->photo)) {
                 $item->addChild(
                     'g:image_link',
-                    asset('storage/product/photo/' . $product->photo),
+                    asset('assets/images/products/' . $product->photo),
                     'http://base.google.com/ns/1.0'
                 );
             } elseif (!empty($product->thumbnail)) {
                 $item->addChild(
                     'g:image_link',
-                    asset('storage/product/thumbnail/' . $product->thumbnail),
+                    asset('assets/images/products/' . $product->thumbnail),
                     'http://base.google.com/ns/1.0'
                 );
             }

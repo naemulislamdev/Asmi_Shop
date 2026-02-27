@@ -12,6 +12,8 @@ use App\Models\Category;
 use App\Models\Childcategory;
 use App\Models\CouponSlider;
 use App\Models\Generalsetting;
+use App\Models\Job;
+use App\Models\JobApplication;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Rating;
@@ -29,6 +31,14 @@ use Illuminate\Support\Facades\Session;
 class FrontendController extends Controller
 {
 
+    public function pharmacy()
+    {
+        return view("pharmacy.index");
+    }
+    public function pharmacyDetails()
+    {
+        return view("pharmacy.details");
+    }
     // LANGUAGE SECTION
 
     public function language($id)
@@ -84,7 +94,7 @@ class FrontendController extends Controller
             ->get();
 
         $total = $promoOffers->count();
-        $half  = ceil($total / 2); 
+        $half  = ceil($total / 2);
 
         $data['left_promo_offers']  = $promoOffers->take($half);
         $data['right_promo_offers'] = $promoOffers->slice($half);
@@ -941,7 +951,7 @@ class FrontendController extends Controller
         $sessionId = $request->input('session_id');
         $identifier = ['session_id' => $sessionId];
 
-       $cartObject = Session::has('cart') ? Session::get('cart') : null;
+        $cartObject = Session::has('cart') ? Session::get('cart') : null;
         $cartItems = $cartObject ? $cartObject->items : [];
 
 
@@ -958,5 +968,54 @@ class FrontendController extends Controller
         );
 
         return response()->json(['success' => true]);
+    }
+
+    // Career section
+    public function career()
+    {
+        $careers = Job::where("status", 1)->get();
+        return view("career.index", compact('careers'));
+    }
+    public function careerForm($slug)
+    {
+        $career = Job::where("slug", $slug)->first();
+        return view("career.create_application", compact('career'));
+    }
+    public function careerStore(Request $request)
+    {
+
+        $request->validate([
+            'full_name'  => 'required|string|max:255',
+            'email'      => 'required|email|max:255',
+            'phone'      => 'required|string|max:20',
+            'position'   => ' nullable|string|max:255',
+            'experience' => 'required|string',
+            'portfolio'  => 'nullable|url',
+            'cv'         => 'required|file|mimes:pdf,doc,docx|max:5120',
+        ]);
+
+        // ✅ CV Upload
+        if ($request->hasFile('cv')) {
+            $cvName = time() . '_' . $request->cv->getClientOriginalName();
+            $request->cv->move(public_path('assets/files/job_resume'), $cvName);
+        }
+
+        // ✅ Store Data
+        JobApplication::create([
+            'full_name'  => $request->full_name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'position'   => $request->position,
+            'experience' => $request->experience,
+            'portfolio'  => $request->portfolio,
+            'cv'         => $cvName,
+        ]);
+
+        return back()->with('success', 'Application submitted successfully!');
+    }
+    public function careerDetails($slug)
+    {
+        $career = Job::where("slug", $slug)->first();
+        return view("career.career_details", compact('career'));
     }
 }

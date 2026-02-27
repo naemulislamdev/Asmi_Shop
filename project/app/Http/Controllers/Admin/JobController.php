@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Job;
 use App\Models\JobDepartment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class JobController extends Controller
@@ -37,6 +38,7 @@ class JobController extends Controller
 
         $job = new Job();
         $job->title = $request->title;
+        $job->slug = Str::slug($request->title);
         $job->department_id = $request->department_id;
         $job->job_location = $request->job_location;
         $job->description = $request->description;
@@ -151,6 +153,7 @@ class JobController extends Controller
     }
     public function update(Request $request, $id)
     {
+
         $request->validate([
             'title'          => 'required|string|max:255',
             'department_id'     => 'nullable|integer',
@@ -166,6 +169,7 @@ class JobController extends Controller
 
         $job = Job::findOrFail($id);
         $job->title = $request->title;
+        $job->slug = Str::slug($request->title);
         $job->department_id = $request->department_id;
         $job->job_location = $request->job_location;
         $job->description = $request->description;

@@ -28,7 +28,8 @@
                         @include('alerts.admin.form-success')
 
                         <div class="position-relative">
-                            <form action="{{ route('career.job-store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('career.job-update', $job->id) }}" method="POST"
+                                enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-6">

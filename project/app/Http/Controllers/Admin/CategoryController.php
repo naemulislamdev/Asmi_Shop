@@ -39,7 +39,7 @@ class CategoryController extends AdminBaseController
             ->addColumn('action', function (Category $data) {
                 return '<div class="action-list"><a data-href="' . route('admin-cat-edit', $data->id) . '" class="edit" data-toggle="modal" data-target="#modal1"> <i class="fas fa-edit"></i>' . __('Edit') . '</a><a href="javascript:;" data-href="' . route('admin-cat-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i></a></div>';
             })
-            ->rawColumns(['status', 'attributes', 'action','is_featured'])
+            ->rawColumns(['status', 'attributes', 'action', 'is_featured'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
@@ -57,16 +57,15 @@ class CategoryController extends AdminBaseController
     {
         //--- Validation Section
         $rules = [
-            
+
             'slug' => 'unique:categories|regex:/^[a-zA-Z0-9\s-]+$/',
-            'image' => 'required|mimes:jpeg,jpg,png,svg'
+            'image' => 'required|image'
         ];
         $customs = [
-            
+
             'slug.unique' => __('This slug has already been taken.'),
             'slug.regex' => __('Slug Must Not Have Any Special Characters.'),
-            'image.required' => __('Banner Image is required.'),
-            'image.mimes' => __('Banner Image Type is Invalid.')
+            'image.required' => __(' Image is required.'),
         ];
         $validator = Validator::make($request->all(), $rules, $customs);
 
@@ -110,15 +109,15 @@ class CategoryController extends AdminBaseController
     {
         //--- Validation Section
         $rules = [
-            
+
             'slug' => 'unique:categories,slug,' . $id . '|regex:/^[a-zA-Z0-9\s-]+$/',
-            'image' => 'mimes:jpeg,jpg,png,svg'
+            'image' => 'required|image'
         ];
         $customs = [
-            
+
             'slug.unique' => __('This slug has already been taken.'),
             'slug.regex' => __('Slug Must Not Have Any Special Characters.'),
-            'image.mimes' => __('Banner Image Type is Invalid.')
+
         ];
         $validator = Validator::make($request->all(), $rules, $customs);
 
@@ -206,7 +205,7 @@ class CategoryController extends AdminBaseController
             //--- Redirect Section Ends
         }
 
-     
+
         if (file_exists(public_path() . '/assets/images/categories/' . $data->image)) {
             unlink(public_path() . '/assets/images/categories/' . $data->image);
         }

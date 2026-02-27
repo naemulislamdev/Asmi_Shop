@@ -623,11 +623,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/application/datatables', 'datatable')->name('application-datatables');
         Route::post('/application/status', 'status')->name('application-status');
         Route::delete('/application/delete/{id}', 'delete')->name('application-delete');
-        // Route::delete('/application/details/{id}', 'delete')->name('application-delete');
-
         // Route::post('/application/store', 'store')->name('application-store');
-        // Route::post('/application/update', 'update')->name('application-update');
-        // Route::delete('/application/delete/{id}', 'delete')->name('application-delete');
     });
 
 
@@ -1622,8 +1618,12 @@ Route::group(['middleware' => 'maintenance'], function () {
 
     // ************************************ FRONT SECTION **********************************************
 
-    Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
+    // pharmacy section start
+    Route::get("/pharmacy", [FrontendController::class, 'pharmacy'])->name("pharmacy");
+    Route::get("/pharmacy/product-details", [FrontendController::class, 'pharmacyDetails'])->name("pharmacy.details");
+    // pharmacy section end
 
+    Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
     Route::get('/', [FrontendController::class, 'index'])->name('front.index');
     Route::get('/view', 'Front\CartController@view_cart')->name('front.cart-view');
     Route::get('/extras', 'Front\FrontendController@extraIndex')->name('front.extraIndex');
@@ -1633,6 +1633,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/order/track/{id}', 'Front\FrontendController@trackload')->name('front.track.search');
     // BLOG SECTION
     Route::get('/offers/{category?}/{subcategory?}/{childcategory?}', 'Front\FrontendController@offers')->name('front.offers');
+    Route::redirect('/Combo-Offers', '/family-pack', 'Front\FrontendController@offers');
     Route::get('/blog', 'Front\FrontendController@blog')->name('front.blog');
     Route::get('/blog/{slug}', 'Front\FrontendController@blogshow')->name('front.blogshow');
     Route::get('/blog/category/{slug}', 'Front\FrontendController@blogcategory')->name('front.blogcategory');
@@ -1652,6 +1653,13 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/contact/refresh_code', 'Front\FrontendController@refresh_code');
     // CONTACT SECTION  ENDS
 
+    // Front CAREER SECTION START
+    Route::get("/career", [FrontendController::class, 'career'])->name('front.career');
+    Route::get("/career/{slug}", [FrontendController::class, 'careerForm'])->name('front.career.applyForm');
+    Route::post("/career/store", [FrontendController::class, 'careerStore'])->name('front.career.store');
+    Route::get("/career-details/{slug}", [FrontendController::class, 'careerDetails'])->name('front.career.details');
+    // Front CAREER SECTION ENDS
+
     // PRODCT AUTO SEARCH SECTION
     Route::get('/autosearch/product/{slug}', 'Front\FrontendController@autosearch');
     // PRODCT AUTO SEARCH SECTION ENDS
@@ -1660,6 +1668,9 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/categories', 'Front\CatalogController@categories')->name('front.categories');
     Route::get('/category/{category?}/{subcategory?}/{childcategory?}', 'Front\CatalogController@category')->name('front.category');
     // CATEGORY SECTION ENDS
+    Route::get('/Combo-Offers', function () {
+        return redirect()->route('front.category', 'family-pack');
+    });
 
     // TAG SECTION
     Route::get('/tag/{slug}', 'Front\CatalogController@tag')->name('front.tag');

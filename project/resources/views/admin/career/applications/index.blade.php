@@ -55,7 +55,7 @@
                                         <th>{{ __('SL#') }}</th>
                                         <th>{{ __(' Date') }}</th>
                                         <th>{{ __('Name') }}</th>
-                                        <th>{{ __('Email') }}</th>
+
                                         <th>{{ __('Phone') }}</th>
                                         <th>{{ __('Position') }}</th>
                                         <th>{{ __('CV') }}</th>
@@ -221,15 +221,13 @@
                     },
                     {
                         data: 'applyed_date',
-                        name: 'applyed_date'
+                        name: 'applyed_date',
+                        searchable: false,
+                        orderable: false,
                     },
                     {
                         data: 'full_name',
                         name: 'full_name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'department_id'
                     },
                     {
                         data: 'phone',

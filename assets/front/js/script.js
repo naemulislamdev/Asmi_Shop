@@ -34,7 +34,7 @@ $(document).ready(function () {
   $("[data-background]").each(function () {
     $(this).css(
       "background-image",
-      "url(" + $(this).attr("data-background") + ")"
+      "url(" + $(this).attr("data-background") + ")",
     );
   });
 
@@ -120,7 +120,7 @@ $(document).ready(function () {
       var distance = countdownDate - now;
       var days = Math.floor(distance / (1000 * 60 * 60 * 24));
       var hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
       );
       var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       var seconds = Math.floor((distance % (1000 * 60)) / 1000);
@@ -236,49 +236,49 @@ $(document).ready(function () {
   });
 
   //******  10. HOME CATE SLIDER ******//
-  $(".home-cate-slider").slick({
-    dots: false,
-    infinite: true,
-    slidesToShow: 6,
-    slidesToScroll: 1,
-    speed: 500,
-    autoplay: true,
-    fade: false,
-    cssEase: "linear",
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 1400,
-        settings: {
-          slidesToShow: 5,
-        },
-      },
-      {
-        breakpoint: 1200,
-        settings: {
-          slidesToShow: 4,
-        },
-      },
-      {
-        breakpoint: 992,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 425,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-    ],
-  });
+  // $(".home-cate-slider").slick({
+  //   dots: false,
+  //   infinite: true,
+  //   slidesToShow: 6,
+  //   slidesToScroll: 1,
+  //   speed: 500,
+  //   autoplay: true,
+  //   fade: false,
+  //   cssEase: "linear",
+  //   arrows: false,
+  //   responsive: [
+  //     {
+  //       breakpoint: 1400,
+  //       settings: {
+  //         slidesToShow: 5,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 1200,
+  //       settings: {
+  //         slidesToShow: 4,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 992,
+  //       settings: {
+  //         slidesToShow: 3,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 768,
+  //       settings: {
+  //         slidesToShow: 3,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 425,
+  //       settings: {
+  //         slidesToShow: 3,
+  //       },
+  //     },
+  //   ],
+  // });
   $(".home3-cate-slider").slick({
     dots: true,
     infinite: true,
@@ -356,7 +356,7 @@ $(document).ready(function () {
       {
         breakpoint: 425,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
         },
       },
     ],
@@ -381,7 +381,7 @@ $(document).ready(function () {
       "৳ " +
         $("#slider-range").slider("values", 0) +
         " - ৳ " +
-        $("#slider-range").slider("values", 1)
+        $("#slider-range").slider("values", 1),
     );
   });
 
@@ -404,7 +404,7 @@ $(document).ready(function () {
           $svg.addClass("has-stroke");
         }
       });
-    }
+    },
   );
 
   //******  14. TOGGLE VENDOR DASHBOARD SIDEBAR ******//

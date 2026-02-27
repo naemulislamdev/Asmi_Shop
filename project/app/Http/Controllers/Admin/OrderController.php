@@ -161,6 +161,9 @@ class OrderController extends AdminBaseController
                 }
                 return 'N/A';
             })
+            ->editColumn('customer_name', function (Order $data) {
+                return $data->customer_name . ' || ' . $data->customer_phone;
+            })
 
             ->editColumn('order_source', function (Order $data) {
                 if ($data->order_source == 'Website') {
@@ -184,7 +187,7 @@ class OrderController extends AdminBaseController
 
                 return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '</button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . $deleteBtn . '</div></div>';
             })
-            ->rawColumns(['date', 'branch', 'customer_address', 'id', 'status', 'custom_note', 'order_source', 'action'])
+            ->rawColumns(['date', 'branch', 'customer_address', 'id', 'status', 'custom_note', 'customer_name', 'order_source', 'action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
