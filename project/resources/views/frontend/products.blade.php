@@ -50,41 +50,26 @@
 </style>
 @section('content')
     <section class="category_banner" style="background: #EDEDED;">
-        <div class="container">
-            <div class="gs-breadcrumb-section bg-class "
-                data-background="
-        @if (!empty($cat->name) && !empty($subcat->name) && !empty($childcat->name)) {{ $childcat->banner ? asset('assets/images/childcategories/' . $childcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
-                        @elseif (!empty($cat->name) && !empty($subcat->name))
-                            {{ $subcat->banner ? asset('assets/images/subcategories/' . $subcat->banner) : asset('assets/images/' . $gs->breadcrumb_banner) }}
-                        @elseif (!empty($cat->name))
-                            {{ $cat->photo ? asset('assets/images/categories/' . $cat->photo) : asset('assets/images/' . $gs->breadcrumb_banner) }}
-                        @else
-                           {{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }} @endif
 
-         ">
-                {{-- <div class="container">
-            <div class="row justify-content-center content-wrapper">
-                <div class="col-12">
-                    <h2 class="breadcrumb-title">
-                        @if (!empty($cat->name) && !empty($subcat->name) && !empty($childcat->name))
-                            {{ $childcat->name ?? 'Products' }}
-                        @elseif (!empty($cat->name) && !empty($subcat->name))
-                            {{ $subcat->name ?? 'Products' }}
-                        @elseif (!empty($cat->name))
-                            {{ $cat->name ?? 'Products' }}
-                        @else
-                            @lang('Products')
-                        @endif
-                    </h2>
-                    <ul class="bread-menu">
-                        <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
-                        <li><a href="javascript:;">@lang('Product')</a></li>
-                    </ul>
+        @php
+            $backgroundImage = null;
+
+            if (!empty($childcat->banner)) {
+                $backgroundImage = asset('assets/images/childcategories/' . $childcat->banner);
+            } elseif (!empty($subcat->banner)) {
+                $backgroundImage = asset('assets/images/subcategories/' . $subcat->banner);
+            } elseif (!empty($cat->photo)) {
+                $backgroundImage = asset('assets/images/categories/' . $cat->photo);
+            }
+        @endphp
+
+        @if ($backgroundImage)
+            <div class="container">
+                <div class="gs-breadcrumb-section bg-class" data-background="{{ $backgroundImage }}">
                 </div>
             </div>
-        </div> --}}
-            </div>
-        </div>
+        @endif
+
     </section>
     <!-- breadcrumb end -->
 

@@ -596,7 +596,7 @@
     <!-- Mobile Offcanvas Start-->
     <div id="mobile-offcanvas" class="mobile-offcanvas shadow ">
         <div class="offers-container mb-0">
-            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center">
+            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center align-items-stretch">
                 <p style="font-size: 15px; color: #1bb9cb" class="pb-0 mb-0">
                     Offers
                     <span class="offer-outline-btn">
@@ -697,6 +697,7 @@
             @endforeach
         </ul>
 
+
     </div>
     <!-- Mobile Offcanvas End-->
 
@@ -727,8 +728,8 @@
 
         @yield('content')
 
-        @if (!request()->is('career/*'))
-            <div class="container product-cart-offcanvas position-relative">
+        @if (!request()->is('career') && !request()->is('career/*'))
+            <div class="container product-cart-offcanvas">
                 <div class="text-end position-fixed" style="right: 1%; top: 50%; z-index: 999">
                     @php
                         $cartObject = Session::has('cart') ? Session::get('cart') : null;
@@ -806,7 +807,7 @@
         <!-- footer section -->
 
         {{-- Mobile bottom Shortcut Offer --}}
-        <div style="position: fixed; left: 0; bottom: -2px; width: 100%; height: auto; z-index: 9999; box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;"
+        {{-- <div style="position: fixed; left: 0; bottom: -2px; width: 100%; height: auto; z-index: 9999; box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;"
             class="bottom-bar bg-white shadow rounded-top d-block d-md-none">
             <div class="d-flex align-items-center justify-content-between gap-3">
                 <div class="container mb-0 border-0 d-flex justify-content-between ">
@@ -836,7 +837,7 @@
 
                 </div>
             </div>
-        </div>
+        </div> --}}
     </main>
 
 

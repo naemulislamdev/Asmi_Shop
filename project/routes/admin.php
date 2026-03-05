@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\CustomeOrderController;
+use App\Http\Controllers\Admin\JobApplicationController;
+use App\Http\Controllers\Admin\JobController;
+use App\Http\Controllers\Admin\JobDepartmentController;
 use App\Http\Controllers\Admin\OrderExportController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +28,9 @@ Route::prefix('admin')->group(function () {
     //------------ ADMIN FORGOT SECTION ENDS ------------
 
     //------------ ADMIN NOTIFICATION SECTION ------------
+    // all notification show in datatable
+    Route::get("/notification/all/view", 'Admin\NotificationController@viewAllNotification')->name('allNotificationView');
+    Route::get("/notification/datatables", 'Admin\NotificationController@datatables')->name('admin-notification-datatables');
 
     // Notification Count
     Route::get('/all/notf/count', 'Admin\NotificationController@all_notf_count')->name('all-notf-count');
@@ -62,7 +68,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN ORDER SECTION ------------
 
-    Route::group(['middleware' => 'permissions:orders'], function () {
+    Route::group(['middleware' => ['permissions:orders', 'not.hr']], function () {
 
         Route::get('/orders/datatables/{slug}', 'Admin\OrderController@datatables')->name('admin-order-datatables'); //JSON REQUEST
         Route::get('/orders/datatables/{slug}', 'Admin\OrderController@datatables')->name('admin-order-datatables'); //JSON REQUEST
@@ -118,7 +124,7 @@ Route::prefix('admin')->group(function () {
 
     });
 
-    Route::group(['middleware' => 'permissions:reports'], function () {
+    Route::group(['middleware' => ['permissions:reports', 'not.hr']], function () {
         Route::get('/orders/report', 'Admin\ReportController@orderReportIndex')->name('admin-order-report-index');
         Route::get('/orders/report/filter', 'Admin\ReportController@orderReportFilter')->name('admin-order-report-filter');
     });
@@ -132,6 +138,7 @@ Route::prefix('admin')->group(function () {
 
 
     //------------ ADMIN ORDER SECTION ENDS------------
+
 
     /////////////////////////////// ////////////////////////////////////////////
 
@@ -177,7 +184,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN CATEGORY SECTION ENDS------------
 
-    Route::group(['middleware' => 'permissions:earning'], function () {
+    Route::group(['middleware' => ['permissions:earning', 'not.hr']], function () {
 
         // -------------------------- Admin Total Income Route --------------------------//
         Route::get('tax/calculate', 'Admin\IncomeController@taxCalculate')->name('admin-tax-calculate-income');
@@ -191,7 +198,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN MANAGE CATEGORY SECTION ------------
 
-    Route::group(['middleware' => 'permissions:categories'], function () {
+    Route::group(['middleware' => ['permissions:categories', 'not.hr']], function () {
 
         Route::get('/category/datatables', 'Admin\CategoryController@datatables')->name('admin-cat-datatables'); //JSON REQUEST
         Route::get('/category', 'Admin\CategoryController@index')->name('admin-cat-index');
@@ -251,7 +258,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN PRODUCT SECTION ------------
 
-    Route::group(['middleware' => 'permissions:products'], function () {
+    Route::group(['middleware' => ['permissions:products', 'not.hr']], function () {
 
         Route::get('/products/datatables', 'Admin\ProductController@datatables')->name('admin-prod-datatables'); //JSON REQUEST
         Route::get('/products', 'Admin\ProductController@index')->name('admin-prod-index');
@@ -293,7 +300,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN AFFILIATE PRODUCT SECTION ------------
 
-    Route::group(['middleware' => 'permissions:affilate_products'], function () {
+    Route::group(['middleware' => ['permissions:affilate_products', 'not.hr']], function () {
 
         Route::get('/products/import/create-product', 'Admin\ImportController@createImport')->name('admin-import-create');
         Route::get('/products/import/edit/{id}', 'Admin\ImportController@edit')->name('admin-import-edit');
@@ -314,7 +321,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN CSV IMPORT SECTION ------------
 
-    Route::group(['middleware' => 'permissions:bulk_product_upload'], function () {
+    Route::group(['middleware' => ['permissions:bulk_product_upload', 'not.hr']], function () {
 
         Route::get('/products/import', 'Admin\ProductController@import')->name('admin-prod-import');
         Route::post('/products/import-submit', 'Admin\ProductController@importSubmit')->name('admin-prod-importsubmit');
@@ -324,7 +331,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN PRODUCT DISCUSSION SECTION ------------
 
-    Route::group(['middleware' => 'permissions:product_discussion'], function () {
+    Route::group(['middleware' => ['permissions:product_discussion', 'not.hr']], function () {
 
         // RATING SECTION ENDS------------
 
@@ -359,7 +366,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN COUPON SECTION ------------
 
-    Route::group(['middleware' => 'permissions:set_coupons'], function () {
+    Route::group(['middleware' => ['permissions:set_coupons', 'not.hr']], function () {
 
         Route::get('/coupon/datatables', 'Admin\CouponController@datatables')->name('admin-coupon-datatables'); //JSON REQUEST
         Route::get('/coupon', 'Admin\CouponController@index')->name('admin-coupon-index');
@@ -373,7 +380,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN COUPON SECTION ENDS------------
 
-    Route::group(['middleware' => 'permissions:branch'], function () {
+    Route::group(['middleware' => ['permissions:branch', 'not.hr']], function () {
 
         Route::get('/branch/datatables', 'Admin\BranchController@datatables')->name('admin-branch-datatables'); //JSON REQUEST
         Route::get('/branch', 'Admin\BranchController@index')->name('admin-branch-index');
@@ -387,7 +394,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN USER SECTION ------------
 
-    Route::group(['middleware' => 'permissions:customers'], function () {
+    Route::group(['middleware' => ['permissions:customers', 'not.hr']], function () {
 
         Route::get('/users/datatables', 'Admin\UserController@datatables')->name('admin-user-datatables'); //JSON REQUEST
         Route::get('/users', 'Admin\UserController@index')->name('admin-user-index');
@@ -403,6 +410,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/user/deposit/{id}', 'Admin\UserController@depositUpdate')->name('admin-user-deposit-update');
         Route::get('/users/vendor/{id}', 'Admin\UserController@vendor')->name('admin-user-vendor');
         Route::post('/user/vendor/{id}', 'Admin\UserController@setVendor')->name('admin-user-vendor-update');
+        Route::get('/user/export', 'Admin\UserController@exportUser')->name('admin-user-export');
 
         //USER WITHDRAW SECTION
 
@@ -426,7 +434,7 @@ Route::prefix('admin')->group(function () {
 
     });
 
-    Route::group(['middleware' => 'permissions:riders'], function () {
+    Route::group(['middleware' => ['permissions:riders', 'not.hr']], function () {
 
         Route::get('/riders/datatables', 'Admin\RiderController@datatables')->name('admin-rider-datatables'); //JSON REQUEST
         Route::get('/riders', 'Admin\RiderController@index')->name('admin-rider-index');
@@ -450,7 +458,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN USER DEPOSIT & TRANSACTION SECTION ------------
 
-    Route::group(['middleware' => 'permissions:customer_deposits'], function () {
+    Route::group(['middleware' => ['permissions:customer_deposits', 'not.hr']], function () {
 
         Route::get('/users/deposit/datatables/{status}', 'Admin\UserDepositController@datatables')->name('admin-user-deposit-datatables'); //JSON REQUEST
         Route::get('/users/deposits/{slug}', 'Admin\UserDepositController@deposits')->name('admin-user-deposits');
@@ -464,7 +472,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN VENDOR SECTION ------------
 
-    Route::group(['middleware' => 'permissions:vendors'], function () {
+    Route::group(['middleware' => ['permissions:vendors', 'not.hr']], function () {
 
         Route::get('/vendors/datatables', 'Admin\VendorController@datatables')->name('admin-vendor-datatables');
         Route::get('/vendors', 'Admin\VendorController@index')->name('admin-vendor-index');
@@ -496,7 +504,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN SUBSCRIPTION SECTION ------------
 
-    Route::group(['middleware' => 'permissions:vendor_subscriptions'], function () {
+    Route::group(['middleware' => ['permissions:vendor_subscriptions', 'not.hr']], function () {
 
         Route::get('/subscription/datatables', 'Admin\SubscriptionController@datatables')->name('admin-subscription-datatables');
         Route::get('/subscription', 'Admin\SubscriptionController@index')->name('admin-subscription-index');
@@ -511,7 +519,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN VENDOR VERIFICATION SECTION ------------
 
-    Route::group(['middleware' => 'permissions:vendor_verifications'], function () {
+    Route::group(['middleware' => ['permissions:vendor_verifications', 'not.hr']], function () {
 
         Route::get('/verificatons/datatables/{status}', 'Admin\VerificationController@datatables')->name('admin-vr-datatables');
         Route::get('/verificatons/{slug}', 'Admin\VerificationController@verificatons')->name('admin-vr-index');
@@ -526,7 +534,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN VENDOR SUBSCRIPTION PLAN SECTION ------------
 
-    Route::group(['middleware' => 'permissions:vendor_subscription_plans'], function () {
+    Route::group(['middleware' => ['permissions:vendor_subscription_plans', 'not.hr']], function () {
 
         Route::get('/vendors/subs/datatables/{status}', 'Admin\VendorSubscriptionController@subsdatatables')->name('admin-vendor-subs-datatables');
         Route::get('/vendors/subs/{slug}', 'Admin\VendorSubscriptionController@subs')->name('admin-vendor-subs');
@@ -538,7 +546,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN USER MESSAGE SECTION ------------
 
-    Route::group(['middleware' => 'permissions:messages'], function () {
+    Route::group(['middleware' => ['permissions:messages', 'not.hr']], function () {
 
         Route::get('/messages/datatables/{type}', 'Admin\MessageController@datatables')->name('admin-message-datatables');
         Route::get('/tickets', 'Admin\MessageController@index')->name('admin-message-index');
@@ -579,7 +587,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN GENERAL SETTINGS SECTION ------------
 
-    Route::group(['middleware' => 'permissions:general_settings'], function () {
+    Route::group(['middleware' => ['permissions:general_settings', 'not.hr']], function () {
 
         Route::get('/general-settings/logo', 'Admin\GeneralSettingController@logo')->name('admin-gs-logo');
         Route::get('/general-settings/favicon', 'Admin\GeneralSettingController@favicon')->name('admin-gs-fav');
@@ -635,7 +643,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN HOME PAGE SETTINGS SECTION ------------
 
-    Route::group(['middleware' => 'permissions:home_page_settings'], function () {
+    Route::group(['middleware' => ['permissions:home_page_settings', 'not.hr']], function () {
 
         Route::get('/home-page-settings', 'Admin\GeneralSettingController@homepage')->name('admin-home-page-index');
 
@@ -718,7 +726,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN HOME PAGE SETTINGS SECTION ENDS ------------
 
-    Route::group(['middleware' => 'permissions:menu_page_settings'], function () {
+    Route::group(['middleware' => ['permissions:menu_page_settings', 'not.hr']], function () {
 
         //------------ ADMIN MENU PAGE SETTINGS SECTION ------------
 
@@ -766,7 +774,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN EMAIL SETTINGS SECTION ------------
 
-    Route::group(['middleware' => 'permissions:email_settings'], function () {
+    Route::group(['middleware' => ['permissions:email_settings', 'not.hr']], function () {
 
         Route::get('/email-templates/datatables', 'Admin\EmailController@datatables')->name('admin-mail-datatables');
         Route::get('/email-templates', 'Admin\EmailController@index')->name('admin-mail-index');
@@ -788,7 +796,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN PAYMENT SETTINGS SECTION ------------
 
-    Route::group(['middleware' => 'permissions:payment_settings'], function () {
+    Route::group(['middleware' => ['permissions:payment_settings', 'not.hr']], function () {
 
         // Payment Informations
 
@@ -833,7 +841,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN SOCIAL SETTINGS SECTION ------------
 
-    Route::group(['middleware' => 'permissions:social_settings'], function () {
+    Route::group(['middleware' => ['permissions:social_settings', 'not.hr']], function () {
 
         //------------ ADMIN SOCIAL LINK ------------
 
@@ -859,7 +867,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN LANGUAGE SETTINGS SECTION ------------
 
-    Route::group(['middleware' => 'permissions:language_settings'], function () {
+    Route::group(['middleware' => ['permissions:language_settings', 'not.hr']], function () {
 
         //  Multiple Language Section
 
@@ -907,7 +915,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN SEOTOOL SETTINGS SECTION ------------
 
-    Route::group(['middleware' => 'permissions:seo_tools'], function () {
+    Route::group(['middleware' => ['permissions:seo_tools', 'not.hr']], function () {
 
         Route::get('/seotools/analytics', 'Admin\SeoToolController@analytics')->name('admin-seotool-analytics');
         Route::post('/seotools/analytics/update', 'Admin\SeoToolController@analyticsupdate')->name('admin-seotool-analytics-update');
@@ -920,7 +928,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN STAFF SECTION ------------
 
-    Route::group(['middleware' => 'permissions:manage_staffs'], function () {
+    Route::group(['middleware' => ['permissions:manage_staffs', 'not.hr']], function () {
 
         Route::get('/staff/datatables', 'Admin\StaffController@datatables')->name('admin-staff-datatables');
         Route::get('/staff', 'Admin\StaffController@index')->name('admin-staff-index');
@@ -975,7 +983,7 @@ Route::prefix('admin')->group(function () {
 
     // ------------ GLOBAL ENDS ----------------------
 
-    Route::group(['middleware' => 'permissions:super'], function () {
+    Route::group(['middleware' => ['permissions:super', 'not.hr']], function () {
 
         Route::get('/cache/clear', function () {
             Artisan::call('cache:clear');
@@ -1029,4 +1037,35 @@ Route::prefix('admin')->group(function () {
         Route::get('/customer/search', 'search')->name('admin-customer-search');
         Route::post('/create-orders/apply-coupon', 'applyCoupon')->name('admin-apply-coupon');
     });
+
+    //------------ ADMIN CAREER SECTION ------------
+
+    Route::middleware('hr.only')->prefix('career')->name('career.')->controller(JobController::class)->group(function () {
+        Route::get('/jobs', 'index')->name('jobs');
+        Route::get('/jobs/datatables', 'datatables')->name('job-datatables');
+        Route::get('/jobs/create', 'create')->name('job-create');
+        Route::post('/jobs/store', 'store')->name('job-store');
+        Route::get('/jobs/edit/{id}', 'edit')->name('job-edit');
+        Route::post('/jobs/update/{id}', 'update')->name('job-update');
+        Route::get('/jobs/details/{id}', 'show')->name('job-details');
+        Route::get('/jobs/status/{id1}/{id2}', 'status')->name('job-status');
+        Route::delete('/jobs/delete/{id}', 'delete')->name('job-delete');
+    });
+    Route::middleware('hr.only')->prefix('career')->name('career.')->controller(JobDepartmentController::class)->group(function () {
+        Route::get('/departments', 'index')->name('departments');
+        Route::get('/department/datatables', 'departmentDatatables')->name('department-datatables');
+        Route::get('/department/status/{id1}/{id2}', 'status')->name('department-status');
+
+        Route::post('/department/store', 'store')->name('department-store');
+        Route::post('/department/update', 'update')->name('department-update');
+        Route::delete('/department/delete/{id}', 'delete')->name('department-delete');
+    });
+    Route::middleware('hr.only')->prefix('career')->name('career.')->controller(JobApplicationController::class)->group(function () {
+        Route::get('/applications', 'index')->name('applications');
+        Route::get('/application/datatables', 'datatable')->name('application-datatables');
+        Route::post('/application/status', 'status')->name('application-status');
+        Route::delete('/application/delete/{id}', 'delete')->name('application-delete');
+        // Route::post('/application/store', 'store')->name('application-store');
+    });
+    //------------ ADMIN CAREER SECTION ENDS ------------
 });
