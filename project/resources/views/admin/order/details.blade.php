@@ -173,15 +173,20 @@
 
                                                 @foreach ($order->tracks as $track)
                                                     @if ($track->title == 'Completed')
-                                                        <span class="badge badge-success">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                        <span class="badge badge-success">{{ $track->text }}</span><i
+                                                            class="fa fa-arrow-right" aria-hidden="true"></i>
                                                     @elseif($track->title == 'Pending')
-                                                        <span class="badge badge-warning">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                        <span class="badge badge-warning">{{ $track->text }}</span><i
+                                                            class="fa fa-arrow-right" aria-hidden="true"></i>
                                                     @elseif($track->title == 'Hold')
-                                                        <span class="badge badge-secondary">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                        <span class="badge badge-secondary">{{ $track->text }}</span><i
+                                                            class="fa fa-arrow-right" aria-hidden="true"></i>
                                                     @elseif($track->title == 'Processing')
-                                                        <span class="badge badge-info">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                        <span class="badge badge-info">{{ $track->text }}</span><i
+                                                            class="fa fa-arrow-right" aria-hidden="true"></i>
                                                     @elseif($track->title == 'on delivery')
-                                                        <span class="badge badge-primary">{{ $track->text }}</span><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                                        <span class="badge badge-primary">{{ $track->text }}</span><i
+                                                            class="fa fa-arrow-right" aria-hidden="true"></i>
                                                     @elseif($track->title == 'Cancelled')
                                                         <span class="badge badge-danger">{{ $track->text }}</span>
                                                     @endif
@@ -208,7 +213,8 @@
                             <h4 class="title">
                                 {{ __('Billing Details') }}
                                 <a class="f15" href="javascript:;" data-toggle="modal"
-                                    data-target="#billing-details-edit"><i class="fas fa-edit"></i>{{ __('Edit') }}</a>
+                                    data-target="#billing-details-edit"><i
+                                        class="fas fa-edit"></i>{{ __('Edit') }}</a>
                             </h4>
                         </div>
                         <div class="table-responsive-sm">
@@ -416,444 +422,22 @@
                     </div>
                 </div>
             </div>
-            @php
-                foreach ($cart['items'] as $key => $item) {
-                    $userId = $item['user_id'];
-                    if (!isset($resultArray[$userId])) {
-                        $resultArray[$userId] = [];
-                    }
-                    $resultArray[$userId][$key] = $item;
-                }
-
-            @endphp
-
             <div class="row">
-                <div class="col-lg-12 order-details-table">
-
-                    @foreach ($resultArray as $key1 => $productt)
-                        @php
-
-                            if ($key1 == 0) {
-                                $vendor = App\Models\Admin::find(1);
-                            } else {
-                                $vendor = App\Models\User::find($key1);
-                            }
-
-                        @endphp
-                        <div class="mr-table">
-                            <h4 class="title">
-                                <a href="javascript:;" data-toggle="modal" vendor="{{ $key1 }}"
-                                    vendor-store="{{ $vendor->shop_name }}" class="mybtn1 pl-2 show_add_produc"
-                                    data-target="#add-product"><i class="fas fa-plus"></i>{{ __('Add Product') }}</a>
-                                {{ __('Products Ordered By') }} - <strong>{{ $vendor->shop_name }}</strong>
-
-                            </h4>
-                            <div class="table-responsive">
-                                <table class="table table-hover dt-responsive" cellspacing="0" width="100%">
-                                    <thead>
-
-                                        <tr>
-                                            <th>{{ __('Product ID#') }}</th>
-                                            <th>{{ __('SKU') }}</th>
-                                            <th>{{ __('Image') }}</th>
-                                            <th>{{ __('Product Title') }}</th>
-                                            <th>{{ __('Details') }}</th>
-                                            <th>{{ __('Total Price') }}</th>
-                                            <th>{{ __('Action') }}</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            $vendor_total = 0;
-                                        @endphp
-                                        @foreach ($productt as $itemKey => $product)
-                                            @php
-                                                $vendor_total += $product['price'];
-                                            @endphp
-                                            <tr>
-                                                <td><input type="hidden"
-                                                        value="{{ $key1 }}">{{ $product['item']['id'] }}</td>
-
-                                                <td>
-                                                    {{ $product['item']['sku'] ?? '' }}
-                                                </td>
-                                                <td>
-                                                    <img class="img-thumbnail"
-                                                        src="{{ $product['item']['photo'] ? asset('assets/images/products/' . $product['item']['photo']) : asset('assets/images/noimage.png') }}"
-                                                        alt="No Image" width="80px">
-                                                </td>
-                                                <td>
-                                                    <input type="hidden" value="{{ $product['license'] }}">
-
-                                                    @if ($product['item']['user_id'] != 0)
-                                                        @php
-                                                            $user = App\Models\User::find($product['item']['user_id']);
-                                                        @endphp
-                                                        @if (isset($user))
-                                                            <a target="_blank"
-                                                                href="{{ route('front.product', $product['item']['slug']) }}">{{ mb_strlen($product['item']['name'], 'utf-8') > 30
-                                                                    ? mb_substr($product['item']['name'], 0, 30, 'utf-8') . '...'
-                                                                    : $product['item']['name'] }}</a>
-                                                        @else
-                                                            <a target="_blank"
-                                                                href="{{ route('front.product', $product['item']['slug']) }}">{{ mb_strlen($product['item']['name'], 'utf-8') > 30
-                                                                    ? mb_substr($product['item']['name'], 0, 30, 'utf-8') . '...'
-                                                                    : $product['item']['name'] }}</a>
-                                                        @endif
-                                                    @else
-                                                        <a target="_blank"
-                                                            href="{{ route('front.product', $product['item']['slug']) }}">{{ mb_strlen($product['item']['name'], 'utf-8') > 30
-                                                                ? mb_substr($product['item']['name'], 0, 30, 'utf-8') . '...'
-                                                                : $product['item']['name'] }}</a>
-                                                    @endif
-
-
-                                                    @if ($product['license'] != '')
-                                                        <a href="javascript:;" data-toggle="modal"
-                                                            data-target="#confirm-delete"
-                                                            class="btn btn-info product-btn license"
-                                                            style="padding: 5px 12px;"><i class="fa fa-eye"></i>
-                                                            {{ __('View License') }}</a>
-                                                    @endif
-
-                                                </td>
-                                                <td>
-                                                    <p>
-                                                        <strong>{{ __('Price') }} :</strong>
-                                                        {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
-                                                    </p>
-                                                    <p>
-                                                        <strong>{{ __('Qty') }} :</strong> {{ $product['qty'] }}
-                                                    </p>
-                                                    @if (!empty($product['keys']))
-                                                        @foreach (array_combine(explode(',', $product['keys']), explode(',', $product['values'])) as $key => $value)
-                                                            <p>
-                                                                <b>{{ ucwords(str_replace('_', ' ', $key)) }} : </b>
-                                                                {{ $value }}
-                                                            </p>
-                                                        @endforeach
-                                                    @endif
-
-                                                </td>
-
-                                                <td> {{ \PriceHelper::showCurrencyPrice($product['price'] * $order->currency_value) }}
-                                                    <small>{{ $product['discount'] == 0
-                                                        ? ''
-                                                        : '(' .
-                                                            $product['discount'] .
-                                                            '%
-                                                                                                                                                                                                                                                            ' .
-                                                            __('Off') .
-                                                            ')' }}</small>
-                                                </td>
-
-
-                                                <td>
-
-                                                    <div class="action-list">
-
-                                                        @if (App\Models\Product::whereId($product['item']['id'])->exists())
-                                                            <a class="add-btn edit-product"data-href="{{ route('admin-order-product-edit', [$itemKey, $product['item']['id'], $order->id]) }}"
-                                                                data-toggle="modal" data-target="#edit-product-modal">
-                                                                <i class="fas fa-edit"></i> {{ __('Edit') }}
-                                                            </a>
-                                                        @endif
-
-                                                        <a class="add-btn delete-product"
-                                                            data-href="{{ route('admin-order-product-delete', [$itemKey, $order->id]) }}"
-                                                            data-toggle="modal" data-target="#delete-product-modal">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-
-                                                    </div>
-
-                                                </td>
-
-                                            </tr>
-                                        @endforeach
-                                        @php
-
-                                            $order_shipping = @json_decode($order->vendor_shipping_id, true);
-                                            $order_package = @json_decode($order->vendor_packing_id, true);
-
-                                            $vendor_shipping_id = @$order_shipping[$key1];
-                                            $vendor_package_id = @$order_package[$key1];
-                                            if ($vendor_shipping_id) {
-                                                $shipping = App\Models\Shipping::findOrFail($vendor_shipping_id);
-                                            } else {
-                                                $shipping = [];
-                                            }
-                                            if ($vendor_package_id) {
-                                                $package = App\Models\Package::findOrFail($vendor_package_id);
-                                            } else {
-                                                $package = [];
-                                            }
-
-                                        @endphp
-                                        <td colspan="7">
-                                            <div class="text-right mx-4">
-                                                @if ($shipping)
-                                                    <p>
-                                                        {{ __('Shipping Method') }} :
-                                                        <strong>{{ $shipping->title }} |
-                                                            {{ \PriceHelper::showCurrencyPrice($shipping->price * $order->currency_value) }}</strong>
-                                                    </p>
-                                                @endif
-                                                @if ($package)
-                                                    <p>
-                                                        {{ __('Packaging Method') }} :
-                                                        <strong>{{ $package->title }} |
-                                                            {{ \PriceHelper::showCurrencyPrice($package->price * $order->currency_value) }}</strong>
-                                                    </p>
-                                                @endif
-                                                <p>
-                                                    {{ __('Total Amount') }} :
-                                                    <strong>
-                                                        {{ \PriceHelper::showCurrencyPrice(
-                                                            ($vendor_total + @$shipping->price + @$package->price) * $order->currency_value,
-                                                        ) }}
-                                                    </strong>
-                                                </p>
-
-                                            </div>
-                                        </td>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="col-lg-12 text-center mt-2">
-                    <a class="btn sendEmail send" href="javascript:;" class="send"
-                        data-email="{{ $order->customer_email }}" data-toggle="modal" data-target="#vendorform">
-                        <i class="fa fa-send"></i> {{ __('Send Email') }}
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Main Content Area End -->
-    </div>
-    </div>
-
-
-    </div>
-
-    {{-- LICENSE MODAL --}}
-
-    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="modal1"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header d-block text-center">
-                    <h4 class="modal-title d-inline-block">{{ __('License Key') }}</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    <p class="text-center">{{ __('The Licenes Key is') }} : <span id="key"></span> <a
-                            href="javascript:;" id="license-edit">{{ __('Edit License') }}</a><a href="javascript:;"
-                            id="license-cancel" class="showbox">{{ __('Cancel') }}</a></p>
-                    <form method="POST" action="{{ route('admin-order-license', $order->id) }}" id="edit-license"
-                        style="display: none;">
-                        {{ csrf_field() }}
-                        <input type="hidden" name="license_key" id="license-key" value="">
-                        <div class="form-group text-center">
-                            <input type="text" name="license" placeholder="{{ __('Enter New License Key') }}"
-                                style="width: 40%; border: none;" required=""><input type="submit" name="submit"
-                                class="btn btn-primary" style="border-radius: 0; padding: 2px; margin-bottom: 2px;">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">{{ __('Close') }}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    {{-- LICENSE MODAL ENDS --}}
-
-    {{-- BILLING DETAILS EDIT MODAL --}}
-
-    @include('admin.order.partials.billing-details')
-
-
-
-
-    {{-- BILLING DETAILS MODAL ENDS --}}
-
-    {{-- SHIPPING DETAILS EDIT MODAL --}}
-
-    @include('admin.order.partials.shipping-details')
-
-    {{-- SHIPPING DETAILS MODAL ENDS --}}
-
-    {{-- ADD PRODUCT MODAL --}}
-
-    @include('admin.order.partials.add-product')
-
-    {{-- ADD PRODUCT MODAL ENDS --}}
-
-
-    {{-- EDIT PRODUCT MODAL --}}
-
-    <div class="modal fade" id="edit-product-modal" tabindex="-1" role="dialog" aria-labelledby="edit-product-modal"
-        aria-hidden="true">
-
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="submit-loader">
-                    <img src="{{ asset('assets/images/' . $gs->admin_loader) }}" alt="">
-                </div>
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        {{ __('Edit Item') }}
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        {{ __('Close') }}
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    {{-- EDIT PRODUCT MODAL ENDS --}}
-
-    {{-- DELETE PRODUCT MODAL --}}
-
-    <div class="modal fade" id="delete-product-modal" tabindex="-1" role="dialog" aria-labelledby="modal1"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header d-block text-center">
-                    <h4 class="modal-title d-inline-block">{{ __('Confirm Delete') }}</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <p class="text-center">{{ __('You are about to delete this item from this cart.') }}</p>
-                    <p class="text-center">{{ __('Do you want to proceed?') }}</p>
-                </div>
-
-                <!-- Modal footer -->
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
-                    <a class="btn btn-danger btn-ok">{{ __('Delete') }}</a>
-
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    {{-- DELETE PRODUCT MODAL ENDS --}}
-
-
-
-    {{-- MESSAGE MODAL --}}
-    <div class="sub-categori">
-        <div class="modal" id="vendorform" tabindex="-1" role="dialog" aria-labelledby="vendorformLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="vendorformLabel">{{ __('Send Email') }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="container-fluid p-0">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="contact-form">
-                                        <form id="emailreply">
-                                            {{ csrf_field() }}
-                                            <ul>
-                                                <li>
-                                                    <input type="email" class="input-field eml-val" id="eml"
-                                                        name="to" placeholder="{{ __('Email') }} *"
-                                                        value="" required="">
-                                                </li>
-                                                <li>
-                                                    <input type="text" class="input-field" id="subj"
-                                                        name="subject" placeholder="{{ __('Subject') }} *"
-                                                        required="">
-                                                </li>
-                                                <li>
-                                                    <textarea class="input-field textarea" name="message" id="msg" placeholder="{{ __('Your Message') }} *"
-                                                        required=""></textarea>
-                                                </li>
-                                            </ul>
-                                            <button class="submit-btn" id="emlsub"
-                                                type="submit">{{ __('Send Email') }}</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-lg-12">
+                    <div class="product-search">
+                        <label><span class="text-info">Product Search for Add Another Products</span></label>
+                        <input type="text" id="product_search" class="form-control"
+                            placeholder="Search product by name or code">
+                        <div id="search_result" class="list-group mt-2"></div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    {{-- MESSAGE MODAL ENDS --}}
-
-    {{-- ORDER MODAL --}}
-
-    <div class="modal fade" id="confirm-delete2" tabindex="-1" role="dialog" aria-labelledby="modal1"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="submit-loader">
-                    <img src="{{ asset('assets/images/' . $gs->admin_loader) }}" alt="">
-                </div>
-                <div class="modal-header d-block text-center">
-                    <h4 class="modal-title d-inline-block">{{ __('Update Status') }}</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <p class="text-center">{{ __("You are about to update the order's status.") }}</p>
-                    <p class="text-center">{{ __('Do you want to proceed?') }}</p>
-                </div>
-
-                <!-- Modal footer -->
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
-                    <a class="btn btn-success btn-ok order-btn">{{ __('Proceed') }}</a>
-                </div>
-
+            <div id="order-items-wrapper">
+                @include('admin.order.partials.order_items', ['order' => $order, 'cart' => $cart])
             </div>
         </div>
     </div>
-
-    {{-- ORDER MODAL ENDS --}}
 
     <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
 
@@ -883,139 +467,6 @@
 
 
 @section('scripts')
-    <script type="text/javascript">
-        (function($) {
-            "use strict";
-
-
-            $(document).on('click', '.show_add_produc', function() {
-                let vendor_id = $(this).attr('vendor');
-                $('#add_vendor_id').val(vendor_id);
-                let message =
-                    `You can add only <strong>(${$(this).attr('vendor-store')})</strong> Store Product`;
-                $('.show_vendor_message').html(message);
-            })
-
-
-            function disablekey() {
-                document.onkeydown = function(e) {
-                    return false;
-                }
-            }
-
-            function enablekey() {
-                document.onkeydown = function(e) {
-                    return true;
-                }
-            }
-
-            $('#example2').dataTable({
-                "ordering": false,
-                'lengthChange': false,
-                'searching': false,
-                'ordering': false,
-                'info': false,
-                'autoWidth': false,
-                'responsive': true
-            });
-
-            $(document).on('click', '.license', function(e) {
-                var id = $(this).parent().find('input[type=hidden]').val();
-                var key = $(this).parent().parent().find('input[type=hidden]').val();
-                $('#key').html(id);
-                $('#license-key').val(key);
-            });
-
-            $(document).on('click', '#license-edit', function(e) {
-                $(this).hide();
-                $('#edit-license').show();
-                $('#license-cancel').show();
-            });
-
-            $(document).on('click', '#license-cancel', function(e) {
-                $(this).hide();
-                $('#edit-license').hide();
-                $('#license-edit').show();
-            });
-
-            @if (Session::has('license'))
-
-                $.notify('{{ Session::get('license') }}', 'success');
-            @endif
-
-            // ADD OPERATION
-
-            $(document).on('click', '.edit-product', function() {
-
-                if (admin_loader == 1) {
-                    $('.submit-loader').show();
-                }
-                $('#edit-product-modal .modal-content .modal-body').html('').load($(this).data('href'),
-                    function(response, status, xhr) {
-                        if (status == "success") {
-                            if (admin_loader == 1) {
-                                $('.submit-loader').hide();
-                            }
-                        }
-                    });
-            });
-
-            // ADD OPERATION END
-
-            // SHOW PRODUCT FORM SUBMIT
-
-            $(document).on('submit', '#show-product', function(e) {
-                e.preventDefault();
-                if (admin_loader == 1) {
-                    $('.submit-loader').show();
-                }
-                $('button.addProductSubmit-btn').prop('disabled', true);
-                disablekey();
-                $.ajax({
-                    method: "POST",
-                    url: $(this).prop('action'),
-                    data: new FormData(this),
-                    dataType: 'JSON',
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-                    success: function(data) {
-                        if (data[0]) {
-                            $('#product-show').html('').load(mainurl +
-                                "/admin/order/product-show/" + data[1],
-                                function(response, status, xhr) {
-                                    if (status == "success") {
-                                        if (admin_loader == 1) {
-                                            $('.submit-loader').hide();
-                                        }
-                                    }
-                                });
-                        } else {
-                            if (admin_loader == 1) {
-                                $('.submit-loader').hide();
-                            }
-                            $('#product-show').html('<div class="col-lg-12 text-center"><h4>' +
-                                data[1] + '.</h4></div>')
-                        }
-
-                        $('button.addProductSubmit-btn').prop('disabled', false);
-
-                        enablekey();
-                    }
-
-                });
-
-            });
-
-            // SHOW PRODUCT FORM SUBMIT ENDS
-
-            $('#delete-product-modal').on('show.bs.modal', function(e) {
-                $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-            });
-
-        })(jQuery);
-    </script>
-
     <script>
         $(document).on('submit', '#orderNoteForm', function(e) {
             console.log('submit');
@@ -1061,6 +512,118 @@
                     // toastr.error('Something went wrong');
                 }
             });
+        });
+    </script>
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+
+        let orderId = '{{ $order->id }}';
+
+        $('#product_search').keyup(function() {
+            let keyword = $(this).val();
+
+            if (keyword.length < 2) {
+                $('#search_result').html('');
+                return;
+            }
+
+            $.get('{{ route('admin.order.product_search') }}', {
+                keyword: keyword
+            }, function(res) {
+                let html = '';
+
+                if (res.length === 0) {
+                    html = `<div class="list-group-item">No product found</div>`;
+                } else {
+                    res.forEach(product => {
+                        html += `
+                        <a href="javascript:;" class="list-group-item list-group-item-action select-product"
+                           data-id="${product.id}">
+                           <strong>${product.name}</strong> ${product.sku ? '(' + product.sku + ')' : ''}
+                        </a>
+                    `;
+                    });
+                }
+
+                $('#search_result').html(html);
+            });
+        });
+
+        $(document).on('click', '.select-product', function() {
+            let productId = $(this).data('id');
+
+            $.post('{{ url('admin/order') }}/' + orderId + '/add-product', {
+                product_id: productId
+            }, function(res) {
+                if (res.status) {
+                    $('#order-items-wrapper').html(res.html);
+                    $('#search_result').html('');
+                    $('#product_search').val('');
+                }
+            }).fail(function(xhr) {
+                alert(xhr.responseJSON?.message || 'Something went wrong while adding product.');
+            });
+        });
+
+        $(document).on('click', '.remove-item', function() {
+            let productId = $(this).data('product-id');
+            let orderId = $(this).data('order-id');
+
+            $.ajax({
+                url: '{{ url('admin/order') }}/' + orderId + '/remove-product/' + productId,
+                type: 'DELETE',
+                success: function(res) {
+                    if (res.status) {
+                        $('#order-items-wrapper').html(res.html);
+                    }
+                },
+                error: function(xhr) {
+                    alert(xhr.responseJSON?.message || 'Something went wrong while removing product.');
+                }
+            });
+        });
+    </script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+
+        let qtyTimer;
+
+        $(document).on('input', '.update_qty', function() {
+            let el = $(this);
+
+            clearTimeout(qtyTimer);
+
+            qtyTimer = setTimeout(function() {
+                let qty = parseInt(el.val());
+                let productId = el.data('product-id');
+                let orderId = el.data('order-id');
+
+                if (!qty || qty < 1) {
+                    qty = 1;
+                    el.val(1);
+                }
+
+                $.post('{{ url('admin/order') }}/' + orderId + '/update-product-qty', {
+                    product_id: productId,
+                    qty: qty
+                }, function(res) {
+                    if (res.status) {
+                        $('#order-items-wrapper').html(res.html);
+                    }
+                }).fail(function(xhr) {
+                    alert(xhr.responseJSON?.message ||
+                        'Something went wrong while updating quantity.');
+                });
+            }, 400);
         });
     </script>
 @endsection

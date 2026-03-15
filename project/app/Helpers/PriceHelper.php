@@ -39,16 +39,20 @@ class PriceHelper
         }
     }
 
-    public static function showCurrencyPrice($price)
+    public static function showCurrencyPrice($price, $itemDiscount=null)
     {
         $gs = cache()->remember('generalsettings', now()->addDay(), function () {
             return DB::table('generalsettings')->first();
         });
+
+        $disPrice = $itemDiscount > 0 ? $itemDiscount : 0;
+
+        $finalPrice = $price + $disPrice;
         $new_price = 0;
-        if (is_numeric($price) && floor($price) != $price) {
-            $new_price = number_format($price, 2, $gs->decimal_separator, $gs->thousand_separator);
+        if (is_numeric($finalPrice) && floor($finalPrice) != $finalPrice) {
+            $new_price = number_format($finalPrice, 2, $gs->decimal_separator, $gs->thousand_separator);
         } else {
-            $new_price = number_format($price, 0, $gs->decimal_separator, $gs->thousand_separator);
+            $new_price = number_format($finalPrice, 0, $gs->decimal_separator, $gs->thousand_separator);
         }
         if (Session::has('currency')) {
             $curr = Currency::find(Session::get('currency'));

@@ -92,7 +92,15 @@ Route::prefix('admin')->group(function () {
         Route::get('/orders/export', [OrderExportController::class, 'export'])->name('orders.export');
         Route::post('order/assign-branch', 'Admin\OrderController@assignBranch')->name('admin-order-assign-branch');
         Route::delete('order/delete/{id}', 'Admin\OrderController@orderDelete')->name('admin-order-delete');
+        // Add product in order details page route
+        Route::get('/order/product-search', 'Admin\OrderController@productSearch')->name('admin.order.product_search');
+        Route::post('/order/{id}/add-product', 'Admin\OrderController@addProduct')
+            ->name('admin.order.add_product');
 
+        Route::delete('/order/{id}/remove-product/{productId}', 'Admin\OrderController@removeProduct')
+            ->name('admin.order.remove_product');
+        Route::post('/order/{id}/update-product-qty', 'Admin\OrderController@updateProductQty')
+            ->name('admin.order.update_product_qty');
         // CREATE ORDER
 
         Route::get('/order/product/datatables', 'Admin\OrderCreateController@datatables')->name('admin-order-product-datatables'); //JSON REQUEST
