@@ -19,7 +19,7 @@ Route::get('/feed/facebook', [FeedController::class, 'facebookFeed']);
 
 // ************************************ ADMIN SECTION ENDS**********************************************
 
-Route::group(['middleware' => 'maintenance'], function () {
+Route::group(['middleware' => 'maintenance', 'content_security_policy'], function () {
 
     // ************************************ FRONT SECTION **********************************************
 

@@ -200,7 +200,11 @@ class CatalogController extends Controller
     }
     public function homeSearch(Request $request)
     {
-        $keyword = $request->search;
+        $request->validate([
+            'search' => 'nullable|string|max:100'
+        ]);
+
+        $keyword = strip_tags($request->search);
 
         $products = Product::where('status', 1)
             ->where(function ($query) use ($keyword) {
@@ -214,7 +218,12 @@ class CatalogController extends Controller
 
     public function ajaxSearch(Request $request)
     {
-        $keyword = $request->query('q');
+        $request->validate([
+            'q' => 'nullable|string|max:100'
+        ]);
+
+        $keyword = strip_tags($request->query('q'));
+
         $products = Product::where('status', 1)
             ->where(function ($query) use ($keyword) {
                 $query->where('name', 'like', "%{$keyword}%")

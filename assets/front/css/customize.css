@@ -67,6 +67,8 @@
 .single-product .content-wrapper,
 .single-product-list-view .content-wrapper {
   height: 150px;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .add-cart-btn.btn-info {
   background: #1bb9cb;
@@ -89,20 +91,20 @@
   border-radius: 10px 10px 0 0;
 }
 .outofstock-box-2 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: 10px 10px 0 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    flex-direction: row;
-    z-index: 2;
-    opacity: 0;
-    visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 10px 10px 0 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
+  z-index: 2;
+  opacity: 0;
+  visibility: hidden;
 }
 .single-product:hover .outofstock-box-2 {
   visibility: visible;
@@ -159,33 +161,34 @@
   }
 }
 .gs-explore-product-section .explore-tab-navbar li .nav-link {
-    color: #030712;
-    font-family: "Saira", sans-serif;
-    font-size: 17px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 130%;
+  color: #030712;
+  font-family: "Saira", sans-serif;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 130%;
 }
 
-.hero-slider-wrapper .slick-prev, .slick-next {
-    background-color: #1bb9cb;
-    color: #fff;
-    height: 35px;
-    width: 35px;
-    line-height: 35px;
-    border-radius: 50%;
-    position: absolute;
-    top: 45%;
-    z-index: 999;
+.hero-slider-wrapper .slick-prev,
+.slick-next {
+  background-color: #1bb9cb;
+  color: #fff;
+  height: 35px;
+  width: 35px;
+  line-height: 35px;
+  border-radius: 50%;
+  position: absolute;
+  top: 45%;
+  z-index: 999;
 }
 .hero-slider-wrapper .slick-prev {
-    left: 0;
+  left: 0;
 }
 .hero-slider-wrapper .slick-next {
-    right: 0;
+  right: 0;
 }
 .hero-slider-wrapper .slick-prev:focus,
 .hero-slider-wrapper .slick-next:focus {
-    outline: none;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.35);
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.35);
 }
