@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Payment\Checkout;
 
-use App\Classes\GeniusMailer;use App\Helpers\OrderHelper;use App\Helpers\PriceHelper;
+use App\Classes\GeniusMailer;
+use App\Helpers\OrderHelper;
+use App\Helpers\PriceHelper;
 use App\Models\Cart;
 use App\Models\Country;
 use App\Models\Order;
@@ -19,6 +21,8 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 {
     public function store(Request $request)
     {
+
+
         $request->validate([
             'customer_name' => 'required|string|max:50',
             'customer_phone' => 'required|regex:/^(01[3-9]\d{8})$/',
@@ -92,7 +96,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $shipping = $orderCalculate['shipping'];
 
             $packeing = $orderCalculate['packeing'];
-        $is_shipping = $orderCalculate['is_shipping'];
+            $is_shipping = $orderCalculate['is_shipping'];
             // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
             // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
             // $vendor_ids = $orderCalculate['vendor_ids'];
@@ -122,7 +126,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $input['cart'] = $new_cart;
         $input['affilate_users'] = $affilate_users;
         $input['pay_amount'] = $orderTotal;
-        $input['order_number'] ='w'. rand(10000, 99999);
+        $input['order_number'] = 'w' . rand(10000, 99999);
         $input['wallet_price'] = $request->wallet_price / $this->curr->value;
         $input['customer_country'] = 'Bangladesh';
 
@@ -134,7 +138,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $input['tax'] = Session::get('current_tax') ?? 0;
 
         $order->fill($input)->save();
-     
+
         $order->notifications()->create();
 
         $sessionId = $input['session_id'];
@@ -160,7 +164,6 @@ class CashOnDeliveryController extends CheckoutBaseControlller
                     $final_reword = Reward::where('order_amount', key($smallest))->first();
                     Auth::user()->update(['reward' => (Auth::user()->reward + $final_reword->reward)]);
                 }
-
             }
         }
 

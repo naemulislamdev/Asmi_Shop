@@ -755,12 +755,10 @@ class FrontendController extends Controller
     }
 
     // -------------------------------- AUTOSEARCH SECTION ENDS ----------------------------------------
-
     // -------------------------------- CONTACT SECTION ----------------------------------------
 
     public function contact()
     {
-
         if (DB::table('pagesettings')->first()->contact == 0) {
             return redirect()->back();
         }
@@ -772,10 +770,13 @@ class FrontendController extends Controller
     public function contactemail(Request $request)
     {
         $gs = $this->gs;
-
         if ($gs->is_capcha == 1) {
             $request->validate(
                 [
+                    "name" => "required|string|max:100",
+                    "phone" => "required|regex:/^(01[3-9]\d{8})$/",
+                    "email" => "required|email|max:100",
+                    "message" => "nullable|string|max:500",
                     "g-recaptcha-response" => "required",
                 ],
                 [
@@ -947,6 +948,13 @@ class FrontendController extends Controller
     }
     public function autoSaveUserInfo(Request $request)
     {
+        $request->validate([
+            'session_id'       => 'nullable|string',
+            'customer_name'    => 'nullable|string|max:100',
+            'customer_email'   => 'nullable|email|max:100',
+            'customer_phone'   => ['nullable', 'regex:/^(01[3-9]\d{8})$/'],
+            'customer_address' => 'nullable|string|max:500',
+        ]);
         //Save user info based on session ID for guest users
         $sessionId = $request->input('session_id');
         $identifier = ['session_id' => $sessionId];
@@ -991,7 +999,7 @@ class FrontendController extends Controller
             'position'   => ' nullable|string|max:255',
             'experience' => 'required|string',
             'portfolio'  => 'nullable|url',
-            'cv'         => 'required|file|mimes:pdf,doc,docx|max:5120',
+            'cv'         => 'required|file|mimes:pdf|max:5120',
         ]);
 
         // ✅ CV Upload
