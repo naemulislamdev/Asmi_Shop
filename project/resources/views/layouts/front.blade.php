@@ -146,7 +146,7 @@
             margin-top: 5px;
         }
 
-        .single-product .img-wrapper .product-badge,
+        /* .single-product .img-wrapper .product-badge,
         .single-product-list-view .img-wrapper .product-badge {
             width: 70px;
             padding: 3px 6px;
@@ -154,7 +154,41 @@
             background: #1bb9cb;
             font-size: 12px;
             font-weight: 600;
+        } */
+
+        /* from ai */
+        .single-product .discount-box span {
+            position: relative;
+            display: inline-block;
+            background: #e60023;
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            text-align: center;
+            font-family: "Rubik", sans-serif;
         }
+
+        .single-product .discount-box span small {
+            display: block;
+            font-size: 11px;
+        }
+
+        /* zigzag bottom */
+        .discount-box span::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -7px;
+            width: 100%;
+            height: 14px;
+            background:
+                linear-gradient(-45deg, transparent 75%, #e60023 75%) 0 0,
+                linear-gradient(45deg, transparent 75%, #e60023 75%) 0 0;
+            background-size: 7px 7px;
+        }
+
+        /* from ai */
 
         .outofstock-box {
             position: absolute;
@@ -332,6 +366,50 @@
             transform: scale(1.1);
             color: #fff;
         }
+
+        /*  For search placheloder animation*/
+
+        .search-box {
+            position: relative;
+        }
+
+        .typing-placeholder {
+            position: absolute;
+            left: 214px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #1bb9cb;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        /* cursor effect */
+        .typingText::after {
+            content: "|";
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .search-box input {
+            border-color: #1bb9cb !important;
+        }
+
+        .search-box input::placeholder {
+            color: #1bb9cb;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
@@ -371,82 +449,8 @@
         $languges = App\Models\Language::all();
     @endphp
     <!-- header area -->
-    {{-- @include('includes.frontend.header') --}}
-    <header class="header shadow">
-        <div class="container-fluid">
-            <!-- Desktop Logo, Menubar, Search Start -->
-            <div class="d-flex align-items-center justify-content-between px-1 px-lg-3 container-fluid">
-                <div class="d-flex align-items-center gap-3 logo_Bar">
-                    <div id="menu-btn" class="menu-icon active">
-                        <i id="barIcon" class="fa-solid fa-bars-staggered"></i>
-                    </div>
-                    <a href="{{ route('front.index') }}">
-                        <img src="{{ asset('assets/images/' . $gs->logo) }}" class="logo" />
-                    </a>
-                    <div class="whatsapp_div ">
-                        <div class="d-flex align-items-center gap-2"><img style="width: 40px; height: auto;"
-                                src="{{ asset('assets/front/images/whatsapp.png') }}" alt="whatsapp">
-                            <div>
-                                <a href="https://wa.me/8801805020340?text=Assalamu%20Alaikum,%20I%20want%20to%20order%20from%20your%20supershop."
-                                    class="text-success fw-bold d-none d-lg-block">
-                                    01805020340
-                                </a>
-                                <a class="text-success fw-bold d-none d-lg-block"
-                                    href="https://wa.me/8801805020346?text=Assalamu%20Alaikum,%20I%20want%20to%20order%20from%20your%20supershop.">01805020346</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="search-box d-none d-lg-block">
-                    <form action="{{ route('front.search') }}" method="GET">
+    @include('includes.frontend.header')
 
-                        <input autocomplete="off" type="text" name="search" class="searchInput"
-                            placeholder="Search for products (e.g. milk, rice, meat, fish)" />
-                    </form>
-                    <!-- Search Result Box -->
-                    <div style=" min-height: 0; max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    position: absolute;
-    width: 100%;
-    z-index: 9999;"
-                        class="searchResults"></div>
-                </div>
-
-
-                @if (Auth::guard('web')->check())
-                    <a class="btn login-btn" href="{{ route('user-dashboard') }}"><i class="fa fa-user-circle"
-                            aria-hidden="true"></i> @lang('Dashboard')</a>
-                @else
-                    <a href="{{ route('user.login') }}" class="btn login-btn"> <i class="fa fa-sign-in"
-                            aria-hidden="true"></i> @lang('Login')</a>
-                @endif
-            </div>
-            <!-- Desktop Logo, Menubar, Search  End-->
-
-            <!-- mobile search will appear below automatically -->
-            <div class="search-box d-lg-none container">
-                <form action="{{ route('front.search') }}" method="GET">
-
-                    <input autocomplete="off" type="text" name="search" class="searchInput"
-                        placeholder="Search for products " />
-                </form>
-                <div style="max-height: 300px;
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        background: #fff;
-                        border: 1px solid #ddd;
-                        border-radius: 4px;
-                        position: absolute;
-                        width: 89%;
-                        z-index: 9999;"
-                    class="searchResults"></div>
-            </div>
-        </div>
-    </header>
 
     <!-- Desktop Sidebar Start -->
     <aside id="sidebar" class="sidebar active pt-4 shadow">
@@ -514,8 +518,7 @@
                                         alt=""> {{ $category->name }}
                                 </a>
 
-                                <button type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#{{ $catId }}"
+                                <button type="button" data-bs-toggle="collapse" data-bs-target="#{{ $catId }}"
                                     aria-expanded="{{ $isCategoryActive ? 'true' : 'false' }}"
                                     class="{{ $isCategoryActive ? '' : 'collapsed' }}">
                                     <i class="fa-solid fa-plus"></i>
@@ -741,7 +744,7 @@
                         <div class="cart-top">
                             <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
                                 alt="bag" />
-                            <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Item</p>
+                            <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Items</p>
                         </div>
 
                         <div class="cart-bottom">
@@ -766,32 +769,38 @@
                             Close
                         </button>
                     </div>
-                    <div class="offcanvas-body p-0">
-                        <!-- Free Delivery info Message -->
-                        {{-- <div class="alert py-1 px-0 my-0 alert-success rounded-0" role="alert">
-                        <strong style="font-size: 12px; padding-left: 5px">Free Home Delivery on orders over
-                            ৳1000!</strong>
-                        <i class="fas fa-info-circle ms-2 d-inline-block"></i>
-                    </div> --}}
-                        <!-- Super Express Delivery -->
-                        <div style="background-color: #eee" class="p-1">
-                            <img style="height: 40px; width: auto"
-                                src="{{ asset('/assets/front/images/fast-delivery.png') }}" alt="fast delivery" />
-                            <strong style="font-size: 13px; margin-left: 8px">We deliver within 1 to 2 hours.</strong>
-                        </div>
+                    <!-- Super Express Delivery -->
+                    <div style="background-color: #eee" class="p-1">
+                        <img style="height: 40px; width: auto"
+                            src="{{ asset('/assets/front/images/fast-delivery.png') }}" alt="fast delivery" />
+                        <strong style="font-size: 13px; margin-left: 8px">We deliver within 1 to 2 hours.</strong>
+                    </div>
+                    <div class="offcanvas-body p-0 position-relative">
+
+
                         <!-- Cart Items Start  -->
                         <div class="offCanva-right-cartItems">
                             @include('includes.frontend.offcanvas-cart')
                         </div>
                         <!-- Cart Items end -->
                         <!-- cart footer start -->
-                        <a href="{{ route('front.checkout') }}" class="order-btn">
-                            <span class="order-text">Place Order</span>
-                            <span
-                                class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
-                        </a>
-                        <!-- cart footer end -->
+
+                        <div
+                            style=" position: sticky;
+                            left: 0;
+                            bottom: 0;
+                            height: 99px;
+                            background: #fff;">
+                            <a href="{{ route('front.checkout') }}" class="order-btn">
+                                <span class="order-text">Place Order</span>
+                                <span
+                                    class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
+                            </a>
+                        </div>
+
                     </div>
+
+                    <!-- cart footer end -->
                     <div class="left-close">
                         <button data-bs-dismiss="offcanvas" title="close">
                             <i class="fas fa-chevron-right"></i>
@@ -1252,6 +1261,76 @@
             // When user closes the offcanvas → save state
             document.getElementById("offcanvasRight").addEventListener("hidden.bs.offcanvas", function() {
                 localStorage.setItem("offcanvasCart", "closed");
+            });
+        });
+    </script>
+    <script>
+        const words = [
+            "Fish",
+            "Meat",
+            "Rice",
+            "Eggs",
+            "Milk",
+            "Fruits",
+            "Vegetables",
+            "Oil",
+            "Snacks",
+            "Drinks",
+            "Baby Food",
+            "Diapers",
+            "Detergent",
+            "Soap",
+            "Shampoo"
+        ];
+
+        document.querySelectorAll(".search-box").forEach((box) => {
+
+            const input = box.querySelector(".searchInput");
+            const typingEl = box.querySelector(".typingText");
+            const typingBox = box.querySelector(".typing-placeholder");
+
+            let wordIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function typeEffect() {
+
+                // যদি user লিখে → stop
+                if (input.value.length > 0) return;
+
+                let currentWord = words[wordIndex];
+
+                if (isDeleting) {
+                    charIndex--;
+                } else {
+                    charIndex++;
+                }
+
+                typingEl.textContent = currentWord.substring(0, charIndex);
+
+                let speed = isDeleting ? 50 : 100;
+
+                if (!isDeleting && charIndex === currentWord.length) {
+                    speed = 1200;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % words.length;
+                }
+
+                setTimeout(typeEffect, speed);
+            }
+
+            typeEffect();
+
+            // input change
+            input.addEventListener("input", () => {
+                if (input.value.length > 0) {
+                    typingBox.style.display = "none";
+                } else {
+                    typingBox.style.display = "block";
+                    typeEffect(); // restart
+                }
             });
         });
     </script>

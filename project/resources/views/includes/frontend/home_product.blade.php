@@ -3,18 +3,20 @@
 
     <div class="single-product">
         <div class="img-wrapper">
-            @if ($product->discount > 0)
-                @if ($product->discount_type == 'percent')
-                    <span class="product-badge">
-                        {{ $product->discount }}% OFF
-                    </span>
-                @elseif($product->discount_type == 'flat')
-                    <span class="product-badge">
-                        {{ $product->discount }}৳ OFF
-                    </span>
+            <div class="discount-box ">
+                @if ($product->discount > 0)
+                    @if ($product->discount_type == 'percent')
+                        <span>
+                            {{ $product->discount }}% <small>OFF</small>
+                        </span>
+                    @elseif($product->discount_type == 'flat')
+                        <span>
+                            {{ $product->discount }}৳ <small>OFF</small>
+                        </span>
+                    @endif
                 @endif
-            @endif
 
+            </div>
 
             @if (Auth::check())
                 @if (isset($wishlist))
