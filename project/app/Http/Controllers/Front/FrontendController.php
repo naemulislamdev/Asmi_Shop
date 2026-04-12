@@ -46,6 +46,35 @@ class FrontendController extends Controller
         Session::put('language', $id);
         return redirect()->route('front.index');
     }
+    public function promoOffers()
+    {
+        $sku = [
+            "8941153503197",
+            "8941153503180",
+            "8941153503166",
+            "8941153503173",
+            "8941153503319", //nai
+            "8941153503258",
+            "8941153501087",
+            "3885132250250",
+            "3885132250502",
+            "3885132251004",
+            "3885132252001",
+            "8941153511048", // nai
+            "8941153512670",
+            "8941153512663",
+            "3885283901001",
+            "8941153500981",
+            "8941153500974"
+        ];
+
+        $prods = Product::whereIn('sku', $sku)
+            ->where('status', 1)
+            ->latest()
+            ->get();
+
+        return view('frontend.promo_offers.promo_offers', compact('prods'));
+    }
 
     // LANGUAGE SECTION ENDS
 
@@ -700,7 +729,6 @@ class FrontendController extends Controller
 
     public function blogshow($slug)
     {
-
         // BLOG TAGS
         $tags = null;
         $tagz = '';

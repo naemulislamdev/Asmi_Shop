@@ -282,7 +282,7 @@
     <!-- hero section start -->
 
     <section class="slider-section">
-        <div class="row ">
+        <div class="row">
             <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
                 <div class="left-promo">
 
@@ -446,7 +446,7 @@
     <!-- Flash Deal Countdown Section -->
     @php
         use Carbon\Carbon;
-
+    // for flash deal
         $flashDeal = \App\Models\FlashDeal::where('status', 1)->first();
         $flashDealExpired = false;
         $flashDealProducts = [];
@@ -456,6 +456,9 @@
             $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->where('status', 1)->get();
             $flashDealExpired = Carbon::now()->gt(Carbon::parse($flashDeal->end_date));
         }
+        // for promo offer section
+        $promoOffers = \App\Models\PromoOffer::where('status', 1)->get();
+
     @endphp
 
     @if ($flashDeal && !$flashDealExpired)
@@ -473,6 +476,12 @@
         @include('includes.frontend.flash_deal', [
             'flashDeal' => $flashDeal,
             'flashDealProducts' => $flashDealProducts,
+        ])
+    @endif
+
+    @if ($promoOffers->count() > 0)
+        @include('includes.frontend.promo_offers', [
+            'promoOffers' => $promoOffers,
         ])
     @endif
 
@@ -825,5 +834,51 @@
                 $("#seconds").text(seconds < 10 ? "0" + seconds : seconds);
             }, 1000);
         });
+    </script>
+    <script>
+        $(function () {
+
+    $('.countdown').each(function () {
+
+        let $this = $(this);
+
+        let startDate = new Date($this.data('start') + " 00:00:00").getTime();
+        let endDate = new Date($this.data('end') + " 23:59:59").getTime();
+
+        let timer = setInterval(function () {
+
+            let now = new Date().getTime();
+
+            // Before start
+            if (now < startDate) {
+                $this.html("<h5>⏳ Deal Not Started Yet!</h5>");
+                return;
+            }
+
+            // After end
+            if (now > endDate) {
+                clearInterval(timer);
+                $this.html("<h5>⚡ Deal Expired!</h5>");
+                return;
+            }
+
+            // Running
+            let distance = endDate - now;
+
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            $this.find('.days').text(days < 10 ? "0" + days : days);
+            $this.find('.hours').text(hours < 10 ? "0" + hours : hours);
+            $this.find('.minutes').text(minutes < 10 ? "0" + minutes : minutes);
+            $this.find('.seconds').text(seconds < 10 ? "0" + seconds : seconds);
+
+        }, 1000);
+
+    });
+
+});
     </script>
 @endpush

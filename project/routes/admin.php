@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\JobApplicationController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
 use App\Http\Controllers\Admin\OrderExportController;
+use App\Http\Controllers\Admin\OrderScheduleController;
+use App\Http\Controllers\Admin\PromoOffersController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -129,7 +131,24 @@ Route::prefix('admin')->group(function () {
         Route::delete('/order/track/delete/{id}', 'Admin\OrderTrackController@delete')->name('admin-order-track-delete');
 
         // Order Tracking Ends
+        // Order time schedules
+        Route::get('order/time/schedule', [OrderScheduleController::class, 'index'])->name('schedule.index');
+        Route::get('order/time/schedule-data', [OrderScheduleController::class, 'datatables'])->name('schedule.data');
+        Route::get('order/time/schedule-create', [OrderScheduleController::class, 'create'])->name('schedule.create');
+        Route::post('order/time/schedule-store', [OrderScheduleController::class, 'store'])->name('schedule.store');
+        Route::get('order/time/schedule-edit/{id}', [OrderScheduleController::class, 'edit'])->name('schedule.edit');
+        Route::post('order/time/schedule-update/{id}', [OrderScheduleController::class, 'update'])->name('schedule.update');
+        Route::delete('order/time/schedule-delete/{id}', [OrderScheduleController::class, 'delete'])->name('schedule.delete');
+        Route::get('order/time/schedule-status/{id1}/{id2}', [OrderScheduleController::class, 'status'])->name('schedule.status');
 
+    });
+    Route::controller(PromoOffersController::class)->group(function () {
+        Route::get('/promo-offers', 'index')->name('admin-promo-offer-index');
+        Route::get('/promo-offers/create', 'create')->name('admin-promo-offer-create');
+        Route::post('/promo-offers/store', 'store')->name('admin-promo-offer-store');
+        Route::get('/promo-offers/edit/{id}', 'edit')->name('admin-promo-offer-edit');
+        Route::post('/promo-offers/update/{id}', 'update')->name('admin-promo-offer-update');
+        Route::get('/promo-offers/delete/{id}', 'destroy')->name('admin-promo-offer-delete');
     });
 
     Route::group(['middleware' => ['permissions:reports', 'not.hr']], function () {

@@ -141,10 +141,12 @@
               <li>
                   <a href="{{ route('admin-commission-income') }}"> {{ __('Commission Earning') }}</a>
               </li>
-
           </ul>
       </li>
-
+      <li>
+          <a href="{{ route('schedule.index') }}"><i
+                  class="fas fa-sitemap"></i>{{ __('Order Schedule') }}</a>
+      </li>
 
       <li>
           <a href="#menu5" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
@@ -195,6 +197,20 @@
           </ul>
       </li>
 
+      <li>
+          <a href="#affiliateprod" class="accordion-toggle wave-effect" data-toggle="collapse"
+              aria-expanded="false">
+              <i class="icofont-opencart"></i>{{ __('Promo Offers') }}
+          </a>
+          <ul class="collapse list-unstyled" id="affiliateprod" data-parent="#accordion">
+              <li>
+                  <a href="{{ route('admin-promo-offer-create') }}"><span>{{ __('Add Promo Offer') }}</span></a>
+              </li>
+              <li>
+                  <a href="{{ route('admin-promo-offer-index') }}"><span>{{ __('All Promo Offers') }}</span></a>
+              </li>
+          </ul>
+      </li>
       <li>
           <a href="#affiliateprod" class="accordion-toggle wave-effect" data-toggle="collapse"
               aria-expanded="false">

@@ -372,11 +372,11 @@
                                 </div>
                             @else
                                 {{-- SHOW QTY BOX --}}
-                                <div class="qty-box mt-auto qty-wrapper" data-product-id="{{ $productt->id }}"
+                                <div class="qty-box mt-auto qty-wrapper-normal" data-product-id="{{ $productt->id }}"
                                     data-unique-key="{{ $uniqueKey }}">
                                     <button type="button" class="qty-btn qty-minus"><i
                                             class="fas fa-minus"></i></button>
-                                    <span class="qty-text">{{ $existingQty }} in Bag</span>
+                                    <span class="qty-text">{{ $existingQty }}</span>
                                     <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                                 </div>
                             @endif

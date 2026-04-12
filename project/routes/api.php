@@ -160,6 +160,7 @@ Route::group(['prefix' => 'front'], function () {
     Route::get('/banners', 'Api\Front\FrontendController@banners');
     Route::get('/partners', 'Api\Front\FrontendController@partners');
     Route::get('/products', 'Api\Front\FrontendController@products');
+    Route::get('/offers', 'Api\Front\FrontendController@offers');
     Route::get('/flash/deal/products', 'Api\Front\FrontendController@flashDeal');
     Route::get('/todays/featured/products', 'Api\Front\FrontendController@featuredProducts');
     Route::get('/vendor/products/{id}', 'Api\Front\FrontendController@vendor_products');

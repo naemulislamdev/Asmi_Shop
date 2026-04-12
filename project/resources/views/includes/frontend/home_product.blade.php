@@ -123,50 +123,52 @@
             <a href="{{ route('front.product', $product->slug) }}">
                 <h6 class="product-title">{{ $product->showName() }}</h6>
             </a>
-            <div class="price-wrapper">
-                @php
-                    $basePrice =
-                        $product->discount > 0
-                            ? \App\Helpers\PriceHelper::discountPrice(
-                                $product->price,
-                                $product->discount,
-                                $product->discount_type,
-                            )
-                            : $product->price;
-                @endphp
-
-                @if ($product->discount > 0)
-                    <h6 class="product-price" data-base-price="{{ $basePrice }}">
-                        {{ \App\Helpers\PriceHelper::discountPrice($product->price, $product->discount, $product->discount_type) }}৳
-                    </h6>
-                    <h6><del>{{ $product->showPrice() }}</del></h6>
-                @else
-                    <h6 class="product-price" data-base-price="{{ $basePrice }}">{{ $product->showPrice() }}</h6>
-                @endif
-                <br>
-
-                @if ($product->measure == 1 && $product->measures->count() > 0)
-                    <h6 class="measure-product">/ Per</h6> <br>
-                    <select class="measure-select" class="form-control">
-                        @foreach ($product->measures as $measure)
-                            <option value="{{ $measure->value }}" data-price="{{ $measure->price }}">
-                                {{ $measure->label }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                @endif
-            </div>
-            @if ($product->start_date != null && $product->end_date != null)
-                <div class="d-flex justify-content-center w-100">
-                    <div class="d-flex justify-content-center countdown" data-start="{{ $product->start_date }}"
-                        data-end="{{ $product->end_date }}">
-                        <span class="flash_timer"></span>
-                    </div>
-                </div>
-            @endif
-            {{-- add to cart and cart item quantity increment decrement buttons --}}
             @if ($product->stock > 0 || $product->preordered == 2)
+                <div class="price-wrapper">
+                    @php
+                        $basePrice =
+                            $product->discount > 0
+                                ? \App\Helpers\PriceHelper::discountPrice(
+                                    $product->price,
+                                    $product->discount,
+                                    $product->discount_type,
+                                )
+                                : $product->price;
+                    @endphp
+
+                    @if ($product->discount > 0)
+                        <h6 class="product-price" data-base-price="{{ $basePrice }}">
+                            {{ \App\Helpers\PriceHelper::discountPrice($product->price, $product->discount, $product->discount_type) }}৳
+                        </h6>
+                        <h6><del>{{ $product->showPrice() }}</del></h6>
+                    @else
+                        <h6 class="product-price" data-base-price="{{ $basePrice }}">{{ $product->showPrice() }}
+                        </h6>
+                    @endif
+                    <br>
+
+                    @if ($product->measure == 1 && $product->measures->count() > 0)
+                        <h6 class="measure-product">/ Per</h6> <br>
+                        <select class="measure-select" class="form-control">
+                            @foreach ($product->measures as $measure)
+                                <option value="{{ $measure->value }}" data-price="{{ $measure->price }}">
+                                    {{ $measure->label }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                    @endif
+                </div>
+                @if ($product->start_date != null && $product->end_date != null)
+                    <div class="d-flex justify-content-center w-100">
+                        <div class="d-flex justify-content-center countdown" data-start="{{ $product->start_date }}"
+                            data-end="{{ $product->end_date }}">
+                            <span class="flash_timer"></span>
+                        </div>
+                    </div>
+                @endif
+                {{-- add to cart and cart item quantity increment decrement buttons --}}
+
                 <div class="cart-ui normal-ui w-100">
                     @if ($existingQty == 0)
                         <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">

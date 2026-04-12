@@ -152,7 +152,7 @@ class FrontendController extends Controller
     public function sliders()
     {
         try {
-            $sliders = Slider::OrderBy('order', 'asc')->where('type','mobile')->get();
+            $sliders = Slider::OrderBy('order', 'asc')->where('type', 'mobile')->get();
             return response()->json(['status' => true, 'data' => SliderResource::collection($sliders), 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
@@ -311,6 +311,73 @@ class FrontendController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
         }
+    }
+    public function offers(Request $request)
+    {
+        $minprice = $request->min ? $request->min / $this->curr->value : null;
+        $maxprice = $request->max ? $request->max / $this->curr->value : null;
+
+        $sort   = $request->sort;
+        $search = $request->search;
+        $pageby = $request->pageby ?? $this->gs->page_count;
+        $type   = $request->type;
+
+        $query = Product::with('user')
+            ->where('discount', '>', 0)
+            ->where('status', 1)
+            ->orderByDesc('updated_at')
+            ->orderByDesc('stock')
+
+            ->when($type, function ($q) {
+                $q->where('is_discount', 1)
+                    ->where('discount_date', '>=', now())
+                    ->whereHas('user', function ($user) {
+                        $user->where('is_vendor', 2);
+                    });
+            })
+
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "{$search}%");
+                });
+            })
+
+            ->when($minprice, function ($q) use ($minprice) {
+                $q->where('price', '>=', $minprice);
+            })
+
+            ->when($maxprice, function ($q) use ($maxprice) {
+                $q->where('price', '<=', $maxprice);
+            })
+
+            ->when($sort, function ($q) use ($sort) {
+                return match ($sort) {
+                    'date_desc' => $q->latest('id'),
+                    'date_asc'  => $q->oldest('id'),
+                    'price_desc' => $q->orderByDesc('price'),
+                    'price_asc' => $q->orderBy('price'),
+                    default     => $q->latest('id'),
+                };
+            }, function ($q) {
+                $q->latest('id');
+            })
+
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating');
+
+        $prods = $query->paginate($pageby);
+
+        $prods->getCollection()->transform(function ($item) {
+            $item->price = $item->vendorSizePrice();
+            return $item;
+        });
+
+        return response()->json([
+            'status' => true,
+            'data'   => ProductlistResource::collection($prods)->response()->getData(true),
+            'error'  => []
+        ]);
     }
     public function featuredProducts()
     {

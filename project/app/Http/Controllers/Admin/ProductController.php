@@ -960,7 +960,7 @@ class ProductController extends AdminBaseController
         if ($request->cross_products) {
             $input['cross_products'] = implode(',', $request->cross_products);
         }
-        $data->slug = Str::slug($data->name, '-') . '-' . strtolower($data->sku);
+        //$data->slug = Str::slug($data->name, '-') . '-' . strtolower($data->sku);
         $input['pre_order'] = $request->pre_order == 1 ? 1 : 0;
 
         $data->update($input);

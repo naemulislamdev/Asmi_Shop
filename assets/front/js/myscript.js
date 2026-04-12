@@ -139,7 +139,7 @@
 
         // Change Add button → Qty UI
         const newQtyHTML = `
-                <div class="qty-box mt-auto qty-wrapper flex-row justify-content-evenly align-items-center" data-product-id="${pid}" data-unique-key="${data.unique_key}">
+                <div class="qty-box mt-auto qty-wrapper-normal flex-row justify-content-evenly align-items-center" data-product-id="${pid}" data-unique-key="${data.unique_key}">
                     <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                     <span class="qty-text">1 </span>
                     <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>

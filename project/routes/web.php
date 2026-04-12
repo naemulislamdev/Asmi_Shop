@@ -38,6 +38,7 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     Route::get('/order/track/{id}', 'Front\FrontendController@trackload')->name('front.track.search');
     // BLOG SECTION
     Route::get('/offers/{category?}/{subcategory?}/{childcategory?}', 'Front\FrontendController@offers')->name('front.offers');
+    Route::get('/pusti-brand-promo/offers/', 'Front\FrontendController@promoOffers')->name('front.promo_offers');
     Route::redirect('/Combo-Offers', '/family-pack', 'Front\FrontendController@offers');
     Route::get('/blog', 'Front\FrontendController@blog')->name('front.blog');
     Route::get('/blog/{slug}', 'Front\FrontendController@blogshow')->name('front.blogshow');
