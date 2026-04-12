@@ -90,6 +90,7 @@
 
 
                                 @if ($productt->discount > 0)
+                                    @dd($productt->discount)
                                     @if ($productt->discount_type == 'percent')
                                         <span class="product-badge">
                                             {{ $productt->discount }} %
