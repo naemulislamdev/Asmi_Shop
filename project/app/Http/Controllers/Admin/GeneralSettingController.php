@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\PriceHelper;
 use App\Models\Generalsetting;
 use Illuminate\Http\Request;
-
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class GeneralSettingController extends AdminBaseController
 {
@@ -122,69 +122,69 @@ class GeneralSettingController extends AdminBaseController
             $input = $request->all();
             $data = Generalsetting::findOrFail(1);
             if ($file = $request->file('logo')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->logo);
                 $input['logo'] = $name;
             }
             if ($file = $request->file('favicon')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->favicon);
                 $input['favicon'] = $name;
             }
             if ($file = $request->file('deal_background')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->favicon);
                 $input['deal_background'] = $name;
             }
 
             if ($file = $request->file('breadcrumb_banner')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->breadcrumb_banner);
                 $input['breadcrumb_banner'] = $name;
             }
             if ($file = $request->file('loader')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->loader);
                 $input['loader'] = $name;
             }
             if ($file = $request->file('admin_loader')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->admin_loader);
                 $input['admin_loader'] = $name;
             }
             if ($file = $request->file('affilate_banner')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->affilate_banner);
                 $input['affilate_banner'] = $name;
             }
             if ($file = $request->file('error_banner_404')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->error_banner_404);
                 $input['error_banner_404'] = $name;
             }
             if ($file = $request->file('error_banner_500')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->error_banner_500);
                 $input['error_banner_500'] = $name;
             }
             if ($file = $request->file('popup_background')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->popup_background);
                 $input['popup_background'] = $name;
             }
             if ($file = $request->file('invoice_logo')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->invoice_logo);
                 $input['invoice_logo'] = $name;
             }
             if ($file = $request->file('user_image')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->user_image);
                 $input['user_image'] = $name;
             }
 
             if ($file = $request->file('footer_logo')) {
-                $name = \PriceHelper::ImageCreateName($file);
+                $name = PriceHelper::ImageCreateName($file);
                 $data->upload($name, $file, $data->footer_logo);
                 $input['footer_logo'] = $name;
             }

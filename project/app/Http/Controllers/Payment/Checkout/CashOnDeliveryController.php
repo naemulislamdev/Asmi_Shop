@@ -139,6 +139,30 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
         $order->fill($input)->save();
 
+        // After Order Save Success
+        if (Auth::check()) {
+
+            $user = Auth::user();
+
+            $point_of_amount = $this->gs->point_of_amount;
+            $amount_of_point = $this->gs->amount_of_point;
+
+            // Check যদি admin value set করে
+            if (!empty($point_of_amount) && !empty($amount_of_point)) {
+
+                $orderAmount = $orderTotal;
+
+                // Calculate Points
+                $earnedPoints = ($orderAmount / $point_of_amount) * $amount_of_point;
+                $earnedPoints = round($earnedPoints, 2);
+
+                if ($earnedPoints > 0) {
+                    $user->wallet_points += $earnedPoints;
+                    $user->save();
+                }
+            }
+        }
+
         $order->notifications()->create();
 
         $sessionId = $input['session_id'];

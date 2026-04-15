@@ -1067,7 +1067,7 @@
 
     <script>
         $(function() {
-            $(".countdown").each(function() {
+            $(".product-countdown").each(function() {
                 var $this = $(this);
                 var startDate = new Date($this.data("start") + " 00:00:00").getTime();
                 var endDate = new Date($this.data("end") + " 23:59:59").getTime();
@@ -1089,16 +1089,16 @@
 
                     var distance = endDate - now;
 
-                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                     $timer.text(
-                        (days < 10 ? "0" + days : days) + ":" +
-                        (hours < 10 ? "0" + hours : hours) + ":" +
-                        (minutes < 10 ? "0" + minutes : minutes) + ":" +
-                        (seconds < 10 ? "0" + seconds : seconds) + " Left"
+                        (days < 10 ? "0" + days : days) + " D:" +
+                        (hours < 10 ? "0" + hours : hours) + " H:" +
+                        (minutes < 10 ? "0" + minutes : minutes) + " M:" +
+                        (seconds < 10 ? "0" + seconds : seconds) + " S Left"
                     );
                 }, 1000);
             });

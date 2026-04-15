@@ -119,8 +119,8 @@
                                         </defs>
                                     </svg>
                                 </div>
-                               
-                                <h5>{{ PriceHelper::showCurrencyPrice($user->affilate_income*$curr->value) }}</h5>
+
+                                <h5>{{ PriceHelper::showCurrencyPrice($user->affilate_income * $curr->value) }}</h5>
                                 <p>@lang('Affiliate Bonus')</p>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                                         </defs>
                                     </svg>
                                 </div>
-                                <h5>{{ PriceHelper::showCurrencyPrice(Auth::user()->balance*$curr->value) }}</h5>
+                                <h5> {{ Auth::user()->wallet_points }} ৳</h5>
                                 <p>@lang('Wallet Balance')</p>
                             </div>
                         </div>
@@ -198,7 +198,7 @@
                                                 $class = 'green-btn';
                                             } elseif ($order->status == 'declined') {
                                                 $class = 'red-btn';
-                                            }else if($order->status == "on delivery"){
+                                            } elseif ($order->status == 'on delivery') {
                                                 $class = 'black-btn';
                                             }
                                         @endphp
@@ -207,7 +207,7 @@
                                         </button>
                                     </td>
                                     <td class="view-btn-wrapper">
-                                        <a href="{{route('user-order',$order->id)}}" class="view-btn">
+                                        <a href="{{ route('user-order', $order->id) }}" class="view-btn">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_548_16589)">
@@ -229,7 +229,7 @@
                         </table>
                     </div>
 
-          
+
                 </div>
             </div>
         </div>
