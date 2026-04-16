@@ -8,6 +8,7 @@ use App\Http\Controllers\Front\FeedController;
 use App\Http\Controllers\Front\FrontendController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
+use App\Http\Controllers\Front\PharmacyController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -23,10 +24,14 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
 
     // ************************************ FRONT SECTION **********************************************
 
-    // pharmacy section start
-    Route::get("/pharmacy", [FrontendController::class, 'pharmacy'])->name("pharmacy");
-    Route::get("/pharmacy/product-details", [FrontendController::class, 'pharmacyDetails'])->name("pharmacy.details");
-    // pharmacy section end
+    // pharmacy Routes start
+
+    Route::controller(PharmacyController::class)->prefix('/pharmacy')->as('pharmacy.')->group(function () {
+        Route::get('/home', 'index')->name('index');
+        Route::get('/product/details', 'productDetails')->name('details');
+    });
+
+    // pharmacy Routes end
 
     Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
     Route::get('/', [FrontendController::class, 'index'])->name('front.index');

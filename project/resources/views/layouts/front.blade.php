@@ -477,7 +477,7 @@
                         src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
                 </p>
             </a>
-            <a class="btn btn-sm btn-success mb-3" href="{{ route('pharmacy') }}">Pharmacy 🩺</a>
+            <a class="btn btn-sm btn-success mb-3" href="{{ route('pharmacy.index') }}">Pharmacy 🩺</a>
             {{-- <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
                 <p class="pb-0 mb-0">Egg Club</p>
             </a> --}}
@@ -936,22 +936,24 @@
 
     @yield('script')
     @stack('scripts')
+
     <script>
-        // pharmacy hero slider
-        var swiper = new Swiper(".mySwiper", {
-            slidesPerView: 1,
+        var cateSlider = new Swiper(".home-category-slider", {
+            slidesPerView: 6,
             spaceBetween: 10,
             loop: true,
+            speed: 500,
             autoplay: {
-                delay: 3000,
+                delay: 2000,
                 disableOnInteraction: false,
             },
 
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
+
+
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
             },
-            navigation: false
         });
         var heroSlider = new Swiper(".heroSlider", {
             slidesPerView: 1,
@@ -974,97 +976,7 @@
                 prevEl: ".swiper-button-prev",
             },
         });
-        var cateSlider = new Swiper(".home-category-slider", {
-            slidesPerView: 6,
-            spaceBetween: 10,
-            loop: true,
-            speed: 500,
-            autoplay: {
-                delay: 2000,
-                disableOnInteraction: false,
-            },
-
-
-
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-        });
-        // for pharmacy product swiper
-        document.querySelectorAll(".product-swiper").forEach((swiperContainer) => {
-            const nextBtn = swiperContainer.querySelector(".swiper-button-next");
-            const prevBtn = swiperContainer.querySelector(".swiper-button-prev");
-
-            const swiper = new Swiper(swiperContainer, {
-                slidesPerView: 2,
-                spaceBetween: 15,
-                autoplay: false,
-                loop: false,
-                grabCursor: true,
-
-                navigation: {
-                    nextEl: nextBtn,
-                    prevEl: prevBtn
-                },
-
-                breakpoints: {
-                    768: {
-                        slidesPerView: 4
-                    },
-                    1200: {
-                        slidesPerView: 4
-                    },
-                    1600: {
-                        slidesPerView: 6
-                    },
-                },
-
-                on: {
-                    init() {
-                        updateNavState(this, prevBtn, nextBtn);
-                    },
-                    resize() {
-                        updateNavState(this, prevBtn, nextBtn);
-                    },
-                    slideChange() {
-                        updateNavState(this, prevBtn, nextBtn);
-                    }
-                }
-            });
-        });
-
-        function updateNavState(swiper, prevBtn, nextBtn) {
-
-            // PREV
-            if (swiper.isBeginning) {
-                prevBtn.setAttribute('disabled', 'true');
-                prevBtn.style.visibility = 'hidden'; // চাইলে remove করতে পারো
-            } else {
-                prevBtn.removeAttribute('disabled');
-                prevBtn.style.visibility = 'visible';
-            }
-
-            // NEXT
-            if (swiper.isEnd) {
-                nextBtn.setAttribute('disabled', 'true');
-            } else {
-                nextBtn.removeAttribute('disabled');
-            }
-
-            // total slides <= visible slides
-            const totalSlides = swiper.slides.length;
-            const visibleSlides = swiper.params.slidesPerView;
-
-            if (totalSlides <= visibleSlides) {
-                prevBtn.setAttribute('disabled', 'true');
-                nextBtn.setAttribute('disabled', 'true');
-                prevBtn.style.visibility = 'hidden';
-            }
-        }
     </script>
-
-
     <script>
         $(function() {
             $(".countdown").each(function() {
@@ -1275,6 +1187,7 @@
             "Vegetables",
             "Oil",
             "Snacks",
+            "Medicine",
             "Drinks",
             "Baby Food",
             "Diapers",

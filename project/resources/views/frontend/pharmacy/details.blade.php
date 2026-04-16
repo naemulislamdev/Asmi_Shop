@@ -477,6 +477,82 @@
 
 
     {{-- Script --}}
+@endsection
+
+@push('scripts')
+    <script>
+        // for pharmacy product swiper
+        document.querySelectorAll(".product-swiper").forEach((swiperContainer) => {
+            const nextBtn = swiperContainer.querySelector(".swiper-button-next");
+            const prevBtn = swiperContainer.querySelector(".swiper-button-prev");
+
+            const swiper = new Swiper(swiperContainer, {
+                slidesPerView: 2,
+                spaceBetween: 15,
+                autoplay: false,
+                loop: false,
+                grabCursor: true,
+
+                navigation: {
+                    nextEl: nextBtn,
+                    prevEl: prevBtn
+                },
+
+                breakpoints: {
+                    768: {
+                        slidesPerView: 4
+                    },
+                    1200: {
+                        slidesPerView: 4
+                    },
+                    1600: {
+                        slidesPerView: 6
+                    },
+                },
+
+                on: {
+                    init() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    },
+                    resize() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    },
+                    slideChange() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    }
+                }
+            });
+        });
+
+        function updateNavState(swiper, prevBtn, nextBtn) {
+
+            // PREV
+            if (swiper.isBeginning) {
+                prevBtn.setAttribute('disabled', 'true');
+                prevBtn.style.visibility = 'hidden'; // চাইলে remove করতে পারো
+            } else {
+                prevBtn.removeAttribute('disabled');
+                prevBtn.style.visibility = 'visible';
+            }
+
+            // NEXT
+            if (swiper.isEnd) {
+                nextBtn.setAttribute('disabled', 'true');
+            } else {
+                nextBtn.removeAttribute('disabled');
+            }
+
+            // total slides <= visible slides
+            const totalSlides = swiper.slides.length;
+            const visibleSlides = swiper.params.slidesPerView;
+
+            if (totalSlides <= visibleSlides) {
+                prevBtn.setAttribute('disabled', 'true');
+                nextBtn.setAttribute('disabled', 'true');
+                prevBtn.style.visibility = 'hidden';
+            }
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -520,4 +596,4 @@
 
         });
     </script>
-@endsection
+@endpush

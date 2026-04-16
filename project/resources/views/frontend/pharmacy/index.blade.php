@@ -1,4 +1,5 @@
 @extends('layouts.front')
+
 @section('content')
     <section class="gs-pharmacy-slider-section my-3">
         <div class="container">
@@ -359,7 +360,7 @@
     </div>
     <div class="gs-pharmacy-slider-section my-3">
         <div class="container">
-            <!-- Swiper -->
+            <!-- middle bannner Swiper -->
             <div class="swiper mySwiper" style="">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
@@ -650,8 +651,106 @@
                     </div>
                 @endforeach
             </div>
+
         </div>
 
     </section>
     <!-- Partner Section Completed -->
 @endsection
+
+@push('scripts')
+    {{-- Pharmacy JS Script Start --}}
+    <script>
+        // pharmacy hero slider
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            spaceBetween: 10,
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: false
+        });
+
+
+        // for pharmacy product swiper
+        document.querySelectorAll(".product-swiper").forEach((swiperContainer) => {
+            const nextBtn = swiperContainer.querySelector(".swiper-button-next");
+            const prevBtn = swiperContainer.querySelector(".swiper-button-prev");
+
+            const swiper = new Swiper(swiperContainer, {
+                slidesPerView: 2,
+                spaceBetween: 15,
+                autoplay: false,
+                loop: false,
+                grabCursor: true,
+
+                navigation: {
+                    nextEl: nextBtn,
+                    prevEl: prevBtn
+                },
+
+                breakpoints: {
+                    768: {
+                        slidesPerView: 4
+                    },
+                    1200: {
+                        slidesPerView: 4
+                    },
+                    1600: {
+                        slidesPerView: 6
+                    },
+                },
+
+                on: {
+                    init() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    },
+                    resize() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    },
+                    slideChange() {
+                        updateNavState(this, prevBtn, nextBtn);
+                    }
+                }
+            });
+        });
+
+        function updateNavState(swiper, prevBtn, nextBtn) {
+
+            // PREV
+            if (swiper.isBeginning) {
+                prevBtn.setAttribute('disabled', 'true');
+                prevBtn.style.visibility = 'hidden'; // চাইলে remove করতে পারো
+            } else {
+                prevBtn.removeAttribute('disabled');
+                prevBtn.style.visibility = 'visible';
+            }
+
+            // NEXT
+            if (swiper.isEnd) {
+                nextBtn.setAttribute('disabled', 'true');
+            } else {
+                nextBtn.removeAttribute('disabled');
+            }
+
+            // total slides <= visible slides
+            const totalSlides = swiper.slides.length;
+            const visibleSlides = swiper.params.slidesPerView;
+
+            if (totalSlides <= visibleSlides) {
+                prevBtn.setAttribute('disabled', 'true');
+                nextBtn.setAttribute('disabled', 'true');
+                prevBtn.style.visibility = 'hidden';
+            }
+        }
+    </script>
+
+    {{-- Pharmacy JS Script End --}}
+@endpush
