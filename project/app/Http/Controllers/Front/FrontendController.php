@@ -478,6 +478,12 @@ class FrontendController extends Controller
     // -------------------------------- HOME PAGE SECTION ENDS ----------------------------------------
     public function offers(Request $request, $slug = null, $slug1 = null, $slug2 = null, $slug3 = null)
     {
+        if ($slug == null && $slug1 == null && $slug2 == null && $slug3 == null) {
+            $data['offerCats'] = Category::whereHas('products', function ($q) {
+                $q->where('discount', '>', 0);
+            })->get();
+            return view('frontend.offer_categories', $data);
+        }
         $data['categories'] = Category::where('status', 1)->get();
 
         if ($request->view_check) {
@@ -634,6 +640,7 @@ class FrontendController extends Controller
 
         return view('frontend.offers', $data);
     }
+
 
     // -------------------------------- BLOG SECTION ----------------------------------------
 
