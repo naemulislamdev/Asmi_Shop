@@ -163,7 +163,7 @@
                 </div>
                 @if ($product->start_date != null && $product->end_date != null)
                     <div class="d-flex justify-content-center w-100">
-                        <div class="d-flex justify-content-center countdown" data-start="{{ $product->start_date }}"
+                        <div class="d-flex justify-content-center product-countdown" data-start="{{ $product->start_date }}"
                             data-end="{{ $product->end_date }}">
                             <span class="flash_timer"></span>
                         </div>

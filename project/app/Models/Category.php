@@ -13,11 +13,15 @@ class Category extends Model
     {
     	return $this->hasMany('App\Models\Subcategory')->where('status','=',1);
     }
-    
+
 
     public function products()
     {
         return $this->hasMany('App\Models\Product');
+    }
+    public function offerProducts()
+    {
+        return $this->hasMany(Product::class)->where('discount', '>', 0);
     }
 
     public function setSlugAttribute($value)
