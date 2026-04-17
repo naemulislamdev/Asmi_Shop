@@ -1,6 +1,23 @@
 <div
     class="{{ isset($class) ? $class : 'col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-3' }} {{ request()->is('search') ? 'mb-3' : '' }} ">
+    {{-- 1taka dojon egg offer condition start --}}
+    @php
+        $cart = session('cart');
 
+        $oilPrice = 0;
+
+        if ($cart && $cart->items) {
+            foreach ($cart->items as $key => $cItem) {
+                // 👉 Oil SKU check (item object এর ভিতর)
+                if (trim($cItem['item']->sku) === '00000437') {
+                    $oilPrice += $cItem['price'] * $cItem['qty'];
+                }
+            }
+        }
+
+        $effectiveTotal = $cart ? $cart->totalPrice - $oilPrice : 0;
+    @endphp
+    {{-- 1taka dojon egg offer condition end --}}
     <div class="single-product">
         <div class="img-wrapper">
             <div class="discount-box ">
@@ -87,32 +104,39 @@
                     @else
                         @if ($product->type != 'Listing')
                             <div class="cart-ui overlay-ui">
-                                @if ($existingQty == 0)
-                                    <div class="overlay-add-btn" data-product-id="{{ $product->id }}">
-                                        <button type="button" class="outofstock-box-2 add_cart_click"
-                                            data-href="{{ route('product.add.to.cart', $product->id) }}"
-                                            data-product-id="{{ $product->id }}">
-                                            <div class="text-center text-white">
-                                                <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
-                                            </div>
-                                            <p style="font-size: 1rem; margin-bottom: 0;" class="text-white">Add to <br>
-                                                Shopping <br>
-                                                Bag</p>
-                                        </button>
-                                    </div>
-                                @else
-                                    <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay"
-                                        data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
-                                        <button class="btn btn-outline-light border-2 btn-sm qty-minus rounded-circle">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
+                                @if ($product->sku !== 'Chicken-Eggs' || ($product->sku === 'Chicken-Eggs' && $cart && $effectiveTotal >= 2000))
+                                    @if ($existingQty == 0)
+                                        <div class="overlay-add-btn" data-product-id="{{ $product->id }}">
+                                            <button type="button" class="outofstock-box-2 add_cart_click"
+                                                data-href="{{ route('product.add.to.cart', $product->id) }}"
+                                                data-product-id="{{ $product->id }}">
+                                                <div class="text-center text-white">
+                                                    <i style="font-size: 1.3rem" class="fas fa-shopping-bag    "></i>
+                                                </div>
+                                                <p style="font-size: 1rem; margin-bottom: 0;" class="text-white">Add to
+                                                    <br>
+                                                    Shopping <br>
+                                                    Bag
+                                                </p>
+                                            </button>
+                                        </div>
+                                    @else
+                                        <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay"
+                                            data-product-id="{{ $product->id }}"
+                                            data-unique-key="{{ $uniqueKey }}">
+                                            <button
+                                                class="btn btn-outline-light border-2 btn-sm qty-minus rounded-circle">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
 
-                                        <span class="h3 text-white qty-text">{{ $existingQty }}</span>
+                                            <span class="h3 text-white qty-text">{{ $existingQty }}</span>
 
-                                        <button class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
+                                            <button
+                                                class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    @endif
                                 @endif
                             </div>
                         @endif
@@ -163,8 +187,8 @@
                 </div>
                 @if ($product->start_date != null && $product->end_date != null)
                     <div class="d-flex justify-content-center w-100">
-                        <div class="d-flex justify-content-center product-countdown" data-start="{{ $product->start_date }}"
-                            data-end="{{ $product->end_date }}">
+                        <div class="d-flex justify-content-center product-countdown"
+                            data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">
                             <span class="flash_timer"></span>
                         </div>
                     </div>
@@ -172,22 +196,24 @@
                 {{-- add to cart and cart item quantity increment decrement buttons --}}
 
                 <div class="cart-ui normal-ui w-100">
-                    @if ($existingQty == 0)
-                        <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
-                            <button
-                                class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
-                                type="button" data-href="{{ route('product.add.to.cart', $product->id) }}"
-                                data-product-id="{{ $product->id }}">
-                                <i class="fa fa-bolt me-2"></i> Add To Cart
-                            </button>
-                        </div>
-                    @else
-                        <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal"
-                            data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
-                            <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
-                            <span class="qty-text">{{ $existingQty }} in Bag</span>
-                            <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
-                        </div>
+                    @if ($product->sku !== 'Chicken-Eggs' || ($product->sku === 'Chicken-Eggs' && $cart && $effectiveTotal >= 2000))
+                        @if ($existingQty == 0)
+                            <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
+                                <button
+                                    class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_click"
+                                    type="button" data-href="{{ route('product.add.to.cart', $product->id) }}"
+                                    data-product-id="{{ $product->id }}">
+                                    <i class="fa fa-bolt me-2"></i> Add To Cart
+                                </button>
+                            </div>
+                        @else
+                            <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal"
+                                data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
+                                <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
+                                <span class="qty-text">{{ $existingQty }} in Bag</span>
+                                <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
+                            </div>
+                        @endif
                     @endif
                 </div>
 

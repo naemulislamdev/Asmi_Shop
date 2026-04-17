@@ -1,8 +1,87 @@
 @extends('layouts.front')
 
+<style>
+    .offersAccordion .accordion-button:hover {
+        z-index: 2;
+        border-radius: 6px 6px 0 0 !important;
+    }
+
+    .offersAccordion .accordion-item {
+        border-radius: 6px !important;
+    }
+
+    .offersAccordion .accordion-item .accordion-header {
+        border-radius: 6px 6px 0 0 !important;
+    }
+
+    .offersAccordion .accordion-item .accordion-collapse {
+        border-radius: 0 0 6px 6px;
+    }
+
+    /* implement style */
+    .offersAccordion .accordion-item {
+        border: none;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .offersAccordion .accordion-button {
+        font-weight: 500;
+        padding: 14px 18px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: none;
+    }
+
+    /* Hover effect */
+    .offersAccordion .accordion-button:hover {
+        background: #f1f3f5;
+    }
+
+    /* Active (opened) state - no blue */
+    .offersAccordion .accordion-button:not(.collapsed) {
+        background: #f8f9fa;
+        color: #000;
+        box-shadow: none;
+    }
+
+    /* Remove default Bootstrap blue focus */
+    .offersAccordion .accordion-button:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+
+    /* Arrow rotation */
+    .offersAccordion .accordion-button::after {
+        transition: transform 0.3s ease;
+    }
+
+    .offersAccordion .accordion-button:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+
+    /* Image alignment */
+    .offersAccordion .accordion-button img {
+        width: 40px;
+        height: auto;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    /* Smooth collapse */
+    .offersAccordion .accordion-collapse {
+        transition: all 0.3s ease;
+    }
+</style>
+
 @section('content')
     <!-- product wrapper start -->
-    <div class="gs-blog-wrapper" style="background: #ededed">
+    <div class="gs-blog-wrapper offersAccordion pt-5" style="background: #ededed">
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -10,12 +89,21 @@
                         @foreach ($offerCats as $offerCat)
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading{{ $offerCat->id }}">
-                                    <a href="{{ route('front.offers', $offerCat->slug) }}"
-                                        onclick="window.location.href=this.href" data-bs-toggle="collapse"
-                                        data-bs-target="#collapse{{ $offerCat->id }}" aria-expanded="true"
-                                        aria-controls="collapse{{ $offerCat->id }}" class="accordion-button" type="button">
+                                    {{-- <a href="{{ route('front.offers', $offerCat->slug) }}">
                                         {{ $offerCat->name }}
-                                    </a>
+                                    </a> --}}
+                                    <div data-bs-toggle="collapse" data-bs-target="#collapse{{ $offerCat->id }}"
+                                        aria-expanded="true" aria-controls="collapse{{ $offerCat->id }}"
+                                        class="accordion-button" type="button">
+                                        <a onclick="window.location.href=this.href" class="d-inline-block"
+                                            href="{{ route('front.offers', $offerCat->slug) }}">
+                                            <img class="rounded ms-3" style="width: 50px"
+                                                src="{{ asset('assets/images/categories') }}/{{ $offerCat->image }}"
+                                                alt="{{ $offerCat->name }}">
+                                            <span class="d-inline-block ms-2 ps-2 ml-2 pl-2">{{ $offerCat->name }}</span>
+                                        </a>
+
+                                    </div>
                                 </h2>
                                 <div id="collapse{{ $offerCat->id }}" class="accordion-collapse collapse"
                                     aria-labelledby="heading{{ $offerCat->id }}" data-bs-parent="#accordionExample">
