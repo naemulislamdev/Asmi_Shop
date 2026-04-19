@@ -126,6 +126,7 @@ class PriceHelper
             $gs = DB::table('generalsettings')->first();
 
             $totalAmount = $cart->totalPrice;
+            $totalAmountOfProduct = $cart->totalPrice;
             $tax_amount = 0;
             if ($input['tax'] && @$input['tax_type']) {
                 if (@$input['tax_type'] == 'state_tax') {
@@ -212,6 +213,7 @@ class PriceHelper
 
                 return [
                     'total_amount' => $totalAmount,
+                    'total_amount_of_product' => $totalAmountOfProduct,
                     'shipping' => isset($shipping) ? $shipping : null,
                     'packeing' => isset($packeing) ? $packeing : null,
                     'is_shipping' => 1,

@@ -48,6 +48,8 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             return redirect()->route('front.cart')->with('success', __("You don't have any product to checkout."));
         }
 
+        $authUser = OrderHelper::get_customer_check($request);
+
         $oldCart = Session::get('cart');
 
         $cart = new Cart($oldCart);
@@ -75,9 +77,6 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $shipping = $orderCalculate['shipping'];
             $packeing = $orderCalculate['packeing'];
             $is_shipping = $orderCalculate['is_shipping'];
-            // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-            // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-            // $vendor_ids = $orderCalculate['vendor_ids'];
 
             $input['shipping_title'] = @$shipping->title;
             $input['vendor_shipping_id'] = @$shipping->id;
@@ -86,9 +85,6 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $input['shipping_cost'] = @$packeing->price ?? 0;
             $input['packing_cost'] = @$packeing->price ?? 0;
             $input['is_shipping'] = $is_shipping;
-            // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-            // $input['vendor_packing_ids'] = $vendor_packing_ids;
-            // $input['vendor_ids'] = $vendor_ids;
         } else {
 
             // multi shipping
@@ -97,47 +93,14 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
             $packeing = $orderCalculate['packeing'];
             $is_shipping = $orderCalculate['is_shipping'];
-            // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-            // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-            // $vendor_ids = $orderCalculate['vendor_ids'];
             $shipping_cost = $orderCalculate['shipping_cost'];
             $packing_cost = $orderCalculate['packing_cost'];
-            //$shipping->id;
             $input['shipping'] = $shipping->id;
-            // $input['shipping_title'] = $vendor_shipping_ids;
-            // $input['vendor_shipping_id'] = $vendor_shipping_ids;
-            // $input['packing_title'] = $vendor_packing_ids;
-            // $input['vendor_packing_id'] = $vendor_packing_ids;
             $input['shipping_cost'] = $shipping_cost;
             $input['packing_cost'] = $packing_cost;
             $input['is_shipping'] = $is_shipping;
-            // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-            // $input['vendor_packing_ids'] = $vendor_packing_ids;
-            // $input['vendor_ids'] = $vendor_ids;
-            // unset($input['shipping']);
-            // unset($input['packeging']);
         }
         //dd($shipping);
-
-        $order = new Order;
-        $success_url = route('front.payment.return');
-        $input['order_source'] = 'Website';
-        $input['user_id'] = Auth::check() ? Auth::user()->id : null;
-        $input['cart'] = $new_cart;
-        $input['affilate_users'] = $affilate_users;
-        $input['pay_amount'] = $orderTotal;
-        $input['order_number'] = 'w' . rand(10000, 99999);
-        $input['wallet_price'] = $request->wallet_price / $this->curr->value;
-        $input['customer_country'] = 'Bangladesh';
-
-        if ($input['tax_type'] == 'state_tax') {
-            $input['tax_location'] = State::findOrFail($input['tax'])->state;
-        } else {
-            $input['tax_location'] = 'Bangladesh'; // Country::findOrFail($input['tax'])->country_name;
-        }
-        $input['tax'] = Session::get('current_tax') ?? 0;
-
-        $order->fill($input)->save();
 
         // After Order Save Success
         if (Auth::check()) {
@@ -150,7 +113,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             // Check যদি admin value set করে
             if (!empty($point_of_amount) && !empty($amount_of_point)) {
 
-                $orderAmount = $orderTotal;
+                $orderAmount = $input['total_amount_of_product'];
 
                 // Calculate Points
                 $earnedPoints = ($orderAmount / $point_of_amount) * $amount_of_point;
@@ -162,6 +125,28 @@ class CashOnDeliveryController extends CheckoutBaseControlller
                 }
             }
         }
+
+        $order = new Order;
+        $success_url = route('front.payment.return');
+        $input['order_source'] = 'Website';
+        $input['user_id'] = Auth::check() ? Auth::user()->id : null;
+        $input['cart'] = $new_cart;
+        $input['affilate_users'] = $affilate_users;
+        $input['pay_amount'] = $orderTotal;
+        $input['order_number'] = 'w' . rand(10000, 99999);
+        $input['wallet_price'] = $request->wallet_price / $this->curr->value;
+        $input['customer_country'] = 'Bangladesh';
+        $input['loyalty_point'] = $earnedPoints ?? 0;
+
+        if ($input['tax_type'] == 'state_tax') {
+            $input['tax_location'] = State::findOrFail($input['tax'])->state;
+        } else {
+            $input['tax_location'] = 'Bangladesh'; // Country::findOrFail($input['tax'])->country_name;
+        }
+        $input['tax'] = Session::get('current_tax') ?? 0;
+
+        $order->fill($input)->save();
+
 
         $order->notifications()->create();
 

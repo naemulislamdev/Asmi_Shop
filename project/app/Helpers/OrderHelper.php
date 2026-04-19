@@ -50,6 +50,47 @@ class OrderHelper
         }
     }
 
+    public static function get_customer_check($request = null)
+    {
+        // Already logged in (session + remember me)
+        if (auth()->check()) {
+            return auth()->user();
+        }
+
+        $phoneNumber = $request->customer_phone;
+
+
+        $remember = true; // always remember customer
+
+        //  Find customer by phone
+        $user = User::where('phone', $phoneNumber)->first();
+
+        // If not found, try email
+        if (!$user && $request->customer_email) {
+            $user = User::where('email', $request->customer_email)->first();
+        }
+        //dd($phoneNumber);
+        $password = $phoneNumber; // default password is phone number
+        if($request->create_account && $request->create_account == 1){
+            $password = $request->password; // if customer wants to create account, use the provided password
+        }
+        // If still not found → create customer
+        if (!$user) {
+            $user = User::create([
+                'name'  => $request->customer_name ?? 'Guest',
+                'address'  => $request->customer_address ?? null,
+                'phone'   => $phoneNumber,
+                'email'   => $request->customer_email ?? ($phoneNumber . '_bd@gmail.com'),
+                'password' => bcrypt($password),
+            ]);
+        }
+
+        // Login customer (remember forever)
+        auth()->guard()->login($user, $remember);
+
+        return $user;
+    }
+
     public static function license_check($cart)
     {
         return $cart;
