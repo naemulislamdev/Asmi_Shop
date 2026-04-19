@@ -177,6 +177,9 @@
                         @endif
                     @endif
 
+                    <h5>@lang('Loyalty Points')</h5>
+                    <p>You have earned <span class="badge bg-success">{{ $order->loyalty_point }}</span> loyalty points of {{ $order->pay_amount }}.</p>
+
                     @if ($order->dp == 0)
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <h5>@lang('Billing Address')</h5>

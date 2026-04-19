@@ -125,7 +125,7 @@
                                                     <div class="gs-checkbox-wrapper" data-bs-toggle="collapse"
                                                         data-bs-target="#show_passwords" aria-expanded="false"
                                                         aria-controls="show_passwords" role="region">
-                                                        <input type="checkbox" id="showca">
+                                                        <input type="checkbox" id="showca" name="create_account" value="1">
                                                         <label class="icon-label" for="showca">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="12"
                                                                 height="12" viewBox="0 0 12 12" fill="none">
@@ -139,14 +139,13 @@
                                                 </div>
                                                 <div class="col-12 collapse" id="show_passwords">
                                                     <div class="row gy-4">
-
                                                         <div class="col-lg-6">
                                                             <div class="input-wrapper">
                                                                 <label class="label-cls" for="crpass">
                                                                     @lang('Create Password')
                                                                 </label>
                                                                 <input class="input-cls" id="crpass"
-                                                                    type="password" placeholder="@lang('Create Your Password')">
+                                                                    type="password" placeholder="@lang('Create Your Password')" name="password">
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-6">
@@ -155,7 +154,7 @@
                                                                     @lang('Confirm Password')
                                                                 </label>
                                                                 <input class="input-cls" id="conpass"
-                                                                    type="password" placeholder="@lang('Confirm Password')">
+                                                                    type="password" placeholder="@lang('Confirm Password')" name="password_confirmation">
                                                             </div>
                                                         </div>
                                                     </div>
