@@ -100,8 +100,8 @@
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  flex-direction: row;
+  justify-content: center;
+  flex-direction: column;
   z-index: 2;
   opacity: 0;
   visibility: hidden;

@@ -249,11 +249,12 @@ class ProductController extends AdminBaseController
     //*** POST Request
     public function store(Request $request)
     {
+
         //--- Validation Section
         $rules = [
-            'photo' => 'required',
             'file' => 'mimes:zip',
         ];
+        // dd($request->all());
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -274,14 +275,25 @@ class ProductController extends AdminBaseController
             $input['file'] = $name;
         }
 
-        $image = $request->photo;
-        list($type, $image) = explode(';', $image);
-        list(, $image) = explode(',', $image);
-        $image = base64_decode($image);
-        $image_name = time() . Str::random(8) . '.png';
-        $path = 'assets/images/products/' . $image_name;
-        file_put_contents($path, $image);
-        $input['photo'] = $image_name;
+
+        // product photo (optional)
+        if (!empty($request->photo)) {
+
+            $image = $request->photo;
+
+            // check base64 format
+            if (str_contains($image, 'base64')) {
+                list($type, $image) = explode(';', $image);
+                list(, $image) = explode(',', $image);
+
+                $image = base64_decode($image);
+                $image_name = time() . Str::random(8) . '.png';
+                $path = 'assets/images/products/' . $image_name;
+
+                file_put_contents($path, $image);
+                $input['photo'] = $image_name;
+            }
+        }
 
         if ($request->type == "Physical" || $request->type == "Listing") {
             $rules = ['sku' => 'min:4|unique:products'];
@@ -498,10 +510,12 @@ class ProductController extends AdminBaseController
         }
 
         // Set Thumbnail
-        $img = Image::make('assets/images/products/' . $prod->photo)->resize(285, 285);
-        $thumbnail = time() . Str::random(8) . '.jpg';
-        $img->save('assets/images/thumbnails/' . $thumbnail);
-        $prod->thumbnail = $thumbnail;
+        if (!empty($prod->photo)) {
+            $img = Image::make('assets/images/products/' . $prod->photo)->resize(285, 285);
+            $thumbnail = time() . Str::random(8) . '.jpg';
+            $img->save('assets/images/thumbnails/' . $thumbnail);
+            $prod->thumbnail = $thumbnail;
+        }
         $prod->update();
 
         // Add To Gallery If any
@@ -1185,7 +1199,7 @@ class ProductController extends AdminBaseController
     }
     public function bulkPriceUpdate(Request $request)
     {
-       // $request->dd();
+        // $request->dd();
         $request->validate([
             'csvfile' => 'required|file|mimes:csv,txt'
         ]);

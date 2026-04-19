@@ -337,6 +337,8 @@
                             $cart = Session::has('cart') ? Session::get('cart') : null;
                             $existingQty = 0;
                             $uniqueKey = null;
+                            $productSKU = null;
+                            $totalPrice = $cart->totalPrice;
 
                             if ($cart && $cart->items) {
                                 foreach ($cart->items as $key => $cItem) {
@@ -350,6 +352,26 @@
                         @endphp
 
 
+                        {{-- 1taka dojon egg offer condition start --}}
+                        @php
+                            $cart = session('cart');
+
+                            $oilPrice = 0;
+
+                            if ($cart && $cart->items) {
+                                foreach ($cart->items as $key => $cItem) {
+                                    // 👉 Oil SKU check (item object এর ভিতর)
+                                    if (trim($cItem['item']->sku) === '00000437') {
+                                        $oilPrice += $cItem['price'] * $cItem['qty'];
+                                    }
+                                }
+                            }
+
+                            $effectiveTotal = $cart ? $cart->totalPrice - $oilPrice : 0;
+                        @endphp
+                        {{-- 1taka dojon egg offer condition end --}}
+
+
                         <!-- add to cart buy btn wrapper -->
                         @if ($productt->stock < 0)
                             <div class="outofstock">
@@ -360,7 +382,10 @@
                                 @endif
                             </div>
                         @endif
-                        @if ($productt->stock > 0 || $productt->preordered == 2)
+
+                        @if (
+                            ($productt->stock > 0 || $productt->preordered == 2) &&
+                                ($productt->sku !== 'Chicken-Eggs' || ($productt->sku === 'Chicken-Eggs' && $cart && $effectiveTotal >= 2000)))
                             @if ($existingQty == 0)
                                 {{-- SHOW ADD TO BAG --}}
                                 <div class="d-block mt-auto add-btn-wrapper">
