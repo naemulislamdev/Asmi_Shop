@@ -93,9 +93,9 @@
                             <div class="col-lg-6 col-md-6 col-sm-12">
                                 <h5>
                                     @if ($order->dp == 0)
-                                    @lang('Shipping Address')
+                                        @lang('Shipping Address')
                                     @else
-                                    @lang('User Information')
+                                        @lang('User Information')
                                     @endif
 
 
@@ -363,7 +363,8 @@
                                             <p class="d-lg-none d-table-cell"><span>@lang('Unit Price:')</span>
                                                 {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
                                             </p>
-                                            <p class="d-lg-none"><span>@lang('Total Price:')</span>{{ \PriceHelper::showCurrencyPrice($product['price'] * $order->currency_value) }}
+                                            <p class="d-lg-none">
+                                                <span>@lang('Total Price:')</span>{{ \PriceHelper::showCurrencyPrice($product['price'] * $order->currency_value) }}
                                                 <small>{{ $product['discount'] == 0 ? '' : '(' . $product['discount'] . '% ' . __('Off') . ')' }}</small>
                                             </p>
 
