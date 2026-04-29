@@ -701,7 +701,7 @@
                         slidesPerView: 4
                     },
                     1200: {
-                        slidesPerView: 4
+                        slidesPerView: 6
                     },
                     1600: {
                         slidesPerView: 6

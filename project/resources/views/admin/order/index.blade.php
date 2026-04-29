@@ -94,20 +94,21 @@
         .note-ok-btn:hover {
             background: #0b5ed7;
         }
-        .note-modal-close{
+
+        .note-modal-close {
             color: #dc3545;
             transition: all 0.3s ease-in-out
         }
+
         .note-modal-close:hover {
             background: #dc3545;
-            color: #fff ;
+            color: #fff;
         }
 
         table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
         table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
             top: 77% !important;
         }
-
     </style>
 @endsection
 
@@ -329,14 +330,13 @@
     </div>
     <!--End Branch modal -->
 
-
     <!-- Modal -->
     <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exportModalLabel">Export Orders</h5>
+                    <h5 class="modal-title" id="exportModalLabel">Export Expired Products</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -505,43 +505,43 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-$(document).on('click', '.delete-order', function () {
+    <script>
+        $(document).on('click', '.delete-order', function() {
 
-    let url = $(this).data('href');
+            let url = $(this).data('href');
 
-    Swal.fire({
-        title: "{{ __('Are you sure?') }}",
-        text: "{{ __('This order will be permanently deleted') }}",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: "{{ __('Yes, delete it!') }}",
-        cancelButtonText: "{{ __('Cancel') }}"
-    }).then((result) => {
+            Swal.fire({
+                title: "{{ __('Are you sure?') }}",
+                text: "{{ __('This order will be permanently deleted') }}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: "{{ __('Yes, delete it!') }}",
+                cancelButtonText: "{{ __('Cancel') }}"
+            }).then((result) => {
 
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (res) {
-                    Swal.fire(
-                        "{{ __('Deleted!') }}",
-                        res.message,
-                        'success'
-                    );
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            Swal.fire(
+                                "{{ __('Deleted!') }}",
+                                res.message,
+                                'success'
+                            );
 
-                    $('#geniustable').DataTable().ajax.reload(null, false);
+                            $('#geniustable').DataTable().ajax.reload(null, false);
+                        }
+                    });
                 }
             });
-        }
-    });
-});
-</script>
+        });
+    </script>
 
     <script>
         $(document).on('click', '.note-view-btn', function() {

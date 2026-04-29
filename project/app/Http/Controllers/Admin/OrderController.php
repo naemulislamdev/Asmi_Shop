@@ -612,15 +612,25 @@ class OrderController extends AdminBaseController
     //*** POST Request
     public function update(Request $request, $id)
     {
-        // dd($request->all());
         //--- Logic Section
         $data = Order::findOrFail($id);
-
         $input = $request->all();
+
 
         if ($request->has('status')) {
             $data->payment_status = $input['payment_status'];
             $data->status = $input['status'];
+            if ($input['status'] == 'cancelled') {
+                if ($data->user) {
+                    $data->user->decrement('wallet_points', $data->loyalty_point);
+                }
+            }
+
+            if ($input['status'] == 'completed') {
+                if ($data->user) {
+                    $data->user->increment('wallet_points', $data->loyalty_point);
+                }
+            }
             $data->update();
 
             if ($request->track_text) {

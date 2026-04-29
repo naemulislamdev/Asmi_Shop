@@ -54,7 +54,7 @@
                                             <div class="col-lg-12">
                                                 <input type="text" class="input-field"
                                                     placeholder="{{ __(" Enter Product
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        												Name") }}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            												Name") }}"
                                                     name="name" required="" value="{{ $data->name }}">
                                             </div>
                                         </div>
@@ -384,7 +384,7 @@
                                                                                         value="{{ !empty(
                                                                                             $selectedAttrs[
                                                                                                 "
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                																		$inName"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        																		$inName"
                                                                                             ]['prices'][$i]
                                                                                         ) && $checked == 1
                                                                                             ? round($selectedAttrs["$inName"]['prices'][$i] * $sign->value, 2)
@@ -1228,6 +1228,33 @@
                                                         @endforeach
                                                     @endif
                                                 </ul>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Video URL') }} *</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input type="url" class="input-field" name="video_url"
+                                                    id="video_url" value="{{ $data->video_url }}">
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-lg-12 mt-3">
+                                                <label>{{ __('Product Manufacturing Date') }}
+                                                </label>
+                                                <input value="{{ $data->mfg_date }}" type="date" name="mfg_date"
+                                                    id="mfg_date" class="input-field">
+                                            </div>
+                                            <div class="col-lg-12 mt-3">
+                                                <label>{{ __('Product Expiry Date') }}
+                                                </label>
+                                                <input value="{{ $data->exp_date }}" type="date" name="exp_date"
+                                                    id="exp_date" class="input-field">
                                             </div>
                                         </div>
 

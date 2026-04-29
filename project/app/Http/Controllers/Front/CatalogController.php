@@ -235,7 +235,7 @@ class CatalogController extends Controller
                 $query->where('name', 'like', "%{$keyword}%")
                     ->orWhere('sku', 'like', "%{$keyword}%");
             })
-            ->get(['id', 'name', 'slug', 'price', 'thumbnail']);
+            ->get(['id', 'name', 'slug', 'price', 'thumbnail', 'photo']);
 
         return response()->json($products);
     }

@@ -144,8 +144,7 @@
           </ul>
       </li>
       <li>
-          <a href="{{ route('schedule.index') }}"><i
-                  class="fas fa-sitemap"></i>{{ __('Order Schedule') }}</a>
+          <a href="{{ route('schedule.index') }}"><i class="fas fa-sitemap"></i>{{ __('Order Schedule') }}</a>
       </li>
 
       <li>
@@ -214,6 +213,9 @@
               </li>
               <li>
                   <a href="{{ route('admin-bulk-update-price') }}"><span>{{ __('Bulk Update Price') }}</span></a>
+              </li>
+              <li>
+                  <a href="{{ route('admin-product-expired') }}"><span>{{ __('Expired Products') }}</span></a>
               </li>
           </ul>
       </li>
@@ -622,7 +624,7 @@
       <li>
           <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
                   class="fas fa-user-secret"></i>{{ __('Manage
-                                                                                                                                                                                                                                                                                                                                                                                                                      Staffs') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                          Staffs') }}</a>
       </li>
 
       <li>
@@ -644,7 +646,7 @@
       <li>
           <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
                   class="fas fa-list-alt"></i>{{ __('Addon
-                                                                                                                                                                                                                                                                                                                                                                                                                      Manager') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                          Manager') }}</a>
       </li>
 
       <li>

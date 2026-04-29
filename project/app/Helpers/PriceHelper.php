@@ -39,7 +39,7 @@ class PriceHelper
         }
     }
 
-    public static function showCurrencyPrice($price, $itemDiscount=null)
+    public static function showCurrencyPrice($price, $itemDiscount = null)
     {
         $gs = cache()->remember('generalsettings', now()->addDay(), function () {
             return DB::table('generalsettings')->first();
@@ -160,6 +160,7 @@ class PriceHelper
 
                 return [
                     'total_amount' => $totalAmount,
+                    'total_amount_of_product' => $totalAmountOfProduct,
                     'shipping' => $shipping,
                     'packeing' => $packeing,
                     'is_shipping' => 0,

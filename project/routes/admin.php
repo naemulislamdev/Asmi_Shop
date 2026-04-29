@@ -140,7 +140,6 @@ Route::prefix('admin')->group(function () {
         Route::post('order/time/schedule-update/{id}', [OrderScheduleController::class, 'update'])->name('schedule.update');
         Route::delete('order/time/schedule-delete/{id}', [OrderScheduleController::class, 'delete'])->name('schedule.delete');
         Route::get('order/time/schedule-status/{id1}/{id2}', [OrderScheduleController::class, 'status'])->name('schedule.status');
-
     });
     Route::controller(PromoOffersController::class)->group(function () {
         Route::get('/promo-offers', 'index')->name('admin-promo-offer-index');
@@ -321,6 +320,12 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/bulk-update-price', 'Admin\ProductController@bulkPrice')->name('admin-bulk-update-price');
         Route::post('/products/bulk-update-price', 'Admin\ProductController@bulkPriceUpdate')->name('admin-bulk-update-price-submit');
+
+        // Expired Product
+        Route::get('/products/expired', 'Admin\ProductController@expired')->name('admin-product-expired');
+        Route::get('/products/export', 'Admin\ProductController@exportExpiredProducts')->name('admin-expired-product-export');
+        Route::get('/products/expired/datatables', 'Admin\ProductController@expiredDatatables')->name('admin-prod-expired-datatables'); //JSON REQUEST
+
     });
 
     //------------ ADMIN PRODUCT SECTION ENDS------------

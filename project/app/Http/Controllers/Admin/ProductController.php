@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ProductExport;
 use App\Helpers\PriceHelper;
 use App\Imports\ProductPriceImport;
 use App\Models\Attribute;
@@ -13,10 +14,11 @@ use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Image;
+use Intervention\Image\Facades\Image;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -250,11 +252,12 @@ class ProductController extends AdminBaseController
     public function store(Request $request)
     {
 
+
         //--- Validation Section
         $rules = [
             'file' => 'mimes:zip',
         ];
-        // dd($request->all());
+
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -402,6 +405,12 @@ class ProductController extends AdminBaseController
         if (!empty($request->tags)) {
             $input['tags'] = implode(',', $request->tags);
         }
+        // Video Url
+        if (!empty($request->video_url)) {
+            $input['video_url'] = $request->video_url;
+        }
+        $input['mfg_date'] = $request->mfg_date ?? null;
+        $input['exp_date'] = $request->exp_date ?? null;
 
         $input['price'] = (int) ($input['price'] / $sign->value);
         // $input['previous_price'] = (int) ($input['previous_price'] / $sign->value);
@@ -712,7 +721,7 @@ class ProductController extends AdminBaseController
     //*** POST Request
     public function update(Request $request, $id)
     {
-        //dd($request->all());
+
         // return $request;
         //--- Validation Section
         $rules = [
@@ -730,7 +739,7 @@ class ProductController extends AdminBaseController
         $data = Product::findOrFail($id);
         $sign = $this->curr;
         $input = $request->all();
-        //dd( $input);
+
 
         //Check Types
         if ($request->type_check == 1) {
@@ -784,6 +793,13 @@ class ProductController extends AdminBaseController
             if ($request->shipping_time_check == "") {
                 $input['ship'] = null;
             }
+            // Video Url
+
+            $input['video_url'] = $request->video_url ?? null;
+
+            $input['mfg_date'] = $request->mfg_date ?? null;
+            $input['exp_date'] = $request->exp_date ?? null;
+
 
             // Check Size
             if (empty($request->stock_check)) {
@@ -1216,5 +1232,148 @@ class ProductController extends AdminBaseController
 
         $msg = session('updated_count') . ' products updated successfully!';
         return response()->json($msg);
+    }
+    // product expired datatables
+    public function expiredDatatables(Request $request)
+    {
+        $from = $request->from;
+        $to   = $request->to;
+        $now = Carbon::now();
+        $nextMonth = $now->copy()->addMonth();
+
+        $query = Product::query()
+            ->whereProductType('normal')
+            ->whereNotNull('exp_date')
+            ->latest('id');
+
+        if ($request->type == 'deactive') {
+            $query->whereStatus(0);
+        }
+
+        // Date filter দিলে — exp_date range দিয়ে খুঁজবে
+        if ($from && $to) {
+            $fromDate = Carbon::parse($from)->startOfDay();
+            $toDate   = Carbon::parse($to)->endOfDay();
+
+            $query->whereBetween('exp_date', [$fromDate, $toDate]);
+        } else {
+            // Default: already expired + next 1 month এ expire হবে
+            $query->where(function ($q) use ($now, $nextMonth) {
+                $q->where('exp_date', '<', $now)
+                    ->orWhereBetween('exp_date', [$now, $nextMonth]);
+            });
+        }
+
+        return DataTables::eloquent($query)
+
+            ->editColumn('name', function (Product $data) {
+                $name = mb_strlen($data->name, 'UTF-8') > 50
+                    ? mb_substr($data->name, 0, 50, 'UTF-8') . '...'
+                    : $data->name;
+
+                $id = '<small>' . __("ID") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . sprintf("%'.08d", $data->id) . '</a></small>';
+
+                $sku = $data->type == 'Physical'
+                    ? '<small class="ml-2"> ' . __("SKU") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . $data->sku . '</a></small>'
+                    : '';
+
+                return $name . '<br>' . $id . $sku . $data->checkVendor();
+            })
+
+            ->editColumn('price', function (Product $data) {
+                $price = $data->price * $this->curr->value;
+                return PriceHelper::showAdminCurrencyPrice($price);
+            })
+            ->editColumn("exp_date", function (Product $data) {
+                if ($data->exp_date) {
+                    return Carbon::parse($data->exp_date)->format('d M Y');
+                }
+                return '-';
+            })
+            ->editColumn("mfg_date", function (Product $data) {
+                if ($data->mfg_date) {
+                    return Carbon::parse($data->mfg_date)->format('d M Y');
+                }
+                return '-';
+            })
+
+            ->editColumn('photo', function (Product $data) {
+                $photo = $data->photo
+                    ? asset('assets/images/products/' . $data->photo)
+                    : asset('assets/images/noimage.png');
+
+                return '<img src="' . $photo . '" class="img-thumbnail" style="width:80px">';
+            })
+
+            ->editColumn('stock', function (Product $data) {
+                if ($data->stock === null) {
+                    return __("Unlimited");
+                }
+                if ($data->stock == 0) {
+                    return __("Out Of Stock");
+                }
+
+                return $data->stock;
+            })
+
+            ->addColumn('status', function (Product $data) {
+                $class = $data->status ? 'drop-success' : 'drop-danger';
+                return '
+        <div class="action-list">
+            <select class="process select droplinks ' . $class . '">
+                <option data-val="1" value="' . route('admin-prod-status', [$data->id, 1]) . '" ' . ($data->status ? 'selected' : '') . '>' . __("Activated") . '</option>
+                <option data-val="0" value="' . route('admin-prod-status', [$data->id, 0]) . '" ' . (!$data->status ? 'selected' : '') . '>' . __("Deactivated") . '</option>
+            </select>
+        </div>';
+            })
+
+            ->addColumn('action', function (Product $data) {
+                $catalog = '';
+                if ($data->type == 'Physical') {
+                    if ($data->is_catalog) {
+                        $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 0]) . '" data-toggle="modal" data-target="#catalog-modal" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Remove Catalog") . '</a>';
+                    } else {
+                        $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 1]) . '" data-toggle="modal" data-target="#catalog-modal"><i class="fas fa-plus"></i> ' . __("Add To Catalog") . '</a>';
+                    }
+                }
+
+                return '
+        <div class="godropdown">
+            <button class="go-dropdown-toggle"> ' . __("Actions") . ' <i class="fas fa-chevron-down"></i></button>
+            <div class="action-list">
+                <a href="' . route('admin-prod-edit', $data->id) . '"><i class="fas fa-edit"></i> ' . __("Edit") . '</a>
+                <a href="javascript" class="set-gallery" data-toggle="modal" data-target="#setgallery"><input type="hidden" value="' . $data->id . '"><i class="fas fa-eye"></i> ' . __("View Gallery") . '</a>
+                ' . $catalog . '
+                <a data-href="' . route('admin-prod-feature', $data->id) . '" class="feature" data-toggle="modal" data-target="#modal2"><i class="fas fa-star"></i> ' . __("Highlight") . '</a>
+                <a href="javascript:;" data-href="' . route('admin-prod-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Delete") . '</a>
+            </div>
+        </div>';
+            })
+
+            ->rawColumns(['name', 'exp_date', 'status', 'action', 'photo'])
+            ->toJson();
+    }
+    public function expired()
+    {
+        $now = Carbon::now();
+        $nextMonth = $now->copy()->addMonth();
+        $totalExpiredProduct = Product::whereDate('exp_date', '<=', $nextMonth->toDateString())->count();
+        return view('admin.product.expired_products', compact('totalExpiredProduct'));
+    }
+    public function exportExpiredProducts(Request $request)
+    {
+        $format = $request->input('format');
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        if ($format == 'excel') {
+            return Excel::download(new ProductExport($fromDate, $toDate), 'expired_products.xlsx');
+        } elseif ($format == 'csv') {
+            return Excel::download(new ProductExport($fromDate, $toDate), 'expired_products.csv', \Maatwebsite\Excel\Excel::CSV);
+        } elseif ($format == 'pdf') {
+            return Excel::download(new ProductExport($fromDate, $toDate), 'expired_products.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        } else {
+            return back()->with('error', 'Format not supported yet!');
+        }
     }
 }
