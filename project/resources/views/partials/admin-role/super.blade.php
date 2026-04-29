@@ -87,10 +87,9 @@
               <li>
                   <a href="{{ route('admin-order-report-index') }}"> {{ __('Order Reports') }}</a>
               </li>
-              {{-- <li>
-            <a href=""> {{ __('Sales Reports') }}</a>
-        </li> --}}
-
+              <li>
+                  <a href="{{ route('admin.report.dailySales') }}"> {{ __('Daily Sales Reports') }}</a>
+              </li>
           </ul>
       </li>
       <li>
@@ -323,7 +322,6 @@
               <li>
                   <a href="{{ route('admin-rider-withdraw-index') }}"><span>{{ __('Withdraws') }}</span></a>
               </li>
-
           </ul>
       </li>
 

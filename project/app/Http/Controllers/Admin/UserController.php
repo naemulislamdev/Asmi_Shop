@@ -11,6 +11,7 @@ use App\{
     Models\UserSubscription
 };
 use App\Exports\UserExport;
+use App\Helpers\PriceHelper;
 use Illuminate\{
     Http\Request,
     Support\Str
@@ -27,6 +28,14 @@ class UserController extends AdminBaseController
     {
         $datas = User::latest('id')->get();
         return DataTables::of($datas)
+            ->addColumn('total_orders', function (User $data) {
+                $total_orders = $data->orders->count();
+                return '<span class="badge badge-success">' . $total_orders . '</span>';
+            })
+            ->editColumn('total_points', function (User $data) {
+                $total_points = $data->wallet_points ?? '0.00';
+                return '<span class="badge badge-info">' . $total_points . '</span>';
+            })
             ->addColumn('action', function (User $data) {
                 $class = $data->ban == 0 ? 'drop-success' : 'drop-danger';
                 $s = $data->ban == 1 ? 'selected' : '';
@@ -43,16 +52,14 @@ class UserController extends AdminBaseController
                                             <a data-href="' . route('admin-user-edit', $data->id) . '" class="edit" data-toggle="modal" data-target="#modal1">
                                             <i class="fas fa-edit"></i>' . __("Edit") .
                     '</a>
-                                            <a href="javascript:;" class="send" data-email="' . $data->email . '" data-toggle="modal" data-target="#vendorform">
-                                            <i class="fas fa-envelope"></i> ' . __("Send") . '
-                                            </a>'
+                        '
                     . $ban .
                     '<a href="javascript:;" data-href="' . route('admin-user-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete">
                                             <i class="fas fa-trash-alt"></i>
                                             </a>
                                             </div>';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'total_orders', 'total_points'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
@@ -111,7 +118,7 @@ class UserController extends AdminBaseController
         $input = $request->all();
         $input['password'] = bcrypt($request['password']);
         if ($file = $request->file('photo')) {
-            $name = \PriceHelper::ImageCreateName($file);
+            $name = PriceHelper::ImageCreateName($file);
             $file->move('assets/images/users', $name);
             $input['photo'] = $name;
         }
@@ -162,7 +169,7 @@ class UserController extends AdminBaseController
         $user = User::findOrFail($id);
         $data = $request->all();
         if ($file = $request->file('photo')) {
-            $name = \PriceHelper::ImageCreateName($file);
+            $name = PriceHelper::ImageCreateName($file);
             $file->move('assets/images/users', $name);
             if ($user->photo != null) {
                 if (file_exists(public_path() . '/assets/images/users/' . $user->photo)) {
@@ -442,7 +449,7 @@ class UserController extends AdminBaseController
             ->editColumn('amount', function (Withdraw $data) {
                 $sign = $this->curr;
                 $amount = $data->amount * $sign->value;
-                return \PriceHelper::showAdminCurrencyPrice($amount);;
+                return PriceHelper::showAdminCurrencyPrice($amount);;
             })
             ->addColumn('action', function (Withdraw $data) {
                 $action = '<div class="action-list"><a data-href="' . route('admin-withdraw-show', $data->id) . '" class="view details-width" data-toggle="modal" data-target="#modal1"> <i class="fas fa-eye"></i> ' . __("Details") . '</a>';

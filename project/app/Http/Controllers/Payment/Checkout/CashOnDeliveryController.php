@@ -50,6 +50,11 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
         $authUser = OrderHelper::get_customer_check($request);
 
+        //dd($authUser->ban);
+        if($authUser->ban == 1){
+            return redirect()->back()->with('unsuccess', __("Your account has been banned. Please contact support."));
+        }
+
         $oldCart = Session::get('cart');
 
         $cart = new Cart($oldCart);

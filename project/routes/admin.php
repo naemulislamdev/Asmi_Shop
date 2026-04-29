@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CustomeOrderController;
+use App\Http\Controllers\Admin\DailySalesReportController;
 use App\Http\Controllers\Admin\JobApplicationController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
@@ -161,6 +162,13 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/userinfo/status/edit/{id}', 'Admin\UserInfoController@statusEdit')->name('userinfo-status-edit');
         Route::post('/userinfo/status/update/{id}', 'Admin\UserInfoController@statusUpdate')->name('userinfo-status-update');
+    });
+
+    Route::controller(DailySalesReportController::class)->group(function () {
+        Route::get('/daily-sales', 'dailySales')->name('admin.report.dailySales');
+        Route::get('/daily-sales-datatable', 'dailySalesData')->name('admin.report.dailySalesData');
+        Route::get('/daily-sales-summary', 'dailySalesSummary')->name('admin.report.dailySalesSummary');
+        Route::get('/daily-sales-export', 'dailySalesExport')->name('admin.report.dailySalesExport');
     });
 
 

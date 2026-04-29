@@ -24,13 +24,15 @@
                     <div class="mr-table allproduct">
                         @include('alerts.admin.form-success')
                         <div class="table-responsive">
-                            
+
                             <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th>{{ __('Name') }}</th>
                                         <th>{{ __('Email') }}</th>
                                         <th>{{ __('Phone') }}</th>
+                                        <th>{{ __('Total Orders') }}</th>
+                                        <th>{{ __('Total Points') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
                                 </thead>
@@ -210,6 +212,14 @@
                     {
                         data: 'phone',
                         name: 'phone'
+                    },
+                    {
+                        data: 'total_orders',
+                        name: 'total_orders'
+                    },
+                    {
+                        data: 'total_points',
+                        name: 'total_points'
                     },
                     {
                         data: 'action',
