@@ -11,17 +11,21 @@ class Order extends Model
 
     public function vendororders()
     {
-        return $this->hasMany('App\Models\VendorOrder','order_id');
+        return $this->hasMany('App\Models\VendorOrder', 'order_id');
     }
 
     public function notifications()
     {
-        return $this->hasMany('App\Models\Notification','order_id');
+        return $this->hasMany('App\Models\Notification', 'order_id');
     }
 
     public function tracks()
     {
-        return $this->hasMany('App\Models\OrderTrack','order_id');
+        return $this->hasMany('App\Models\OrderTrack', 'order_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public static function getShipData($cart)
@@ -29,20 +33,17 @@ class Order extends Model
         $vendor_shipping_id = 0;
         $user = array();
         foreach ($cart->items as $prod) {
-                $user[] = $prod['item']['user_id'];
+            $user[] = $prod['item']['user_id'];
         }
         $users = array_unique($user);
-        if(count($users) == 1)
-        {
+        if (count($users) == 1) {
             $shipping_data  = DB::table('shippings')->whereUserId($users[0])->get();
-            if(count($shipping_data) == 0){
+            if (count($shipping_data) == 0) {
                 $shipping_data  = DB::table('shippings')->whereUserId(0)->get();
-            }
-            else{
+            } else {
                 $vendor_shipping_id = $users[0];
             }
-        }
-        else {
+        } else {
             $shipping_data  = DB::table('shippings')->whereUserId(0)->get();
         }
         $data['shipping_data'] = $shipping_data;
@@ -55,21 +56,18 @@ class Order extends Model
         $vendor_packing_id = 0;
         $user = array();
         foreach ($cart->items as $prod) {
-                $user[] = $prod['item']['user_id'];
+            $user[] = $prod['item']['user_id'];
         }
         $users = array_unique($user);
-        if(count($users) == 1)
-        {
+        if (count($users) == 1) {
             $package_data  = DB::table('packages')->whereUserId($users[0])->get();
 
-            if(count($package_data) == 0){
+            if (count($package_data) == 0) {
                 $package_data  = DB::table('packages')->whereUserId(0)->get();
-            }
-            else{
+            } else {
                 $vendor_packing_id = $users[0];
             }
-        }
-        else {
+        } else {
             $package_data  = DB::table('packages')->whereUserId(0)->get();
         }
         $data['package_data'] = $package_data;
@@ -78,7 +76,7 @@ class Order extends Model
     }
     public function shippingMethod()
     {
-        return $this->belongsTo('App\Models\Shipping','shipping');
+        return $this->belongsTo('App\Models\Shipping', 'shipping');
     }
     public function branch()
     {

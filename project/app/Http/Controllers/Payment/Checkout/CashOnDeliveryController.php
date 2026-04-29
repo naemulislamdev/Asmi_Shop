@@ -21,8 +21,6 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 {
     public function store(Request $request)
     {
-
-
         $request->validate([
             'customer_name' => 'required|string|max:50',
             'customer_phone' => 'required|regex:/^(01[3-9]\d{8})$/',
@@ -105,6 +103,8 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $input['packing_cost'] = $packing_cost;
             $input['is_shipping'] = $is_shipping;
         }
+
+        $orderAmount = $orderCalculate['total_amount_of_product'];
         //dd($shipping);
 
         // After Order Save Success
@@ -118,7 +118,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             // Check যদি admin value set করে
             if (!empty($point_of_amount) && !empty($amount_of_point)) {
 
-                $orderAmount = $input['total_amount_of_product'];
+                $orderAmount = $orderAmount;
 
                 // Calculate Points
                 $earnedPoints = ($orderAmount / $point_of_amount) * $amount_of_point;
@@ -130,6 +130,19 @@ class CashOnDeliveryController extends CheckoutBaseControlller
                 }
             }
         }
+        // loyalty points discount start
+        $grandTotal = $orderTotal;
+        if ($request->use_points != null && Auth::check()) {
+            $user = Auth::user();
+            $usedPoints = $request->use_points;
+
+            $discountAmount = $user->wallet_points - $usedPoints;
+            $user->wallet_points = $discountAmount;
+            $user->save();
+            $grandTotal = $orderTotal - $usedPoints;
+            $discountType = "loyalty_points";
+        }
+        // loyalty points discount end
 
         $order = new Order;
         $success_url = route('front.payment.return');
@@ -137,11 +150,13 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $input['user_id'] = Auth::check() ? Auth::user()->id : null;
         $input['cart'] = $new_cart;
         $input['affilate_users'] = $affilate_users;
-        $input['pay_amount'] = $orderTotal;
+        $input['pay_amount'] = $grandTotal;
         $input['order_number'] = 'w' . rand(10000, 99999);
         $input['wallet_price'] = $request->wallet_price / $this->curr->value;
         $input['customer_country'] = 'Bangladesh';
         $input['loyalty_point'] = $earnedPoints ?? 0;
+        $input['discount_type'] = $discountType ?? null;
+        $input['discount'] = $request->use_points ?? 0;
 
         if ($input['tax_type'] == 'state_tax') {
             $input['tax_location'] = State::findOrFail($input['tax'])->state;

@@ -1,390 +1,698 @@
 @extends('layouts.front')
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+    .order-success-wrapper {
+        background: #f9fafb;
+        font-family: "Rubik", sans-serif;
+    }
+
+    .shipping-cost {
+        font-family: "Rubik";
+    }
+
+    .order-success-wrapper {
+        background: #f9fafb;
+    }
+
+    .success-card {
+        background: #fff;
+        border-radius: 6px;
+        padding: 20px 40px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    /* HEADER */
+    .success-header {
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 120px;
+    }
+
+    .success-header h2 {
+        color: #2ecc71;
+        margin-top: 15px;
+    }
+
+    .btn-home {
+        display: inline-block;
+        background: linear-gradient(45deg, #1598a7, #1bb9cb);
+        color: #fff;
+        padding: 12px 30px;
+        border-radius: 50px;
+    }
+
+    /* ORDER INFO */
+    .order-info {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin: 40px 0;
+    }
+
+    .info-box {
+        background: #f5f7fa;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    /* LOYALTY */
+    .loyalty-box {
+        /* margin-top: 20px; */
+        text-align: center;
+        padding: 30px;
+        /* background: linear-gradient(135deg, #fff3cd, #ffe0b2); */
+        /* background: #444444; */
+        border-radius: 16px;
+        /* color: #FFF !important; */
+    }
+
+    .points {
+        font-size: 50px;
+        font-weight: bold;
+        color: #ff6a00;
+    }
+
+    .total-points {
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 24px;
+    }
+
+
+    /* ADDRESS */
+    .address-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 40px;
+    }
+
+    .address-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    /* PRODUCTS */
+    .product-section {
+        margin-top: 40px;
+    }
+
+    .product-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f9fafb;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .product-item img {
+        width: 60px;
+        border-radius: 8px;
+    }
+
+    .product-info {
+        flex: 1;
+        margin-left: 15px;
+    }
 
 
 
 
+
+    .order-info .info-box h6 {
+        font-size: 20px;
+    }
+
+    .order-info .info-box p {
+        font-size: 17px;
+    }
+
+    .giftBox img {
+        width: 150px;
+        margin-top: 15px;
+    }
+
+    .order-summary {
+        border: 0.5px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 13px 20px;
+        border-bottom: 0.5px solid #f0f1f3;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-key {
+        font-size: 15px;
+        color: #111827;
+    }
+
+    .summary-val {
+        font-size: 14px;
+        font-weight: 500;
+        color: #111827;
+        text-align: right;
+        font-family: "Rubik", sans-serif;
+    }
+
+    /* Discount row */
+    .discount-val {
+        color: #d97706;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .discount-badge {
+        font-size: 11px;
+        font-weight: 500;
+        background: #fff8f0;
+        color: #b05f10;
+        border: 0.5px solid #f5d7b0;
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+
+    /* Payment method badge */
+    .method-badge {
+        font-size: 12px;
+        font-weight: 500;
+        background: #f0fdf4;
+        color: #15803d;
+        border: 0.5px solid #bbf7d0;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    /* Grand total row */
+    .grand-total-row {
+        background: #f9fafb;
+    }
+
+    .grand-total-val {
+        font-size: 16px;
+        color: #15803d;
+    }
+
+    .free-val {
+        color: #15803d;
+        font-weight: 500;
+    }
+
+    /* payment mehtod and customer info */
+    .address-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 24px;
+    }
+
+    .address-card {
+        border: 0.5px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .address-card-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border-bottom: 0.5px solid #e5e7eb;
+    }
+
+    .address-card-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #e8f6f8;
+        color: #1598a7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .address-card-header h6 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0;
+    }
+
+    .address-card-body {
+        padding: 4px 0;
+    }
+
+    .address-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 0.5px solid #f3f4f6;
+    }
+
+    .address-row:last-child {
+        border-bottom: none;
+    }
+
+    .address-key {
+        font-size: 13px;
+        color: #6b7280;
+        flex-shrink: 0;
+    }
+
+    .address-val {
+        font-size: 13px;
+        font-weight: 500;
+        color: #111827;
+        text-align: right;
+        margin-left: 12px;
+    }
+
+    .txn-val {
+        font-family: monospace;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .info-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .badge-green {
+        background: #e9faf3;
+        color: #15803d;
+        border: 0.5px solid #bbf7d0;
+    }
+
+    .badge-amber {
+        background: #fff8f0;
+        color: #b05f10;
+        border: 0.5px solid #fcd34d;
+        font-family: "Rubik", sans-serif;
+    }
+
+    @media (max-width: 576px) {
+        .address-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Product list */
+    .product-section {
+        margin-top: 24px;
+        border: 0.5px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .product-section-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border-bottom: 0.5px solid #e5e7eb;
+    }
+
+    .product-section-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #e8f6f8;
+        color: #1598a7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .product-section-header h6 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0;
+        flex: 1;
+    }
+
+    .product-count {
+        font-size: 11px;
+        font-weight: 600;
+        background: #e8f6f8;
+        color: #1598a7;
+        border: 0.5px solid #b2e8f0;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .product-list {
+        padding: 4px 0;
+    }
+
+    .product-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 0.5px solid #f3f4f6;
+        transition: background 0.15s;
+    }
+
+    .product-item:last-child {
+        border-bottom: none;
+    }
+
+    .product-item:hover {
+        background: #fafafa;
+    }
+
+    .product-item img {
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 0.5px solid #e5e7eb;
+        flex-shrink: 0;
+    }
+
+    .product-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .product-info h6 {
+        font-size: 14px;
+        font-weight: 500;
+        color: #111827;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .product-qty {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .product-price {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+        flex-shrink: 0;
+        font-family: "Rubik";
+    }
+
+    @media (max-width: 768px) {
+        .order-info {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .address-section {
+            grid-template-columns: 1fr;
+        }
+
+        .success-card {
+            padding: 20px 12px;
+
+        }
+    }
+</style>
 @section('content')
-    <div class="gs-success-invoice-section">
+    <div class="order-success-wrapper">
         <div class="container">
-            <div class="success-invoice-box">
-                <div class="success-invoice-header wow-replaced" data-wow-delay=".1s">
-                    <img src="{{ asset('assets/front/images/success-check.gif') }}" alt="Order Successfully" width="200">
-                    {{-- <svg class="succss-icon" xmlns="http://www.w3.org/2000/svg" width="121" height="120" viewBox="0 0 121 120"
-                        fill="none">
-                        <g clip-path="url(#clip0_6740_32691)">
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M60.5 0C27.3935 0 0.5 26.8935 0.5 60C0.5 93.1065 27.3935 120 60.5 120C93.6065 120 120.5 93.1065 120.5 60C120.5 26.8935 93.6065 0 60.5 0Z"
-                                fill="#27BE69" />
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M60.5 0C59.6354 0 58.7777 0.0291416 57.9219 0.0654602C89.8339 1.41977 115.344 27.7582 115.344 60C115.344 92.2418 89.8339 118.58 57.9219 119.935C58.7777 119.971 59.6354 120 60.5 120C93.6064 120 120.5 93.1064 120.5 60C120.5 26.8936 93.6064 2.34375e-08 60.5 0Z"
-                                fill="#1F9854" />
-                            <path
-                                d="M94.9671 29.5313C92.7603 29.5315 90.6412 30.4107 89.0816 31.972L49.0109 72.079L31.9185 54.971C31.9183 54.9709 31.9181 54.9707 31.918 54.9705C28.69 51.7403 23.3755 51.7403 20.1475 54.9705C20.1474 54.9707 20.1472 54.9709 20.1471 54.971C16.9197 58.202 16.9197 63.5146 20.1471 66.7456C20.1472 66.7456 20.1474 66.7456 20.1475 66.7456L40.2534 86.8698C45.0476 91.6682 52.9746 91.6684 57.7688 86.8698L100.853 43.7466C104.08 40.5157 104.08 35.203 100.853 31.972C99.2934 30.4107 97.1748 29.5316 94.968 29.5313C94.9677 29.5312 94.9674 29.5312 94.9671 29.5313Z"
-                                fill="#E8F5E9" />
-                            <path
-                                d="M94.9675 29.5312C94.0834 29.5313 93.2155 29.6786 92.3899 29.9483C93.6248 30.3516 94.7625 31.0363 95.6972 31.972C98.9245 35.203 98.9245 40.5157 95.6972 43.7466L52.6129 86.8698C50.868 88.6163 48.7064 89.7189 46.4336 90.1941C50.4053 91.0243 54.72 89.9218 57.7692 86.8698L100.853 43.7466C104.081 40.5157 104.081 35.203 100.853 31.972C99.2938 30.4107 97.1752 29.5316 94.9684 29.5312H94.9675Z"
-                                fill="#C8E6C9" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_6740_32691">
-                                <rect width="120" height="120" fill="white" transform="translate(0.5)" />
-                            </clipPath>
-                        </defs>
-                    </svg> --}}
-                    <h3>@lang('THANK YOU FOR YOUR PURCHASE')</h3>
-                    <h5>@lang("We'll email you an order confirmation with details and tracking info")</h5>
-                    <a href="{{ route('front.index') }}" class="template-btn btn-success-page">@lang('Get Back to Our Homepage')</a>
+
+            <div class="success-card">
+
+                <!-- ✅ SUCCESS HEADER -->
+                <div class="success-header">
+                    <img src="{{ asset('assets/front/images/success-check.gif') }}" class="success-icon">
+
+                    <h2>Order Placed Successfully 🎉</h2>
+                    <p>Thank you! Your order has been confirmed.</p>
+
+                    <a href="{{ route('front.index') }}" class="btn-home">
+                        Continue Shopping
+                    </a>
                 </div>
-                <div class=" success-invoice-body wow-replaced" data-wow-delay=".1s">
-                    <h4>@lang('Order#') {{ $order->order_number }}</h4>
-                    <p>@lang('Order Date') {{ date('d-M-Y', strtotime($order->created_at)) }}</p>
-                </div>
-                <div class="row order-details-area wow-replaced" data-wow-delay=".1s">
 
 
-                    @if ($order->dp == 1)
-                        <div class="col-lg-6 col-md-6 col-sm-12">
-                            <h5>@lang('Shipping Address')</h5>
-                            <div class="name d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none">
-                                    <path
-                                        d="M11.9999 15C8.82977 15 6.01065 16.5306 4.21585 18.906C3.82956 19.4172 3.63641 19.6728 3.64273 20.0183C3.64761 20.2852 3.81521 20.6219 4.02522 20.7867C4.29704 21 4.67372 21 5.42708 21H18.5726C19.326 21 19.7027 21 19.9745 20.7867C20.1845 20.6219 20.3521 20.2852 20.357 20.0183C20.3633 19.6728 20.1701 19.4172 19.7839 18.906C17.9891 16.5306 15.1699 15 11.9999 15Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path
-                                        d="M11.9999 12C14.4851 12 16.4999 9.98528 16.4999 7.5C16.4999 5.01472 14.4851 3 11.9999 3C9.51457 3 7.49985 5.01472 7.49985 7.5C7.49985 9.98528 9.51457 12 11.9999 12Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_name }}</p>
-                            </div>
-                            <div class="address d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none">
-                                    <path
-                                        d="M12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path
-                                        d="M12 22C14 18 20 15.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 15.4183 10 18 12 22Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_address }} {{ $order->customer_city }}-{{ $order->customer_zip }}</p>
-                            </div>
-                            <div class="contact-number d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none">
-                                    <path
-                                        d="M8.38028 8.85335C9.07627 10.303 10.0251 11.6616 11.2266 12.8632C12.4282 14.0648 13.7869 15.0136 15.2365 15.7096C15.3612 15.7694 15.4235 15.7994 15.5024 15.8224C15.7828 15.9041 16.127 15.8454 16.3644 15.6754C16.4313 15.6275 16.4884 15.5704 16.6027 15.4561C16.9523 15.1064 17.1271 14.9316 17.3029 14.8174C17.9658 14.3864 18.8204 14.3864 19.4833 14.8174C19.6591 14.9316 19.8339 15.1064 20.1835 15.4561L20.3783 15.6509C20.9098 16.1824 21.1755 16.4481 21.3198 16.7335C21.6069 17.301 21.6069 17.9713 21.3198 18.5389C21.1755 18.8242 20.9098 19.09 20.3783 19.6214L20.2207 19.779C19.6911 20.3087 19.4263 20.5735 19.0662 20.7757C18.6667 21.0001 18.0462 21.1615 17.588 21.1601C17.1751 21.1589 16.8928 21.0788 16.3284 20.9186C13.295 20.0576 10.4326 18.4332 8.04466 16.0452C5.65668 13.6572 4.03221 10.7948 3.17124 7.76144C3.01103 7.19699 2.93092 6.91477 2.9297 6.50182C2.92833 6.0436 3.08969 5.42311 3.31411 5.0236C3.51636 4.66357 3.78117 4.39876 4.3108 3.86913L4.46843 3.7115C4.99987 3.18006 5.2656 2.91433 5.55098 2.76999C6.11854 2.48292 6.7888 2.48292 7.35636 2.76999C7.64174 2.91433 7.90747 3.18006 8.43891 3.7115L8.63378 3.90637C8.98338 4.25597 9.15819 4.43078 9.27247 4.60655C9.70347 5.26945 9.70347 6.12403 9.27247 6.78692C9.15819 6.96269 8.98338 7.1375 8.63378 7.4871C8.51947 7.60142 8.46231 7.65857 8.41447 7.72538C8.24446 7.96281 8.18576 8.30707 8.26748 8.58743C8.29048 8.66632 8.32041 8.72866 8.38028 8.85335Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_phone }}</p>
-                            </div>
-                            <div class="mail d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none">
-                                    <path
-                                        d="M2 7L10.1649 12.7154C10.8261 13.1783 11.1567 13.4097 11.5163 13.4993C11.8339 13.5785 12.1661 13.5785 12.4837 13.4993C12.8433 13.4097 13.1739 13.1783 13.8351 12.7154L22 7M6.8 20H17.2C18.8802 20 19.7202 20 20.362 19.673C20.9265 19.3854 21.3854 18.9265 21.673 18.362C22 17.7202 22 16.8802 22 15.2V8.8C22 7.11984 22 6.27976 21.673 5.63803C21.3854 5.07354 20.9265 4.6146 20.362 4.32698C19.7202 4 18.8802 4 17.2 4H6.8C5.11984 4 4.27976 4 3.63803 4.32698C3.07354 4.6146 2.6146 5.07354 2.32698 5.63803C2 6.27976 2 7.11984 2 8.8V15.2C2 16.8802 2 17.7202 2.32698 18.362C2.6146 18.9265 3.07354 19.3854 3.63803 19.673C4.27976 20 5.11984 20 6.8 20Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_email }}</p>
-                            </div>
+                <!-- ✅ LOYALTY SECTION -->
+                <div class="loyalty-box ">
+                    @if ($order->loyalty_point > 0)
+                        <h4>🎁 You Earned Rewards</h4>
+
+                        <div class="points">
+                            <span id="loyaltyCounter">{{ $order->loyalty_point }}</span>
                         </div>
+                        <div class="giftBox">
+                            <img src="{{ asset('assets/front/images/download.gif') }}" alt="Reward Point Open Box">
+                        </div>
+
+                        <p class="points-text">
+                            Loyalty Points Earned
+                        </p>
+
+                        <div class="total-points text-success">
+                            Total Balance: {{ auth()->user() ? auth()->user()->wallet_points : 0 }}
+                        </div>
+                        <p><i>N.B: Minimum 100 reward point is required to withdraw.</i></p>
                     @else
-                        @if ($order->shipping == 'shipto')
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <h5>
-                                    @if ($order->dp == 0)
-                                    @lang('Shipping Address')
-                                    @else
-                                    @lang('User Information')
+                        <div class="total-points text-success">
+                            Total Balance: {{ auth()->user() ? auth()->user()->wallet_points : 0 }}
+                        </div>
+                    @endif
+                </div>
+                <!-- ORDER SUMMARY -->
+                <!-- ORDER SUMMARY -->
+                <div class="order-summary mt-3">
+                    <div class="summary-row">
+                        <span class="summary-key">Order Number</span>
+                        <span class="summary-val">#{{ $order->order_number }}</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-key">Order Date</span>
+                        <span class="summary-val">{{ date('d F Y, h:i A', strtotime($order->created_at)) }}</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-key">Subtotal</span>
+                        <span class="summary-val">
+                            @php $total = $order->pay_amount * $order->currency_value + ($order->discount ?? 0); @endphp
+                            {{ \PriceHelper::showOrderCurrencyPrice($total, $order->currency_sign) }}
+                        </span>
+                    </div>
+
+                    @if (($order->discount ?? 0) > 0)
+                        <div class="summary-row">
+                            <span class="summary-key">Discount</span>
+                            <span class="summary-val discount-val">
+                                − {{ \PriceHelper::showOrderCurrencyPrice($order->discount, $order->currency_sign) }}
+                                <span class="discount-badge">
+                                    @if ($order->discount_type == 'percent')
+                                        % Off
+                                    @elseif ($order->discount_type == 'amount')
+                                        Fixed
+                                    @elseif ($order->discount_type == 'loyalty_points')
+                                        Points
                                     @endif
-
-
-                                </h5>
-                                <div class="name d-flex gap-12">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M11.9999 15C8.82977 15 6.01065 16.5306 4.21585 18.906C3.82956 19.4172 3.63641 19.6728 3.64273 20.0183C3.64761 20.2852 3.81521 20.6219 4.02522 20.7867C4.29704 21 4.67372 21 5.42708 21H18.5726C19.326 21 19.7027 21 19.9745 20.7867C20.1845 20.6219 20.3521 20.2852 20.357 20.0183C20.3633 19.6728 20.1701 19.4172 19.7839 18.906C17.9891 16.5306 15.1699 15 11.9999 15Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path
-                                            d="M11.9999 12C14.4851 12 16.4999 9.98528 16.4999 7.5C16.4999 5.01472 14.4851 3 11.9999 3C9.51457 3 7.49985 5.01472 7.49985 7.5C7.49985 9.98528 9.51457 12 11.9999 12Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    <p>{{ $order->shipping_name == null ? $order->customer_name : $order->shipping_name }}
-                                    </p>
-                                </div>
-                                <div class="address d-flex gap-12">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path
-                                            d="M12 22C14 18 20 15.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 15.4183 10 18 12 22Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    <p>{{ $order->shipping_address == null ? $order->customer_address : $order->shipping_address }}<br>
-                                        {{ $order->shipping_city == null ? $order->customer_city : $order->shipping_city }}-{{ $order->shipping_zip == null ? $order->customer_zip : $order->shipping_zip }}
-                                    </p>
-                                </div>
-                                <div class="contact-number d-flex gap-12">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M8.38028 8.85335C9.07627 10.303 10.0251 11.6616 11.2266 12.8632C12.4282 14.0648 13.7869 15.0136 15.2365 15.7096C15.3612 15.7694 15.4235 15.7994 15.5024 15.8224C15.7828 15.9041 16.127 15.8454 16.3644 15.6754C16.4313 15.6275 16.4884 15.5704 16.6027 15.4561C16.9523 15.1064 17.1271 14.9316 17.3029 14.8174C17.9658 14.3864 18.8204 14.3864 19.4833 14.8174C19.6591 14.9316 19.8339 15.1064 20.1835 15.4561L20.3783 15.6509C20.9098 16.1824 21.1755 16.4481 21.3198 16.7335C21.6069 17.301 21.6069 17.9713 21.3198 18.5389C21.1755 18.8242 20.9098 19.09 20.3783 19.6214L20.2207 19.779C19.6911 20.3087 19.4263 20.5735 19.0662 20.7757C18.6667 21.0001 18.0462 21.1615 17.588 21.1601C17.1751 21.1589 16.8928 21.0788 16.3284 20.9186C13.295 20.0576 10.4326 18.4332 8.04466 16.0452C5.65668 13.6572 4.03221 10.7948 3.17124 7.76144C3.01103 7.19699 2.93092 6.91477 2.9297 6.50182C2.92833 6.0436 3.08969 5.42311 3.31411 5.0236C3.51636 4.66357 3.78117 4.39876 4.3108 3.86913L4.46843 3.7115C4.99987 3.18006 5.2656 2.91433 5.55098 2.76999C6.11854 2.48292 6.7888 2.48292 7.35636 2.76999C7.64174 2.91433 7.90747 3.18006 8.43891 3.7115L8.63378 3.90637C8.98338 4.25597 9.15819 4.43078 9.27247 4.60655C9.70347 5.26945 9.70347 6.12403 9.27247 6.78692C9.15819 6.96269 8.98338 7.1375 8.63378 7.4871C8.51947 7.60142 8.46231 7.65857 8.41447 7.72538C8.24446 7.96281 8.18576 8.30707 8.26748 8.58743C8.29048 8.66632 8.32041 8.72866 8.38028 8.85335Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    <p>{{ $order->shipping_phone == null ? $order->customer_phone : $order->shipping_phone }}
-                                    </p>
-                                </div>
-                                <div class="mail d-flex gap-12">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M2 7L10.1649 12.7154C10.8261 13.1783 11.1567 13.4097 11.5163 13.4993C11.8339 13.5785 12.1661 13.5785 12.4837 13.4993C12.8433 13.4097 13.1739 13.1783 13.8351 12.7154L22 7M6.8 20H17.2C18.8802 20 19.7202 20 20.362 19.673C20.9265 19.3854 21.3854 18.9265 21.673 18.362C22 17.7202 22 16.8802 22 15.2V8.8C22 7.11984 22 6.27976 21.673 5.63803C21.3854 5.07354 20.9265 4.6146 20.362 4.32698C19.7202 4 18.8802 4 17.2 4H6.8C5.11984 4 4.27976 4 3.63803 4.32698C3.07354 4.6146 2.6146 5.07354 2.32698 5.63803C2 6.27976 2 7.11984 2 8.8V15.2C2 16.8802 2 17.7202 2.32698 18.362C2.6146 18.9265 3.07354 19.3854 3.63803 19.673C4.27976 20 5.11984 20 6.8 20Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    <p>{{ $order->shipping_email == null ? $order->customer_email : $order->shipping_email }}
-                                    </p>
-                                </div>
-                            </div>
-                        @else
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <h5>@lang('PickUp Location')</h5>
-
-                                <div class="address d-flex gap-12">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path
-                                            d="M12 22C14 18 20 15.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 15.4183 10 18 12 22Z"
-                                            stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    <p>{{ $order->customer_address }}</p>
-                                </div>
-
-                            </div>
-                        @endif
-                    @endif
-
-                    <h5>@lang('Loyalty Points')</h5>
-                    <p>You have earned <span class="badge bg-success">{{ $order->loyalty_point }}</span> loyalty points of {{ $order->pay_amount }}.</p>
-
-                    @if ($order->dp == 0)
-                        <div class="col-lg-6 col-md-6 col-sm-12">
-                            <h5>@lang('Billing Address')</h5>
-                            <div class="name d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24" fill="none">
-                                    <path
-                                        d="M11.9999 15C8.82977 15 6.01065 16.5306 4.21585 18.906C3.82956 19.4172 3.63641 19.6728 3.64273 20.0183C3.64761 20.2852 3.81521 20.6219 4.02522 20.7867C4.29704 21 4.67372 21 5.42708 21H18.5726C19.326 21 19.7027 21 19.9745 20.7867C20.1845 20.6219 20.3521 20.2852 20.357 20.0183C20.3633 19.6728 20.1701 19.4172 19.7839 18.906C17.9891 16.5306 15.1699 15 11.9999 15Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                    <path
-                                        d="M11.9999 12C14.4851 12 16.4999 9.98528 16.4999 7.5C16.4999 5.01472 14.4851 3 11.9999 3C9.51457 3 7.49985 5.01472 7.49985 7.5C7.49985 9.98528 9.51457 12 11.9999 12Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_name }}</p>
-                            </div>
-                            <div class="address d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24" fill="none">
-                                    <path
-                                        d="M12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                    <path
-                                        d="M12 22C14 18 20 15.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 15.4183 10 18 12 22Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_address }}
-                                    {{ $order->customer_city }}-{{ $order->customer_zip }}</p>
-                            </div>
-                            <div class="contact-number d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24" fill="none">
-                                    <path
-                                        d="M8.38028 8.85335C9.07627 10.303 10.0251 11.6616 11.2266 12.8632C12.4282 14.0648 13.7869 15.0136 15.2365 15.7096C15.3612 15.7694 15.4235 15.7994 15.5024 15.8224C15.7828 15.9041 16.127 15.8454 16.3644 15.6754C16.4313 15.6275 16.4884 15.5704 16.6027 15.4561C16.9523 15.1064 17.1271 14.9316 17.3029 14.8174C17.9658 14.3864 18.8204 14.3864 19.4833 14.8174C19.6591 14.9316 19.8339 15.1064 20.1835 15.4561L20.3783 15.6509C20.9098 16.1824 21.1755 16.4481 21.3198 16.7335C21.6069 17.301 21.6069 17.9713 21.3198 18.5389C21.1755 18.8242 20.9098 19.09 20.3783 19.6214L20.2207 19.779C19.6911 20.3087 19.4263 20.5735 19.0662 20.7757C18.6667 21.0001 18.0462 21.1615 17.588 21.1601C17.1751 21.1589 16.8928 21.0788 16.3284 20.9186C13.295 20.0576 10.4326 18.4332 8.04466 16.0452C5.65668 13.6572 4.03221 10.7948 3.17124 7.76144C3.01103 7.19699 2.93092 6.91477 2.9297 6.50182C2.92833 6.0436 3.08969 5.42311 3.31411 5.0236C3.51636 4.66357 3.78117 4.39876 4.3108 3.86913L4.46843 3.7115C4.99987 3.18006 5.2656 2.91433 5.55098 2.76999C6.11854 2.48292 6.7888 2.48292 7.35636 2.76999C7.64174 2.91433 7.90747 3.18006 8.43891 3.7115L8.63378 3.90637C8.98338 4.25597 9.15819 4.43078 9.27247 4.60655C9.70347 5.26945 9.70347 6.12403 9.27247 6.78692C9.15819 6.96269 8.98338 7.1375 8.63378 7.4871C8.51947 7.60142 8.46231 7.65857 8.41447 7.72538C8.24446 7.96281 8.18576 8.30707 8.26748 8.58743C8.29048 8.66632 8.32041 8.72866 8.38028 8.85335Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_phone }}</p>
-                            </div>
-                            <div class="mail d-flex gap-12">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24" fill="none">
-                                    <path
-                                        d="M2 7L10.1649 12.7154C10.8261 13.1783 11.1567 13.4097 11.5163 13.4993C11.8339 13.5785 12.1661 13.5785 12.4837 13.4993C12.8433 13.4097 13.1739 13.1783 13.8351 12.7154L22 7M6.8 20H17.2C18.8802 20 19.7202 20 20.362 19.673C20.9265 19.3854 21.3854 18.9265 21.673 18.362C22 17.7202 22 16.8802 22 15.2V8.8C22 7.11984 22 6.27976 21.673 5.63803C21.3854 5.07354 20.9265 4.6146 20.362 4.32698C19.7202 4 18.8802 4 17.2 4H6.8C5.11984 4 4.27976 4 3.63803 4.32698C3.07354 4.6146 2.6146 5.07354 2.32698 5.63803C2 6.27976 2 7.11984 2 8.8V15.2C2 16.8802 2 17.7202 2.32698 18.362C2.6146 18.9265 3.07354 19.3854 3.63803 19.673C4.27976 20 5.11984 20 6.8 20Z"
-                                        stroke="#4C3533" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                                <p>{{ $order->customer_email ?? 'Empty' }}</p>
-                            </div>
+                                </span>
+                            </span>
                         </div>
                     @endif
 
-
-
-                    <div class="col-lg-6 col-md-6 col-sm-12 payment-information">
-                        <h5>@lang('Payment Information')</h5>
-                        <div class="payment-information">
-
-                            @if ($gs->multiple_shipping == 0)
-                                @if ($order->shipping_cost != 0)
-                                    <p>{{ $order->shipping_title }}:
-                                        {{ \PriceHelper::showOrderCurrencyPrice($order->shipping_cost, $order->currency_sign) }}
-                                    </p>
-                                @endif
-
-
-                                @if ($order->packing_cost != 0)
-                                    <p>{{ $order->packing_title }}:
-                                        {{ \PriceHelper::showOrderCurrencyPrice($order->packing_cost, $order->currency_sign) }}
-                                    </p>
-                                @endif
+                    {{-- ✅ Delivery Charge --}}
+                    <div class="summary-row">
+                        <span class="summary-key">Delivery Charge</span>
+                        <span class="summary-val {{ $order->shipping_cost <= 0 ? 'free-val' : '' }}">
+                            @if ($order->shipping_cost <= 0)
+                                Free
                             @else
-                                @if ($order->shipping_cost != 0)
-                                    <p>{{ __('Shipping Cost') }}:
-                                        {{ \PriceHelper::showOrderCurrencyPrice($order->shipping_cost * $order->currency_value, $order->currency_sign) }}
-                                    </p>
-                                @endif
-
-
-                                @if ($order->packing_cost != 0)
-                                    <p>{{ __('Packing Cost') }}:
-                                        {{ \PriceHelper::showOrderCurrencyPrice($order->packing_cost * $order->currency_value, $order->currency_sign) }}
-                                    </p>
-                                @endif
+                                {{ \PriceHelper::showOrderCurrencyPrice($order->shipping_cost * $order->currency_value, $order->currency_sign) }}
                             @endif
-
-
-
-
-                            <p>@lang('Tax :')
-                                {{ \PriceHelper::showOrderCurrencyPrice($order->tax / $order->currency_value, $order->currency_sign) }}
-                            </p>
-                            <p>@lang('Paid Amount:')
-
-                                @if ($order->method != 'Wallet')
-                                    {{ \PriceHelper::showOrderCurrencyPrice(
-                                        ($order->pay_amount + $order->wallet_price) * $order->currency_value,
-                                        $order->currency_sign,
-                                    ) }}
-                                @else
-                                    {{ \PriceHelper::showOrderCurrencyPrice($order->wallet_price * $order->currency_value, $order->currency_sign) }}
-                                @endif
-                            </p>
-                            <p>@lang('Payment Method:')
-                                {{ $order->method }}
-                                @if ($order->method != 'Cash On Delivery' && $order->method != 'Wallet')
-                                    <br>
-                                    {{ __('Transaction ID:') }} {{ $order->txnid }}
-                                @endif
-                            </p>
-                        </div>
+                        </span>
                     </div>
-                    @if ($order->dp == 0)
-                        <div class="col-lg-6 col-md-6 col-sm-12">
-                            <h5>@lang('Shipping Method')</h5>
-                            <div class="payment-information">
 
-                                @if ($order->shipping == 'shipto')
-                                    <p>{{ __('Ship To Address') }}</p>
-                                @else
-                                    <p>{{ __('Pick Up') }}</p>
-                                @endif
+                    <div class="summary-row">
+                        <span class="summary-key">Payment Method</span>
+                        <span class="summary-val">
+                            <span class="method-badge">{{ $order->method }}</span>
+                        </span>
+                    </div>
+
+                    <div class="summary-row grand-total-row">
+                        <span class="summary-key"><strong>Grand Total</strong></span>
+                        <span class="summary-val grand-total-val fw-bold">
+                            @php
+                                $grandTotal =
+                                    $order->pay_amount * $order->currency_value +
+                                    ($order->shipping_cost > 0 ? $order->shipping_cost * $order->currency_value : 0);
+                            @endphp
+                            {{ \PriceHelper::showOrderCurrencyPrice($grandTotal, $order->currency_sign) }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ✅ ADDRESS -->
+                <div class="address-section">
+
+                    {{-- Shipping Info --}}
+                    <div class="address-card">
+                        <div class="address-card-header">
+                            <div class="address-card-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                                        stroke="currentColor" stroke-width="1.5" />
+                                    <circle cx="12" cy="9" r="2.5" stroke="currentColor"
+                                        stroke-width="1.5" />
+                                </svg>
                             </div>
-
+                            <h6>Shipping Info</h6>
                         </div>
-                    @endif
+                        <div class="address-card-body">
+                            <div class="address-row">
+                                <span class="address-key">Name</span>
+                                <span class="address-val">{{ $order->customer_name }}</span>
+                            </div>
+                            <div class="address-row">
+                                <span class="address-key">Address</span>
+                                <span class="address-val">{{ $order->customer_address }}</span>
+                            </div>
+                            <div class="address-row">
+                                <span class="address-key">Phone</span>
+                                <span class="address-val">{{ $order->customer_phone }}</span>
+                            </div>
+                        </div>
+                    </div>
 
+                    {{-- Payment Info --}}
+                    <div class="address-card">
+                        <div class="address-card-header">
+                            <div class="address-card-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor"
+                                        stroke-width="1.5" />
+                                    <path d="M2 10h20" stroke="currentColor" stroke-width="1.5" />
+                                </svg>
+                            </div>
+                            <h6>Payment Info</h6>
+                        </div>
+                        <div class="address-card-body">
+                            <div class="address-row">
+                                <span class="address-key">Method</span>
+                                <span class="address-val">
+                                    <span class="info-badge badge-green">{{ $order->method }}</span>
+                                </span>
+                            </div>
+                            <div class="address-row">
+                                <span class="address-key">Delivery Charge</span>
+                                <span class="address-val">
+                                    @if ($order->shipping_cost <= 0)
+                                        <span class="info-badge badge-green">Free</span>
+                                    @else
+                                        <span
+                                            class="info-badge badge-amber">{{ \PriceHelper::showOrderCurrencyPrice($order->shipping_cost, $order->currency_sign) }}</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="address-row">
+                                <span class="address-key">Transaction</span>
+                                <span class="address-val txn-val">{{ $order->txnid ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
-                <div class="ordered-products wow-replaced" data-wow-delay=".1s">
-                    <h4>@lang('Ordered Products:')</h4>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr class="wow-replaced" data-wow-delay=".1s">
-                                    <th class="d-none d-lg-table-cell">@lang('Product Image')</th>
-                                    <th>@lang('Product Details')</th>
-                                    <th class="d-none d-lg-table-cell">@lang('Unit Price')</th>
-                                    <th class="d-none d-lg-table-cell">@lang('Total')</th>
-                                </tr>
-                            </thead>
-                            <tbody>
 
+                <!-- ✅ PRODUCT LIST -->
+                <div class="product-section">
+                    <div class="product-section-header">
+                        <div class="product-section-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linejoin="round" />
+                                <path d="M3 6h18M16 10a4 4 0 01-8 0" stroke="currentColor" stroke-width="1.5"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <h6>Ordered Products</h6>
+                        <span class="product-count">{{ count($tempcart->items) }} items</span>
+                    </div>
 
-                                @foreach ($tempcart->items as $product)
-                                    <tr class="wow-replaced" data-wow-delay=".1s">
-                                        <td colspan="1" class="product-img d-none d-lg-table-cell">
-                                            <img src="{{ asset('assets/images/products/' . $product['item']['photo']) }}"
-                                                alt="">
-                                        </td>
-                                        <td class="product-details">
-                                            <img src="{{ asset('assets/images/products/' . $product['item']['photo']) }}"
-                                                alt="" class="d-lg-none d-table-cell pb-24 small-device-img">
-                                            <h6>{{ $product['item']['name'] }}</h6>
-                                            <p><span>@lang('Quantity:')</span> {{ $product['qty'] }}</p>
-                                            {{-- <p><span>Size:</span>
-                                                @if (!empty($product['size']))
-                                                    <b>{{ __('Size') }}</b>:
-                                                    {{ $product['item']['measure'] }}{{ str_replace('-', '                                                                ', $product['size']) }}
-                                                    <br>
-                                                @endif
+                    <div class="product-list">
+                        @foreach ($tempcart->items as $product)
+                            <div class="product-item">
+                                <img src="{{ asset('assets/images/products/' . $product['item']['photo']) }}"
+                                    alt="{{ $product['item']['name'] }}"
+                                    onerror="this.src='{{ asset('assets/front/images/placeholder.png') }}'">
 
-                                            </p>
-                                            <p><span>@lang('Color:')</span>
+                                <div class="product-info">
+                                    <h6>{{ $product['item']['name'] }}</h6>
+                                    <span class="product-qty">Qty: {{ $product['qty'] }}</span>
+                                </div>
 
-                                                @if (!empty($product['color']))
-                                                    <div class="d-flex mt-2">
-                                                        <b>{{ __('Color') }}</b>: <span class="color-show-btn mt-1 ms-3" id="color-bar"
-                                                            style="background-color: #{{ $product['color'] == '' ? ' white' : $product['color'] }};"></span>
-                                                    </div>
-                                                @endif
-                                            </p> --}}
-
-                                            @if (!empty($product['keys']))
-                                                @foreach (array_combine(explode(',', $product['keys']), explode(',', $product['values'])) as $key => $value)
-                                                    <p><span>{{ ucwords(str_replace('_', ' ', $key)) }}:</span>
-                                                        {{ $value }}</p>
-                                                @endforeach
-                                            @endif
-
-                                            <p class="d-lg-none d-table-cell"><span>@lang('Unit Price:')</span>
-                                                {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
-                                            </p>
-                                            <p class="d-lg-none"><span>@lang('Total Price:')</span>{{ \PriceHelper::showCurrencyPrice($product['price'] * $order->currency_value) }}
-                                                <small>{{ $product['discount'] == 0 ? '' : '(' . $product['discount'] . '% ' . __('Off') . ')' }}</small>
-                                            </p>
-
-                                        </td>
-                                        <td class="d-none d-lg-table-cell">
-                                            {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
-                                        </td>
-                                        <td class="d-none d-lg-table-cell">
-                                            {{ \PriceHelper::showCurrencyPrice($product['price'] * $order->currency_value) }}
-                                            <small>{{ $product['discount'] == 0 ? '' : '(' . $product['discount'] . '% ' . __('Off') . ')' }}</small>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                <div class="product-price">
+                                    {{ \PriceHelper::showCurrencyPrice($product['price'] * $order->currency_value) }}
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
+
             </div>
+
         </div>
     </div>
 @endsection
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let target = {{ $order->loyalty_point ?? 0 }};
+        let count = 0;
+        let el = document.getElementById("loyaltyCounter");
+        let speed = Math.ceil(target / 40);
+        let interval = setInterval(() => {
+                count += speed;
+                if (count >= target) {
+                    count = target;
+                    clearInterval(interval);
+                }
+                el.innerText = count;
+            },
+            30);
+        setTimeout(() => {
+
+            confetti({
+                particleCount: 400,
+                spread: 120,
+                origin: {
+                    y: 0.3,
+                    x: 0.6
+                }
+            });
+        }, 0);
+    });
+</script>

@@ -5,6 +5,16 @@
         .order-table-wrap table#example2 {
             margin: 10px 20px;
         }
+
+        .discount-badge {
+            font-size: 11px;
+            font-weight: 500;
+            background: #fff8f0;
+            color: #b05f10;
+            border: 0.5px solid #f5d7b0;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
     </style>
 @endsection
 
@@ -63,7 +73,14 @@
                                             <td width="45%">{{ $order->shipping_title }}</td>
                                         </tr>
                                     @endif
-
+                                    <tr>
+                                        <th width="45%">{{ __('Subtotal') }}</th>
+                                        <td width="10%">:</td>
+                                        <td width="45%">
+                                            @php $total = $order->pay_amount  - $order->shipping_cost; @endphp
+                                            {{ \PriceHelper::showOrderCurrencyPrice($total, $order->currency_sign) }}
+                                        </td>
+                                    </tr>
                                     @if ($order->shipping_cost != 0)
                                         <tr>
                                             <th width="45%">{{ __('Shipping Cost') }}</th>
@@ -73,6 +90,56 @@
                                             </td>
                                         </tr>
                                     @endif
+                                    @if (($order->discount ?? 0) > 0)
+                                        <tr>
+                                            <th width="45%">{{ __('Discount') }}</th>
+                                            <td width="10%">:</td>
+                                            <td width="45%">
+                                                −
+                                                {{ \PriceHelper::showOrderCurrencyPrice($order->discount, $order->currency_sign) }}
+                                                <span class="discount-badge">
+                                                    @if ($order->discount_type == 'percent')
+                                                        % Off
+                                                    @elseif ($order->discount_type == 'amount')
+                                                        Fixed
+                                                    @elseif ($order->discount_type == 'loyalty_points')
+                                                        Points
+                                                    @endif
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                    @if (($order->discount ?? 0) > 0)
+                                        <tr>
+                                            <th width="45%">{{ __('Discount Type') }}</th>
+                                            <td width="10%">:</td>
+                                            <td width="45%">
+                                                @if ($order->discount_type == 'percent')
+                                                    % Off
+                                                @elseif ($order->discount_type == 'amount')
+                                                    Fixed
+                                                @elseif ($order->discount_type == 'loyalty_points')
+                                                    Loyalty Points
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endif
+
+
+                                    <tr>
+                                        <th width="45%">{{ __('Total Cost') }}</th>
+                                        <td width="10%">:</td>
+                                        <td width="45%">
+                                            <strong>
+                                                {{ \PriceHelper::showOrderCurrencyPrice(
+                                                    ($order->pay_amount + $order->wallet_price - $order->discount) * $order->currency_value,
+                                                    $order->currency_sign,
+                                                ) }}
+                                            </strong>
+                                        </td>
+                                    </tr>
+
+
 
                                     @if ($order->tax != 0)
                                         <tr>
@@ -113,16 +180,7 @@
                                         @endif
                                     @endif
 
-                                    <tr>
-                                        <th width="45%">{{ __('Total Cost') }}</th>
-                                        <td width="10%">:</td>
-                                        <td width="45%">
-                                            {{ \PriceHelper::showOrderCurrencyPrice(
-                                                ($order->pay_amount + $order->wallet_price) * $order->currency_value,
-                                                $order->currency_sign,
-                                            ) }}
-                                        </td>
-                                    </tr>
+
                                     <tr>
                                         <th width="45%">{{ __('Ordered Date') }}</th>
                                         <td width="10%">:</td>

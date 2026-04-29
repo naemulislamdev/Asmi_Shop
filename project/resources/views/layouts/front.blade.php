@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/datatables.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/glightbox.min.css">
-
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/pharmacy.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/style.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/custom.css">
@@ -1044,6 +1043,8 @@
                             if (products.length > 0) {
                                 let html = '';
                                 products.forEach(p => {
+                                    console.log(p);
+
                                     const productUrl =
                                         `{{ route('front.product', ':slug') }}`
                                         .replace(':slug', p.slug);
@@ -1052,7 +1053,7 @@
                                 <div class="search-item">
                                     <a href="${productUrl}">
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ asset('/assets/images/thumbnails') }}/${p.thumbnail}"
+                                            <img src="{{ asset('/assets/images/products') }}/${p.photo}"
                                             alt="" style="width:40px;height:40px;margin-right:10px;">
                                             <div>
                                                 <strong>${p.name}</strong><br>

@@ -719,7 +719,8 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input name="price" type="number" class="input-field"
-                                                    placeholder="{{ __('e.g 20') }}" required="" step="any" min="0">
+                                                    placeholder="{{ __('e.g 20') }}" required="" step="any"
+                                                    min="0">
                                             </div>
                                         </div>
 
@@ -814,6 +815,30 @@
                                                 </ul>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <label>{{ __('Video URL') }}
+                                                    <small>EX:https://www.youtube.com/embed/gqGbgfdfE</small></label>
+                                                <input type="url" name="video_url" id="video_url"
+                                                    class="input-field"
+                                                    placeholder="{{ __('Enter Product Video URL') }}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-lg-12 mt-3">
+                                                <label>{{ __('Product Manufacturing Date') }}
+                                                </label>
+                                                <input type="date" name="mfg_date" id="mfg_date" class="input-field"
+                                                    value="{{ date('Y-m-d') }}">
+                                            </div>
+                                            <div class="col-lg-12 mt-3">
+                                                <label>{{ __('Product Expiry Date') }}
+                                                </label>
+                                                <input type="date" name="exp_date" id="exp_date"
+                                                    class="input-field">
+                                            </div>
+                                        </div>
 
                                         <div class="row text-center">
                                             <div class="col-6 offset-3">
@@ -875,6 +900,9 @@
 @endsection
 
 @section('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('assets/admin/js/jquery.Jcrop.js') }}"></script>
     <script src="{{ asset('assets/admin/js/jquery.SimpleCropper.js') }}"></script>
     <script src="{{ asset('assets/admin/js/select2.js') }}"></script>

@@ -4,6 +4,16 @@
     .single-product-details-content-wrapper .add-btn-wrapper {
         width: 40%;
     }
+
+    .add-cart-btn.btn-info {
+        width: 50% !important;
+    }
+
+    .single-product-details-content-wrapper .gs-product-details-gallery-wrapper .main-img {
+        -o-object-fit: contain;
+        object-fit: contain;
+        cursor: zoom-in;
+    }
 </style>
 @section('content')
 
@@ -37,15 +47,16 @@
                     <div class="gs-product-details-gallery-wrapper">
                         <div class="product-main-slider">
                             <img src="{{ filter_var($productt->photo, FILTER_VALIDATE_URL) ? $productt->photo : asset('assets/images/products/' . $productt->photo) }}"
-                                alt="Thumb Image"
+                                alt="{{ $productt->name }}"
                                 data-zoom-image="{{ filter_var($productt->photo, FILTER_VALIDATE_URL) ? $productt->photo : asset('assets/images/products/' . $productt->photo) }}"
-                                class="main-img" alt="gallery-img">
+                                class="main-img glightbox" alt="gallery-img">
                             @foreach ($productt->galleries as $gal)
                                 <img src="{{ asset('assets/images/galleries/' . $gal->photo) }}"
                                     data-image="{{ asset('assets/images/galleries/' . $gal->photo) }}" class="main-img"
                                     alt="gallery-img">
                             @endforeach
                         </div>
+
 
                         <div class="product-nav-slider">
                             <img src="{{ filter_var($productt->photo, FILTER_VALIDATE_URL) ? $productt->photo : asset('assets/images/products/' . $productt->photo) }}"
@@ -76,56 +87,58 @@
                                         )
                                         : $productt->price;
                             @endphp
-                            <div class="price-wrapper mb-3">
-                                @if ($productt->discount > 0)
-                                    <h5 class="product-price" data-base-price="{{ $basePrice }}">
-                                        {{ \App\Helpers\PriceHelper::discountPrice($productt->price, $productt->discount, $productt->discount_type) }}
-                                        ৳
-                                    </h5>
-                                    <h5><del>{{ $productt->price }} ৳</del></h5>
-                                @else
-                                    <h5 class="product-price" data-base-price="{{ $basePrice }}">{{ $productt->price }}
-                                        ৳</h5>
-                                @endif
-
-
-                                @if ($productt->discount > 0)
-                                    @dd($productt->discount)
-                                    @if ($productt->discount_type == 'percent')
-                                        <span class="product-badge">
-                                            {{ $productt->discount }} %
-                                        </span>
-                                    @elseif($productt->discount_type == 'flat')
-                                        <span class="product-badge">
-                                            {{ $productt->discount }} ৳
-                                        </span>
+                            @if ($productt->stock > 0 || $productt->preordered == 2)
+                                <div class="price-wrapper mb-3">
+                                    @if ($productt->discount > 0)
+                                        <h5 class="product-price" data-base-price="{{ $basePrice }}">
+                                            {{ \App\Helpers\PriceHelper::discountPrice($productt->price, $productt->discount, $productt->discount_type) }}
+                                            ৳
+                                        </h5>
+                                        <h5><del>{{ $productt->price }} ৳</del></h5>
+                                    @else
+                                        <h5 class="product-price" data-base-price="{{ $basePrice }}">
+                                            {{ $productt->price }}
+                                            ৳</h5>
                                     @endif
-                                @endif
 
-                                @if ($productt->measure)
-                                    <h6 class="measure-product">
-                                        / Per
-                                        <select class="measure-select" data-measure-type="{{ $productt->measure }}">
-                                            @if ($productt->measure == 'KG')
-                                                <option value="1">1kg</option>
-                                                <option value="0.5">500gm</option>
-                                                <option value="0.25">250gm</option>
-                                            @elseif($productt->measure == 'LTR')
-                                                <option value="1">1L</option>
-                                                <option value="0.5">500ml</option>
-                                                <option value="0.25">250ml</option>
-                                            @elseif($productt->measure == 'PCS')
-                                                <option value="1">1p</option>
-                                                <option value="5">5p</option>
-                                                <option value="10">10p</option>
-                                            @endif
-                                        </select>
-                                    </h6>
-                                @endif
-                                <input type="hidden" id="product-id" data-base-pid="{{ $productt->id }}"
-                                    value="{{ $productt->id }}">
 
-                            </div>
+                                    @if ($productt->discount > 0)
+                                        @if ($productt->discount_type == 'percent')
+                                            <span class="product-badge">
+                                                {{ $productt->discount }} %
+                                            </span>
+                                        @elseif($productt->discount_type == 'flat')
+                                            <span class="product-badge">
+                                                {{ $productt->discount }} ৳
+                                            </span>
+                                        @endif
+                                    @endif
+
+                                    @if ($productt->measure)
+                                        <h6 class="measure-product">
+                                            / Per
+                                            <select class="measure-select" data-measure-type="{{ $productt->measure }}">
+                                                @if ($productt->measure == 'KG')
+                                                    <option value="1">1kg</option>
+                                                    <option value="0.5">500gm</option>
+                                                    <option value="0.25">250gm</option>
+                                                @elseif($productt->measure == 'LTR')
+                                                    <option value="1">1L</option>
+                                                    <option value="0.5">500ml</option>
+                                                    <option value="0.25">250ml</option>
+                                                @elseif($productt->measure == 'PCS')
+                                                    <option value="1">1p</option>
+                                                    <option value="5">5p</option>
+                                                    <option value="10">10p</option>
+                                                @endif
+                                            </select>
+                                        </h6>
+                                    @endif
+                                    <input type="hidden" id="product-id" data-base-pid="{{ $productt->id }}"
+                                        value="{{ $productt->id }}">
+
+                                </div>
+                            @endif
                             @if ($productt->start_date != null && $productt->end_date != null)
                                 <div class="mb-4 countdown" data-start="{{ $productt->start_date }}"
                                     data-end="{{ $productt->end_date }}">
@@ -337,8 +350,6 @@
                             $cart = Session::has('cart') ? Session::get('cart') : null;
                             $existingQty = 0;
                             $uniqueKey = null;
-                            $productSKU = null;
-                            $totalPrice = $cart->totalPrice;
 
                             if ($cart && $cart->items) {
                                 foreach ($cart->items as $key => $cItem) {
@@ -351,6 +362,17 @@
                             }
                         @endphp
 
+
+                        <!-- add to cart buy btn wrapper -->
+                        @if ($productt->stock <= 0)
+                            <div class="outofstock">
+                                @if ($productt->preordered == 2)
+                                    <h5>{{ __('Make a Pre Order !') }}</h5>
+                                @else
+                                    <h5>{{ __('Out of Stock !') }}</h5>
+                                @endif
+                            </div>
+                        @endif
 
                         {{-- 1taka dojon egg offer condition start --}}
                         @php
@@ -371,26 +393,14 @@
                         @endphp
                         {{-- 1taka dojon egg offer condition end --}}
 
-
-                        <!-- add to cart buy btn wrapper -->
-                        @if ($productt->stock < 0)
-                            <div class="outofstock">
-                                @if ($productt->preordered == 2)
-                                    <h5>{{ __('Make a Pre Order !') }}</h5>
-                                @else
-                                    <h5>{{ __('Out of Stock !') }}</h5>
-                                @endif
-                            </div>
-                        @endif
-
                         @if (
                             ($productt->stock > 0 || $productt->preordered == 2) &&
                                 ($productt->sku !== 'Chicken-Eggs' || ($productt->sku === 'Chicken-Eggs' && $cart && $effectiveTotal >= 2000)))
                             @if ($existingQty == 0)
                                 {{-- SHOW ADD TO BAG --}}
-                                <div class="d-block mt-auto add-btn-wrapper">
+                                <div class="w-100 d-block mt-auto add-btn-wrapper">
                                     <button
-                                        class="btn btn-sm add-cart-btn btn-info d-flex d-block justify-content-center align-items-center add_cart_details"
+                                        class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_details"
                                         data-href="{{ route('product.add.to.cart', $productt->id) }}"
                                         data-product-id="{{ $productt->id }}">
                                         <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
@@ -406,6 +416,10 @@
                                     <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                                 </div>
                             @endif
+                        @else
+                            <div class="alert alert-info mt-2">
+                                <small>2000 টাকার বেশি কেনাকাটা করলে ১ ডজন ডিম ১ টাকা দামে পাওয়া যাবে 🎉</small>
+                            </div>
                         @endif
 
                         <!-- wish-compare-report-wrapper -->
@@ -654,6 +668,84 @@
                                 @endif
 
                             </div>
+
+                        </div>
+                        <div class="product-video-content-area">
+                            @php
+
+                                $videoUrl = $productt->video_url;
+                                $embedUrl = '';
+                                $width = '100%'; // Default width
+                                $height = '500'; // Default height
+                                $col = '6'; // Default col
+                                $ratio = '56.25%'; // default (16:9)
+
+                                if (strpos($videoUrl, 'facebook.com') !== false) {
+                                    if (strpos($videoUrl, '/reel/') !== false) {
+                                        // Facebook Reel URL
+                                        $videoId = explode('/reel/', $videoUrl)[1];
+                                        $videoId = explode('?', $videoId)[0];
+                                        $embedUrl = "https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/watch/?v={$videoId}";
+                                        $height = '800'; // Facebook Reel height
+                                        $col = '4';
+                                        $ratio = '177.77%'; // 9:16 (vertical video)
+                                    } elseif (
+                                        strpos($videoUrl, 'watch?v=') !== false ||
+                                        strpos($videoUrl, '/watch/') !== false
+                                    ) {
+                                        // Facebook Watch Video URL
+                                        if (strpos($videoUrl, 'v=') !== false) {
+                                            $videoId = explode('v=', $videoUrl)[1];
+                                        } else {
+                                            $videoId = explode('/watch/', $videoUrl)[1];
+                                        }
+                                        $videoId = explode('&', $videoId)[0]; // Remove trailing query parameters
+                                        $embedUrl = "https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/watch/?v={$videoId}";
+                                        $height = '530'; // Facebook Watch video height
+                                        $ratio = '177.77%'; // 9:16 (vertical video)
+                                    }
+                                } elseif (
+                                    strpos($videoUrl, 'youtube.com') !== false ||
+                                    strpos($videoUrl, 'youtu.be') !== false
+                                ) {
+                                    if (strpos($videoUrl, 'youtube.com/watch') !== false) {
+                                        // Standard YouTube Video URL
+                                        $videoId = explode('v=', $videoUrl)[1];
+                                        $videoId = explode('&', $videoId)[0];
+                                        $embedUrl = "https://www.youtube.com/embed/{$videoId}";
+                                    } elseif (strpos($videoUrl, 'youtu.be') !== false) {
+                                        // Shortened YouTube URL
+                                        $videoId = explode('/', $videoUrl)[3];
+                                        $videoId = explode('?', $videoId)[0];
+                                        $embedUrl = "https://www.youtube.com/embed/{$videoId}";
+                                    } elseif (strpos($videoUrl, '/embed/') !== false) {
+                                        // YouTube Embed URL
+                                        $embedUrl = $videoUrl;
+                                    } elseif (strpos($videoUrl, 'shorts') !== false) {
+                                        // YouTube Shorts URL
+                                        //https://www.youtube.com/shorts/zIDDpjTJRjU?feature=share
+                                        $videoId = explode('/', $videoUrl)[4];
+                                        $videoId = explode('?', $videoId)[0];
+                                        $embedUrl = "https://www.youtube.com/shorts/{$videoId}";
+                                    }
+                                    // Adjust height for YouTube Shorts
+                                    if (strpos($videoUrl, 'shorts') !== false) {
+                                        $height = '700'; // YouTube Shorts height
+                                        $col = '4';
+                                    }
+                                }
+                            @endphp
+
+                            @if ($embedUrl)
+                                <div style="position: relative; width: 100%; padding-top: {{ $ratio }};">
+                                    <iframe
+                                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;"
+                                        src="{{ $embedUrl }}" title="Video Player"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                    </iframe>
+                                </div>
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -879,9 +971,6 @@
     </div>
     <!--  tab-product-des-wrapper end -->
 
-
-
-
     <!-- Related Products slider start -->
     <div class="gs-product-cards-slider-area wow-replaced" data-wow-delay=".1s">
         <div class="container">
@@ -928,10 +1017,6 @@
         </div>
     @endif
     <!-- More Products By Seller slider end -->
-
-
-
-
 
     <!-- Product report Modal Start -->
     @if (auth()->check())
