@@ -140,7 +140,7 @@
                         overflow-y: auto;
                         overflow-x: hidden;
                         background: #fff;
-                      
+
                         border-radius: 4px;
                         position: absolute;
                         width: 89%;
@@ -148,4 +148,5 @@
                   class="searchResults"></div>
           </div>
       </div>
+
   </header>

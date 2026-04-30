@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ConditionalOfferController;
 use App\Http\Controllers\Admin\CustomeOrderController;
 use App\Http\Controllers\Admin\DailySalesReportController;
 use App\Http\Controllers\Admin\JobApplicationController;
@@ -149,6 +150,17 @@ Route::prefix('admin')->group(function () {
         Route::get('/promo-offers/edit/{id}', 'edit')->name('admin-promo-offer-edit');
         Route::post('/promo-offers/update/{id}', 'update')->name('admin-promo-offer-update');
         Route::get('/promo-offers/delete/{id}', 'destroy')->name('admin-promo-offer-delete');
+    });
+
+    // Conditional offer routes
+    Route::controller(ConditionalOfferController::class)->group(function () {
+        Route::get('/conditional-offers', 'index')->name('admin-conditional-offer-index');
+        Route::get('/conditional-offers/create', 'create')->name('admin-conditional-offer-create');
+        Route::post('/conditional-offers/store', 'store')->name('admin-conditional-offer-store');
+        Route::get('/conditional-offers/edit/{id}', 'edit')->name('admin-conditional-offer-edit');
+        Route::post('/conditional-offers/update/{id}', 'update')->name('admin-conditional-offer-update');
+        Route::delete('/conditional-offers/delete/{id}', 'destroy')->name('admin-conditional-offer-delete');
+        Route::get('/conditional-offers/status/{id1}/{id2}', 'status')->name('admin-conditional-offer-status');
     });
 
     Route::group(['middleware' => ['permissions:reports', 'not.hr']], function () {

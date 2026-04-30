@@ -409,6 +409,11 @@
         .search-box input::placeholder {
             color: #1bb9cb;
         }
+
+        #popup-modal .modal-content {
+            background-color: transparent !important;
+            border: none !important;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
@@ -856,7 +861,6 @@
     <script src="{{ asset('assets/front') }}/js/slick.js"></script>
     <script src="{{ asset('assets/front') }}/js/swiper-bundle.min.js"></script>
     <script src="{{ asset('assets/front') }}/js/glightbox.min.js"></script>
-    <script src="{{ asset('assets/front') }}/js/jquery-ui.js"></script>
     <script src="{{ asset('assets/front') }}/js/nice-select.js"></script>
 
     <script src="{{ asset('assets/front') }}/js/wow.js"></script>
@@ -1249,6 +1253,28 @@
             });
         });
     </script>
+
+
 </body>
+
+<script>
+    @if (Request::is('/'))
+        document.addEventListener('DOMContentLoaded', function() {
+            function getCookie(name) {
+                let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+                return match ? match[2] : null;
+            }
+
+            if (!getCookie('popup_banner')) {
+                var el = document.getElementById('popup-modal');
+                if (el) {
+                    var myModal = new bootstrap.Modal(el);
+                    myModal.show();
+                    document.cookie = "popup_banner=off; max-age=60; path=/";
+                }
+            }
+        });
+    @endif
+</script>
 
 </html>

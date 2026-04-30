@@ -222,14 +222,16 @@
       <li>
           <a href="#affiliateprod" class="accordion-toggle wave-effect" data-toggle="collapse"
               aria-expanded="false">
-              <i class="icofont-opencart"></i>{{ __('Promo Offers') }}
+              <i class="icofont-sale-discount"></i>{{ __(' Offers') }}
           </a>
           <ul class="collapse list-unstyled" id="affiliateprod" data-parent="#accordion">
+
               <li>
-                  <a href="{{ route('admin-promo-offer-create') }}"><span>{{ __('Add Promo Offer') }}</span></a>
+                  <a href="{{ route('admin-promo-offer-index') }}"><span>{{ __('Promo Offers') }}</span></a>
               </li>
               <li>
-                  <a href="{{ route('admin-promo-offer-index') }}"><span>{{ __('All Promo Offers') }}</span></a>
+                  <a
+                      href="{{ route('admin-conditional-offer-index') }}"><span>{{ __('Conditional Offers') }}</span></a>
               </li>
           </ul>
       </li>
@@ -622,7 +624,7 @@
       <li>
           <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
                   class="fas fa-user-secret"></i>{{ __('Manage
-                                                                                                                                                                                                                                                                                                                                                                                                                                                          Staffs') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  Staffs') }}</a>
       </li>
 
       <li>
@@ -644,7 +646,7 @@
       <li>
           <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
                   class="fas fa-list-alt"></i>{{ __('Addon
-                                                                                                                                                                                                                                                                                                                                                                                                                                                          Manager') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  Manager') }}</a>
       </li>
 
       <li>
