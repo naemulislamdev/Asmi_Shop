@@ -26,7 +26,7 @@ class Cart extends Model
     }
 
     // ************** ADD TO CART *****************
-    public function add($item, $id, $finalPrice = null, $uniqueKey, $measureValue = '', $quantity)
+    public function add($item, $id, $finalPrice = null, $uniqueKey, $measureValue = '', $quantity, $isOffer = false)
     {
         $finalPrice = is_null($finalPrice) ? (float) $item->price : (float) $finalPrice;
 
@@ -50,6 +50,7 @@ class Cart extends Model
             'affilate_user' => 0,
             'measure_value' => $measureValue,
             'unique_key'  => $uniqueKey,
+            ' is_offer' => $isOffer,
         ];
 
         // If same uniqueKey already exists, use it (increase qty) otherwise keep default

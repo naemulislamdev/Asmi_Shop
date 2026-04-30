@@ -141,10 +141,14 @@ class CartController extends Controller
         // $data[0] = count($cart->items);
         // $data[1] = $cart->totalPrice;
         // $data[2] = $uniqueKey;
+
+        $offers = $this->getEligibleOffers($cart);
+
         return response()->json([
             'cart_count' => count($cart->items),
             'total_price' => $cart->totalPrice,
-            'unique_key' => $uniqueKey
+            'unique_key' => $uniqueKey,
+            'offers' => $offers
         ]);
     }
 
@@ -161,11 +165,14 @@ class CartController extends Controller
                 $cart->recalculateTotals();
                 Session::put('cart', $cart);
 
+                $offers = $this->getEligibleOffers($cart);
+
                 return response()->json([
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
                     'qty' => $cart->items[$key]['qty'],
                    // 'product_id' => $row['item']['id'],
+                    'offers' => $offers
                 ]);
             }
         }
@@ -196,12 +203,14 @@ class CartController extends Controller
                 // Recalculate totals
                 $cart->recalculateTotals();
                 Session::put('cart', $cart);
+                $offers = $this->getEligibleOffers($cart);
 
                 return response()->json([
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
                     'qty' => $updatedQty,
-                    'product_id' => $productId
+                    'product_id' => $productId,
+                    'offers' => $offers
                 ]);
             }
         }
@@ -217,13 +226,16 @@ class CartController extends Controller
 
         Session::put('cart', $cart);
 
+        $offers = $this->getEligibleOffers($cart);
+
         return response()->json([
             'status' => true,
             'html'   => view('includes.frontend.offcanvas-cart')->with([
                 'cartItems' => $cart->items
             ])->render(),
             'count'  => count($cart->items),
-            'total'  => $cart->totalPrice
+            'total'  => $cart->totalPrice,
+            'offers' => $offers
         ]);
     }
 
@@ -245,6 +257,66 @@ class CartController extends Controller
         }
 
         return back()->with('success', __('Item has been removed from cart.'));
+    }
+
+    private function getEligibleOffers($cart)
+    {
+        $offers = \DB::table('conditional_offers')->get();
+
+        $eligibleProducts = [];
+
+        // ✅ cart total (offer ছাড়া)
+        $cartTotal = collect($cart->items)
+            ->where('is_offer', '!=', true)
+            ->sum('price');
+
+        // ✅ cart sku list
+        $cartSkus = collect($cart->items)
+            ->pluck('item.sku')
+            ->toArray();
+
+        foreach ($offers as $offer) {
+
+            $offerProducts = json_decode($offer->offer_products, true);
+            $excludeSkus = json_decode($offer->exclude_product, true);
+
+            // 🔴 exclude check
+            if (!empty($excludeSkus) && array_intersect($cartSkus, $excludeSkus)) {
+                continue;
+            }
+
+            foreach ($offerProducts as $op) {
+
+                $amount = (float) $op['amount'];
+                $sku = $op['sku'];
+
+                // ✅ amount match
+                if ($cartTotal >= $amount) {
+
+                    $product = Product::where('sku', $sku)->first();
+
+                    if (!$product) continue;
+
+                    $eligibleProducts[] = [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'sku' => $product->sku,
+                        'price' => $product->price, // or fixed?
+                        'offer_price' => 0, // তুমি চাইলে 1tk / 2tk logic add করতে পারো
+                        'image' => $product->photo,
+                        'amount' => $amount
+                    ];
+                }
+            }
+        }
+
+        // 🔥 duplicate remove (same SKU multiple বার আসতে পারে)
+        $eligibleProducts = collect($eligibleProducts)
+            ->unique('sku')
+            ->values()
+            ->toArray();
+
+        return $eligibleProducts;
     }
 
     //////////////////////Chnage///////////////////////////

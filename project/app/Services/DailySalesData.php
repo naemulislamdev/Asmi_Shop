@@ -44,7 +44,7 @@ class DailySalesData
                     $products[$key] = [
                         'thumbnail' => $product['photo'] ?? '',
                         'name' => $product['name'] ?? '',
-                        'code' => $product['slug'] ?? '',
+                        'sku' => $product['sku'] ?? '',
                         'variation' => [
                             'Size' => $item['size'] ?? '',
                             'color' => $item['color'] ?? ''
@@ -66,7 +66,7 @@ class DailySalesData
             ->addIndexColumn()
 
             ->editColumn('thumbnail', function ($row) {
-                return '<img src="' . asset('assets/storage/product/thumbnail/' . $row['thumbnail']) . '" width="50">';
+                return '<img src="' . asset('assets/images/products/' . $row['thumbnail']) . '" width="50">';
             })
 
             ->editColumn('variation', function ($row) {

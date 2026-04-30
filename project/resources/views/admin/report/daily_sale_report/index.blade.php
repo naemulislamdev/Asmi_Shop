@@ -39,7 +39,7 @@
                                 <label for="order_status">Order Status</label>
                                 <select id="order_status" class="form-control" multiple>
                                     <option value="pending">Pending</option>
-                                    <option value="confirmed" selected>Confirmed</option>
+                                    <option value="completed" selected>Confirmed</option>
                                     <option value="processing">Processing</option>
                                     <option value="out_for_delivery">Out for delivery</option>
                                     <option value="delivered">Delivered</option>
@@ -122,7 +122,7 @@
                         </div>
 
                         <div class="table-responsive overflow-hidden">
-                            <table class="table" id="szbd-datatable">
+                            <table class="table" id="geniustable">
                                 <thead class="table-light">
                                     <tr>
                                         <th>SL</th>
@@ -234,7 +234,7 @@
                 });
             }
 
-            var table = $('#szbd-datatable').DataTable({
+            var table = $('#geniustable').DataTable({
                 processing: true,
                 serverSide: true,
                 scrollX: false,
