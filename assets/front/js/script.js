@@ -3,10 +3,10 @@ $(document).ready(function () {
   1. DATA BACKGROUND SET
   2. MOBILE MENU
   3. STICKY HEADER
-  4. SEARCH BAR 
+  4. SEARCH BAR
   5. NICE SELECT
-  6. WOW JS 
-  7. HIDE & SHOW PASSWORD 
+  6. WOW JS
+  7. HIDE & SHOW PASSWORD
   8. COUNTDOWN STARTS
   9. HERO SECTION SLIDER
   10. HOME CATE SLIDER
@@ -20,7 +20,7 @@ $(document).ready(function () {
   18. CHANGE FILE NAME OF FILE INPUT
   19. TOGGLING ADD PRODUCT FORM  BASED ON SELECTED PRODUCT TYPE
   20. APEXCHART
-         
+
     */
 
   //****** 1. DATA BACKGROUND SET ******//
@@ -154,7 +154,7 @@ $(document).ready(function () {
 
   //******  9. HERO SECTION SLIDER ******//
 
- $(".hero-slider-wrapper").slick({
+  $(".hero-slider-wrapper").slick({
     dots: true,
     infinite: true,
     speed: 500,
@@ -168,7 +168,7 @@ $(document).ready(function () {
       '<button title="Next" type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
   });
 
-$(".left-promo").slick({
+  $(".left-promo").slick({
     dots: true,
     infinite: false,
     speed: 1000,
@@ -193,7 +193,7 @@ $(".left-promo").slick({
     centerPadding: "0px",
   });
 
- /* 
+  /*
   ===================================
   Home  Coupon Slider
   ===================================
