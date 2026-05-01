@@ -17,10 +17,20 @@
 
         $effectiveTotal = $cart ? $cart->totalPrice - $oilPrice : 0;
     @endphp
+
+    @php
+        $offerMeta = session('offer_meta') ?? [
+            'all_offer_skus' => [],
+            'eligible_offer_skus' => [],
+        ];
+
+        $isOfferProduct = in_array($product->sku, $offerMeta['all_offer_skus']);
+        $isEligible = in_array($product->sku, $offerMeta['eligible_offer_skus']);
+    @endphp
     {{-- 1taka dojon egg offer condition end --}}
-    <div class="single-product">
+    <div class="single-product" data-sku="{{ $product->sku }}">
         <div class="img-wrapper">
-            <div class="discount-box ">
+            <div class="discount-box">
                 @if ($product->discount > 0)
                     @if ($product->discount_type == 'percent')
                         <span>
@@ -104,7 +114,7 @@
                     @else
                         @if ($product->type != 'Listing')
                             <div class="cart-ui overlay-ui">
-                                @if ($product->sku !== 'Chicken-Eggs' || ($product->sku === 'Chicken-Eggs' && $cart && $effectiveTotal >= 2000))
+                                @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
                                     @if ($existingQty == 0)
                                         <div class="overlay-add-btn" data-product-id="{{ $product->id }}">
                                             <button type="button" class="outofstock-box-2 add_cart_click"
@@ -196,7 +206,7 @@
                 {{-- add to cart and cart item quantity increment decrement buttons --}}
 
                 <div class="cart-ui normal-ui w-100">
-                    @if ($product->sku !== 'Chicken-Eggs' || ($product->sku === 'Chicken-Eggs' && $cart && $effectiveTotal >= 2000))
+                   @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
                         @if ($existingQty == 0)
                             <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
                                 <button

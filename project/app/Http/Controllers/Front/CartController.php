@@ -141,13 +141,18 @@ class CartController extends Controller
         // $data[0] = count($cart->items);
         // $data[1] = $cart->totalPrice;
         // $data[2] = $uniqueKey;
+        //dd($cart->items);
 
-        $offers = $this->getEligibleOffers($cart);
+        $offerMeta = $this->getOfferMeta($cart);
+        $offers = $this->getEligibleOfferProducts($cart);
+
+        Session::put('offer_meta', $offerMeta);
 
         return response()->json([
             'cart_count' => count($cart->items),
             'total_price' => $cart->totalPrice,
             'unique_key' => $uniqueKey,
+            'offer_meta' => $offerMeta,
             'offers' => $offers
         ]);
     }
@@ -165,13 +170,16 @@ class CartController extends Controller
                 $cart->recalculateTotals();
                 Session::put('cart', $cart);
 
-                $offers = $this->getEligibleOffers($cart);
+                $offerMeta = $this->getOfferMeta($cart);
+                $offers = $this->getEligibleOfferProducts($cart);
 
+                Session::put('offer_meta', $offerMeta);
                 return response()->json([
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
                     'qty' => $cart->items[$key]['qty'],
                    // 'product_id' => $row['item']['id'],
+                    'offer_meta' => $offerMeta,
                     'offers' => $offers
                 ]);
             }
@@ -203,13 +211,17 @@ class CartController extends Controller
                 // Recalculate totals
                 $cart->recalculateTotals();
                 Session::put('cart', $cart);
-                $offers = $this->getEligibleOffers($cart);
+                $offerMeta = $this->getOfferMeta($cart);
+                $offers = $this->getEligibleOfferProducts($cart);
+
+                Session::put('offer_meta', $offerMeta);
 
                 return response()->json([
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
                     'qty' => $updatedQty,
                     'product_id' => $productId,
+                    'offer_meta' => $offerMeta,
                     'offers' => $offers
                 ]);
             }
@@ -226,7 +238,10 @@ class CartController extends Controller
 
         Session::put('cart', $cart);
 
-        $offers = $this->getEligibleOffers($cart);
+        $offerMeta = $this->getOfferMeta($cart);
+        $offers = $this->getEligibleOfferProducts($cart);
+
+        Session::put('offer_meta', $offerMeta);
 
         return response()->json([
             'status' => true,
@@ -235,6 +250,7 @@ class CartController extends Controller
             ])->render(),
             'count'  => count($cart->items),
             'total'  => $cart->totalPrice,
+            'offer_meta' => $offerMeta,
             'offers' => $offers
         ]);
     }
@@ -259,38 +275,76 @@ class CartController extends Controller
         return back()->with('success', __('Item has been removed from cart.'));
     }
 
-    private function getEligibleOffers($cart)
+    private function getOfferMeta($cart)
     {
-        $offers = \DB::table('conditional_offers')->get();
+        $offers = \DB::table('conditional_offers')->where('is_active', true)->get();
 
-        $eligibleProducts = [];
+        $allOfferSkus = [];
+        $eligibleSkus = [];
 
-        // ✅ cart total (offer ছাড়া)
         $cartTotal = collect($cart->items)
             ->where('is_offer', '!=', true)
             ->sum('price');
 
-        // ✅ cart sku list
-        $cartSkus = collect($cart->items)
-            ->pluck('item.sku')
-            ->toArray();
+        $cartSkus = collect($cart->items)->pluck('item.sku')->toArray();
 
         foreach ($offers as $offer) {
 
             $offerProducts = json_decode($offer->offer_products, true);
-            $excludeSkus = json_decode($offer->exclude_product, true);
+            $excludeSkus = json_decode($offer->excluded_sku, true);
 
-            // 🔴 exclude check
+            foreach ($offerProducts as $op) {
+
+                $sku = $op['sku'];
+                $amount = (float)$op['amount'];
+
+                // সব offer sku collect
+                $allOfferSkus[] = $sku;
+
+                // exclude check
+                if (!empty($excludeSkus) && array_intersect($cartSkus, $excludeSkus)) {
+                    continue;
+                }
+
+                // eligible check
+                if ($cartTotal >= $amount) {
+                    $eligibleSkus[] = $sku;
+                }
+            }
+        }
+
+        return [
+            'all_offer_skus' => array_unique($allOfferSkus),
+            'eligible_offer_skus' => array_unique($eligibleSkus),
+        ];
+    }
+    private function getEligibleOfferProducts($cart)
+    {
+        $offers = \DB::table('conditional_offers')->where('is_active', true)->get();
+
+        $eligibleProducts = [];
+
+        $cartTotal = collect($cart->items)
+            ->where('is_offer', '!=', true)
+            ->sum('price');
+
+        $cartSkus = collect($cart->items)->pluck('item.sku')->toArray();
+
+        foreach ($offers as $offer) {
+
+            $offerProducts = json_decode($offer->offer_products, true);
+            $excludeSkus = json_decode($offer->excluded_sku, true);
+
+            // ❌ exclude check
             if (!empty($excludeSkus) && array_intersect($cartSkus, $excludeSkus)) {
                 continue;
             }
 
             foreach ($offerProducts as $op) {
 
-                $amount = (float) $op['amount'];
                 $sku = $op['sku'];
+                $amount = (float)$op['amount'];
 
-                // ✅ amount match
                 if ($cartTotal >= $amount) {
 
                     $product = Product::where('sku', $sku)->first();
@@ -301,22 +355,15 @@ class CartController extends Controller
                         'id' => $product->id,
                         'name' => $product->name,
                         'sku' => $product->sku,
-                        'price' => $product->price, // or fixed?
-                        'offer_price' => 0, // তুমি চাইলে 1tk / 2tk logic add করতে পারো
-                        'image' => $product->photo,
-                        'amount' => $amount
+                        'image' => asset('assets/images/thumbnails/' . $product->thumbnail),
+                        'price' => $product->price,
+                        'offer_price' => 0, // customize if needed
                     ];
                 }
             }
         }
 
-        // 🔥 duplicate remove (same SKU multiple বার আসতে পারে)
-        $eligibleProducts = collect($eligibleProducts)
-            ->unique('sku')
-            ->values()
-            ->toArray();
-
-        return $eligibleProducts;
+        return collect($eligibleProducts)->unique('sku')->values()->toArray();
     }
 
     //////////////////////Chnage///////////////////////////

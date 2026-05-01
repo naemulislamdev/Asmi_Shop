@@ -50,7 +50,7 @@ class Cart extends Model
             'affilate_user' => 0,
             'measure_value' => $measureValue,
             'unique_key'  => $uniqueKey,
-            ' is_offer' => $isOffer,
+            'is_offer' => $isOffer,
         ];
 
         // If same uniqueKey already exists, use it (increase qty) otherwise keep default

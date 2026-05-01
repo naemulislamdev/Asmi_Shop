@@ -415,6 +415,92 @@
             border: none !important;
         }
     </style>
+
+    <style>
+        .offer-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 340px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            overflow: hidden;
+            transform: translateX(120%);
+            transition: all 0.4s ease;
+        }
+
+        .offer-popup.show {
+            transform: translateX(0);
+        }
+
+        .offer-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: #fff;
+            padding: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .offer-header button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .offer-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .offer-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .offer-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .offer-info {
+            flex: 1;
+        }
+
+        .offer-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .offer-price {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .offer-btn {
+            background: #ff5722;
+            border: none;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .offer-btn:hover {
+            background: #e64a19;
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/customize.css">
@@ -454,8 +540,6 @@
     @endphp
     <!-- header area -->
     @include('includes.frontend.header')
-
-
 
     <!-- Desktop Sidebar Start -->
     <aside id="sidebar" class="sidebar active pt-4 shadow">
@@ -854,7 +938,14 @@
         </div> --}}
     </main>
 
+    <div id="offerPopup" class="offer-popup d-none">
+        <div class="offer-header">
+            <span>🎁 Special Offer Unlocked</span>
+            <button onclick="closeOfferPopup()">×</button>
+        </div>
 
+        <div id="offerList" class="offer-list"></div>
+    </div>
 
     <!--Esential Js Files-->
     <script src="{{ asset('assets/front') }}/js/jquery.min.js"></script>
