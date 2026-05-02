@@ -60,7 +60,7 @@
     const measureType = wrap.find(".measure-select").data("measure-type");
     const measureValue = parseFloat(wrap.find(".measure-select").val() || 1);
     const basePrice = parseFloat(
-      wrap.find(".product-price").data("base-price")
+      wrap.find(".product-price").data("base-price"),
     );
     const finalPrice = basePrice * measureValue;
 
@@ -79,8 +79,8 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
-        showOfferPopup(data.offers);
-    }
+          showOfferPopup(data.offers);
+        }
 
         const uniqueKey = data.unique_key;
 
@@ -142,8 +142,8 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
-        showOfferPopup(data.offers);
-    }
+          showOfferPopup(data.offers);
+        }
 
         // Change Add button → Qty UI
         const newQtyHTML = `
@@ -178,23 +178,21 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
-        showOfferPopup(data.offers);
-    }
+          showOfferPopup(data.offers);
+        }
 
         $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`).text(
-          qty + " "
+          qty + " ",
         );
 
         $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`).text(
-          qty + " "
+          qty + " ",
         );
       },
     });
   });
 
-
   $(document).on("click", ".qty-minus", function () {
-
     const wrap = $(this).closest("[data-unique-key]");
     const pid = wrap.data("product-id");
     const unique_key = wrap.data("unique-key");
@@ -211,8 +209,8 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
-        showOfferPopup(data.offers);
-    }
+          showOfferPopup(data.offers);
+        }
 
         if (qty <= 0) {
           // NORMAL UI RESET
@@ -240,11 +238,11 @@
         } else {
           // UPDATE BOTH UI
           $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`).text(
-            qty + " "
+            qty + " ",
           );
 
           $(`.qty-wrapper-overlay[data-product-id="${pid}"] .qty-text`).text(
-            qty + " "
+            qty + " ",
           );
         }
       },
@@ -267,7 +265,7 @@
         $(".cart-count").text(res.count);
 
         if (res.offers) {
-            showOfferPopup(res.offers);
+          showOfferPopup(res.offers);
         }
 
         const addRoute = getAddToCartRoute(pid);
@@ -304,93 +302,94 @@
 
   let offerMeta = {
     all_offer_skus: [],
-    eligible_offer_skus: []
-};
+    eligible_offer_skus: [],
+  };
 
   function updateCartUI(data) {
     $(".cart-count").html(data.cart_count);
     $(".total_price").html(data.total_price);
 
     if (data.offer_meta) {
-       offerMeta = data.offer_meta;
-        updateOfferUI();
+      offerMeta = data.offer_meta;
+      updateOfferUI();
     }
 
     if (data.offers) {
-        showOfferPopup(data.offers);
+      showOfferPopup(data.offers);
     }
 
     $(".cart-popup").load(mainurl + "/carts/view");
   }
   function updateOfferUI() {
-
     $(".single-product").each(function () {
+      let sku = $(this).data("sku"); // add this attribute
 
-        let sku = $(this).data("sku"); // add this attribute
+      let isOffer = offerMeta.all_offer_skus.includes(sku);
+      let isEligible = offerMeta.eligible_offer_skus.includes(sku);
 
-        let isOffer = offerMeta.all_offer_skus.includes(sku);
-        let isEligible = offerMeta.eligible_offer_skus.includes(sku);
-
-        if (isOffer && !isEligible) {
-            $(this).find(".add-btn-wrapper, .overlay-add-btn").hide();
-        } else {
-            $(this).find(".add-btn-wrapper, .overlay-add-btn").show();
-        }
+      if (isOffer && !isEligible) {
+        $(this).find(".add-btn-wrapper, .overlay-add-btn").hide();
+      } else {
+        $(this).find(".add-btn-wrapper, .overlay-add-btn").show();
+      }
     });
-}
+  }
 
   function reloadOffcanvasCart() {
     $(".offCanva-right-cartItems").load(mainurl + "/cart/offcanvas");
   }
-// End add to cart
-  let shownOffers = JSON.parse(localStorage.getItem('shownOffers')) || [];
+  // End add to cart
+  let shownOffers = JSON.parse(localStorage.getItem("shownOffers")) || [];
 
-function showOfferPopup(offers) {
-  console.log(localStorage.getItem('shownOffers'));
-  
+  function showOfferPopup(offers) {
+    console.log(localStorage.getItem("shownOffers"));
 
-    let newOffers = offers.filter(o => !shownOffers.includes(o.sku));
+    let newOffers = offers.filter((o) => !shownOffers.includes(o.sku));
 
     if (newOffers.length === 0) return;
 
-    let list = document.getElementById('offerList');
-    list.innerHTML = '';
+    let list = document.getElementById("offerList");
+    list.innerHTML = "";
 
-    newOffers.forEach(item => {
+    newOffers.forEach((item) => {
+      let url = routeTemplate.replace(":sku", item.sku);
 
-        let html = `
-            <div class="offer-item">
-                <img src="${item.image}" alt="">
-                <div class="offer-info">
-                    <div class="offer-title">${item.name}</div>
-                    <div class="offer-price">
-                        🔥 ${item.price ?? 0} Tk
-                    </div>
+      let html = `
+    <a href="${url}" class="offer-link">
+        <div class="offer-item">
+            <img src="${item.image}" alt="">
+
+            <div class="offer-info">
+                <div class="offer-title">${item.name}</div>
+
+                <div class="offer-price">
+                    🔥 ${item.price ?? 0} Tk
                 </div>
-                <button class="offer-btn"
-                    onclick="addOfferToCart(${item.id}, '${item.sku}')">
-                    Add
-                </button>
             </div>
-        `;
 
-        list.innerHTML += html;
+            <div class="offer-btn-wrapper">
+                <span class="offer-btn">Add</span>
+            </div>
+        </div>
+    </a>
+    `;
 
-        shownOffers.push(item.sku);
+      list.innerHTML += html;
+      shownOffers.push(item.sku);
     });
 
-    localStorage.setItem('shownOffers', JSON.stringify(shownOffers));
+    localStorage.setItem("shownOffers", JSON.stringify(shownOffers));
 
-    let popup = document.getElementById('offerPopup');
-    popup.classList.remove('d-none');
+    let popup = document.getElementById("offerPopup");
+    popup.classList.remove("d-none");
 
-    setTimeout(() => popup.classList.add('show'), 50);
+    setTimeout(() => popup.classList.add("show"), 50);
 
     // auto hide after 10 sec
     setTimeout(() => {
-        popup.classList.remove('show');
+      popup.classList.remove("show");
     }, 10000);
-}
+  }
 
   //End add to cart
 })(jQuery);

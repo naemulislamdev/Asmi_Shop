@@ -17,7 +17,6 @@ use Svg\Tag\Rect;
 
 class CartController extends Controller
 {
-
     public function cartCheckout(Request $request)
     {
         if (Session::has('already')) {
@@ -178,7 +177,7 @@ class CartController extends Controller
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
                     'qty' => $cart->items[$key]['qty'],
-                   // 'product_id' => $row['item']['id'],
+                    // 'product_id' => $row['item']['id'],
                     'offer_meta' => $offerMeta,
                     'offers' => $offers
                 ]);
@@ -365,6 +364,7 @@ class CartController extends Controller
 
         return collect($eligibleProducts)->unique('sku')->values()->toArray();
     }
+
 
     //////////////////////Chnage///////////////////////////
 }

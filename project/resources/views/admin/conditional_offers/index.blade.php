@@ -76,13 +76,18 @@
                                                 @endforeach
 
                                             </td>
+
                                             <td>
                                                 <span
                                                     class="text-danger fw-bold">৳{{ number_format($offer->offer_price, 0) }}</span>
                                                 <small class="text-muted">× {{ $offer->offer_quantity }}</small>
                                             </td>
                                             <td>
-                                                @forelse($offer->excluded_sku ? json_decode($offer->excluded_sku) : [] as $ex)
+                                                @php
+                                                    $excludedSkus = json_decode($offer->excluded_sku, true) ?? [];
+                                                @endphp
+
+                                                @forelse($excludedSkus as $ex)
                                                     <span class="badge badge-success me-1">{{ $ex }}</span>
                                                 @empty
                                                     <span class="text-muted small">কোনোটি নেই</span>

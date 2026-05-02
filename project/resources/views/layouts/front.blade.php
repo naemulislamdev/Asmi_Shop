@@ -500,6 +500,8 @@
         .offer-btn:hover {
             background: #e64a19;
         }
+
+        /* header changes 1 May 26 */
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
@@ -1031,7 +1033,9 @@
 
     @yield('script')
     @stack('scripts')
-
+    <script>
+        const routeTemplate = "{{ route('front.conditional-product', ':sku') }}";
+    </script>
     <script>
         var cateSlider = new Swiper(".home-category-slider", {
             slidesPerView: 6,
@@ -1348,24 +1352,5 @@
 
 </body>
 
-<script>
-    @if (Request::is('/'))
-        document.addEventListener('DOMContentLoaded', function() {
-            function getCookie(name) {
-                let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-                return match ? match[2] : null;
-            }
-
-            if (!getCookie('popup_banner')) {
-                var el = document.getElementById('popup-modal');
-                if (el) {
-                    var myModal = new bootstrap.Modal(el);
-                    myModal.show();
-                    document.cookie = "popup_banner=off; max-age=60; path=/";
-                }
-            }
-        });
-    @endif
-</script>
 
 </html>

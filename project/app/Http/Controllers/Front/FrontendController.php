@@ -1027,6 +1027,7 @@ class FrontendController extends Controller
     public function careerStore(Request $request)
     {
 
+
         $request->validate([
             'full_name'  => 'required|string|max:255',
             'email'      => 'required|email|max:255',
@@ -1060,5 +1061,11 @@ class FrontendController extends Controller
     {
         $career = Job::where("slug", $slug)->first();
         return view("career.career_details", compact('career'));
+    }
+
+    public function conditioalProduct($sku)
+    {
+        $prods = Product::where("sku", $sku)->where("status", 1)->paginate(20);
+        return view("includes.frontend.conditional_product", compact('prods'));
     }
 }

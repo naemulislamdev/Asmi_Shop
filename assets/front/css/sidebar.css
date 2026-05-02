@@ -597,9 +597,6 @@ ul {
   .product-cart-offcanvas .offcanvas {
     top: var(--header-height, 110px);
   }
-  .logo_Bar {
-    gap: 45px !important;
-  }
   .main-content {
     margin-top: 135px;
   }
@@ -612,14 +609,52 @@ ul {
   .cart-item {
     grid-template-columns: 40px 60px 2fr 44px 30px;
   }
+  /* 1may */
+  .logo_Bar {
+    gap: 32px !important;
+  }
+  .login-btn.btn {
+    margin-left: 155px;
+  }
 }
-
+.conditonalNotification .dropdown-menu {
+  margin-left: -216px !important;
+  padding-left: 0 !important;
+  max-width: 260px;
+}
+.conditonalNotification .dropdown-item {
+  display: flex !important;
+  align-items: center;
+}
+.conditonalNotification .dropdown-item span {
+  font-size: 14px;
+  text-wrap: wrap;
+  display: inline-block;
+  margin-left: 10px;
+}
+.conditonalNotification .dropdown .btn-check:checked + .btn,
+.btn.active,
+.btn.show,
+.btn:first-child:active,
+:not(.btn-check) + .btn:active {
+  color: #fff !important;
+  background-color: #fff !important;
+  border-color: #fff !important;
+}
+.conditonalNotification .dropdown-toggle::after {
+  margin-left: 0 !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-radius: 0 !important;
+}
+.conditonalNotification .dropdown-menu > li:last-child {
+  border-bottom: 2px solid transparent;
+}
 @media (max-width: 992px) {
   .mobile-offcanvas {
     top: 114px;
-  }
-  .logo_Bar {
-    gap: 45px !important;
   }
 }
 

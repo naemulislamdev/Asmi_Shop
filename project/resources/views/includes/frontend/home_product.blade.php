@@ -86,7 +86,7 @@
 
             <a href="{{ route('front.product', $product->slug) }}">
                 <img class="product-img"
-                    src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/noimage.png') }}"
+                    src="{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}"
                     alt="product img">
             </a>
             @if ($product->stock <= 0)
@@ -206,7 +206,7 @@
                 {{-- add to cart and cart item quantity increment decrement buttons --}}
 
                 <div class="cart-ui normal-ui w-100">
-                   @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
+                    @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
                         @if ($existingQty == 0)
                             <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
                                 <button

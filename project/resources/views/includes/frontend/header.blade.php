@@ -1,5 +1,5 @@
   <header class="header shadow">
-      <div class="container-fluid">
+      <div class="container-fluid position-relative">
           <!-- Desktop Logo, Menubar, Search Start -->
           <div class="d-flex align-items-center justify-content-between px-1 px-lg-3 container-fluid">
               <div class="d-flex align-items-center gap-3 logo_Bar">
@@ -23,51 +23,6 @@
                       </div>
                   </div>
               </div>
-              {{-- <div class="search-box d-none d-lg-block">
-                  <form action="{{ route('front.search') }}" method="GET">
-
-                      <input autocomplete="off" type="text" name="search" class="searchInput"
-                          placeholder="Search for products (e.g. milk, rice, meat, fish)" />
-                  </form>
-
-                  <div style=" min-height: 0; max-height: 300px;
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        background: #fff;
-                        border: 1px solid #ddd;
-                        border-radius: 4px;
-                        position: absolute;
-                        width: 100%;
-                        z-index: 9999;"
-                      class="searchResults"></div>
-              </div> --}}
-              {{--
-              <div class="search-box  container position-relative">
-                  <form action="{{ route('front.search') }}" method="GET">
-
-                      <input autocomplete="off" type="text" name="search" class="searchInput form-control"
-                          placeholder="Search for products (e.g" />
-
-                      <!-- Animated text -->
-                      <div class="placeholder-animation">
-                          <span id="slideText">Fish</span>
-                          )
-                      </div>
-
-                  </form>
-
-                  <div style=" min-height: 0; max-height: 300px;
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        background: #fff;
-                        border: 1px solid #ddd;
-                        border-radius: 4px;
-                        position: absolute;
-                        width: 100%;
-                        z-index: 9999;"
-                      class="searchResults"></div>
-              </div> --}}
-
               <div class="search-box d-none d-lg-block  container position-relative">
                   <form action="{{ route('front.search') }}" method="GET">
 
@@ -95,34 +50,55 @@
 
 
               @if (Auth::guard('web')->check())
-                  <a class="btn login-btn" href="{{ route('user-dashboard') }}"><i class="fa fa-user-circle"
+                  <a class="btn btn-sm login-btn" href="{{ route('user-dashboard') }}"><i class="fa fa-user-circle"
                           aria-hidden="true"></i> @lang('Dashboard')</a>
               @else
-                  <a href="{{ route('user.login') }}" class="btn login-btn"> <i class="fa fa-sign-in"
+                  <a href="{{ route('user.login') }}" class="btn btn-sm login-btn"> <i class="fa fa-sign-in"
                           aria-hidden="true"></i> @lang('Login')</a>
               @endif
+              <div class="ms-0 ms-lg-3 conditonalNotification">
+                  <div class="dropdown position-static ms-0 ml-md-3 position-relative">
+                      <button class="btn p-0 border-0 bg-transparent dropdown-toggle" type="button"
+                          data-bs-toggle="dropdown">
+                          <img style="height: 30px; width: auto;"
+                              src="{{ asset('assets/front/images/notification.gif') }}" alt="">
+
+                          <span style="top: 0; left: 35px"
+                              class="position-absolute translate-middle badge rounded-pill bg-primary">
+                              {{ 3 }}
+                          </span>
+                      </button>
+
+                      <ul class="dropdown-menu dropdown-menu-end shadow" style="margin-left: -98px !important;">
+                          <li>
+                              <a class="dropdown-item" href="{{ route('front.conditional-product', 'gala3900') }}">
+                                  <img style="width: 40px; height: auto;"
+                                      src="{{ asset('assets/front/images/sp_offer.png') }}" alt="">
+                                  <span> offer name here 1</span>
+                              </a>
+                          </li>
+                          <li>
+                              <a class="dropdown-item" href="#">
+                                  <img style="width: 40px; height: auto;"
+                                      src="{{ asset('assets/front/images/sp_offer.png') }}" alt="">
+                                  <span> offer name here 2</span>
+                              </a>
+                          </li>
+                          <li>
+                              <a class="dropdown-item" href="#">
+                                  <img style="width: 40px; height: auto;"
+                                      src="{{ asset('assets/front/images/sp_offer.png') }}" alt="">
+                                  <span> offer name here 3</span>
+                              </a>
+                          </li>
+
+                      </ul>
+                  </div>
+
+              </div>
           </div>
           <!-- Desktop Logo, Menubar, Search  End-->
-
-          <!-- mobile search will appear below automatically -->
-          {{-- <div class="search-box d-lg-none container">
-              <form action="{{ route('front.search') }}" method="GET">
-
-                  <input autocomplete="off" type="text" name="search" class="searchInput"
-                      placeholder="Search for products " />
-              </form>
-              <div style="max-height: 300px;
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        background: #fff;
-                        border: 1px solid #ddd;
-                        border-radius: 4px;
-                        position: absolute;
-                        width: 89%;
-                        z-index: 9999;"
-                  class="searchResults"></div>
-          </div> --}}
-          <div class="search-box d-blcok d-lg-none  container position-relative">
+          <div class="search-box d-block d-lg-none  container position-relative px-0 ">
               <form action="{{ route('front.search') }}" method="GET">
 
                   <input autocomplete="off" type="text" name="search" class="searchInput form-control"
@@ -146,7 +122,10 @@
                         width: 89%;
                         z-index: 9999;"
                   class="searchResults"></div>
+
+
           </div>
+
       </div>
 
   </header>

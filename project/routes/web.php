@@ -8,6 +8,7 @@ use App\Http\Controllers\Front\FeedController;
 use App\Http\Controllers\Front\FrontendController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
+use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\PharmacyController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,11 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     });
 
     // pharmacy Routes end
+
+    /* Conditional offer product route start*/
+    Route::get('/conditonal-product/{sku}', 'Front\FrontendController@conditioalProduct')->name("front.conditional-product");
+    /* Conditional offer product route End*/
+
 
     Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
     Route::get('/', [FrontendController::class, 'index'])->name('front.index');

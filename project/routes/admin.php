@@ -1092,7 +1092,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN CAREER SECTION ------------
 
-    Route::middleware('hr.only')->prefix('career')->name('career.')->controller(JobController::class)->group(function () {
+    Route::prefix('career')->name('career.')->controller(JobController::class)->group(function () {
         Route::get('/jobs', 'index')->name('jobs');
         Route::get('/jobs/datatables', 'datatables')->name('job-datatables');
         Route::get('/jobs/create', 'create')->name('job-create');
@@ -1103,7 +1103,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/jobs/status/{id1}/{id2}', 'status')->name('job-status');
         Route::delete('/jobs/delete/{id}', 'delete')->name('job-delete');
     });
-    Route::middleware('hr.only')->prefix('career')->name('career.')->controller(JobDepartmentController::class)->group(function () {
+    Route::prefix('career')->name('career.')->controller(JobDepartmentController::class)->group(function () {
         Route::get('/departments', 'index')->name('departments');
         Route::get('/department/datatables', 'departmentDatatables')->name('department-datatables');
         Route::get('/department/status/{id1}/{id2}', 'status')->name('department-status');
@@ -1112,7 +1112,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/department/update', 'update')->name('department-update');
         Route::delete('/department/delete/{id}', 'delete')->name('department-delete');
     });
-    Route::middleware('hr.only')->prefix('career')->name('career.')->controller(JobApplicationController::class)->group(function () {
+    Route::prefix('career')->name('career.')->controller(JobApplicationController::class)->group(function () {
         Route::get('/applications', 'index')->name('applications');
         Route::get('/application/datatables', 'datatable')->name('application-datatables');
         Route::post('/application/status', 'status')->name('application-status');

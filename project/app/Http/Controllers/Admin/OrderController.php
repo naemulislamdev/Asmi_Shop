@@ -610,27 +610,79 @@ class OrderController extends AdminBaseController
     }
 
     //*** POST Request
+    // public function update(Request $request, $id)
+    // {
+
+    //     $data = Order::findOrFail($id);
+    //     $input = $request->all();
+
+
+    //     if ($request->has('status')) {
+    //         $data->payment_status = $input['payment_status'];
+    //         $data->status = $input['status'];
+    //         if ($input['status'] == 'cancelled') {
+    //             if ($data->user) {
+    //                 $data->user->decrement('wallet_points', $data->loyalty_point);
+    //             }
+    //         }
+
+    //         if ($input['status'] == 'completed') {
+    //             if ($data->user) {
+    //                 $data->user->increment('wallet_points', $data->loyalty_point);
+    //             }
+    //         }
+    //         $data->update();
+
+    //         if ($request->track_text) {
+    //             $title = ucwords($request->status);
+    //             $ck = OrderTrack::where('order_id', '=', $id)->where('title', '=', $title)->first();
+    //             if ($ck) {
+    //                 $ck->order_id = $id;
+    //                 $ck->title = $title;
+    //                 $ck->text = $request->track_text;
+    //                 $ck->update();
+    //             } else {
+    //                 $data = new OrderTrack;
+    //                 $data->order_id = $id;
+    //                 $data->title = $title;
+    //                 $data->text = $request->track_text;
+    //                 $data->save();
+    //             }
+    //         }
+    //         $msg = __('Status Updated Successfully.');
+    //         return response()->json($msg);
+    //     }
+
+
+    //     $data->update($input);
+    //     $msg = __('Data Updated Successfully.');
+    //     return redirect()->back()->with('success', $msg);
+    // }
     public function update(Request $request, $id)
     {
         //--- Logic Section
         $data = Order::findOrFail($id);
         $input = $request->all();
 
-
         if ($request->has('status')) {
             $data->payment_status = $input['payment_status'];
             $data->status = $input['status'];
+
+            // ✅ Fix: Ensure loyalty_point is a valid numeric value
+            $loyaltyPoint = (int) ($data->loyalty_point ?? 0);
+
             if ($input['status'] == 'cancelled') {
-                if ($data->user) {
-                    $data->user->decrement('wallet_points', $data->loyalty_point);
+                if ($data->user && $loyaltyPoint > 0) {
+                    $data->user->decrement('wallet_points', $loyaltyPoint);
                 }
             }
 
             if ($input['status'] == 'completed') {
-                if ($data->user) {
-                    $data->user->increment('wallet_points', $data->loyalty_point);
+                if ($data->user && $loyaltyPoint > 0) {
+                    $data->user->increment('wallet_points', $loyaltyPoint);
                 }
             }
+
             $data->update();
 
             if ($request->track_text) {
@@ -642,17 +694,17 @@ class OrderController extends AdminBaseController
                     $ck->text = $request->track_text;
                     $ck->update();
                 } else {
-                    $data = new OrderTrack;
-                    $data->order_id = $id;
-                    $data->title = $title;
-                    $data->text = $request->track_text;
-                    $data->save();
+                    $track = new OrderTrack;  // ✅ Also fixed: was reusing $data variable
+                    $track->order_id = $id;
+                    $track->title = $title;
+                    $track->text = $request->track_text;
+                    $track->save();
                 }
             }
+
             $msg = __('Status Updated Successfully.');
             return response()->json($msg);
         }
-
 
         $data->update($input);
         $msg = __('Data Updated Successfully.');

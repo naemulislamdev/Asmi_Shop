@@ -373,29 +373,7 @@
                                 @endif
                             </div>
                         @endif
-
-                        {{-- 1taka dojon egg offer condition start --}}
-                        @php
-                            $cart = session('cart');
-
-                            $oilPrice = 0;
-
-                            if ($cart && $cart->items) {
-                                foreach ($cart->items as $key => $cItem) {
-                                    // 👉 Oil SKU check (item object এর ভিতর)
-                                    if (trim($cItem['item']->sku) === '00000437') {
-                                        $oilPrice += $cItem['price'] * $cItem['qty'];
-                                    }
-                                }
-                            }
-
-                            $effectiveTotal = $cart ? $cart->totalPrice - $oilPrice : 0;
-                        @endphp
-                        {{-- 1taka dojon egg offer condition end --}}
-
-                        @if (
-                            ($productt->stock > 0 || $productt->preordered == 2) &&
-                                ($productt->sku !== 'Chicken-Eggs' || ($productt->sku === 'Chicken-Eggs' && $cart && $effectiveTotal >= 2000)))
+                        @if ($productt->stock > 0 || $productt->preordered == 2)
                             @if ($existingQty == 0)
                                 {{-- SHOW ADD TO BAG --}}
                                 <div class="w-100 d-block mt-auto add-btn-wrapper">
@@ -416,11 +394,22 @@
                                     <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                                 </div>
                             @endif
-                        @else
-                            <div class="alert alert-info mt-2">
-                                <small>2000 টাকার বেশি কেনাকাটা করলে ১ ডজন ডিম ১ টাকা দামে পাওয়া যাবে 🎉</small>
-                            </div>
                         @endif
+                        <div class="alert alert-info mt-2 mb-2 py-1" style="padding: 10px">
+                            <small>১০০০ টাকার কেনাকাটায় ২ কেজি আলু ফ্রি 🥔🎉</small>
+                        </div>
+                        <div class="alert alert-info mt-2 mb-2 py-1" style="padding: 10px">
+                            <small>২০০০ টাকার বেশি কেনাকাটা করলে ১ ডজন ডিম ১ টাকা দামে পাওয়া যাবে 🎉</small>
+                        </div>
+
+
+                        <div class="alert alert-info mt-2 mb-2 py-1" style="padding: 10px">
+                            <small>২৫০০ টাকার বেশি কেনাকাটায় ১ লিটার সয়াবিন তেল মাত্র ১ টাকায় 🔥</small>
+                        </div>
+
+                        <div class="alert alert-info mt-2 mb-2 py-1" style="padding: 10px">
+                            <small>৫০০০ টাকার কেনাকাটায় ২ লিটার সয়াবিন তেল মাত্র ২ টাকায় 💥</small>
+                        </div>
 
                         <!-- wish-compare-report-wrapper -->
                         <div class="wish-compare-report-wrapper">

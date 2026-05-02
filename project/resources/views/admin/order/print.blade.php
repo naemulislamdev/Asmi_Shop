@@ -51,7 +51,7 @@
 
         .inv-label p {
             font-size: 12px;
-            color: #6b7280;
+            color: #111;
             margin-top: 4px;
         }
 
@@ -73,7 +73,7 @@
         .inv-meta-box h6 {
             font-size: 10px;
             font-weight: 600;
-            color: #9ca3af;
+            color: #111;
             text-transform: uppercase;
             letter-spacing: 0.07em;
             margin-bottom: 10px;
@@ -81,7 +81,7 @@
 
         .inv-meta-box p {
             font-size: 12px;
-            color: #374151;
+            color: #111;
             line-height: 1.8;
         }
 
@@ -123,10 +123,11 @@
             background: #f9fafb;
         }
 
+
         .inv-table tbody td {
-            padding: 12px 14px;
+            padding: 4px 14px;
             color: #374151;
-            vertical-align: top;
+            vertical-align: center;
             font-size: 12px;
         }
 
@@ -151,8 +152,12 @@
         }
 
         .detail-row strong {
-            color: #374151;
+            color: #050507;
             font-weight: 500;
+        }
+
+        .detail-row {
+            color: #111;
         }
 
         .color-dot {
@@ -188,13 +193,13 @@
         }
 
         .sum-label {
-            color: #6b7280;
+            color: #111;
             text-align: right;
             width: 70%;
         }
 
         .sum-value {
-            color: #111827;
+            color: #111;
             font-weight: 600;
             text-align: right;
             white-space: nowrap;
@@ -245,6 +250,10 @@
             color: #15803d;
         }
 
+        .inv_table {
+            margin-bottom: 50px;
+        }
+
         /* ── Footer ── */
         .inv-footer {
             margin-top: 40px;
@@ -257,7 +266,7 @@
 
         .inv-footer p {
             font-size: 11px;
-            color: #9ca3af;
+            color: #111;
         }
 
         .inv-footer .thank-you {
@@ -358,13 +367,13 @@
                         <div class="product-name">{{ $product['item']['name'] }}</div>
                     </td>
                     <td>
-                        @if ($product['size'])
+                        @if (!empty($product['size']))
                             <div class="detail-row">
                                 <strong>{{ __('Size') }}:</strong>
                                 {{ str_replace('-', ' ', $product['size']) }}
                             </div>
                         @endif
-                        @if ($product['color'])
+                        @if (!empty($product['color']))
                             <div class="detail-row">
                                 <strong>{{ __('Color') }}:</strong>
                                 <span class="color-dot" style="background:#{{ $product['color'] }};"></span>
