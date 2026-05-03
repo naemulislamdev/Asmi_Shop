@@ -79,8 +79,15 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
-          showOfferPopup(data.offers);
+
+        showOfferPopup(data.offers);
+        updateOfferHeader(data.offers);
+
+        // reset shownOffers if empty
+        if (data.offers.length === 0) {
+            lastShownOffers = [];
         }
+    }
 
         const uniqueKey = data.unique_key;
 
@@ -141,9 +148,16 @@
         updateCartUI(data);
         reloadOffcanvasCart();
 
-        if (data.offers) {
-          showOfferPopup(data.offers);
+       if (data.offers) {
+
+        showOfferPopup(data.offers);
+        updateOfferHeader(data.offers);
+
+        // reset shownOffers if empty
+        if (data.offers.length === 0) {
+            lastShownOffers = [];
         }
+    }
 
         // Change Add button → Qty UI
         const newQtyHTML = `
@@ -177,9 +191,16 @@
         $(".total_price").text(data.total_price);
         reloadOffcanvasCart();
 
-        if (data.offers) {
-          showOfferPopup(data.offers);
+       if (data.offers) {
+
+        showOfferPopup(data.offers);
+        updateOfferHeader(data.offers);
+
+        // reset shownOffers if empty
+        if (data.offers.length === 0) {
+            lastShownOffers = [];
         }
+    }
 
         $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`).text(
           qty + " ",
@@ -209,8 +230,15 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
-          showOfferPopup(data.offers);
+
+        showOfferPopup(data.offers);
+        updateOfferHeader(data.offers);
+
+        // reset shownOffers if empty
+        if (data.offers.length === 0) {
+            lastShownOffers = [];
         }
+    }
 
         if (qty <= 0) {
           // NORMAL UI RESET
@@ -265,8 +293,15 @@
         $(".cart-count").text(res.count);
 
         if (res.offers) {
-          showOfferPopup(res.offers);
+
+        showOfferPopup(res.offers);
+        updateOfferHeader(res.offers);
+
+        // reset shownOffers if empty
+        if (res.offers.length === 0) {
+            lastShownOffers = [];
         }
+    }
 
         const addRoute = getAddToCartRoute(pid);
 
@@ -314,8 +349,15 @@
       updateOfferUI();
     }
 
-    if (data.offers) {
-      showOfferPopup(data.offers);
+   if (data.offers) {
+
+        showOfferPopup(data.offers);
+        updateOfferHeader(data.offers);
+
+        // reset shownOffers if empty
+        if (data.offers.length === 0) {
+            lastShownOffers = [];
+        }
     }
 
     $(".cart-popup").load(mainurl + "/carts/view");
@@ -339,57 +381,69 @@
     $(".offCanva-right-cartItems").load(mainurl + "/cart/offcanvas");
   }
   // End add to cart
-  let shownOffers = JSON.parse(localStorage.getItem("shownOffers")) || [];
+ let lastShownOffers = [];
 
-  function showOfferPopup(offers) {
-    console.log(localStorage.getItem("shownOffers"));
+function showOfferPopup(offers) {
 
-    let newOffers = offers.filter((o) => !shownOffers.includes(o.sku));
+    let newOffers = offers.filter(o => !lastShownOffers.includes(o.sku));
 
     if (newOffers.length === 0) return;
 
     let list = document.getElementById("offerList");
     list.innerHTML = "";
 
-    newOffers.forEach((item) => {
-      let url = routeTemplate.replace(":sku", item.sku);
+    newOffers.forEach(item => {
 
-      let html = `
-    <a href="${url}" class="offer-link">
-        <div class="offer-item">
-            <img src="${item.image}" alt="">
+        let url = routeTemplate.replace(":sku", item.sku);
 
-            <div class="offer-info">
-                <div class="offer-title">${item.name}</div>
-
-                <div class="offer-price">
-                    🔥 ${item.price ?? 0} Tk
+        list.innerHTML += `
+        <a href="${url}" class="offer-link">
+            <div class="offer-item">
+                <img src="${item.image}">
+                <div class="offer-info">
+                    <div>${item.name}</div>
+                    <div>🔥 ${item.price} Tk</div>
                 </div>
             </div>
-
-            <div class="offer-btn-wrapper">
-                <span class="offer-btn">Add</span>
-            </div>
-        </div>
-    </a>
-    `;
-
-      list.innerHTML += html;
-      shownOffers.push(item.sku);
+        </a>`;
+        
+        lastShownOffers.push(item.sku);
     });
-
-    localStorage.setItem("shownOffers", JSON.stringify(shownOffers));
 
     let popup = document.getElementById("offerPopup");
     popup.classList.remove("d-none");
+    popup.classList.add("show");
 
-    setTimeout(() => popup.classList.add("show"), 50);
+    setTimeout(() => popup.classList.remove("show"), 10000);
+}
 
-    // auto hide after 10 sec
-    setTimeout(() => {
-      popup.classList.remove("show");
-    }, 10000);
-  }
+// Update offer header count
+function updateOfferHeader(offers) {
+
+    // count update
+    $(".conditonalNotification .badge").text(offers.length);
+
+    let html = '';
+
+    offers.forEach(item => {
+
+        let url = routeTemplate.replace(":sku", item.sku);
+
+        html += `
+        <li>
+            <a class="dropdown-item" href="${url}">
+                <img style="width:40px" src="${item.image}">
+                <span>${item.name}</span>
+            </a>
+        </li>`;
+    });
+
+    if (offers.length === 0) {
+        html = `<li class="text-center p-2">No Offers</li>`;
+    }
+
+    $(".conditonalNotification .dropdown-menu").html(html);
+}
 
   //End add to cart
 })(jQuery);

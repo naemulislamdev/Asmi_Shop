@@ -58,6 +58,9 @@
               @endif
               <div class="ms-0 ms-lg-3 conditonalNotification">
                   <div class="dropdown position-static ms-0 ml-md-3 position-relative">
+                      @php
+                          $offers = session('offers', []);
+                      @endphp
                       <button class="btn p-0 border-0 bg-transparent dropdown-toggle" type="button"
                           data-bs-toggle="dropdown">
                           <img style="height: 30px; width: auto;"
@@ -65,36 +68,25 @@
 
                           <span style="top: 0; left: 35px"
                               class="position-absolute translate-middle badge rounded-pill bg-primary">
-                              {{ 3 }}
+                              {{ count($offers) }}
                           </span>
                       </button>
 
                       <ul class="dropdown-menu dropdown-menu-end shadow" style="margin-left: -98px !important;">
-                          <li>
-                              <a class="dropdown-item" href="{{ route('front.conditional-product', 'gala3900') }}">
-                                  <img style="width: 40px; height: auto;"
-                                      src="{{ asset('assets/front/images/sp_offer.png') }}" alt="">
-                                  <span> offer name here 1</span>
-                              </a>
-                          </li>
-                          <li>
-                              <a class="dropdown-item" href="#">
-                                  <img style="width: 40px; height: auto;"
-                                      src="{{ asset('assets/front/images/sp_offer.png') }}" alt="">
-                                  <span> offer name here 2</span>
-                              </a>
-                          </li>
-                          <li>
-                              <a class="dropdown-item" href="#">
-                                  <img style="width: 40px; height: auto;"
-                                      src="{{ asset('assets/front/images/sp_offer.png') }}" alt="">
-                                  <span> offer name here 3</span>
-                              </a>
-                          </li>
+                          @forelse($offers as $offer)
+                              <li>
+                                  <a class="dropdown-item"
+                                      href="{{ route('front.conditional-product', $offer['sku']) }}">
+                                      <img style="width: 40px;" src="{{ $offer['image'] }}">
+                                      <span>{{ $offer['name'] }}</span>
+                                  </a>
+                              </li>
+                          @empty
+                              <li class="text-center p-2">No Offers</li>
+                          @endforelse
 
                       </ul>
                   </div>
-
               </div>
           </div>
           <!-- Desktop Logo, Menubar, Search  End-->

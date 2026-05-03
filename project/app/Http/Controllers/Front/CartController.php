@@ -120,8 +120,14 @@ class CartController extends Controller
             return response()->json('digital');
         }
 
+        $offer = $this->getOfferMeta($cart);
+
+        $isOffer = in_array($prod->sku, $offer['eligible_offer_skus']);
+
+        $is_offer = $isOffer ? true : false;
+
         // Add to cart (pass finalPrice & measureValue)
-        $cart->add($prod, $prod->id, $finalPrice, $uniqueKey, $measureValue, $quantity);
+        $cart->add($prod, $prod->id, $finalPrice, $uniqueKey, $measureValue, $quantity, $is_offer);
 
         // Use the same uniqueKey to inspect the cart row
 
@@ -146,6 +152,7 @@ class CartController extends Controller
         $offers = $this->getEligibleOfferProducts($cart);
 
         Session::put('offer_meta', $offerMeta);
+        Session::put('offers', $offers);
 
         return response()->json([
             'cart_count' => count($cart->items),
@@ -173,6 +180,7 @@ class CartController extends Controller
                 $offers = $this->getEligibleOfferProducts($cart);
 
                 Session::put('offer_meta', $offerMeta);
+                Session::put('offers', $offers);
                 return response()->json([
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
@@ -214,6 +222,7 @@ class CartController extends Controller
                 $offers = $this->getEligibleOfferProducts($cart);
 
                 Session::put('offer_meta', $offerMeta);
+                Session::put('offers', $offers);
 
                 return response()->json([
                     'cart_count' => count($cart->items),
@@ -241,6 +250,7 @@ class CartController extends Controller
         $offers = $this->getEligibleOfferProducts($cart);
 
         Session::put('offer_meta', $offerMeta);
+        Session::put('offers', $offers);
 
         return response()->json([
             'status' => true,
@@ -334,7 +344,7 @@ class CartController extends Controller
             $offerProducts = json_decode($offer->offer_products, true);
             $excludeSkus = json_decode($offer->excluded_sku, true);
 
-            // ❌ exclude check
+            // exclude check
             if (!empty($excludeSkus) && array_intersect($cartSkus, $excludeSkus)) {
                 continue;
             }
@@ -350,11 +360,13 @@ class CartController extends Controller
 
                     if (!$product) continue;
 
+                    $pImage = $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/noimage.png');
+
                     $eligibleProducts[] = [
                         'id' => $product->id,
                         'name' => $product->name,
                         'sku' => $product->sku,
-                        'image' => asset('assets/images/thumbnails/' . $product->thumbnail),
+                        'image' => $pImage,
                         'price' => $product->price,
                         'offer_price' => 0, // customize if needed
                     ];

@@ -974,6 +974,9 @@
 
         });
     </script>
+    <script>
+    var routeTemplate = "{{ route('front.conditional-product', ':sku') }}";
+</script>
 
     <script>
         "use strict";

@@ -137,10 +137,20 @@
                                 <div class="row mt-3">
                                     <div class="col-12">
                                         <label>Excluded Product SKU</label>
+                                        @php
+                                            // ✅ Safe decode (always array)
+                                            $excludedSkus = [];
+
+                                            if (!empty($offer->excluded_sku)) {
+                                                $decoded = json_decode($offer->excluded_sku, true);
+                                                $excludedSkus = is_array($decoded) ? $decoded : [];
+                                            }
+                                        @endphp
+
                                         <select class="form-control select2" name="excluded_sku[]" multiple>
                                             @foreach ($products as $product)
                                                 <option value="{{ $product->sku }}"
-                                                    {{ in_array($product->sku, old('excluded_sku', json_decode($offer->excluded_sku ?? '[]'))) ? 'selected' : '' }}>
+                                                    {{ in_array($product->sku, old('excluded_sku', $excludedSkus)) ? 'selected' : '' }}>
                                                     {{ $product->name }} | {{ $product->sku }}
                                                 </option>
                                             @endforeach

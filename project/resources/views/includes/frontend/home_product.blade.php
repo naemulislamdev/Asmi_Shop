@@ -1,21 +1,24 @@
+<style>
+    .qty-btn.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+</style>
 <div
     class="{{ isset($class) ? $class : 'col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-3' }} {{ request()->is('search') ? 'mb-3' : '' }} ">
     {{-- 1taka dojon egg offer condition start --}}
     @php
         $cart = session('cart');
 
-        $oilPrice = 0;
+        $isOfferItem = false;
 
-        if ($cart && $cart->items) {
-            foreach ($cart->items as $key => $cItem) {
-                // 👉 Oil SKU check (item object এর ভিতর)
-                if (trim($cItem['item']->sku) === '00000437') {
-                    $oilPrice += $cItem['price'] * $cItem['qty'];
-                }
+    if ($cart && $cart->items) {
+        foreach ($cart->items as $cItem) {
+            if ($cItem['item']->id == $product->id) {
+                $isOfferItem = $cItem['is_offer'] ?? false;
             }
         }
-
-        $effectiveTotal = $cart ? $cart->totalPrice - $oilPrice : 0;
+    }
     @endphp
 
     @php
@@ -42,7 +45,6 @@
                         </span>
                     @endif
                 @endif
-
             </div>
 
             @if (Auth::check())
@@ -142,7 +144,7 @@
                                             <span class="h3 text-white qty-text">{{ $existingQty }}</span>
 
                                             <button
-                                                class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle">
+                                                class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle" {{ $isOfferItem ? 'disabled' : '' }}>
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -221,7 +223,7 @@
                                 data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
                                 <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                                 <span class="qty-text">{{ $existingQty }} in Bag</span>
-                                <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
+                                <button class="qty-btn qty-plus" {{ $isOfferItem ? 'disabled' : '' }}><i class="fas fa-plus"></i></button>
                             </div>
                         @endif
                     @endif
