@@ -36,10 +36,10 @@ class AuthController extends Controller
   {
     try {
       $rules = [
-        'fullname' => 'required',
-        'email' => 'required|email|unique:users',
+        'fullname' => 'nullable|string|max:255',
+        'email' => 'nullable|email|unique:users',
         'phone' => 'required',
-        'address' => 'required',
+        'address' => 'nullable',
         'password' => 'required'
       ];
 
@@ -104,7 +104,8 @@ class AuthController extends Controller
   {
     try {
       $rules = [
-        'email' => 'required',
+        'phone' => 'nullable|unique:users',
+        'email' => 'nullable|email|unique:users',
         'password' => 'required'
       ];
 
@@ -113,7 +114,7 @@ class AuthController extends Controller
         return response()->json(['status' => false, 'data' => [], 'error' => $validator->errors()]);
       }
 
-      $credentials = request(['email', 'password']);
+      $credentials = request(['phone','email', 'password']);
 
 
       if (!$token = auth()->attempt($credentials)) {

@@ -31,195 +31,84 @@ class CheckoutController extends Controller
 {
     public function checkout(Request $request)
     {
-        //return $request->all();
-
         try {
 
-            $datas = ['id', 'qty', 'size', 'size_qty', 'size_key', 'size_price', 'color', 'keys', 'values', 'prices'];
             $input = $request->all();
 
+            // ✅ Decode items safely
+            $items = is_string($input['items'])
+                ? json_decode($input['items'], true)
+                : $input['items'];
 
-            $items = $input['items'];
-
-            if (gettype($items) == 'string') {
-                $items = json_decode($items, true);
-            }
-
-
-            $new_cart = new Cart(null);
-
-            foreach ($items as $key => $item) {
-                if (array_keys($item) == $datas) {
-                    //return $input['currency_code'];
-                    $this->addtocart($new_cart, $input['currency_code'], $item['id'], $item['qty'], $item['size'], $item['color'], $item['size_qty'], $item['size_price'], $item['size_key'], $item['keys'], $item['values'], $item['prices'], $input['affilate_user']);
-                }
-            }
-
-            $cart = new Cart($new_cart);
-
+            $cart = new Cart(null);
             $gs = Generalsetting::find(1);
 
-            $currency_code = $input['currency_code'];
-
-            if (!empty($currency_code)) {
-                $curr = Currency::where('name', '=', $currency_code)->first();
-                if (empty($curr)) {
-                    $curr = Currency::where('is_default', '=', 1)->first();
-                }
-            } else {
-                $curr = Currency::where('is_default', '=', 1)->first();
-            }
-
-            OrderHelper::license_check($cart); // For License Checking
-
-
-            $t_cart = new Cart($cart);
-            $new_cart = [];
-            $new_cart['totalQty'] = $t_cart->totalQty;
-            $new_cart['totalPrice'] = $t_cart->totalPrice;
-            $new_cart['items'] = $t_cart->items;
-            $new_cart = json_encode($new_cart);
-
-
-
-            $temp_affilate_users = OrderHelper::product_affilate_check($cart); // For Product Based Affilate Checking
-            $affilate_users = $temp_affilate_users == null ? null : json_encode($temp_affilate_users);
-
-
-            foreach ($cart->items as $key => $prod) {
-
-                if (!empty($prod['item']['license']) && !empty($prod['item']['license_qty'])) {
-                    foreach ($prod['item']['license_qty'] as $ttl => $dtl) {
-
-                        if ($dtl != 0) {
-
-                            $dtl--;
-                            $produc = Product::find($prod['item']['id']);
-                            $temp = $produc->license_qty;
-                            $temp[$ttl] = $dtl;
-                            $final = implode(',', $temp);
-                            $produc->license_qty = $final;
-                            $produc->update();
-                            $temp = $produc->license;
-                            $license = $temp[$ttl];
-                            $cart->MobileupdateLicense($key, $license);
-                        }
-                    }
+            foreach ($items as $item) {
+                if ($this->validCartItem($item)) {
+                    $this->addtocart(
+                        $cart,
+                        $input['currency_code'],
+                        $item['id'],
+                        $item['qty'],
+                        $item['size'],
+                        $item['color'],
+                        $item['size_qty'],
+                        $item['size_price'],
+                        $item['size_key'],
+                        $item['keys'],
+                        $item['values'],
+                        $item['prices'],
+                        $input['affilate_user'] ?? null
+                    );
                 }
             }
 
-            $t_cart = new Cart($cart);
+            $curr = Currency::where('name', $input['currency_code'] ?? '')
+                ->first() ?? Currency::where('is_default', 1)->first();
 
+            $cartData = [
+                'totalQty' => $cart->totalQty,
+                'totalPrice' => $cart->totalPrice,
+                'items' => $cart->items,
+            ];
 
-            $orderCalculate = PriceHelper::getOrderTotal($input, $t_cart);
+            $affilate_users = optional(OrderHelper::product_affilate_check($cart))
+                ? json_encode(OrderHelper::product_affilate_check($cart))
+                : null;
 
-            if (isset($orderCalculate['success']) && $orderCalculate['success'] == false) {
-                return redirect()->back()->with('unsuccess', $orderCalculate['message']);
+            $orderCalculate = PriceHelper::getOrderTotal($input, $cart);
+
+            if (!empty($orderCalculate['success']) && !$orderCalculate['success']) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $orderCalculate['message']
+                ]);
             }
 
-            if ($gs->multiple_shipping == 0) {
-                $orderTotal = $orderCalculate['total_amount'];
-                $shipping = $orderCalculate['shipping'];
-                $packeing = $orderCalculate['packeing'];
-                $is_shipping = $orderCalculate['is_shipping'];
-                // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-                // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-                // $vendor_ids = $orderCalculate['vendor_ids'];
-
-                $input['shipping_title'] = @$shipping->title;
-                $input['vendor_shipping_id'] = @$shipping->id;
-                $input['packing_title'] = @$packeing->title;
-                $input['vendor_packing_id'] = @$packeing->id;
-                $input['shipping_cost'] = @$shipping->price ?? 0;
-                $input['packing_cost'] = @$packeing->price ?? 0;
-                $input['is_shipping'] = $is_shipping;
-                // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-                // $input['vendor_packing_ids'] = $vendor_packing_ids;
-                // $input['vendor_ids'] = $vendor_ids;
-            } else {
-
-
-                // multi shipping
-
-                $orderTotal = $orderCalculate['total_amount'];
-                $shipping = $orderCalculate['shipping'];
-                $packeing = $orderCalculate['packeing'];
-                $is_shipping = $orderCalculate['is_shipping'];
-                // $vendor_shipping_ids = $orderCalculate['vendor_shipping_ids'];
-                // $vendor_packing_ids = $orderCalculate['vendor_packing_ids'];
-                // $vendor_ids = $orderCalculate['vendor_ids'];
-                $shipping_cost = $orderCalculate['shipping_cost'];
-                $packing_cost = $orderCalculate['packing_cost'];
-
-                // $input['shipping_title'] = $vendor_shipping_ids;
-                // $input['vendor_shipping_id'] = $vendor_shipping_ids;
-                // $input['packing_title'] = $vendor_packing_ids;
-                // $input['vendor_packing_id'] = $vendor_packing_ids;
-                $input['shipping_cost'] = $shipping_cost;
-                $input['packing_cost'] = $packing_cost;
-                $input['is_shipping'] = $is_shipping;
-                // $input['vendor_shipping_ids'] = $vendor_shipping_ids;
-                // $input['vendor_packing_ids'] = $vendor_packing_ids;
-                // $input['vendor_ids'] = $vendor_ids;
-                unset($input['shipping']);
-                unset($input['packeging']);
-            }
-
-
-            $order = new Order;
-
-            $input['user_id'] = $request->user_id ? $request->user_id : null;
+            $order = new Order();
+            $input['user_id'] = $request->user_id ?? null;
             $input['order_source'] = 'Mobile Apps';
-
-            $input['cart'] = $new_cart;
+            $input['cart'] = json_encode($cartData);
             $input['affilate_users'] = $affilate_users;
+
             $input['currency_name'] = $curr->name;
             $input['currency_sign'] = $curr->sign;
             $input['currency_value'] = $curr->value;
-            $input['pay_amount'] = $orderTotal / $curr->value;
-            $input['order_number'] ='a'. rand(10000, 99999);
-            $input['wallet_price'] = $request->wallet_price / $curr->value;
 
-            if (@$input['tax_type'] == 'state_tax') {
-                if (@$input['tax_type'] == 'state_tax') {
-                    $input['tax_location'] = State::findOrFail($input['tax'])->state;
-                } else {
-                    $input['tax_location'] = Country::findOrFail($input['tax'])->country_name;
-                }
-            }
+            $input['pay_amount'] = $orderCalculate['total_amount'] / $curr->value;
+            $input['order_number'] = 'A' . now()->timestamp . rand(100, 999);
 
+            $input['wallet_price'] = ($request->wallet_price ?? 0) / $curr->value;
 
-
-            $state = State::where('id', $input['tax'])->first();
-            if ($state) {
-                $total = $cart->totalPrice;
-                $tax = $total * $state->tax / 100;
-            }
-
-
-
-            $input['tax'] = $tax ?? 0;
-
-            if (Session::has('affilate')) {
-                $val = $request->total / $curr->value;
-                $val = $val / 100;
-                $sub = $val * $gs->affilate_charge;
-                if ($temp_affilate_users != null) {
-                    $t_sub = 0;
-                    foreach ($temp_affilate_users as $t_cost) {
-                        $t_sub += $t_cost['charge'];
-                    }
-                    $sub = $sub - $t_sub;
-                }
-                if ($sub > 0) {
-                    $user = OrderHelper::affilate_check(Session::get('affilate'), $sub, $input['dp']); // For Affiliate Checking
-                    $input['affilate_user'] = Session::get('affilate');
-                    $input['affilate_charge'] = $sub;
-                }
-            }
+            $input['tax'] = $this->calculateTax($cart, $input);
 
             $order->fill($input)->save();
-            $order->tracks()->create(['title' => 'Pending', 'text' => 'You have successfully placed your order.']);
+
+            $order->tracks()->create([
+                'title' => 'Pending',
+                'text' => 'Order placed successfully'
+            ]);
+
             $order->notifications()->create();
 
 
@@ -227,15 +116,17 @@ class CheckoutController extends Controller
                 if ($gs->is_reward == 1) {
                     $num = $order->pay_amount;
                     $rewards = Reward::get();
+                    $smallest = [];
                     foreach ($rewards as $i) {
                         $smallest[$i->order_amount] = abs($i->order_amount - $num);
                     }
 
-                    asort($smallest);
-
-                    $final_reword = Reward::where('order_amount', key($smallest))->first();
-                    if ($final_reword) {
-                        Auth::guard('api')->user()->update(['reward' => (Auth::guard('api')->user()->reward + $final_reword->reward)]);
+                    if (!empty($smallest)) {
+                        asort($smallest);
+                        $final_reword = Reward::where('order_amount', key($smallest))->first();
+                        if ($final_reword) {
+                            Auth::user()->update(['reward' => (Auth::user()->reward + $final_reword->reward)]);
+                        }
                     }
                 }
             }
