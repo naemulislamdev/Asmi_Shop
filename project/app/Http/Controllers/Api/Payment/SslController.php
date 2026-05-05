@@ -33,7 +33,7 @@ class SslController extends Controller
 
         $txnid = "SSLCZ_TXN_" . uniqid();
 
-        $order->pay_amount = round($item_amount / $order->currency_value, 2);
+        $order->pay_amount = round($order->pay_amount, 2);
         $order['method'] = $request->method;
         $order['txnid'] = $txnid;
 
@@ -72,14 +72,16 @@ class SslController extends Controller
             $direct_api_url = "https://securepay.sslcommerz.com/gwprocess/v3/api.php";
         }
 
+        $isSandbox = (int) ($paydata['sandbox_check'] ?? 0) === 1;
+
         $handle = curl_init();
         curl_setopt($handle, CURLOPT_URL, $direct_api_url);
-        curl_setopt($handle, CURLOPT_TIMEOUT, 30);
-        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($handle, CURLOPT_TIMEOUT, 15);
+        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($handle, CURLOPT_POST, 1);
         curl_setopt($handle, CURLOPT_POSTFIELDS, $post_data);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false); # KEEP IT FALSE IF YOU RUN FROM LOCAL PC
+        curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, !$isSandbox);
 
         $content = curl_exec($handle);
         $code = curl_getinfo($handle, CURLINFO_HTTP_CODE);

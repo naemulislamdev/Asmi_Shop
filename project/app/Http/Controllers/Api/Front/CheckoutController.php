@@ -24,6 +24,7 @@ use App\Models\User;
 use App\Models\VendorOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
@@ -41,14 +42,27 @@ class CheckoutController extends Controller
                 : $input['items'];
 
             $cart = new Cart(null);
-            $gs = Generalsetting::find(1);
+            $gs = Generalsetting::cached();
+
+            $curr = Currency::where('name', $input['currency_code'] ?? '')
+                ->first() ?? Currency::where('is_default', 1)->first();
+
+            $productIds = collect($items)
+                ->filter(fn($i) => $this->validCartItem($i))
+                ->pluck('id')
+                ->all();
+
+            $productMap = Product::whereIn('id', $productIds)
+                ->get(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes'])
+                ->keyBy('id');
 
             foreach ($items as $item) {
-                if ($this->validCartItem($item)) {
+                if ($this->validCartItem($item) && isset($productMap[$item['id']])) {
                     $this->addtocart(
                         $cart,
-                        $input['currency_code'],
-                        $item['id'],
+                        $curr,
+                        $gs,
+                        $productMap[$item['id']],
                         $item['qty'],
                         $item['size'],
                         $item['color'],
@@ -63,18 +77,14 @@ class CheckoutController extends Controller
                 }
             }
 
-            $curr = Currency::where('name', $input['currency_code'] ?? '')
-                ->first() ?? Currency::where('is_default', 1)->first();
-
             $cartData = [
                 'totalQty' => $cart->totalQty,
                 'totalPrice' => $cart->totalPrice,
                 'items' => $cart->items,
             ];
 
-            $affilate_users = optional(OrderHelper::product_affilate_check($cart))
-                ? json_encode(OrderHelper::product_affilate_check($cart))
-                : null;
+            $affilateData = OrderHelper::product_affilate_check($cart);
+            $affilate_users = !empty($affilateData) ? json_encode($affilateData) : null;
 
             $orderCalculate = PriceHelper::getOrderTotal($input, $cart);
 
@@ -112,28 +122,15 @@ class CheckoutController extends Controller
             $order->notifications()->create();
 
 
-            if (Auth::guard('api')->check()) {
+            $apiUser = Auth::guard('api')->user();
+            if ($apiUser) {
                 if ($gs->is_reward == 1) {
-                    $num = $order->pay_amount;
-                    $rewards = Reward::get();
-                    $smallest = [];
-                    foreach ($rewards as $i) {
-                        $smallest[$i->order_amount] = abs($i->order_amount - $num);
-                    }
-
-                    if (!empty($smallest)) {
-                        asort($smallest);
-                        $final_reword = Reward::where('order_amount', key($smallest))->first();
-                        if ($final_reword) {
-                            Auth::user()->update(['reward' => (Auth::user()->reward + $final_reword->reward)]);
-                        }
+                    $final_reword = Reward::orderByRaw('ABS(order_amount - ?)', [$order->pay_amount])->first();
+                    if ($final_reword) {
+                        $apiUser->update(['reward' => $apiUser->reward + $final_reword->reward]);
                     }
                 }
-            }
-
-
-            if (Auth::guard('api')->check()) {
-                Auth::guard('api')->user()->update(['balance' => (Auth::guard('api')->user()->balance - $order->wallet_price)]);
+                $apiUser->update(['balance' => $apiUser->balance - $order->wallet_price]);
             }
 
 
@@ -199,19 +196,19 @@ class CheckoutController extends Controller
             } else {
                 if ($input['status'] == "completed") {
 
+                    $totals = [];
                     foreach ($data->vendororders as $vorder) {
-                        $uprice = User::find($vorder->user_id);
-                        $uprice->current_balance = $uprice->current_balance + $vorder->price;
-                        $uprice->update();
+                        $totals[$vorder->user_id] = ($totals[$vorder->user_id] ?? 0) + $vorder->price;
+                    }
+                    foreach ($totals as $uid => $sum) {
+                        User::whereKey($uid)->increment('current_balance', $sum);
                     }
 
-                    if (User::where('id', $data->affilate_user)->exists()) {
-                        $auser = User::where('id', $data->affilate_user)->first();
-                        $auser->affilate_income += $data->affilate_charge;
-                        $auser->update();
+                    if ($auser = User::find($data->affilate_user)) {
+                        $auser->increment('affilate_income', $data->affilate_charge);
                     }
 
-                    $gs = Generalsetting::find(1);
+                    $gs = Generalsetting::cached();
                     if ($gs->is_smtp == 1) {
                         $maildata = [
                             'to' => $data->customer_email,
@@ -243,30 +240,32 @@ class CheckoutController extends Controller
 
                     $cart = unserialize(bzdecompress(utf8_decode($data->cart)));
 
+                    $itemIds = collect($cart->items)->pluck('item.id')->unique()->all();
+                    $productMap = Product::whereIn('id', $itemIds)->get()->keyBy('id');
+
                     foreach ($cart->items as $prod) {
+                        $product = $productMap[$prod['item']['id']] ?? null;
+                        if (!$product) {
+                            continue;
+                        }
+
                         $x = (string) $prod['stock'];
                         if ($x != null) {
-
-                            $product = Product::find($prod['item']['id']);
                             $product->stock = $product->stock + $prod['qty'];
                             $product->update();
                         }
-                    }
 
-                    foreach ($cart->items as $prod) {
-                        $x = (string) $prod['size_qty'];
-                        if (!empty($x)) {
-                            $product = Product::find($prod['item']['id']);
-                            $x = (int) $x;
+                        $sx = (string) $prod['size_qty'];
+                        if (!empty($sx)) {
+                            $sxi = (int) $sx;
                             $temp = $product->size_qty;
-                            $temp[$prod['size_key']] = $x;
-                            $temp1 = implode(',', $temp);
-                            $product->size_qty = $temp1;
+                            $temp[$prod['size_key']] = $sxi;
+                            $product->size_qty = implode(',', $temp);
                             $product->update();
                         }
                     }
 
-                    $gs = Generalsetting::find(1);
+                    $gs = Generalsetting::cached();
                     if ($gs->is_smtp == 1) {
                         $maildata = [
                             'to' => $data->customer_email,
@@ -350,13 +349,9 @@ class CheckoutController extends Controller
         }
     }
 
-    protected function addtocart($cart, $currency_code, $p_id, $p_qty, $p_size, $p_color, $p_size_qty, $p_size_price, $p_size_key, $p_keys, $p_values, $p_prices, $affilate_user)
+    protected function addtocart($cart, $curr, $gs, $prod, $p_qty, $p_size, $p_color, $p_size_qty, $p_size_price, $p_size_key, $p_keys, $p_values, $p_prices, $affilate_user)
     {
-        //return $cart->items;
-
         try {
-
-            $id = $p_id;
             $qty = $p_qty;
             $size = str_replace(' ', '-', $p_size);
             $color = $p_color;
@@ -374,22 +369,11 @@ class CheckoutController extends Controller
             }
 
             $keys = $keys == "" ? '' : implode(',', $keys);
-
             $values = $values == "" ? '' : implode(',', $values);
-            if (!empty($currency_code)) {
-                $curr = Currency::where('name', '=', $currency_code)->first();
-                if (!empty($curr)) {
-                    $curr = Currency::where('is_default', '=', 1)->first();
-                }
-            } else {
-                $curr = Currency::where('is_default', '=', 1)->first();
-            }
 
             $size_price = ($size_price / $curr->value);
-            $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes']);
 
             if ($prod->user_id != 0) {
-                $gs = Generalsetting::find(1);
                 $prc = $prod->price + $gs->fixed_commission + ($prod->price / 100) * $gs->percentage_commission;
                 $prod->price = round($prc, 2);
             }
@@ -492,53 +476,42 @@ class CheckoutController extends Controller
     // }
 
     public function VendorWisegetShippingPackaging(Request $request)
-{
-    $vendorIds = explode(',', $request->vendor_ids);
+    {
+        $vendorIds = array_filter(array_map('trim', explode(',', (string) $request->vendor_ids)), 'strlen');
 
-    foreach ($vendorIds as $key => $value) {
-        // Fetch and format shipping data for each vendor
-        $shipping = Shipping::where('user_id', $value)->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'user_id' => $item->user_id,
-                'title' => $item->title,
-                'subtitle' => $item->subtitle,
-                'price' => $item->price,
-            ];
-        });
+        $columns = ['id', 'user_id', 'title', 'subtitle', 'price'];
 
-        // Fetch and format packaging data for each vendor
-        $packaging = Package::where('user_id', $value)->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'user_id' => $item->user_id,
-                'title' => $item->title,
-                'subtitle' => $item->subtitle,
-                'price' => $item->price,
-            ];
-        });
+        $shipping = Shipping::whereIn('user_id', $vendorIds)
+            ->get($columns)
+            ->groupBy('user_id');
+
+        $packaging = Package::whereIn('user_id', $vendorIds)
+            ->get($columns)
+            ->groupBy('user_id');
+
+        $formattedShipping = [];
+        $formattedPackaging = [];
+        foreach ($vendorIds as $vid) {
+            $formattedShipping[$vid] = $shipping->get($vid, collect())->values();
+            $formattedPackaging[$vid] = $packaging->get($vid, collect())->values();
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'shipping' => $formattedShipping,
+                'packaging' => $formattedPackaging,
+            ],
+            'error' => [],
+        ]);
     }
-
-    // Ensure all keys are nested under "00" regardless of vendor IDs
-    $formattedShipping = ['00' => $shipping];
-    $formattedPackaging = ['00' => $packaging];
-
-    // Build and return the response
-    return response()->json([
-        'status' => true,
-        'data' => [
-            'shipping' => $formattedShipping,
-            'packaging' => $formattedPackaging
-        ],
-        'error' => []
-    ]);
-}
-
 
 
     public function countries()
     {
-        $countries = Country::with('states.cities')->get();
+        $countries = Cache::remember('checkout.countries.tree', 3600, function () {
+            return Country::with('states.cities')->get();
+        });
         return response()->json(['status' => true, 'data' => $countries, 'error' => []]);
     }
 }

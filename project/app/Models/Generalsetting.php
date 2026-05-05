@@ -10,6 +10,16 @@ class Generalsetting extends Model
 
     public $timestamps = false;
 
+    protected static $cached;
+
+    public static function cached()
+    {
+        if (self::$cached === null) {
+            self::$cached = self::find(1);
+        }
+        return self::$cached;
+    }
+
     public function upload($name,$file,$oldname)
     {
         $file->move('assets/images',$name);

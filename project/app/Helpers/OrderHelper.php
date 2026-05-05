@@ -124,7 +124,7 @@ class OrderHelper
     {
         $affilate_users = null;
         $i = 0;
-        $gs = \App\Models\Generalsetting::find(1);
+        $gs = \App\Models\Generalsetting::cached();
         $percentage = $gs->affilate_charge / 100;
         foreach ($cart->items as $prod) {
 
@@ -199,17 +199,29 @@ class OrderHelper
     public static function size_qty_check($cart)
     {
         try {
+            $ids = collect($cart->items)
+                ->filter(fn($p) => !empty((string)$p['size_qty']) && (string)$p['size_qty'] !== 'undefined')
+                ->pluck('item.id')
+                ->unique()
+                ->all();
+
+            if (empty($ids)) {
+                return;
+            }
+
+            $products = Product::whereIn('id', $ids)->get()->keyBy('id');
+
             foreach ($cart->items as $prod) {
                 $x = (string)$prod['size_qty'];
-
-                if (!empty($x) && $x != "undefined") {
-                    $product = Product::find($prod['item']['id']);
-                    $x = (int)$x;
-                    $x = $x - $prod['qty'];
+                if (!empty($x) && $x !== 'undefined') {
+                    $product = $products[$prod['item']['id']] ?? null;
+                    if (!$product) {
+                        continue;
+                    }
+                    $remaining = (int)$x - $prod['qty'];
                     $temp = $product->size_qty;
-                    $temp[$prod['size_key']] = $x;
-                    $temp1 = implode(',', $temp);
-                    $product->size_qty =  $temp1;
+                    $temp[$prod['size_key']] = $remaining;
+                    $product->size_qty = implode(',', $temp);
                     $product->update();
                 }
             }
@@ -220,19 +232,41 @@ class OrderHelper
     public static function stock_check($cart)
     {
         try {
+            $ids = collect($cart->items)
+                ->filter(fn($p) => (string)$p['stock'] != null)
+                ->pluck('item.id')
+                ->unique()
+                ->all();
+
+            if (empty($ids)) {
+                return;
+            }
+
+            $products = Product::whereIn('id', $ids)->get()->keyBy('id');
+            $now = now();
+            $lowStockNotifs = [];
+
             foreach ($cart->items as $prod) {
                 $x = (string)$prod['stock'];
                 if ($x != null) {
-
-                    $product = Product::find($prod['item']['id']);
-                    $product->stock =  $prod['stock'];
+                    $product = $products[$prod['item']['id']] ?? null;
+                    if (!$product) {
+                        continue;
+                    }
+                    $product->stock = $prod['stock'];
                     $product->update();
                     if ($product->stock <= 5) {
-                        $notification = new Notification;
-                        $notification->product_id = $product->id;
-                        $notification->save();
+                        $lowStockNotifs[] = [
+                            'product_id' => $product->id,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
                     }
                 }
+            }
+
+            if (!empty($lowStockNotifs)) {
+                Notification::insert($lowStockNotifs);
             }
         } catch (\Exception $e) {
         }
@@ -240,31 +274,39 @@ class OrderHelper
 
     public static function vendor_order_check($cart, $order)
     {
-
         try {
-            $notf = array();
+            $now = now();
+            $vendorOrders = [];
+            $notf = [];
 
             foreach ($cart->items as $prod) {
                 if ($prod['item']['user_id'] != 0) {
-                    $vorder =  new VendorOrder();
-                    $vorder->order_id = $order->id;
-                    $vorder->user_id = $prod['item']['user_id'];
-                    $vorder->qty = $prod['qty'];
-                    $vorder->price = $prod['price'];
-                    $vorder->order_number = $order->order_number;
-                    $vorder->save();
+                    $vendorOrders[] = [
+                        'order_id'     => $order->id,
+                        'user_id'      => $prod['item']['user_id'],
+                        'qty'          => $prod['qty'],
+                        'price'        => $prod['price'],
+                        'order_number' => $order->order_number,
+                    ];
                     $notf[] = $prod['item']['user_id'];
                 }
             }
 
+            if (!empty($vendorOrders)) {
+                VendorOrder::insert($vendorOrders);
+            }
+
             if (!empty($notf)) {
-                $users = array_unique($notf);
-                foreach ($users as $user) {
-                    $notification = new UserNotification;
-                    $notification->user_id = $user;
-                    $notification->order_number = $order->order_number;
-                    $notification->save();
+                $rows = [];
+                foreach (array_unique($notf) as $user) {
+                    $rows[] = [
+                        'user_id'      => $user,
+                        'order_number' => $order->order_number,
+                        'created_at'   => $now,
+                        'updated_at'   => $now,
+                    ];
                 }
+                UserNotification::insert($rows);
             }
         } catch (\Exception $e) {
         }

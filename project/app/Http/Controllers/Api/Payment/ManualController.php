@@ -20,8 +20,7 @@ class ManualController extends Controller
         if ($request->has('order_number')) {
             $order_number = $request->order_number;
             $order = Order::where('order_number', $order_number)->firstOrFail();
-            $item_amount = $order->pay_amount * $order->currency_value;
-            $order->pay_amount = round($item_amount / $order->currency_value, 2);
+            $order->pay_amount = round($order->pay_amount, 2);
             $order->method = $request->method;
             $order->txnid = $request->txnid;
             $order->payment_status = 'Pending';
