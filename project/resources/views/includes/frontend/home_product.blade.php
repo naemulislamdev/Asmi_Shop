@@ -1,9 +1,3 @@
-<style>
-    .qty-btn.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-}
-</style>
 <div
     class="{{ isset($class) ? $class : 'col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-3' }} {{ request()->is('search') ? 'mb-3' : '' }} ">
     {{-- 1taka dojon egg offer condition start --}}
@@ -26,6 +20,8 @@
             'all_offer_skus' => [],
             'eligible_offer_skus' => [],
         ];
+
+        $hasOfferInCart = session('has_offer_in_cart', false);
 
         $isOfferProduct = in_array($product->sku, $offerMeta['all_offer_skus']);
         $isEligible = in_array($product->sku, $offerMeta['eligible_offer_skus']);
@@ -116,7 +112,7 @@
                     @else
                         @if ($product->type != 'Listing')
                             <div class="cart-ui overlay-ui">
-                                @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
+                                @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
                                     @if ($existingQty == 0)
                                         <div class="overlay-add-btn" data-product-id="{{ $product->id }}">
                                             <button type="button" class="outofstock-box-2 add_cart_click"
@@ -208,7 +204,7 @@
                 {{-- add to cart and cart item quantity increment decrement buttons --}}
 
                 <div class="cart-ui normal-ui w-100">
-                    @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
+                    @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
                         @if ($existingQty == 0)
                             <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
                                 <button

@@ -75,6 +75,8 @@
         quantity: 1,
       },
       success: function (data) {
+        console.log(data);
+        
         updateCartUI(data);
         reloadOffcanvasCart();
 
@@ -182,7 +184,7 @@
     $.ajax({
       url: mainurl + "/cart/increment",
       method: "POST",
-      data: { unique_key },
+      data: { unique_key: unique_key, product_id: pid },
       success: function (data) {
         //const pid = data.product_id;
         const qty = data.qty;
@@ -221,7 +223,7 @@
     $.ajax({
       url: mainurl + "/cart/decrement",
       method: "POST",
-      data: { unique_key },
+      data: { unique_key: unique_key, product_id: pid },
       success: function (data) {
         const qty = data.qty;
         const addRoute = getAddToCartRoute(pid);
@@ -284,7 +286,7 @@
     $.ajax({
       url: mainurl + "/cart/remove",
       method: "POST",
-      data: { unique_key: key },
+      data: { unique_key: key, product_id: pid },
       success: function (res) {
         if (!res.status) return;
 
@@ -341,6 +343,8 @@
   };
 
   function updateCartUI(data) {
+    console.log(data);
+    
     $(".cart-count").html(data.cart_count);
     $(".total_price").html(data.total_price);
 
@@ -359,9 +363,30 @@
             lastShownOffers = [];
         }
     }
+    if (data.has_offer_in_cart) {
+       window.location.reload();
+      console.log("Yes");
+      
+        disableOtherOffers();
+    }else {
+    updateOfferUI();
+}
 
     $(".cart-popup").load(mainurl + "/carts/view");
   }
+  function disableOtherOffers() {
+
+    $(".single-product").each(function () {
+
+        let sku = $(this).data("sku");
+
+        let isOffer = offerMeta.all_offer_skus.includes(sku);
+
+        if (isOffer) {
+            $(this).find(".add-btn-wrapper, .overlay-add-btn").hide();
+        }
+    });
+}
   function updateOfferUI() {
     $(".single-product").each(function () {
       let sku = $(this).data("sku"); // add this attribute

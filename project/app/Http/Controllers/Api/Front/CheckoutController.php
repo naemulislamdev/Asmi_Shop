@@ -40,6 +40,15 @@ class CheckoutController extends Controller
                 ? json_decode($input['items'], true)
                 : $input['items'];
 
+            $input['shipping'] = isset($input['shipping'][0])
+                ? $input['shipping'][0]
+                : null;
+
+            $input['packaging'] = isset($input['packaging'][0])
+                ? $input['packaging'][0]
+                : null;
+
+
             $cart = new Cart(null);
             $gs = Generalsetting::find(1);
 
@@ -95,7 +104,7 @@ class CheckoutController extends Controller
             $input['currency_sign'] = $curr->sign;
             $input['currency_value'] = $curr->value;
 
-            $input['pay_amount'] = $orderCalculate['total_amount'] / $curr->value;
+            $input['pay_amount'] = $orderCalculate['total_amount'];
             $input['order_number'] = 'A' . now()->timestamp . rand(100, 999);
 
             $input['wallet_price'] = ($request->wallet_price ?? 0) / $curr->value;
@@ -174,6 +183,25 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
         }
+    }
+
+    private function validCartItem($item)
+    {
+        $required = ['id', 'qty', 'size', 'color'];
+        foreach ($required as $field) {
+            if (!isset($item[$field])) return false;
+        }
+        return true;
+    }
+
+    private function calculateTax($cart, $input)
+    {
+        if (empty($input['tax'])) return 0;
+
+        $state = State::find($input['tax']);
+        if (!$state) return 0;
+
+        return ($cart->totalPrice * $state->tax) / 100;
     }
 
     //*** POST Request
@@ -492,47 +520,47 @@ class CheckoutController extends Controller
     // }
 
     public function VendorWisegetShippingPackaging(Request $request)
-{
-    $vendorIds = explode(',', $request->vendor_ids);
+    {
+        $vendorIds = explode(',', $request->vendor_ids);
 
-    foreach ($vendorIds as $key => $value) {
-        // Fetch and format shipping data for each vendor
-        $shipping = Shipping::where('user_id', $value)->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'user_id' => $item->user_id,
-                'title' => $item->title,
-                'subtitle' => $item->subtitle,
-                'price' => $item->price,
-            ];
-        });
+        foreach ($vendorIds as $key => $value) {
+            // Fetch and format shipping data for each vendor
+            $shipping = Shipping::where('user_id', $value)->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'user_id' => $item->user_id,
+                    'title' => $item->title,
+                    'subtitle' => $item->subtitle,
+                    'price' => $item->price,
+                ];
+            });
 
-        // Fetch and format packaging data for each vendor
-        $packaging = Package::where('user_id', $value)->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'user_id' => $item->user_id,
-                'title' => $item->title,
-                'subtitle' => $item->subtitle,
-                'price' => $item->price,
-            ];
-        });
+            // Fetch and format packaging data for each vendor
+            $packaging = Package::where('user_id', $value)->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'user_id' => $item->user_id,
+                    'title' => $item->title,
+                    'subtitle' => $item->subtitle,
+                    'price' => $item->price,
+                ];
+            });
+        }
+
+        // Ensure all keys are nested under "00" regardless of vendor IDs
+        $formattedShipping = ['00' => $shipping];
+        $formattedPackaging = ['00' => $packaging];
+
+        // Build and return the response
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'shipping' => $formattedShipping,
+                'packaging' => $formattedPackaging
+            ],
+            'error' => []
+        ]);
     }
-
-    // Ensure all keys are nested under "00" regardless of vendor IDs
-    $formattedShipping = ['00' => $shipping];
-    $formattedPackaging = ['00' => $packaging];
-
-    // Build and return the response
-    return response()->json([
-        'status' => true,
-        'data' => [
-            'shipping' => $formattedShipping,
-            'packaging' => $formattedPackaging
-        ],
-        'error' => []
-    ]);
-}
 
 
 
