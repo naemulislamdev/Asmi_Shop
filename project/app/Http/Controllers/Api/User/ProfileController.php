@@ -214,4 +214,78 @@ class ProfileController extends Controller
             return response()->json(['status' => true, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
+
+    /**
+     * GET /api/user/affilate/program
+     * Returns the user's affilate code, total income, and the list of users
+     * referred via this code along with each referred order's bonus.
+     */
+    public function affilateProgram()
+    {
+        try {
+            $user = Auth::guard('api')->user();
+            if (!$user) {
+                return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'Unauthenticated.']], 401);
+            }
+
+            $bonuses = \App\Models\AffliateBonus::where('refer_id', $user->id)
+                ->orderByDesc('created_at')
+                ->get();
+
+            $referrals = $bonuses->map(function ($b) {
+                $u = User::find($b->user_id);
+                return [
+                    'id'         => $b->id,
+                    'user'       => $u ? [
+                        'id'        => $u->id,
+                        'full_name' => $u->name,
+                        'email'     => $u->email,
+                    ] : null,
+                    'bonus'      => (float) ($b->bonus ?? 0),
+                    'order_id'   => $b->order_id ?? null,
+                    'created_at' => $b->created_at,
+                ];
+            });
+
+            return response()->json([
+                'status' => true,
+                'data'   => [
+                    'affilate_code'   => $user->affilate_code,
+                    'affilate_income' => (string) ($user->affilate_income ?? '0'),
+                    'referrals'       => $referrals,
+                    'total_referrals' => $bonuses->count(),
+                ],
+                'error'  => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/user/affilate/history
+     * Withdraw history scoped to affiliate type. Returns list of past
+     * withdrawals so the user can track payouts of their affiliate income.
+     */
+    public function affilateHistory()
+    {
+        try {
+            $user = Auth::guard('api')->user();
+            if (!$user) {
+                return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'Unauthenticated.']], 401);
+            }
+
+            $rows = \App\Models\Withdraw::where('user_id', $user->id)
+                ->orderByDesc('id')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $rows,
+                'error'  => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
 }
