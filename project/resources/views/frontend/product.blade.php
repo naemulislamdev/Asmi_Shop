@@ -362,6 +362,32 @@
                             }
                         @endphp
 
+                        @php
+                            $cart = session('cart');
+
+                            $isOfferItem = false;
+
+                            if ($cart && $cart->items) {
+                                foreach ($cart->items as $cItem) {
+                                    if ($cItem['item']->id == $productt->id) {
+                                        $isOfferItem = $cItem['is_offer'] ?? false;
+                                    }
+                                }
+                            }
+                        @endphp
+
+                        @php
+                            $offerMeta = session('offer_meta') ?? [
+                                'all_offer_skus' => [],
+                                'eligible_offer_skus' => [],
+                            ];
+
+                            $hasOfferInCart = session('has_offer_in_cart', false);
+
+                            $isOfferProduct = in_array($productt->sku, $offerMeta['all_offer_skus']);
+                            $isEligible = in_array($productt->sku, $offerMeta['eligible_offer_skus']);
+                        @endphp
+
 
                         <!-- add to cart buy btn wrapper -->
                         @if ($productt->stock <= 0)
@@ -374,25 +400,28 @@
                             </div>
                         @endif
                         @if ($productt->stock > 0 || $productt->preordered == 2)
-                            @if ($existingQty == 0)
-                                {{-- SHOW ADD TO BAG --}}
-                                <div class="w-100 d-block mt-auto add-btn-wrapper">
-                                    <button
-                                        class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_details"
-                                        data-href="{{ route('product.add.to.cart', $productt->id) }}"
-                                        data-product-id="{{ $productt->id }}">
-                                        <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
-                                    </button>
-                                </div>
-                            @else
-                                {{-- SHOW QTY BOX --}}
-                                <div class="qty-box mt-auto qty-wrapper-normal" data-product-id="{{ $productt->id }}"
-                                    data-unique-key="{{ $uniqueKey }}">
-                                    <button type="button" class="qty-btn qty-minus"><i
-                                            class="fas fa-minus"></i></button>
-                                    <span class="qty-text">{{ $existingQty }}</span>
-                                    <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
-                                </div>
+                            @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
+                                @if ($existingQty == 0)
+                                    {{-- SHOW ADD TO BAG --}}
+                                    <div class="w-100 d-block mt-auto add-btn-wrapper">
+                                        <button
+                                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_details"
+                                            data-href="{{ route('product.add.to.cart', $productt->id) }}"
+                                            data-product-id="{{ $productt->id }}">
+                                            <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
+                                        </button>
+                                    </div>
+                                @else
+                                    {{-- SHOW QTY BOX --}}
+                                    <div class="qty-box mt-auto qty-wrapper-normal" data-product-id="{{ $productt->id }}"
+                                        data-unique-key="{{ $uniqueKey }}">
+                                        <button type="button" class="qty-btn qty-minus"><i
+                                                class="fas fa-minus"></i></button>
+                                        <span class="qty-text">{{ $existingQty }}</span>
+                                        <button type="button" class="qty-btn qty-plus"><i
+                                                class="fas fa-plus"></i></button>
+                                    </div>
+                                @endif
                             @endif
                         @endif
                         <div class="alert alert-info mt-2 mb-2 py-1" style="padding: 10px">

@@ -32,7 +32,6 @@ class Cart extends Model
 
         // Default stored item structure
         $storedItem = [
-            'product_id'  => $id ?? 0,
             'user_id'     => $item->user_id ?? 0,
             'qty'         => 0,
             'size_key'    => 0,

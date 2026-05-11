@@ -1,9 +1,15 @@
 <!-- Cart Items -->
+@php $isOfferItem = false; @endphp
 @if (count($cartItems) > 0)
     @foreach ($cartItems as $cartItem)
+    @php
+         if ($cartItem['is_offer'] == true) {
+                $isOfferItem = $cartItem['is_offer'] ?? false;
+            }
+    @endphp
         <div class="cart-item border-bottom">
             <div class="item-qty qty-plus-wrap" data-unique-key="{{ $cartItem['unique_key'] }}" data-product-id="{{ $cartItem['item']['id'] }}">
-                <button class="qty-btn qty-plus">
+                <button class="qty-btn {{ $isOfferItem ? '' : 'qty-plus' }}">
                     <i class="fa-solid fa-chevron-up"></i>
                 </button>
                 <p>{{ $cartItem['qty'] }}</p>

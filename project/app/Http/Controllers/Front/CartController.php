@@ -151,10 +151,6 @@ class CartController extends Controller
 
         // Use the same uniqueKey to inspect the cart row
 
-        // if ($cart->items[$uniqueKey]['stock'] < 0) {
-        //     return response()->json(0);
-        // }
-
         if (!empty($cart->items[$uniqueKey]['size_qty'])) {
             if ($cart->items[$uniqueKey]['qty'] > $cart->items[$uniqueKey]['size_qty']) {
                 return response()->json(0);
@@ -272,27 +268,13 @@ class CartController extends Controller
         $offerMeta = $this->getOfferMeta($cart);
         $offers = $this->getEligibleOfferProducts($cart);
 
-        // 2️⃣ ❌ Invalid offer remove (not eligible anymore)
-        foreach ($cart->items as $key => $item) {
-            if (!empty($item['is_offer']) && $item['is_offer'] === true) {
-
-                if (!in_array($item['item']->sku, $offerMeta['eligible_offer_skus'])) {
-                    unset($cart->items[$key]);
-                }
-            }
-        }
-
-        // 🔁 IMPORTANT: array reindex (unset er por)
-        $cart->items = array_values($cart->items);
-
-        // 3️⃣ 🔥 Only ONE offer allowed (extra offer remove)
         $offerFound = false;
 
         foreach ($cart->items as $key => $item) {
             if (!empty($item['is_offer']) && $item['is_offer'] === true) {
 
                 if ($offerFound) {
-                    // 👉 second offer → remove
+                    // second offer → remove
                     unset($cart->items[$key]);
                 } else {
                     $offerFound = true;
@@ -300,17 +282,12 @@ class CartController extends Controller
             }
         }
 
-        // আবার reindex
-        $cart->items = array_values($cart->items);
-
-        // 4️⃣ 🔥 hasOfferInCart (correct way)
+        // hasOfferInCart (correct way)
         $hasOfferInCart = false;
 
         foreach ($cart->items as $item) {
-            //dd($item['item']->sku, $offerMeta['eligible_offer_skus']);
-
-            // 👉 আগে SKU match
-            if ($productId && $item['product_id'] == $productId) {
+            // আগে SKU match
+            if ($productId && $item['item']->id == $productId) {
                 if (in_array($item['item']->sku, $offerMeta['eligible_offer_skus'])) {
                     if (!empty($item['is_offer']) && $item['is_offer'] === true) {
                         $hasOfferInCart = true;
@@ -322,7 +299,6 @@ class CartController extends Controller
             }
         }
 
-        // 5️⃣ Recalculate cart (VERY IMPORTANT)
         $cart->recalculateTotals();
 
         // 6️⃣ Session update
