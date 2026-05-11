@@ -8,6 +8,7 @@ use App\Helpers\PriceHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderDetailsResource;
 use App\Models\Cart;
+use App\Models\City;
 use App\Models\Country;
 use App\Models\Coupon;
 use App\Models\Currency;
@@ -568,5 +569,75 @@ class CheckoutController extends Controller
     {
         $countries = Country::with('states.cities')->get();
         return response()->json(['status' => true, 'data' => $countries, 'error' => []]);
+    }
+
+    /**
+     * GET /api/front/states/{country_id}
+     * States for a country (used by checkout dropdowns).
+     */
+    public function statesByCountry($country_id)
+    {
+        try {
+            $states = State::where('country_id', $country_id)->orderBy('name')->get(['id', 'country_id', 'name']);
+            return response()->json(['status' => true, 'data' => $states, 'error' => []]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/cities/{state_id}
+     * Cities for a state (used by checkout dropdowns).
+     */
+    public function citiesByState($state_id)
+    {
+        try {
+            $cities = City::where('state_id', $state_id)->orderBy('name')->get(['id', 'state_id', 'name']);
+            return response()->json(['status' => true, 'data' => $cities, 'error' => []]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/wallet/check?amount=...&total=...
+     * Auth-protected (Bearer token). Validates whether `amount` is a usable
+     * partial wallet payment given the user's current balance and the order
+     * total. Mirrors web-side walletcheck().
+     */
+    public function walletCheck(Request $request)
+    {
+        try {
+            $user = \Illuminate\Support\Facades\Auth::guard('api')->user();
+            if (!$user) {
+                return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'Unauthenticated.']], 401);
+            }
+
+            $amount = (float) ($request->amount ?? 0);
+            $total  = (float) ($request->total ?? 0);
+            $balance = (float) ($user->balance ?? 0);
+
+            if ($amount <= 0 || $amount > $total || $amount > $balance) {
+                return response()->json([
+                    'status' => false,
+                    'data'   => [],
+                    'error'  => ['message' => 'Invalid wallet amount.'],
+                ]);
+            }
+
+            $remaining = round($total - $amount, 2);
+
+            return response()->json([
+                'status' => true,
+                'data'   => [
+                    'remaining_total' => $remaining,
+                    'deducted_amount' => round($amount, 2),
+                    'wallet_balance'  => round($balance, 2),
+                ],
+                'error'  => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
     }
 }
