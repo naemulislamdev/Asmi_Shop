@@ -574,11 +574,21 @@ class CheckoutController extends Controller
     /**
      * GET /api/front/states/{country_id}
      * States for a country (used by checkout dropdowns).
+     * Note: DB column is `state` (not `name`). Returned as `name` for client friendliness.
      */
     public function statesByCountry($country_id)
     {
         try {
-            $states = State::where('country_id', $country_id)->orderBy('name')->get(['id', 'country_id', 'name']);
+            $rows = State::where('country_id', $country_id)
+                ->orderBy('state')
+                ->get(['id', 'country_id', 'state']);
+            $states = $rows->map(function ($s) {
+                return [
+                    'id'         => $s->id,
+                    'country_id' => $s->country_id,
+                    'name'       => $s->state,
+                ];
+            });
             return response()->json(['status' => true, 'data' => $states, 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
@@ -588,11 +598,21 @@ class CheckoutController extends Controller
     /**
      * GET /api/front/cities/{state_id}
      * Cities for a state (used by checkout dropdowns).
+     * Note: DB column is `city_name`. Returned as `name` for client friendliness.
      */
     public function citiesByState($state_id)
     {
         try {
-            $cities = City::where('state_id', $state_id)->orderBy('name')->get(['id', 'state_id', 'name']);
+            $rows = City::where('state_id', $state_id)
+                ->orderBy('city_name')
+                ->get(['id', 'state_id', 'city_name']);
+            $cities = $rows->map(function ($c) {
+                return [
+                    'id'       => $c->id,
+                    'state_id' => $c->state_id,
+                    'name'     => $c->city_name,
+                ];
+            });
             return response()->json(['status' => true, 'data' => $cities, 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
