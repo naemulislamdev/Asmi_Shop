@@ -329,7 +329,7 @@ class Product extends Model
         }
 
         $price = $price * $curr->value;
-        $price = \PriceHelper::showPrice($price);
+        $price = PriceHelper::showPrice($price);
 
 
         if ($gs->currency_format == 0) {
@@ -378,7 +378,7 @@ class Product extends Model
             });
         }
         $price = $price * $curr->value;
-        $price = \PriceHelper::showPrice($price);
+        $price = PriceHelper::showPrice($price);
         if ($gs->currency_format == 0) {
             return $curr->sign . $price;
         } else {
@@ -396,7 +396,7 @@ class Product extends Model
         }
 
         $price = $price * $curr->value;
-        $price = \PriceHelper::showPrice($price);
+        $price = PriceHelper::showPrice($price);
         return $price;
     }
 
@@ -681,7 +681,7 @@ class Product extends Model
         }
 
         $price = $price * $curr->value;
-        $price = \PriceHelper::apishowPrice($price);
+        $price = PriceHelper::apishowPrice($price);
         return $price;
     }
 
