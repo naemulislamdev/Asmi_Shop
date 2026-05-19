@@ -126,14 +126,30 @@ class CartController extends Controller
 
         $is_offer = $isOffer ? true : false;
 
+
+
+        $hasOfferInCart = false;
+
+        if ($cart->items) {
+            foreach ($cart->items as $item) {
+                if (!empty($item['is_offer'])) {
+                    $hasOfferInCart = true;
+                    break;
+                }
+            }
+        }
+
+        if ($is_offer && $hasOfferInCart) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Only one offer product allowed'
+            ]);
+        }
+
         // Add to cart (pass finalPrice & measureValue)
         $cart->add($prod, $prod->id, $finalPrice, $uniqueKey, $measureValue, $quantity, $is_offer);
 
         // Use the same uniqueKey to inspect the cart row
-
-        // if ($cart->items[$uniqueKey]['stock'] < 0) {
-        //     return response()->json(0);
-        // }
 
         if (!empty($cart->items[$uniqueKey]['size_qty'])) {
             if ($cart->items[$uniqueKey]['qty'] > $cart->items[$uniqueKey]['size_qty']) {
@@ -141,25 +157,15 @@ class CartController extends Controller
             }
         }
 
-        // Save back to session
-        Session::put('cart', $cart);
-        // $data[0] = count($cart->items);
-        // $data[1] = $cart->totalPrice;
-        // $data[2] = $uniqueKey;
-        //dd($cart->items);
-
-        $offerMeta = $this->getOfferMeta($cart);
-        $offers = $this->getEligibleOfferProducts($cart);
-
-        Session::put('offer_meta', $offerMeta);
-        Session::put('offers', $offers);
+        $data = $this->updateOfferSession($cart, $id);
 
         return response()->json([
             'cart_count' => count($cart->items),
             'total_price' => $cart->totalPrice,
             'unique_key' => $uniqueKey,
-            'offer_meta' => $offerMeta,
-            'offers' => $offers
+            'offer_meta' => $data['offer_meta'],
+            'offers' => $data['offers'],
+            'has_offer_in_cart' => $data['has_offer_in_cart']
         ]);
     }
 
@@ -176,18 +182,16 @@ class CartController extends Controller
                 $cart->recalculateTotals();
                 Session::put('cart', $cart);
 
-                $offerMeta = $this->getOfferMeta($cart);
-                $offers = $this->getEligibleOfferProducts($cart);
+                $data = $this->updateOfferSession($cart, $request->product_id);
 
-                Session::put('offer_meta', $offerMeta);
-                Session::put('offers', $offers);
                 return response()->json([
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
                     'qty' => $cart->items[$key]['qty'],
                     // 'product_id' => $row['item']['id'],
-                    'offer_meta' => $offerMeta,
-                    'offers' => $offers
+                    'offer_meta' => $data['offer_meta'],
+                    'offers' => $data['offers'],
+                    'has_offer_in_cart' => $data['has_offer_in_cart']
                 ]);
             }
         }
@@ -217,20 +221,17 @@ class CartController extends Controller
 
                 // Recalculate totals
                 $cart->recalculateTotals();
-                Session::put('cart', $cart);
-                $offerMeta = $this->getOfferMeta($cart);
-                $offers = $this->getEligibleOfferProducts($cart);
 
-                Session::put('offer_meta', $offerMeta);
-                Session::put('offers', $offers);
+                $data = $this->updateOfferSession($cart, $request->product_id);
 
                 return response()->json([
                     'cart_count' => count($cart->items),
                     'total_price' => $cart->totalPrice,
                     'qty' => $updatedQty,
                     'product_id' => $productId,
-                    'offer_meta' => $offerMeta,
-                    'offers' => $offers
+                    'offer_meta' => $data['offer_meta'],
+                    'offers' => $data['offers'],
+                    'has_offer_in_cart' => $data['has_offer_in_cart']
                 ]);
             }
         }
@@ -246,11 +247,7 @@ class CartController extends Controller
 
         Session::put('cart', $cart);
 
-        $offerMeta = $this->getOfferMeta($cart);
-        $offers = $this->getEligibleOfferProducts($cart);
-
-        Session::put('offer_meta', $offerMeta);
-        Session::put('offers', $offers);
+        $data = $this->updateOfferSession($cart, $request->product_id);
 
         return response()->json([
             'status' => true,
@@ -259,9 +256,62 @@ class CartController extends Controller
             ])->render(),
             'count'  => count($cart->items),
             'total'  => $cart->totalPrice,
-            'offer_meta' => $offerMeta,
-            'offers' => $offers
+            'offer_meta' => $data['offer_meta'],
+            'offers' => $data['offers'],
+            'has_offer_in_cart' => $data['has_offer_in_cart']
         ]);
+    }
+
+    private function updateOfferSession($cart, $productId = null)
+    {
+        // 1️⃣ Offer Meta & Eligible Products
+        $offerMeta = $this->getOfferMeta($cart);
+        $offers = $this->getEligibleOfferProducts($cart);
+
+        $offerFound = false;
+
+        foreach ($cart->items as $key => $item) {
+            if (!empty($item['is_offer']) && $item['is_offer'] === true) {
+
+                if ($offerFound) {
+                    // second offer → remove
+                    unset($cart->items[$key]);
+                } else {
+                    $offerFound = true;
+                }
+            }
+        }
+
+        // hasOfferInCart (correct way)
+        $hasOfferInCart = false;
+
+        foreach ($cart->items as $item) {
+            // আগে SKU match
+            if ($productId && $item['item']->id == $productId) {
+                if (in_array($item['item']->sku, $offerMeta['eligible_offer_skus'])) {
+                    if (!empty($item['is_offer']) && $item['is_offer'] === true) {
+                        $hasOfferInCart = true;
+                    } else {
+                        $hasOfferInCart = false;
+                    }
+                    break;
+                }
+            }
+        }
+
+        $cart->recalculateTotals();
+
+        // 6️⃣ Session update
+        Session::put('cart', $cart);
+        Session::put('offer_meta', $offerMeta);
+        Session::put('offers', $offers);
+        Session::put('has_offer_in_cart', $hasOfferInCart);
+
+        return [
+            'offer_meta' => $offerMeta,
+            'offers' => $offers,
+            'has_offer_in_cart' => $hasOfferInCart
+        ];
     }
 
     public function removecart($id)

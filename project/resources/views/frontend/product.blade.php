@@ -412,6 +412,32 @@
                             }
                         @endphp
 
+                        @php
+                            $cart = session('cart');
+
+                            $isOfferItem = false;
+
+                            if ($cart && $cart->items) {
+                                foreach ($cart->items as $cItem) {
+                                    if ($cItem['item']->id == $productt->id) {
+                                        $isOfferItem = $cItem['is_offer'] ?? false;
+                                    }
+                                }
+                            }
+                        @endphp
+
+                        @php
+                            $offerMeta = session('offer_meta') ?? [
+                                'all_offer_skus' => [],
+                                'eligible_offer_skus' => [],
+                            ];
+
+                            $hasOfferInCart = session('has_offer_in_cart', false);
+
+                            $isOfferProduct = in_array($productt->sku, $offerMeta['all_offer_skus']);
+                            $isEligible = in_array($productt->sku, $offerMeta['eligible_offer_skus']);
+                        @endphp
+
 
                         <!-- add to cart buy btn wrapper -->
                         @if ($productt->stock <= 0)
@@ -424,7 +450,11 @@
                             </div>
                         @endif
                         @if ($productt->stock > 0 || $productt->preordered == 2)
+<<<<<<< HEAD
                             @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
+=======
+                            @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
+>>>>>>> 58b532872a38a0fd45d4bf263b726045c0a2e465
                                 @if ($existingQty == 0)
                                     {{-- SHOW ADD TO BAG --}}
                                     <div class="w-100 d-block mt-auto add-btn-wrapper">

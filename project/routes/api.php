@@ -19,6 +19,9 @@ Route::group(['prefix' => 'user'], function () {
 
     Route::post('registration', 'Api\Auth\AuthController@register');
     Route::post('login', 'Api\Auth\AuthController@login');
+    Route::post('login/by-order', 'Api\Auth\AuthController@loginByOrder');
+    Route::post('login/otp/request', 'Api\Auth\AuthController@loginOtpRequest');
+    Route::post('login/otp/verify',  'Api\Auth\AuthController@loginOtpVerify');
     Route::post('logout', 'Api\Auth\AuthController@logout');
     Route::post('forgot', 'Api\Auth\AuthController@forgot');
     Route::post('forgot/submit', 'Api\Auth\AuthController@forgot_submit');
@@ -135,6 +138,18 @@ Route::group(['prefix' => 'user'], function () {
 
           // ---------------------DEPOSIT CONTROLLER ENDS ---------------------
 
+          // ---------------------AFFILATE CONTROLLER ---------------------
+
+          Route::get('/affilate/program', 'Api\User\ProfileController@affilateProgram');
+          Route::get('/affilate/history', 'Api\User\ProfileController@affilateHistory');
+
+          // ---------------------AFFILATE CONTROLLER ENDS ---------------------
+
+          // ---------------------WALLET CHECK ---------------------
+
+          Route::get('/wallet/check', 'Api\Front\CheckoutController@walletCheck');
+
+          // ---------------------WALLET CHECK ENDS ---------------------
 
     });
 
@@ -161,12 +176,25 @@ Route::group(['prefix' => 'front'], function () {
     Route::get('/partners', 'Api\Front\FrontendController@partners');
     Route::get('/products', 'Api\Front\FrontendController@products');
     Route::get('/offers', 'Api\Front\FrontendController@offers');
+
+    // Promo + Conditional offers (admin-managed bundles / threshold deals)
+    Route::get('/promo-offers',          'Api\Front\OfferController@promoOffers');
+    Route::get('/promo-offer/{id}',      'Api\Front\OfferController@promoOffer');
+    Route::get('/conditional-offers',    'Api\Front\OfferController@conditionalOffers');
+    Route::get('/conditional-offer/{id}','Api\Front\OfferController@conditionalOffer');
     Route::get('/flash/deal/products', 'Api\Front\FrontendController@flashDeal');
     Route::get('/todays/featured/products', 'Api\Front\FrontendController@featuredProducts');
     Route::get('/vendor/products/{id}', 'Api\Front\FrontendController@vendor_products');
     Route::get('/settings', 'Api\Front\FrontendController@settings');
     Route::get('/faqs', 'Api\Front\FrontendController@faqs');
     Route::get('/blogs', 'Api\Front\FrontendController@blogs');
+    Route::get('/blog-categories', 'Api\Front\FrontendController@blogCategories');
+    Route::get('/blog-search', 'Api\Front\FrontendController@blogSearch');
+    Route::get('/blog/category/{slug}', 'Api\Front\FrontendController@blogByCategory');
+    Route::get('/blog/tag/{slug}',      'Api\Front\FrontendController@blogByTag');
+    Route::get('/blog/{slug}',          'Api\Front\FrontendController@blogShow');
+    Route::post('/subscribe',           'Api\Front\FrontendController@subscribe');
+    Route::get('/autosearch',           'Api\Front\FrontendController@autosearch');
     Route::get('/pages', 'Api\Front\FrontendController@pages');
     Route::get('/ordertrack','Api\Front\FrontendController@ordertrack');
     Route::post('/contactmail', 'Api\Front\FrontendController@contactmail');
@@ -213,6 +241,8 @@ Route::group(['prefix' => 'front'], function () {
     Route::post('/checkout/update/{id}','Api\Front\CheckoutController@update');
     Route::get('/checkout/delete/{id}','Api\Front\CheckoutController@delete');
     Route::get('/get/countries','Api\Front\CheckoutController@countries');
+    Route::get('/states/{country_id}', 'Api\Front\CheckoutController@statesByCountry');
+    Route::get('/cities/{state_id}',   'Api\Front\CheckoutController@citiesByState');
     //------------ Checkout Controller ------------
 
 });

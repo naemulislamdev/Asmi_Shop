@@ -21,6 +21,8 @@
             'eligible_offer_skus' => [],
         ];
 
+        $hasOfferInCart = session('has_offer_in_cart', false);
+
         $isOfferProduct = in_array($product->sku, $offerMeta['all_offer_skus']);
         $isEligible = in_array($product->sku, $offerMeta['eligible_offer_skus']);
     @endphp
@@ -115,7 +117,7 @@
                     @else
                         @if ($product->type != 'Listing')
                             <div class="cart-ui overlay-ui">
-                                @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
+                                @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
                                     @if ($existingQty == 0)
                                         <div class="overlay-add-btn" data-product-id="{{ $product->id }}">
                                             <button type="button" class="outofstock-box-2 add_cart_click"
@@ -228,7 +230,7 @@
                 {{-- add to cart and cart item quantity increment decrement buttons --}}
 
                 <div class="cart-ui normal-ui w-100">
-                    @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
+                    @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
                         @if ($existingQty == 0)
                             <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
                                 <button

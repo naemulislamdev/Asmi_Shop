@@ -460,15 +460,207 @@ class FrontendController extends Controller
     public function blogs(Request $request)
     {
         try {
+            $perPage = (int) ($request->paginate ?? 0);
+
+            $query = Blog::orderByDesc('id');
+
             if ($request->type == 'latest') {
-                $blogs = Blog::orderby('id', 'desc')->take(6)->get();
-            } else {
-                $blogs = Blog::all();
+                $blogs = $query->take(6)->get();
+                return response()->json(['status' => true, 'data' => BlogResource::collection($blogs), 'error' => []]);
             }
 
-            return response()->json(['status' => true, 'data' => BlogResource::collection($blogs), 'error' => []]);
+            if ($perPage > 0) {
+                $blogs = $query->paginate($perPage);
+                return response()->json([
+                    'status' => true,
+                    'data'   => [
+                        'current_page' => $blogs->currentPage(),
+                        'last_page'    => $blogs->lastPage(),
+                        'per_page'     => $blogs->perPage(),
+                        'total'        => $blogs->total(),
+                        'data'         => BlogResource::collection($blogs->items()),
+                    ],
+                    'error'  => [],
+                ]);
+            }
+
+            return response()->json(['status' => true, 'data' => BlogResource::collection($query->get()), 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/blog/{slug}
+     * Single blog by slug. Increments view count.
+     */
+    public function blogShow($slug)
+    {
+        try {
+            $blog = Blog::where('slug', $slug)->first();
+            if (!$blog) {
+                return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'Blog not found.']]);
+            }
+            $blog->views = (int) $blog->views + 1;
+            $blog->save();
+
+            return response()->json(['status' => true, 'data' => new BlogResource($blog), 'error' => []]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/blog/category/{slug}
+     * Blogs filtered by category slug.
+     */
+    public function blogByCategory(Request $request, $slug)
+    {
+        try {
+            $cat = \App\Models\BlogCategory::where('slug', $slug)->first();
+            if (!$cat) {
+                return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'Category not found.']]);
+            }
+            $blogs = Blog::where('category_id', $cat->id)->orderByDesc('id')->get();
+            return response()->json([
+                'status' => true,
+                'data'   => [
+                    'category' => ['id' => $cat->id, 'name' => $cat->name, 'slug' => $cat->slug],
+                    'blogs'    => BlogResource::collection($blogs),
+                ],
+                'error'  => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/blog/tag/{slug}
+     * Blogs whose tags column contains the given slug (substring match).
+     */
+    public function blogByTag(Request $request, $slug)
+    {
+        try {
+            $blogs = Blog::where('tags', 'like', '%' . $slug . '%')->orderByDesc('id')->get();
+            return response()->json([
+                'status' => true,
+                'data'   => [
+                    'tag'   => $slug,
+                    'blogs' => BlogResource::collection($blogs),
+                ],
+                'error'  => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/blog-search?search=...
+     */
+    public function blogSearch(Request $request)
+    {
+        try {
+            $search = trim((string) $request->search);
+            if ($search === '') {
+                return response()->json(['status' => true, 'data' => ['search' => '', 'blogs' => []], 'error' => []]);
+            }
+            $blogs = Blog::where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('details', 'like', '%' . $search . '%');
+            })->orderByDesc('id')->get();
+            return response()->json([
+                'status' => true,
+                'data'   => [
+                    'search' => $search,
+                    'blogs'  => BlogResource::collection($blogs),
+                ],
+                'error'  => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/blog-categories
+     * Public list of blog categories (with blog counts).
+     */
+    public function blogCategories()
+    {
+        try {
+            $cats = \App\Models\BlogCategory::orderBy('name')->get(['id', 'name', 'slug']);
+            $rows = $cats->map(function ($c) {
+                return [
+                    'id'    => $c->id,
+                    'name'  => $c->name,
+                    'slug'  => $c->slug,
+                    'count' => Blog::where('category_id', $c->id)->count(),
+                ];
+            });
+            return response()->json(['status' => true, 'data' => $rows, 'error' => []]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * POST /api/front/subscribe
+     * Newsletter subscribe by email.
+     */
+    public function subscribe(Request $request)
+    {
+        try {
+            $rules = [
+                'email' => 'required|email|max:255',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'data' => [], 'error' => $validator->errors()]);
+            }
+
+            $email = strtolower(trim($request->email));
+            $exists = \App\Models\Subscriber::where('email', $email)->exists();
+            if ($exists) {
+                return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'You are already subscribed.']]);
+            }
+
+            \App\Models\Subscriber::create(['email' => $email]);
+            return response()->json(['status' => true, 'data' => ['message' => 'Subscribed successfully.'], 'error' => []]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
+
+    /**
+     * GET /api/front/autosearch?q=...
+     * Lightweight product autocomplete: top 10 active products matching name.
+     */
+    public function autosearch(Request $request)
+    {
+        try {
+            $q = trim((string) $request->q);
+            if ($q === '') {
+                return response()->json(['status' => true, 'data' => [], 'error' => []]);
+            }
+
+            $products = Product::where('status', 1)
+                ->where(function ($qq) use ($q) {
+                    $qq->where('name', 'like', '%' . $q . '%')
+                        ->orWhere('sku', 'like', $q . '%');
+                })
+                ->orderByDesc('updated_at')
+                ->take(10)
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => ProductlistResource::collection($products),
+                'error'  => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
         }
     }
 
