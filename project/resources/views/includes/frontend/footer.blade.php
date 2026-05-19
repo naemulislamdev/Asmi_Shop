@@ -116,6 +116,9 @@
                     <li class="wow-replaced" data-wow-delay=".1s">
                         <a href="{{ route('front.career') }}">{{ __('Career') }}</a>
                     </li>
+                    <li class="wow-replaced" data-wow-delay=".1s">
+                        <a href="{{ route('front.outlets') }}">{{ __('Outlets') }}</a>
+                    </li>
 
 
 

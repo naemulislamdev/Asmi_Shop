@@ -155,6 +155,41 @@
                             <div class="gocover"
                                 style="background: url({{ asset('assets/images/' . $gs->admin_loader) }}) no-repeat scroll center center rgba(45, 45, 45, 0.5);">
                             </div>
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-3">
+                                    <label for="from_date">From Date</label>
+                                    <input type="date" id="from_date" class="form-control" placeholder="From Date">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="to_date">To Date</label>
+                                    <input type="date" id="to_date" class="form-control" placeholder="To Date">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="orderStatus" class="form-control">
+                                        <option value="">All Statuses</option>
+                                        <option value="pending">
+                                            {{ __('Pending') }}</option>
+                                        <option value="hold">
+                                            {{ __('Hold') }}</option>
+                                        <option value="processing">
+                                            {{ __('Processing') }}</option>
+                                        <option value="on delivery">
+                                            {{ __('On Delivery') }}</option>
+                                        <option value="completed">
+                                            {{ __('Completed') }}</option>
+                                        <option value="cancelled">
+                                            {{ __('Cancel') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" id="filter_btn" class="btn btn-primary mt-3">Filter</button>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" id="reset_btn" class="btn btn-secondary mt-3">Reset</button>
+                                </div>
+
+                            </div>
                             <table id="geniustable" class="table table-hover dt-responsive" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
@@ -241,8 +276,8 @@
                                             <ul>
                                                 <li>
                                                     <input type="email" class="input-field eml-val" id="eml"
-                                                        name="to" placeholder="{{ __('Email') }} *" value=""
-                                                        required="">
+                                                        name="to" placeholder="{{ __('Email') }} *"
+                                                        value="" required="">
                                                 </li>
                                                 <li>
                                                     <input type="text" class="input-field" id="subj"
@@ -301,8 +336,8 @@
     <!--Branch modal -->
     <!-- Branch Modal -->
     <div class="modal fade" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <form id="branchForm">
+        <div class="modal-dialog modal-dialog-centered w-100" role="document">
+            <form id="branchForm" class="w-100">
                 @csrf
                 <input type="hidden" name="order_id" id="branch_order_id">
                 <div class="modal-content">
@@ -329,6 +364,37 @@
         </div>
     </div>
     <!--End Branch modal -->
+
+    {{-- Rider Modal Start --}}
+    <div class="modal fade" id="riderModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered w-100" role="document">
+            <form id="riderForm" class="w-100">
+                @csrf
+                <input type="hidden" name="order_id" id="branch_order_id">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('Select Rider') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>{{ __('Rider') }}</label>
+                            <select name="rider_id" class="form-control" required>
+                                <option selected disabled>{{ __('Choose Rider') }}</option>
+                                @foreach ($riders as $rider)
+                                    <option value="{{ $rider->id }}">{{ $rider->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {{-- Rider Modal End --}}
 
     <!-- Modal -->
     <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
@@ -402,16 +468,26 @@
 
 @section('scripts')
     {{-- DATA TABLE --}}
-
     <script type="text/javascript">
+        var currentStatus = 'all';
         (function($) {
             "use strict";
+
 
             var table = $('#geniustable').DataTable({
                 ordering: false,
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('admin-order-datatables', 'none') }}',
+
+
+                ajax: {
+                    url: '{{ route('admin-order-datatables', 'none') }}',
+                    data: function(d) {
+                        d.date_from = $('#from_date').val();
+                        d.date_to = $('#to_date').val();
+                        d.status = $('#orderStatus').val();
+                    }
+                },
                 columns: [{
                         data: 'customer_name',
                         name: 'customer_name'
@@ -422,19 +498,26 @@
                     },
                     {
                         data: 'date',
-                        name: 'date'
+                        name: 'created_at',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         data: 'branch',
-                        name: 'branch'
+                        name: 'branch.name',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         data: 'id',
-                        name: 'id'
+                        name: 'order_number',
+                        searchable: true,
                     },
                     {
                         data: 'totalQty',
-                        name: 'totalQty'
+                        name: 'totalQty',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         data: 'pay_amount',
@@ -446,9 +529,10 @@
                     },
                     {
                         data: 'custom_note',
-                        name: 'custom_note'
+                        name: 'custom_note',
+                        searchable: false,
+                        orderable: false
                     },
-
                     {
                         data: 'order_source',
                         name: 'order_source'
@@ -458,7 +542,6 @@
                         searchable: false,
                         orderable: false
                     }
-
                 ],
                 language: {
                     processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">'
@@ -466,6 +549,19 @@
                 drawCallback: function(settings) {
                     $('.select').niceSelect();
                 }
+            });
+
+            // Filter button click
+            $('#filter_btn').on('click', function() {
+                table.ajax.reload();
+            });
+
+            // Reset button click
+            $('#reset_btn').on('click', function() {
+                $('#from_date').val('');
+                $('#to_date').val('');
+                $('#orderStatus').val('');
+                table.ajax.reload();
             });
 
             $(function() {

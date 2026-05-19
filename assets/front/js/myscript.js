@@ -81,15 +81,14 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
+          showOfferPopup(data.offers);
+          updateOfferHeader(data.offers);
 
-        showOfferPopup(data.offers);
-        updateOfferHeader(data.offers);
-
-        // reset shownOffers if empty
-        if (data.offers.length === 0) {
+          // reset shownOffers if empty
+          if (data.offers.length === 0) {
             lastShownOffers = [];
+          }
         }
-    }
 
         const uniqueKey = data.unique_key;
 
@@ -150,16 +149,15 @@
         updateCartUI(data);
         reloadOffcanvasCart();
 
-       if (data.offers) {
+        if (data.offers) {
+          showOfferPopup(data.offers);
+          updateOfferHeader(data.offers);
 
-        showOfferPopup(data.offers);
-        updateOfferHeader(data.offers);
-
-        // reset shownOffers if empty
-        if (data.offers.length === 0) {
+          // reset shownOffers if empty
+          if (data.offers.length === 0) {
             lastShownOffers = [];
+          }
         }
-    }
 
         // Change Add button → Qty UI
         const newQtyHTML = `
@@ -193,16 +191,15 @@
         $(".total_price").text(data.total_price);
         reloadOffcanvasCart();
 
-       if (data.offers) {
+        if (data.offers) {
+          showOfferPopup(data.offers);
+          updateOfferHeader(data.offers);
 
-        showOfferPopup(data.offers);
-        updateOfferHeader(data.offers);
-
-        // reset shownOffers if empty
-        if (data.offers.length === 0) {
+          // reset shownOffers if empty
+          if (data.offers.length === 0) {
             lastShownOffers = [];
+          }
         }
-    }
 
         $(`.qty-wrapper-normal[data-product-id="${pid}"] .qty-text`).text(
           qty + " ",
@@ -232,15 +229,14 @@
         reloadOffcanvasCart();
 
         if (data.offers) {
+          showOfferPopup(data.offers);
+          updateOfferHeader(data.offers);
 
-        showOfferPopup(data.offers);
-        updateOfferHeader(data.offers);
-
-        // reset shownOffers if empty
-        if (data.offers.length === 0) {
+          // reset shownOffers if empty
+          if (data.offers.length === 0) {
             lastShownOffers = [];
+          }
         }
-    }
 
         if (qty <= 0) {
           // NORMAL UI RESET
@@ -295,15 +291,14 @@
         $(".cart-count").text(res.count);
 
         if (res.offers) {
+          showOfferPopup(res.offers);
+          updateOfferHeader(res.offers);
 
-        showOfferPopup(res.offers);
-        updateOfferHeader(res.offers);
-
-        // reset shownOffers if empty
-        if (res.offers.length === 0) {
+          // reset shownOffers if empty
+          if (res.offers.length === 0) {
             lastShownOffers = [];
+          }
         }
-    }
 
         const addRoute = getAddToCartRoute(pid);
 
@@ -353,15 +348,14 @@
       updateOfferUI();
     }
 
-   if (data.offers) {
+    if (data.offers) {
+      showOfferPopup(data.offers);
+      updateOfferHeader(data.offers);
 
-        showOfferPopup(data.offers);
-        updateOfferHeader(data.offers);
-
-        // reset shownOffers if empty
-        if (data.offers.length === 0) {
-            lastShownOffers = [];
-        }
+      // reset shownOffers if empty
+      if (data.offers.length === 0) {
+        lastShownOffers = [];
+      }
     }
     if (data.has_offer_in_cart) {
        window.location.reload();
@@ -406,22 +400,33 @@
     $(".offCanva-right-cartItems").load(mainurl + "/cart/offcanvas");
   }
   // End add to cart
- let lastShownOffers = [];
+  let lastShownOffers = [];
 
-function showOfferPopup(offers) {
-
-    let newOffers = offers.filter(o => !lastShownOffers.includes(o.sku));
+  function showOfferPopup(offers) {
+    let newOffers = offers.filter((o) => !lastShownOffers.includes(o.sku));
 
     if (newOffers.length === 0) return;
 
     let list = document.getElementById("offerList");
     list.innerHTML = "";
 
-    newOffers.forEach(item => {
+    setTimeout(() => {
+      confetti({
+        particleCount: 500,
+        spread: 100,
+        angle: 250,
+        origin: {
+          x: 1,
+          y: 0,
+        },
+        zIndex: 999999, // 👈 add this
+      });
+    }, 0);
 
-        let url = routeTemplate.replace(":sku", item.sku);
+    newOffers.forEach((item) => {
+      let url = routeTemplate.replace(":sku", item.sku);
 
-        list.innerHTML += `
+      list.innerHTML += `
         <a href="${url}" class="offer-link">
             <div class="offer-item">
                 <img src="${item.image}">
@@ -431,8 +436,8 @@ function showOfferPopup(offers) {
                 </div>
             </div>
         </a>`;
-        
-        lastShownOffers.push(item.sku);
+
+      lastShownOffers.push(item.sku);
     });
 
     let popup = document.getElementById("offerPopup");
@@ -440,21 +445,19 @@ function showOfferPopup(offers) {
     popup.classList.add("show");
 
     setTimeout(() => popup.classList.remove("show"), 10000);
-}
+  }
 
-// Update offer header count
-function updateOfferHeader(offers) {
-
+  // Update offer header count
+  function updateOfferHeader(offers) {
     // count update
     $(".conditonalNotification .badge").text(offers.length);
 
-    let html = '';
+    let html = "";
 
-    offers.forEach(item => {
+    offers.forEach((item) => {
+      let url = routeTemplate.replace(":sku", item.sku);
 
-        let url = routeTemplate.replace(":sku", item.sku);
-
-        html += `
+      html += `
         <li>
             <a class="dropdown-item" href="${url}">
                 <img style="width:40px" src="${item.image}">
@@ -464,11 +467,11 @@ function updateOfferHeader(offers) {
     });
 
     if (offers.length === 0) {
-        html = `<li class="text-center p-2">No Offers</li>`;
+      html = `<li class="text-center p-2">No Offers</li>`;
     }
 
     $(".conditonalNotification .dropdown-menu").html(html);
-}
+  }
 
   //End add to cart
 })(jQuery);

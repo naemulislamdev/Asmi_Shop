@@ -64,13 +64,29 @@
 
     </section>
     <!-- breadcrumb end -->
+    <section class="p-0" style="background: #ededed;"
+        data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
+        <div class="container">
+            <div class="row justify-content-center content-wrapper mt-3">
+                <div class="col-12">
 
+                    <nav class="custom-breadcrumb mb-2 mb-lg-0">
+                        <a href="{{ url('/') }}">Home</a>
+                        <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                        <span class="active">Special Deal</span>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <h1 class="text-dark text-center h2">Special Deal</h1>
     <!-- product wrapper start -->
     <div class="gs-blog-wrapper pt-3" style="background: #ededed">
         <div class="container">
             <div class="row flex-column-reverse flex-lg-row">
 
                 <div class="col-lg-12 gs-main-blog-wrapper">
+
 
                     @php
                         if (request()->input('view_check') == null || request()->input('view_check') == 'grid-view') {
@@ -79,11 +95,6 @@
                             $view = 'list-view';
                         }
                     @endphp
-
-                    <!-- product nav wrapper -->
-                    <div class=" product-nav-wrapper mb-3 rounded-bottom">
-                        <h5>@lang('You have Get Offer Product') </h5>
-                    </div>
 
 
 

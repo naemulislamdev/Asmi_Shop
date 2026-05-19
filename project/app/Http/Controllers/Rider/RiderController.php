@@ -14,6 +14,7 @@ class RiderController extends RiderBaseController
     public function index()
     {
         $user = $this->rider;
+
         $orders = DeliveryRider::where('rider_id', $this->rider->id)
             ->orderby('id', 'desc')->take(8)->get();
         return view('rider.dashbaord', compact('orders', 'user'));
@@ -30,9 +31,9 @@ class RiderController extends RiderBaseController
 
         $rules =
             [
-            'photo' => 'mimes:jpeg,jpg,png,svg',
-            'email' => 'unique:users,email,' . $this->rider->id,
-        ];
+                'photo' => 'mimes:jpeg,jpg,png,svg',
+                'email' => 'unique:users,email,' . $this->rider->id,
+            ];
 
         $customs = [
             'photo.mimes' => __('The image must be a file of type: jpeg, jpg, png, svg.'),

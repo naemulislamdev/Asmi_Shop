@@ -7,11 +7,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Rider extends Authenticatable
 {
 
-    protected $fillable = ['name', 'photo', 'zip', 'city_id', 'state_id', 'country', 'address', 'phone', 'fax', 'email', 'password', 'location', 'email_verify', 'email_verified', 'email_token', 'status', 'balance'];
+    protected $guarded = [''];
 
     protected $hidden = [
-        'password', 'remember_token'
+        'password',
+        'remember_token'
     ];
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
 
     public function orders()

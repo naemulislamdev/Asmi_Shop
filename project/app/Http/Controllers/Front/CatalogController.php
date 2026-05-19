@@ -144,6 +144,7 @@ class CatalogController extends Controller
 
             // OPTIONAL: stable ordering
             ->orderBy('stock', 'desc')
+            ->where('is_offer_active', 0)
 
             // RATINGS
             ->withCount('ratings')

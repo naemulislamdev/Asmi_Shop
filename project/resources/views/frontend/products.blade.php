@@ -47,6 +47,50 @@
             object-fit: contain;
         }
     }
+
+    /* Breadcumb style start */
+
+    .custom-breadcrumb {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 14px;
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+
+    /* links */
+    .custom-breadcrumb a {
+        color: #6c757d;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .custom-breadcrumb a:hover {
+        color: #007bff;
+    }
+
+    /* separator icon */
+    .custom-breadcrumb .separator {
+        margin: 0 8px;
+        color: #adb5bd;
+        font-size: 12px;
+    }
+
+    /* active item */
+    .custom-breadcrumb .active {
+        color: #212529;
+        font-weight: 600;
+    }
+
+    /* optional: spacing fix for mobile */
+    @media (max-width: 576px) {
+        .custom-breadcrumb {
+            font-size: 13px;
+            padding: 8px 10px;
+        }
+    }
 </style>
 @section('content')
     <section class="category_banner" style="background: #EDEDED;">
@@ -72,10 +116,48 @@
 
     </section>
     <!-- breadcrumb end -->
-
+    {{-- @dd($cat->name) --}}
     <!-- product wrapper start -->
     <div class="gs-blog-wrapper pt-3" style="background: #ededed">
         <div class="container">
+
+            <nav class="custom-breadcrumb mb-2 mb-lg-0">
+                <a href="{{ url('/') }}">Home</a>
+
+
+                @if (!empty($childcat->name))
+                    <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                    <a href="{{ route('front.category', $cat->slug) }}">{{ $cat->name }}</a>
+
+                    @if (!empty($subcat->name))
+                        <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                        <a href="{{ route('front.category', [$cat->slug, $subcat->slug]) }}">
+                            {{ $subcat->name }}
+                        </a>
+                    @endif
+
+                    <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                    <span class="active">{{ $childcat->name }}</span>
+                @elseif (!empty($subcat->name))
+                    <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                    <a href="{{ route('front.category', $cat->slug) }}">{{ $cat->name }}</a>
+
+                    <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                    <span class="active">{{ $subcat->name }}</span>
+                @elseif (!empty($cat->name))
+                    <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                    <span class="active">{{ $cat->name }}</span>
+                @endif
+            </nav>
+            <h1 class="text-center h2 mb-3">
+                @if (!empty($childcat->name))
+                    {{ $childcat->name }}
+                @elseif(!empty($subcat->name))
+                    {{ $subcat->name }}
+                @elseif(!empty($cat->name))
+                    {{ $cat->name }}
+                @endif
+            </h1>
             <div class="row flex-column-reverse flex-lg-row">
 
                 <div class="col-lg-12 gs-main-blog-wrapper">
@@ -88,11 +170,10 @@
                         }
                     @endphp
 
-                    {{-- <!-- product nav wrapper -->
-                    <div class=" product-nav-wrapper mb-3 rounded-bottom">
+                    <!-- product nav wrapper -->
+                    {{-- <div class=" product-nav-wrapper mb-3 rounded-bottom">
                         <h5>@lang('Total Products Found:') {{ $prods->count() }}</h5>
                     </div> --}}
-
 
 
                     @if ($prods->count() == 0)

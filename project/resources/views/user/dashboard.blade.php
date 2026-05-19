@@ -190,6 +190,7 @@
                                     </td>
                                     <td>
                                         @php
+                                            $class = '';
                                             if ($order->status == 'pending') {
                                                 $class = 'yellow-btn';
                                             } elseif ($order->status == 'processing') {

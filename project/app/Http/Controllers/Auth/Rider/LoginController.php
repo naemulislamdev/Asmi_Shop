@@ -15,20 +15,13 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-
         $request->validate([
-            'email' => 'required|email',
+            'phone' => 'required',
             'password' => 'required',
         ]);
         // Attempt to log the user in
-        if (Auth::guard('rider')->attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::guard('rider')->attempt(['phone' => $request->phone, 'password' => $request->password])) {
             // if successful, then redirect to their intended location
-
-            // Check If Email is verified or not
-            if (Auth::guard('rider')->user()->email_verified == 'No') {
-                Auth::guard('rider')->logout();
-                return redirect()->back()->with('unsuccess', __('Your Email is not Verified!'));
-            }
 
             if (Auth::guard('rider')->user()->ban == 1) {
                 Auth::guard('rider')->logout();

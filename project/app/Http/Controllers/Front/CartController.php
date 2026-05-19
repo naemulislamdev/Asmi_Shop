@@ -426,7 +426,4 @@ class CartController extends Controller
 
         return collect($eligibleProducts)->unique('sku')->values()->toArray();
     }
-
-
-    //////////////////////Chnage///////////////////////////
 }

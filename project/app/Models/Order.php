@@ -27,6 +27,10 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function deliveryRider()
+    {
+        return $this->belongsTo(DeliveryRider::class);
+    }
 
     public static function getShipData($cart)
     {
@@ -81,5 +85,9 @@ class Order extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class);
+    }
+    public function rider()
+    {
+        return $this->belongsTo(Rider::class);
     }
 }

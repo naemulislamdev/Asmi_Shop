@@ -32,6 +32,7 @@
         "php-http/message-factory": "^1.1",
         "phpmailer/phpmailer": "^6.8",
         "razorpay/razorpay": "^2.8",
+        "spatie/laravel-sitemap": "^7.3",
         "stripe/stripe-php": "^12.6",
         "symfony/http-client": "^7.1",
         "tymon/jwt-auth": "^2.0",

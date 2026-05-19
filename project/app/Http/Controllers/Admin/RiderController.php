@@ -46,11 +46,11 @@ class RiderController extends AdminBaseController
                     <a href="' . route('admin-rider-show', $data->id) . '" >
                         <i class="fas fa-eye"></i> ' . __("Details") . '
                     </a>
-                    
+
                     <a href="javascript:;" data-href="' . route('admin-rider-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete">
                             <i class="fas fa-trash-alt"></i>
                             </a>
-                            
+
                         </div>';
             })
             ->rawColumns(['action', 'total_delivery'])
@@ -95,7 +95,7 @@ class RiderController extends AdminBaseController
 
         $msg = __('Data Deleted Successfully.');
         return response()->json($msg);
-        //--- Redirect Section Ends    
+        //--- Redirect Section Ends
     }
 
     //*** JSON Request
@@ -134,7 +134,7 @@ class RiderController extends AdminBaseController
     }
 
 
-    //*** GET Request       
+    //*** GET Request
     public function withdrawdetails($id)
     {
         $sign = $this->curr;
@@ -142,19 +142,19 @@ class RiderController extends AdminBaseController
         return view('admin.rider.withdraw-details', compact('withdraw', 'sign'));
     }
 
-    //*** GET Request   
+    //*** GET Request
     public function accept($id)
     {
         $withdraw = Withdraw::findOrFail($id);
         $data['status'] = "completed";
         $withdraw->update($data);
-        //--- Redirect Section     
+        //--- Redirect Section
         $msg = __('Withdraw Accepted Successfully.');
         return response()->json($msg);
-        //--- Redirect Section Ends   
+        //--- Redirect Section Ends
     }
 
-    //*** GET Request   
+    //*** GET Request
     public function reject($id)
     {
         $withdraw = Withdraw::findOrFail($id);
@@ -163,9 +163,9 @@ class RiderController extends AdminBaseController
         $account->update();
         $data['status'] = "rejected";
         $withdraw->update($data);
-        //--- Redirect Section     
+        //--- Redirect Section
         $msg = __('Withdraw Rejected Successfully.');
         return response()->json($msg);
-        //--- Redirect Section Ends   
+        //--- Redirect Section Ends
     }
 }

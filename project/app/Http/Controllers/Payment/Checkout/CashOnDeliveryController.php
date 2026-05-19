@@ -27,6 +27,9 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             'email' => 'nullable|string|email|max:255',
             'customer_address' => 'required|string|max:255',
             'order_note' => 'nullable|string|max:255',
+            'branch_id' => 'required',
+        ], [
+            'branch_id.required' => 'Please select a branch.',
         ]);
         $requestInput = $request->all();
         //dd($requestInput);
@@ -49,7 +52,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $authUser = OrderHelper::get_customer_check($request);
 
         //dd($authUser->ban);
-        if($authUser->ban == 1){
+        if ($authUser->ban == 1) {
             return redirect()->back()->with('unsuccess', __("Your account has been banned. Please contact support."));
         }
 
@@ -157,7 +160,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $input['loyalty_point'] = $earnedPoints ?? 0;
         $input['discount_type'] = $discountType ?? null;
         $input['discount'] = $request->use_points ?? 0;
-
+        $input['branch_id'] = $request->branch_id ?? null;
         if ($input['tax_type'] == 'state_tax') {
             $input['tax_location'] = State::findOrFail($input['tax'])->state;
         } else {

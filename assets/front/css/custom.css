@@ -56,3 +56,47 @@
 .sidebar-active-color {
   color: #ff4c3b !important;
 }
+
+/* Breadcumb style start */
+
+.custom-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 14px;
+  background: transparent;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+/* links */
+.custom-breadcrumb a {
+  color: #6c757d;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.custom-breadcrumb a:hover {
+  color: #007bff;
+}
+
+/* separator icon */
+.custom-breadcrumb .separator {
+  margin: 0 8px;
+  color: #adb5bd;
+  font-size: 12px;
+}
+
+/* active item */
+.custom-breadcrumb .active {
+  color: #212529;
+  font-weight: 600;
+}
+
+/* optional: spacing fix for mobile */
+@media (max-width: 576px) {
+  .custom-breadcrumb {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+}

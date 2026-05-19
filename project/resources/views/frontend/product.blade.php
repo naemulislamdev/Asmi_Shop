@@ -17,6 +17,30 @@
 </style>
 @section('content')
 
+    @php
+        $cart = session('cart');
+
+        $isOfferItem = false;
+
+        if ($cart && $cart->items) {
+            foreach ($cart->items as $cItem) {
+                if ($cItem['item']->id == $productt->id) {
+                    $isOfferItem = $cItem['is_offer'] ?? false;
+                }
+            }
+        }
+    @endphp
+
+    @php
+        $offerMeta = session('offer_meta') ?? [
+            'all_offer_skus' => [],
+            'eligible_offer_skus' => [],
+        ];
+
+        $isOfferProduct = in_array($productt->sku, $offerMeta['all_offer_skus']);
+        $isEligible = in_array($productt->sku, $offerMeta['eligible_offer_skus']);
+    @endphp
+
     <!-- single product details content wrapper start -->
     <div class="single-product-details-content-wrapper">
         <div class="container">
@@ -76,7 +100,7 @@
                     <form>
                         <!-- product-info-wrapper  -->
                         <div class="product-info-wrapper  {{ $productt->type != 'Physical' ? 'mb-3' : '' }}">
-                            <h3>{{ $productt->name }}</h3>
+                            <h1 class="h3">{{ $productt->name }}</h1>
                             @php
                                 $basePrice =
                                     $productt->discount > 0
@@ -140,9 +164,35 @@
                                 </div>
                             @endif
                             @if ($productt->start_date != null && $productt->end_date != null)
-                                <div class="mb-4 countdown" data-start="{{ $productt->start_date }}"
+                                <div class="mb-4 product-countdown" data-start="{{ $productt->start_date }}"
                                     data-end="{{ $productt->end_date }}">
-                                    <span class="flash_timer"></span>
+
+                                    <div class="flash-sale-badge">
+                                        <i class="ti ti-bolt"></i> Flash Sale ends in
+                                    </div>
+
+                                    <div class="flash-timer-wrap">
+                                        <div class="flash-block">
+                                            <span class="flash-num" data-unit="days">00</span>
+                                            <span class="flash-label">Days</span>
+                                        </div>
+                                        <span class="flash-sep">:</span>
+                                        <div class="flash-block">
+                                            <span class="flash-num" data-unit="hours">00</span>
+                                            <span class="flash-label">Hours</span>
+                                        </div>
+                                        <span class="flash-sep">:</span>
+                                        <div class="flash-block">
+                                            <span class="flash-num" data-unit="mins">00</span>
+                                            <span class="flash-label">Minutes</span>
+                                        </div>
+                                        <span class="flash-sep">:</span>
+                                        <div class="flash-block">
+                                            <span class="flash-num" data-unit="secs">00</span>
+                                            <span class="flash-label">Seconds</span>
+                                        </div>
+                                    </div>
+
                                 </div>
                             @endif
                             <div class="rating-wrapper">
@@ -400,7 +450,11 @@
                             </div>
                         @endif
                         @if ($productt->stock > 0 || $productt->preordered == 2)
+<<<<<<< HEAD
+                            @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
+=======
                             @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
+>>>>>>> 58b532872a38a0fd45d4bf263b726045c0a2e465
                                 @if ($existingQty == 0)
                                     {{-- SHOW ADD TO BAG --}}
                                     <div class="w-100 d-block mt-auto add-btn-wrapper">
@@ -997,6 +1051,7 @@
                 @php
                     $query = App\Models\Product::query()
                         ->where('product_type', $productt->product_type)
+                        ->where('is_offer_active', 0)
                         ->withCount('ratings')
                         ->withAvg('ratings', 'rating');
 

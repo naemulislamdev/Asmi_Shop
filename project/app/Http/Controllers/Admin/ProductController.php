@@ -112,7 +112,6 @@ class ProductController extends AdminBaseController
             ->toJson();
     }
 
-    //*** JSON Request
     public function catalogdatatables()
     {
         $datas = Product::where('is_catalog', '=', 1)->orderBy('id', 'desc');
@@ -722,6 +721,7 @@ class ProductController extends AdminBaseController
     public function update(Request $request, $id)
     {
 
+
         // return $request;
         //--- Validation Section
         $rules = [
@@ -793,6 +793,11 @@ class ProductController extends AdminBaseController
             if ($request->shipping_time_check == "") {
                 $input['ship'] = null;
             }
+
+
+            $input['is_offer_active'] = $request->is_offer_active ? 1 : 0;
+
+
             // Video Url
 
             $input['video_url'] = $request->video_url ?? null;
@@ -990,14 +995,16 @@ class ProductController extends AdminBaseController
         if ($request->cross_products) {
             $input['cross_products'] = implode(',', $request->cross_products);
         }
-        //$data->slug = Str::slug($data->name, '-') . '-' . strtolower($data->sku);
+
+        if ($data->slug !== $request->slug) {
+            $data->slug = Str::slug($request->slug, '-');
+        }
         $input['pre_order'] = $request->pre_order == 1 ? 1 : 0;
 
         $data->update($input);
         //-- Logic Section Ends
 
         if ($request->measure_check == 1 && $request->has('measures')) {
-
             $data->measures()->delete();
             foreach ($request->measures as $measure) {
                 if (!empty($measure['value']) && !empty($measure['label'])) {

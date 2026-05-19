@@ -5,7 +5,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="canonical" href="https://asmishop.com/">
     <!--Essential css files-->
+    {{-- json Schema start --}}
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebSite",
+                    "@id": "https://asmishop.com/#website",
+                    "name": "Asmi Shop",
+                    "url": "https://asmishop.com/",
+                    "potentialAction": {
+                        "@type": "SearchAction",
+                        "target": {
+                            "@type": "EntryPoint",
+                            "urlTemplate": "https://asmishop.com/category?search={search_term_string}"
+                        },
+                        "query-input": "required name=search_term_string"
+                    }
+                },
+                {
+                    "@type": "ItemList",
+                    "name": "Asmi Shop Important Pages",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Food",
+                            "url": "https://asmishop.com/category/food"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "Our Special Offers",
+                            "url": "https://asmishop.com/offers"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 3,
+                            "name": "Fish",
+                            "url": "https://asmishop.com/category/food/Meat-and-fish/fish"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 4,
+                            "name": "Baby Food & Care",
+                            "url": "https://asmishop.com/category/baby-food-and-care"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 6,
+                            "name": "Our Outlets",
+                            "url": "https://asmishop.com/outlets"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 7,
+                            "name": "Contact Us",
+                            "url": "https://asmishop.com/contact"
+                        }
+                    ]
+                }
+            ]
+        }
+        </script>
+    {{-- json Schema end --}}
+
 
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/all.css">
@@ -24,6 +91,8 @@
 
     <link rel="icon" href="{{ asset('assets/images/' . $gs->favicon) }}">
     @include('includes.frontend.extra_head')
+    <meta name="keywords"
+        content="online grocery shop, bangladesh grocery online, bd online shop list, online shop list in bangladesh, daily shopping mohammadpur, bangladesh online grocery, online grocery shop bd, online grocery shops in bangladesh, daily shopping online, grocery store dhaka, daily online shopping, best online grocery shop in dhaka, grocery store online, online grocery shop dhaka, online grocery shopping, top online shop in bd, online super shop, grocery items list in bangladesh, groceries store, daily shopping, grocery shop, bangladesh online shopping website list, grocery shop bd, top 10 online shopping sites in bangladesh, best online shopping sites in bangladesh, daily shopping bangladesh, daily shopping bd, bangladesh best online shopping site, best online shopping website in bangladesh, grocery shop online, online grocery, bangladesh grocery store, grocery shop in bangladesh, grocery shopping, best supershop in dhaka">
     @yield('css')
     <style>
         .header-top {
@@ -333,6 +402,10 @@
                 object-fit: contain;
             }
 
+            .offer-popup {
+                top: 120px !important;
+            }
+
         }
 
         .chat-item {
@@ -415,11 +488,10 @@
             border: none !important;
         }
     </style>
-
     <style>
         .offer-popup {
             position: fixed;
-            top: 20px;
+            top: 70px;
             right: 20px;
             width: 340px;
             background: #fff;
@@ -446,10 +518,7 @@
         }
 
         .offer-header button {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 20px;
+            font-size: 17px;
             cursor: pointer;
         }
 
@@ -502,6 +571,124 @@
         }
 
         /* header changes 1 May 26 */
+        .qty-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .offer-popup {
+                top: 120px !important;
+            }
+        }
+    </style>
+    <style>
+        .flash-sale-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #993C1D;
+            background: #FAECE7;
+            border-radius: 8px;
+            padding: 3px 8px;
+            margin-bottom: 8px;
+        }
+
+        .flash-timer-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 10px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            width: fit-content;
+            max-width: 100%;
+        }
+
+        .flash-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1 1 44px;
+            min-width: 44px;
+            max-width: 70px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 6px 8px 5px;
+        }
+
+        .flash-num {
+            font-size: clamp(18px, 4vw, 26px);
+            /* mobile তে ছোট, desktop এ বড় */
+            font-weight: 500;
+            color: #1a1a1a;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .flash-label {
+            font-size: clamp(9px, 1.8vw, 10px);
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .flash-sep {
+            font-size: clamp(16px, 3.5vw, 22px);
+            font-weight: 500;
+            color: #aaa;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+    </style>
+    <style>
+        .card-timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #e4f8fb;
+            border: hsl(188, 74%, 94%);
+            color: #0d988d;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .cd-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+
+        .cd-unit span {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .cd-unit small {
+            font-size: 8px;
+            /* label খুব ছোট */
+            font-weight: 400;
+            color: #0d988d;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .cd-sep {
+            color: #f59e0b;
+            font-size: 13px;
+            margin-bottom: 8px;
+            /* separator উপরে রাখতে */
+        }
     </style>
     <style>
     .qty-btn.disabled {
@@ -539,6 +726,10 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NGVKWTDQ" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+    <noscript>
+        <img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id={{ $seo->facebook_pixel }}&ev=PageView&noscript=1" />
+    </noscript>
 
     @php
         $categories = App\Models\Category::with('subs')->where('status', 1)->get();
@@ -949,11 +1140,13 @@
     <div id="offerPopup" class="offer-popup d-none">
         <div class="offer-header">
             <span>🎁 Special Offer Unlocked</span>
-            <button onclick="closeOfferPopup()">×</button>
+            <button class="btn btn-sm btn-danger" onclick="closeOfferPopup()">X</button>
         </div>
 
         <div id="offerList" class="offer-list"></div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <!--Esential Js Files-->
     <script src="{{ asset('assets/front') }}/js/jquery.min.js"></script>
@@ -969,6 +1162,15 @@
     <script src="{{ asset('assets/front') }}/js/script.js"></script>
     <script src="{{ asset('assets/front/js/myscript.js') }}"></script>
 
+    <script>
+        const closeOfferPopup = () => {
+            let popup = document.getElementById("offerPopup");
+            popup.classList.remove("show");
+            popup.classList.add("d-none");
+
+            setTimeout(() => popup.classList.add("show"), 10);
+        }
+    </script>
 
     <script>
         const lightbox = GLightbox({
@@ -981,8 +1183,8 @@
         });
     </script>
     <script>
-    var routeTemplate = "{{ route('front.conditional-product', ':sku') }}";
-</script>
+        var routeTemplate = "{{ route('front.conditional-product', ':sku') }}";
+    </script>
 
     <script>
         "use strict";
@@ -1086,42 +1288,123 @@
         });
     </script>
     <script>
+        // $(function() {
+        //     $(".product-countdown").each(function() {
+        //         var $this = $(this);
+        //         var startDate = new Date($this.data("start") + " 00:00:00").getTime();
+        //         var endDate = new Date($this.data("end") + " 23:59:59").getTime();
+        //         var $wrap = $this.find(".flash-timer-wrap");
+
+        //         function pad(n) {
+        //             return n < 10 ? "0" + n : "" + n;
+        //         }
+
+        //         var interval = setInterval(function() {
+        //             var now = new Date().getTime();
+
+        //             if (now < startDate) {
+        //                 $wrap.html(
+        //                     '<span style="font-size:13px;color:#888;">⏳ Deal not started yet</span>'
+        //                 );
+        //                 return;
+        //             }
+        //             if (now > endDate) {
+        //                 clearInterval(interval);
+        //                 $wrap.html(
+        //                     '<span style="font-size:13px;color:#888;">⚡ Deal expired</span>');
+        //                 return;
+        //             }
+
+        //             var dist = endDate - now;
+        //             var d = Math.floor(dist / (1000 * 60 * 60 * 24));
+        //             var h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        //             var m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+        //             var s = Math.floor((dist % (1000 * 60)) / 1000);
+
+        //             $this.find('[data-unit="days"]').text(pad(d));
+        //             $this.find('[data-unit="hours"]').text(pad(h));
+        //             $this.find('[data-unit="mins"]').text(pad(m));
+        //             $this.find('[data-unit="secs"]').text(pad(s));
+
+        //         }, 1000);
+        //     });
+        // });
         $(function() {
             $(".product-countdown").each(function() {
                 var $this = $(this);
                 var startDate = new Date($this.data("start") + " 00:00:00").getTime();
                 var endDate = new Date($this.data("end") + " 23:59:59").getTime();
-                var $timer = $this.find(".flash_timer");
+                var $wrap = $this.find(".flash-timer-wrap");
+
+                function pad(n) {
+                    return n < 10 ? "0" + n : "" + n;
+                }
 
                 var interval = setInterval(function() {
                     var now = new Date().getTime();
 
                     if (now < startDate) {
-                        $timer.html("⏳ Deal Not Started Yet!");
+                        $wrap.html(
+                            '<span style="font-size:13px;color:#888;">⏳ Deal not started yet</span>'
+                        );
                         return;
                     }
-
                     if (now > endDate) {
                         clearInterval(interval);
-                        $timer.html("⚡ Deal Expired!");
+                        $wrap.html(
+                            '<span style="font-size:13px;color:#888;">⚡ Deal expired</span>');
                         return;
                     }
 
-                    var distance = endDate - now;
+                    var dist = endDate - now;
+                    var d = Math.floor(dist / (1000 * 60 * 60 * 24));
+                    var h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                    var s = Math.floor((dist % (1000 * 60)) / 1000);
 
-                    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    $this.find('[data-unit="days"]').text(pad(d));
+                    $this.find('[data-unit="hours"]').text(pad(h));
+                    $this.find('[data-unit="mins"]').text(pad(m));
+                    $this.find('[data-unit="secs"]').text(pad(s));
 
-                    $timer.text(
-                        (days < 10 ? "0" + days : days) + " D:" +
-                        (hours < 10 ? "0" + hours : hours) + " H:" +
-                        (minutes < 10 ? "0" + minutes : minutes) + " M:" +
-                        (seconds < 10 ? "0" + seconds : seconds) + " S Left"
-                    );
                 }, 1000);
             });
+        });
+        $(".card-countdown").each(function() {
+            var $this = $(this);
+            var startDate = new Date($this.data("start") + " 00:00:00").getTime();
+            var endDate = new Date($this.data("end") + " 23:59:59").getTime();
+            var $badge = $this.find(".card-timer-badge");
+
+            function pad(n) {
+                return n < 10 ? "0" + n : "" + n;
+            }
+
+            var interval = setInterval(function() {
+                var now = new Date().getTime();
+
+                if (now < startDate) {
+                    $badge.html('<i class="ti ti-clock"></i> Soon');
+                    return;
+                }
+                if (now > endDate) {
+                    clearInterval(interval);
+                    $this.hide(); // expired হলে hide করে দাও
+                    return;
+                }
+
+                var dist = endDate - now;
+                var d = Math.floor(dist / (1000 * 60 * 60 * 24));
+                var h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                var s = Math.floor((dist % (1000 * 60)) / 1000);
+
+                $this.find('[data-unit="days"]').text(pad(d));
+                $this.find('[data-unit="hours"]').text(pad(h));
+                $this.find('[data-unit="mins"]').text(pad(m));
+                $this.find('[data-unit="secs"]').text(pad(s));
+
+            }, 1000);
         });
     </script>
 
