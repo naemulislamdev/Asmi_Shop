@@ -270,7 +270,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 16px;
+            padding: 7px 12px;
             border: 1px solid #e5e7eb;
             border-radius: 10px;
             cursor: pointer;
@@ -443,12 +443,19 @@
     </style>
 
     <div class="container gs-cart-container checkout-page py-0 my-0">
+        <nav class="custom-breadcrumb mb-2 mb-lg-0">
+            <a href="{{ url('/') }}">Home</a>
+            <span class="separator"><i class="fa fa-chevron-right"></i></span>
+            <span class="active">Checkout</span>
+        </nav>
+        <h1 class="text-center h3">Cart Checkout</h1>
         <div class="row gs-cart-row justify-content-center">
 
             @if (Session::has('cart'))
                 @php $discount = 0; @endphp
 
                 <div class="col-lg-7">
+
 
                     {{-- Personal Information --}}
                     <div class="checkout-box">
@@ -543,7 +550,8 @@
                                     <div class="col-lg-12">
                                         <label class="create-account-toggle" data-bs-toggle="collapse"
                                             data-bs-target="#show_passwords">
-                                            <input type="checkbox" id="showca" name="create_account" value="1">
+                                            <input type="checkbox" id="showca" name="create_account"
+                                                value="1">
                                             <div class="check-box">
                                                 <svg width="12" height="12" viewBox="0 0 12 12"
                                                     fill="none">
@@ -768,8 +776,74 @@
                         </div>
                     </div>
 
+                    {{-- Select your outlet --}}
+                    {{-- Nearest Outlet Selection --}}
+                    @php
+                        $outlets = App\Models\Branch::where('status', 1)->get();
+
+                    @endphp
+
+                    <div class="checkout-box  @error('branch_id') border border-danger @enderror">
+                        <div class="checkout-box-header">
+                            <div class="checkout-box-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                                    <circle cx="12" cy="9" r="2.5" stroke="currentColor"
+                                        stroke-width="1.5" />
+                                </svg>
+                            </div>
+                            <h6>{{ __('Select Your Nearest Outlet') }}</h6>
+                        </div>
+                        <div class="checkout-box-body  ">
+                            <div class="shipping-options">
+                                @forelse($outlets as $outlet)
+                                    <label class="shipping-option-card" for="outlet_{{ $outlet->id }}">
+                                        <input type="radio" id="outlet_{{ $outlet->id }}" name="branch_id"
+                                            value="{{ $outlet->id }}">
+
+                                        <div class="shipping-icon">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <path
+                                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                                                    stroke="currentColor" stroke-width="1.5"
+                                                    stroke-linejoin="round" />
+                                                <circle cx="12" cy="9" r="2.5" stroke="currentColor"
+                                                    stroke-width="1.5" />
+                                            </svg>
+                                        </div>
+
+                                        <div class="shipping-info">
+                                            <span class="shipping-title">{{ $outlet->name }}</span>
+                                            @if ($outlet->address)
+                                                <span class="shipping-subtitle">{!! $outlet->address !!}</span>
+                                            @endif
+                                        </div>
+
+                                        {{-- <div>
+                                            @if ($outlet->is_open)
+                                                <span class="badge-free">Open</span>
+                                            @else
+                                                <span
+                                                    style="font-size:11px;font-weight:600;background:#fef3c7;color:#92400e;border:0.5px solid #fcd34d;padding:3px 10px;border-radius:20px;">Closed</span>
+                                            @endif
+                                        </div> --}}
+                                    </label>
+                                @empty
+                                    <p class="text-muted small">{{ __('No Outlet Available') }}</p>
+                                @endforelse
+                            </div>
+                            @error('branch_id')
+                                <span class="field-error mt-2 d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    {{-- Select your outlet --}}
+                    {{-- Nearest Outlet Selection --}}
+
                     {{-- Submit --}}
-                    <button type="submit" class="checkout-submit-btn">
+
+                    <button id="orderBtn" type="submit" class="checkout-submit-btn">
                         {{ __('Complete Order') }}
                     </button>
 
@@ -840,7 +914,21 @@
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        document
+            .getElementById('userInfoForm')
+            .addEventListener('submit', function() {
 
+                let btn = document.getElementById('orderBtn');
+
+                btn.disabled = true;
+
+                btn.innerHTML = `
+                Processing...
+                <span class="spinner-border spinner-border-sm"></span>
+            `;
+            });
+    </script>
 
     <script type="text/javascript">
         // under input field

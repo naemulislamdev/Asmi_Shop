@@ -1,22 +1,22 @@
 @extends('layouts.front')
 @section('content')
-    <section class="gs-breadcrumb-section bg-class"
+    <section class="gs-breadcrumb-section bg-class p-2"
         data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
         <div class="container">
             <div class="row justify-content-center content-wrapper">
                 <div class="col-12">
-                    <h2 class="breadcrumb-title">@lang('Contact')</h2>
-                    <ul class="bread-menu">
-                        <li><a href="{{ route('front.index') }}">@lang('Home')</a></li>
-                        <li><a href="{{ route('front.contact') }}">@lang('Contact')</a></li>
-                    </ul>
+                    <nav class="custom-breadcrumb mb-2 mb-lg-0">
+                        <a href="{{ url('/') }}">Home</a>
+                        <span class="separator"><i class="fa fa-chevron-right"></i></span>
+                        <span class="active">Contact</span>
+                    </nav>
                 </div>
             </div>
         </div>
     </section>
 
-
-    <div class="gs-contact-section">
+    <h1 class="text-dark text-center h2">@lang('Contact Us')</h1>
+    <div class="gs-contact-section p-0 mt-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-5 wow-replaced" data-wow-delay=".1s">
@@ -122,12 +122,13 @@
                     <div class="leave-reply-section">
                         <h3>@lang('Feel free to message us')</h3>
                         <form class="form-area" action="{{ route('front.contact.submit') }}" method="POST">
-                              @csrf
+                            @csrf
                             <div class="row gy-4 form-row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <input id="name" type="text" name="name" class="form-control"
-                                            placeholder="@lang('Your Name')" required="required" data-error="name is required.">
+                                            placeholder="@lang('Your Name')" required="required"
+                                            data-error="name is required.">
                                     </div>
                                     @error('name')
                                         <p class="my-2 text-danger">{{ $message }}</p>

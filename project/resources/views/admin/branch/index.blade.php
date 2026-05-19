@@ -31,6 +31,7 @@
                                     <tr>
                                         <th>{{ __('Name') }}</th>
                                         <th>{{ __('Address') }}</th>
+                                        <th>{{ __('Serial') }}</th>
                                         <th>{{ __('Status') }}</th>
                                         <th>{{ __('Options') }}</th>
                                     </tr>
@@ -131,6 +132,10 @@
                     {
                         data: 'address',
                         name: 'address'
+                    },
+                    {
+                        data: 'order',
+                        name: 'order'
                     },
                     {
                         data: 'status',

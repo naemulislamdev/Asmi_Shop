@@ -1,18 +1,28 @@
 <?php
 
+use App\Http\Controllers\Admin\BranchOrderController;
+use App\Http\Controllers\Admin\BranchSalesReportController;
 use App\Http\Controllers\Admin\ConditionalOfferController;
 use App\Http\Controllers\Admin\CustomeOrderController;
 use App\Http\Controllers\Admin\DailySalesReportController;
 use App\Http\Controllers\Admin\JobApplicationController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\OrderExportController;
 use App\Http\Controllers\Admin\OrderScheduleController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PromoOffersController;
+use App\Http\Controllers\Admin\SitemapController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
+
+    // generate sitemap
+    Route::get('/sitemap', [SitemapController::class, 'index'])->name('admin-sitemap');
+    Route::get('sitemap-download', [SitemapController::class, 'download'])->name('admin-sitemap-download');
+
 
     //------------ ADMIN LOGIN SECTION ------------
 
@@ -106,7 +116,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/order/{id}/update-product-qty', 'Admin\OrderController@updateProductQty')
             ->name('admin.order.update_product_qty');
         // CREATE ORDER
-
         Route::get('/order/product/datatables', 'Admin\OrderCreateController@datatables')->name('admin-order-product-datatables'); //JSON REQUEST
         Route::get('/order/create', 'Admin\OrderCreateController@create')->name('admin-order-create');
         Route::get('/order/product/add/{product_id}', 'Admin\OrderCreateController@addProduct')->name('admin-order-product-add');
@@ -180,6 +189,12 @@ Route::prefix('admin')->group(function () {
         Route::get('/daily-sales-datatable', 'dailySalesData')->name('admin.report.dailySalesData');
         Route::get('/daily-sales-summary', 'dailySalesSummary')->name('admin.report.dailySalesSummary');
         Route::get('/daily-sales-export', 'dailySalesExport')->name('admin.report.dailySalesExport');
+    });
+    // Branch Sales Report Controller
+    Route::controller(BranchSalesReportController::class)->group(function () {
+        Route::get('/branch-sales', 'index')->name('admin.branch.sales');
+        Route::get('/branch-sales/summary', 'summary')->name('admin.branch.sales.summary');
+        Route::get('/branch-sales/datatable', 'datatable')->name('admin.branch.sales.datatable');
     });
 
 
@@ -817,7 +832,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/flash/deal/update/{id}', 'Admin\FlashDealController@update')->name('admin-flash-deal-update');
         Route::get('/flash/deal/delete/{id}', 'Admin\FlashDealController@destroy')->name('admin-flash-deal-delete');
         //------------ ADMIN PAGE SECTION ENDS------------
-
         Route::get('/page-settings/contact', 'Admin\PageSettingController@contact')->name('admin-ps-contact');
         Route::post('/page-settings/update/all', 'Admin\PageSettingController@update')->name('admin-ps-update');
     });
@@ -1015,6 +1029,7 @@ Route::prefix('admin')->group(function () {
     // STATUS SECTION
     Route::get('/products/status/{id1}/{id2}', 'Admin\ProductController@status')->name('admin-prod-status');
     // STATUS SECTION ENDS
+    // routes/web.php
 
     // FEATURE SECTION
     Route::get('/products/feature/{id}', 'Admin\ProductController@feature')->name('admin-prod-feature');
@@ -1102,6 +1117,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/jobs/details/{id}', 'show')->name('job-details');
         Route::get('/jobs/status/{id1}/{id2}', 'status')->name('job-status');
         Route::delete('/jobs/delete/{id}', 'delete')->name('job-delete');
+        Route::delete('/jobs/{id}/remove-image', 'removeImage')->name('job-remove-image');
     });
     Route::prefix('career')->name('career.')->controller(JobDepartmentController::class)->group(function () {
         Route::get('/departments', 'index')->name('departments');
@@ -1117,7 +1133,20 @@ Route::prefix('admin')->group(function () {
         Route::get('/application/datatables', 'datatable')->name('application-datatables');
         Route::post('/application/status', 'status')->name('application-status');
         Route::delete('/application/delete/{id}', 'delete')->name('application-delete');
-        // Route::post('/application/store', 'store')->name('application-store');
+        Route::post('/application/store', 'store')->name('application-store');
     });
-    //------------ ADMIN CAREER SECTION ENDS ------------
+    //------------ ADMIN CAREER SECTION ENDS ------------//
+
+    // Branch Wise Order Show
+    Route::prefix('/branch-orders')->name('branch-orders.')->controller(BranchOrderController::class)->group(function () {
+        Route::get('/', 'allBranchOrders')->name('index');
+        Route::get('/datatable/{branch_id?}', 'datatables')->name('datatables');
+        Route::get('/summary/{branch_id?}', 'summary')->name('summary');
+        // wildcard সবার শেষে
+        Route::get('/{branch_id}', 'singleBranchOrders')->name('single');
+        Route::get('/branch/not-assigned', 'notAssignedBranch')->name('not-assigned');
+        // Route যোগ করুন
+        Route::get('/branch/{branch_id}/riders',  'getBranchRiders')->name('riders');
+        Route::post('/branch/assign-rider',  'assignRider')->name('assignRider');
+    });
 });

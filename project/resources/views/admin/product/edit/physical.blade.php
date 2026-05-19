@@ -53,9 +53,21 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input type="text" class="input-field"
-                                                    placeholder="{{ __(" Enter Product
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            												Name") }}"
-                                                    name="name" required="" value="{{ $data->name }}">
+                                                    placeholder="{{ __(' Enter Product Name') }}" name="name"
+                                                    required="" value="{{ $data->name }}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Product Slug') }}* </h4>
+                                                    <p class="sub-heading">{{ __('(In Any Language)') }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input type="text" class="input-field"
+                                                    placeholder="{{ __(' Enter Product slug') }}" name="slug"
+                                                    required="" value="{{ $data->slug }}">
                                             </div>
                                         </div>
 
@@ -384,7 +396,7 @@
                                                                                         value="{{ !empty(
                                                                                             $selectedAttrs[
                                                                                                 "
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        																		$inName"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        																		$inName"
                                                                                             ]['prices'][$i]
                                                                                         ) && $checked == 1
                                                                                             ? round($selectedAttrs["$inName"]['prices'][$i] * $sign->value, 2)
@@ -463,7 +475,8 @@
                                                                         <input type="number"
                                                                             name="measures[{{ $index }}][price]"
                                                                             class="input-field measure-price"
-                                                                            step="0.01" value="{{ $measure->price }}">
+                                                                            step="0.01"
+                                                                            value="{{ $measure->price }}">
                                                                     </td>
 
                                                                     <td>
@@ -767,6 +780,24 @@
                                                             {{ !empty($data->size) ? 'checked' : '' }}>
                                                         <label for="size-check"
                                                             class="stock-text">{{ __('Manage Stock') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input name="is_offer_active" type="checkbox" id="offer_check"
+                                                            value="1"
+                                                            {{ !empty($data->is_offer_active) ? 'checked' : '' }}>
+                                                        <label
+                                                            for="offer_check">{{ __('if Conditional Offer active') }}</label>
                                                     </li>
                                                 </ul>
                                             </div>

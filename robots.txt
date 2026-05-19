@@ -1,2 +1,18 @@
 User-agent: *
-Disallow:
+Disallow: /admin/login
+Disallow: /admin
+Disallow: /user/login
+Disallow: /user/register
+Disallow: /user/forgot
+Disallow: /user/dashboard
+Disallow: /checkout
+Disallow: /checkout-complete/
+Disallow: /api/
+
+
+# Laravel Specific Blocks
+Disallow: /vendor/
+Disallow: /storage/
+Disallow: /cache/
+
+Sitemap: https://asmishop.com/sitemap.xml

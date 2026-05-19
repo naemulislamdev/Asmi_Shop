@@ -81,6 +81,41 @@
           </ul>
       </li>
       <li>
+          <a href="#branch_wise_orders" class="accordion-toggle wave-effect" data-toggle="collapse"
+              aria-expanded="false"><i class="fa fa-store"></i>{{ __('Branch Wise Orders') }}
+          </a>
+          <ul class="collapse list-unstyled" id="branch_wise_orders" data-parent="#accordion">
+              <li>
+                  <a href="{{ route('branch-orders.index') }}"> {{ __('All Branch Orders') }}
+                      <span class="badge badge-dark float-right">{{ $totalBranchOrders ?? 0 }}</span>
+                  </a>
+              </li>
+              @php
+                  $badges = [
+                      'badge-primary',
+                      'badge-success',
+                      'badge-danger',
+                      'badge-warning',
+                      'badge-info',
+                      'badge-dark',
+                  ];
+              @endphp
+
+              @foreach ($branchWiseOrders as $index => $item)
+                  <li>
+                      <a
+                          href="{{ $item['branch_id'] ? route('branch-orders.single', $item['branch_id']) : route('branch-orders.not-assigned') }}">
+                          {{ $item['branch_id'] ? $item['branch_name'] : __('Not Assigned Branch') }}
+                          <span
+                              class="text-center align-self-center badge {{ $badges[$index % count($badges)] }} float-right">
+                              {{ $item['total'] ?? 0 }}
+                          </span>
+                      </a>
+                  </li>
+              @endforeach
+          </ul>
+      </li>
+      <li>
           <a href="#all_reports" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
                   class="fas fa-hand-holding-usd"></i>{{ __('Reports') }}</a>
           <ul class="collapse list-unstyled" id="all_reports" data-parent="#accordion">
@@ -89,6 +124,9 @@
               </li>
               <li>
                   <a href="{{ route('admin.report.dailySales') }}"> {{ __('Daily Sales Reports') }}</a>
+              </li>
+              <li>
+                  <a href="{{ route('admin.branch.sales') }}"> {{ __('Branch Sales Reports') }}</a>
               </li>
           </ul>
       </li>
@@ -289,7 +327,7 @@
 
       <li>
           <a href="{{ route('admin-branch-index') }}" class=" wave-effect"><i
-                  class="fas fa-sitemap"></i>{{ __('Branch') }}</a>
+                  class="fas fa-store"></i>{{ __('Branch Management') }}</a>
       </li>
       <li>
           <a href="{{ route('admin-coupon-index') }}" class=" wave-effect"><i
@@ -624,7 +662,7 @@
       <li>
           <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
                   class="fas fa-user-secret"></i>{{ __('Manage
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  Staffs') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Staffs') }}</a>
       </li>
 
       <li>
@@ -639,6 +677,11 @@
       </li>
 
       <li>
+          <a href="{{ route('admin-sitemap') }}" class=" wave-effect"><i
+                  class="fas fa-download"></i>{{ __('Download Sitemap') }}</a>
+      </li>
+
+      <li>
           <a href="{{ route('admin-cache-clear') }}" class=" wave-effect"><i
                   class="fas fa-sync"></i>{{ __('Clear Cache') }}</a>
       </li>
@@ -646,7 +689,7 @@
       <li>
           <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
                   class="fas fa-list-alt"></i>{{ __('Addon
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  Manager') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Manager') }}</a>
       </li>
 
       <li>

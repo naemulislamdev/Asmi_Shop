@@ -37,6 +37,10 @@
                                             <span class="info-title">@lang('Address:') </span>
                                             <span class="info-content">{{ $user->address }}</span>
                                         </div>
+                                        <div class="account-info-item">
+                                            <span class="info-title">@lang('Branch:') </span>
+                                            <span class="info-content">{{ $user->branch->name }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -107,23 +111,28 @@
 
                                         @php
 
-                                             $order_shipping = json_decode($order->order->vendor_shipping_id, true) ?? [];
+                                            $order_shipping =
+                                                json_decode($order->order->vendor_shipping_id, true) ?? [];
                                             $order_package = json_decode($order->order->vendor_packing_id, true) ?? [];
-                                            
+
                                             // Retrieve vendor-specific shipping and packing IDs
                                             $vendor_shipping_id = $order_shipping[$order->vendor_id] ?? null;
                                             $vendor_package_id = $order_package[$order->vendor_id] ?? null;
-                                            
+
                                             // Retrieve Shipping model or set to null if not found
-                                            $shipping = $vendor_shipping_id ? App\Models\Shipping::find($vendor_shipping_id) : null;
-                                            
+                                            $shipping = $vendor_shipping_id
+                                                ? App\Models\Shipping::find($vendor_shipping_id)
+                                                : null;
+
                                             // Retrieve Package model or set to null if not found
-                                            $package = $vendor_package_id ? App\Models\Package::find($vendor_package_id) : null;
-                                            
+                                            $package = $vendor_package_id
+                                                ? App\Models\Package::find($vendor_package_id)
+                                                : null;
+
                                             // Calculate costs if models are found, default to 0 if null
                                             $shipping_cost = $shipping ? $shipping->price : 0;
                                             $packing_cost = $package ? $package->price : 0;
-                                            
+
                                             // Total extra cost
                                             $extra_price = $shipping_cost + $packing_cost;
                                         @endphp

@@ -18,7 +18,6 @@ class DeliveryRider extends Model
     {
         return $this->belongsTo(Rider::class);
     }
-
     public function order()
     {
         return $this->belongsTo(Order::class);

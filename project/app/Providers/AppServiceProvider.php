@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Branch;
 use App\Models\Currency;
 use App\Models\Language;
 use Illuminate\{
@@ -45,6 +46,41 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 $view->with('langg', Language::where('is_default', '=', 1)->first());
             }
+            // $totalBranchOrders = Order::whereNotNull('branch_id')->count();
+
+            // $branchWiseOrders = Order::select(
+            //     'branch_id',
+            //     DB::raw('COUNT(*) as total')
+            // )
+            //     ->whereNotNull('branch_id')
+            //     ->with('branch')
+            //     ->groupBy('branch_id')
+            //     ->get();
+            $totalBranchOrders = Order::count(); // সব orders
+
+            // branch wise order
+            $branchWiseOrders = Order::select(
+                'branch_id',
+                DB::raw('COUNT(*) as total')
+            )
+                ->groupBy('branch_id')
+                ->get();
+
+            // branch গুলো একবারে নাও
+            $branchIds = $branchWiseOrders->pluck('branch_id')->filter()->unique()->values();
+            $branchMap = Branch::whereIn('id', $branchIds)->get()->keyBy('id')->toArray();
+
+            // result prepare করো
+            $result = $branchWiseOrders->map(function ($item) use ($branchMap) {
+                return [
+                    'branch_id'   => $item->branch_id,
+                    'total'       => $item->total,
+                    'branch_name' => $item->branch_id
+                        ? ($branchMap[$item->branch_id]['name'] ?? 'Unknown')
+                        : null,
+                ];
+            });
+            // branch wise order
 
             $orderCounts = Order::selectRaw("
             COUNT(*) as total,
@@ -60,6 +96,8 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'orderCounts' => $orderCounts,
                 'todayOrders' => $todayOrders,
+                'totalBranchOrders' => $totalBranchOrders,
+                'branchWiseOrders' => $result,
             ]);
         });
     }

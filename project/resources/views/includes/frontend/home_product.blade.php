@@ -1,9 +1,3 @@
-<style>
-    .qty-btn.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-}
-</style>
 <div
     class="{{ isset($class) ? $class : 'col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-3' }} {{ request()->is('search') ? 'mb-3' : '' }} ">
     {{-- 1taka dojon egg offer condition start --}}
@@ -12,13 +6,13 @@
 
         $isOfferItem = false;
 
-    if ($cart && $cart->items) {
-        foreach ($cart->items as $cItem) {
-            if ($cItem['item']->id == $product->id) {
-                $isOfferItem = $cItem['is_offer'] ?? false;
+        if ($cart && $cart->items) {
+            foreach ($cart->items as $cItem) {
+                if ($cItem['item']->id == $product->id) {
+                    $isOfferItem = $cItem['is_offer'] ?? false;
+                }
             }
         }
-    }
     @endphp
 
     @php
@@ -31,7 +25,7 @@
         $isEligible = in_array($product->sku, $offerMeta['eligible_offer_skus']);
     @endphp
     {{-- 1taka dojon egg offer condition end --}}
-    <div class="single-product" data-sku="{{ $product->sku }}">
+    <div class="single-product position-relative" data-sku="{{ $product->sku }}">
         <div class="img-wrapper">
             <div class="discount-box">
                 @if ($product->discount > 0)
@@ -87,8 +81,13 @@
 
 
             <a href="{{ route('front.product', $product->slug) }}">
-                <img class="product-img"
+                {{-- <img class="product-img"
                     src="{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}"
+                    alt="product img"> --}}
+
+                <img class="product-img"
+                    src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/products/' . $product->photo) }}"
+                    onerror="this.onerror=null; this.src='{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}';"
                     alt="product img">
             </a>
             @if ($product->stock <= 0)
@@ -144,7 +143,8 @@
                                             <span class="h3 text-white qty-text">{{ $existingQty }}</span>
 
                                             <button
-                                                class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle" {{ $isOfferItem ? 'disabled' : '' }}>
+                                                class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle"
+                                                {{ $isOfferItem ? 'disabled' : '' }}>
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -197,11 +197,31 @@
 
                     @endif
                 </div>
+
                 @if ($product->start_date != null && $product->end_date != null)
-                    <div class="d-flex justify-content-center w-100">
-                        <div class="d-flex justify-content-center product-countdown"
-                            data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">
-                            <span class="flash_timer"></span>
+                    <div style="position: absolute; left: 2px; bottom: 45%" class="card-countdown"
+                        data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">
+                        <div class="card-timer-badge">
+                            <i class="ti ti-bolt"></i>
+                            <div class="cd-unit">
+                                <span data-unit="days">00</span>
+                                <small>day</small>
+                            </div>
+                            <span class="cd-sep">:</span>
+                            <div class="cd-unit">
+                                <span data-unit="hours">00</span>
+                                <small>hours</small>
+                            </div>
+                            <span class="cd-sep">:</span>
+                            <div class="cd-unit">
+                                <span data-unit="mins">00</span>
+                                <small>minute</small>
+                            </div>
+                            <span class="cd-sep">:</span>
+                            <div class="cd-unit">
+                                <span data-unit="secs">00</span>
+                                <small>second</small>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -223,7 +243,8 @@
                                 data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
                                 <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                                 <span class="qty-text">{{ $existingQty }} in Bag</span>
-                                <button class="qty-btn qty-plus" {{ $isOfferItem ? 'disabled' : '' }}><i class="fas fa-plus"></i></button>
+                                <button class="qty-btn qty-plus" {{ $isOfferItem ? 'disabled' : '' }}><i
+                                        class="fas fa-plus"></i></button>
                             </div>
                         @endif
                     @endif

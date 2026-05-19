@@ -6,6 +6,7 @@
             <div class="row">
                 <div class="col-lg-6 mx-auto reg-area">
                     <div class="reg-content">
+                        <h1 class="h2 text-center fw-bold">Login</h1>
                         <h4 class="text-center">@lang('Welcome Back! Please login') </h4>
                         <form action="{{ route('user.login.submit') }}" method="POST">
                             @csrf

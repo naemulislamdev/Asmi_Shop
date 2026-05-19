@@ -33,7 +33,7 @@ class OrderController extends AdminBaseController
     {
         $categories = Category::where('status', 1)->get();
         $branchs = Branch::where('status', 1)->get();
-
+        $riders = Rider::where('status', null)->get();
         if ($request->status == 'pending') {
             return view('admin.order.pending', compact('categories', 'branchs'));
         } else if ($request->status == 'hold') {
@@ -47,59 +47,67 @@ class OrderController extends AdminBaseController
         } else if ($request->status == 'today-orders') {
             return view('admin.order.today_orders', compact('categories', 'branchs'));
         } else {
-            return view('admin.order.index', compact('categories', 'branchs'));
+            return view('admin.order.index', compact('categories', 'branchs', 'riders'));
         }
     }
 
-    public function datatables($status)
+    public function datatables(Request $request, $status)
     {
+
+        $query = Order::with(['branch:id,name', 'tracks' => function ($q) {
+            $q->latest()->limit(1);
+        }]);
+
         if (auth()->user()->role_id != 0) {
-            if ($status == 'pending') {
-                $datas = Order::where('status', '=', 'pending')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            } elseif ($status == 'hold') {
-                $datas = Order::where('status', '=', 'hold')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            } elseif ($status == 'processing') {
-                $datas = Order::where('status', '=', 'processing')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            } elseif ($status == 'completed') {
-                $datas = Order::where('status', '=', 'completed')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            } elseif ($status == 'cancelled') {
-                $datas = Order::where('status', '=', 'cancelled')->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            } elseif ($status == 'today-orders') {
-                $from = date('Y-m-d') . " 00:00:00";
-                $to   = date('Y-m-d') . " 23:59:59";
-                $datas = Order::whereBetween('created_at', [$from, $to])->where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            } else {
-                $datas = Order::where('branch_id', auth()->user()->branch_id)->latest('id')->get();
-            }
-        } else {
-            if ($status == 'pending') {
-                $datas = Order::where('status', '=', 'pending')->latest('id')->get();
-            } elseif ($status == 'hold') {
-                $datas = Order::where('status', '=', 'hold')->latest('id')->get();
-            } elseif ($status == 'processing') {
-                $datas = Order::where('status', '=', 'processing')->latest('id')->get();
-            } elseif ($status == 'completed') {
-                $datas = Order::where('status', '=', 'completed')->latest('id')->get();
-            } elseif ($status == 'cancelled') {
-                $datas = Order::where('status', '=', 'cancelled')->latest('id')->get();
-            } elseif ($status == 'today-orders') {
-                $from = date('Y-m-d') . " 00:00:00";
-                $to   = date('Y-m-d') . " 23:59:59";
-                $datas = Order::whereBetween('created_at', [$from, $to])->where('branch_id', auth()->user()->branch_id)
-                    ->where('status', 'pending')->latest('id')->get();
-            } else {
-                $datas = Order::latest()->get();
-            }
+            $query->where('branch_id', auth()->user()->branch_id);
         }
 
-        //--- Integrating This Collection Into Datatables
-        return DataTables::of($datas)
+        // URL segment status (pending/completed page etc.)
+        if ($status == 'pending') {
+            $query->where('status', 'pending');
+        } elseif ($status == 'hold') {
+            $query->where('status', 'hold');
+        } elseif ($status == 'processing') {
+            $query->where('status', 'processing');
+        } elseif ($status == 'completed') {
+            $query->where('status', 'completed');
+        } elseif ($status == 'cancelled') {
+            $query->where('status', 'cancelled');
+        } elseif ($status == 'today-orders') {
+            $query->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
+        }
+        // 'none' = all orders page, তখন dropdown filter কাজ করবে
+
+        // Dropdown status filter — শুধু 'none' page-এ কাজ করবে
+        $filterStatus = $request->get('status');
+        if ($status == 'none' && !empty($filterStatus)) {
+            $query->where('status', $filterStatus);
+        }
+
+        // Date range filter — সব page-এ কাজ করবে
+        $from = $request->get('date_from');
+        $to   = $request->get('date_to');
+
+        if ($from && $to) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($from)->startOfDay(),
+                Carbon::parse($to)->endOfDay(),
+            ]);
+        } elseif ($from) {
+            $query->whereDate('created_at', '>=', $from);
+        } elseif ($to) {
+            $query->whereDate('created_at', '<=', $to);
+        }
+
+        $query->latest('id');
+
+        return DataTables::eloquent($query) // eloquent() ব্যবহার করুন, of() না
             ->editColumn('customer_address', function (Order $data) {
                 return Str::limit($data->customer_address, 30, '...');
             })
             ->editColumn('date', function (Order $data) {
-                $date = \Carbon\Carbon::parse($data->created_at)->format('d M Y');
-                $time = \Carbon\Carbon::parse($data->created_at)->format('h:i A');
+                $date = Carbon::parse($data->created_at)->format('d M Y');
+                $time = Carbon::parse($data->created_at)->format('h:i A');
                 return $date . '<br><small>' . $time . '</small>';
             })
             ->editColumn('branch', function (Order $data) {
@@ -120,81 +128,68 @@ class OrderController extends AdminBaseController
                 return $id . $viewbtn;
             })
             ->editColumn('pay_amount', function (Order $data) {
-                return PriceHelper::showOrderCurrencyPrice((($data->pay_amount + $data->wallet_price) * $data->currency_value), $data->currency_sign);
+                return PriceHelper::showOrderCurrencyPrice(
+                    (($data->pay_amount + $data->wallet_price) * $data->currency_value),
+                    $data->currency_sign
+                );
             })
             ->editColumn('status', function (Order $data) {
-                if ($data->status == 'completed') {
-                    $badge = 'success';
-                    $source = __('Completed');
-                } elseif ($data->status == 'pending') {
-                    $badge = 'warning';
-                    $source = __('Pending');
-                } elseif ($data->status == 'hold') {
-                    $badge = 'secondary';
-                    $source = __('Hold');
-                } elseif ($data->status == 'processing') {
-                    $badge = 'info';
-                    $source = __('Processing');
-                } elseif ($data->status == 'on delivery') {
-                    $badge = 'primary';
-                    $source = __('On Delivery');
-                } elseif ($data->status == 'cancelled') {
-                    $badge = 'danger';
-                    $source = __('Cancelled');
-                } else {
-                    $badge = 'dark';
-                    $source = __('Unknown');
-                }
-                return '<span class="badge badge-' . $badge . '">' . $source . '</span>';
+                $map = [
+                    'completed'   => ['success',   'Completed'],
+                    'pending'     => ['warning',   'Pending'],
+                    'hold'        => ['secondary', 'Hold'],
+                    'processing'  => ['info',      'Processing'],
+                    'on delivery' => ['primary',   'On Delivery'],
+                    'cancelled'   => ['danger',    'Cancelled'],
+                ];
+                [$badge, $source] = $map[$data->status] ?? ['dark', 'Unknown'];
+                return '<span class="badge badge-' . $badge . '">' . __($source) . '</span>';
             })
             ->editColumn('custom_note', function (Order $data) {
-                if ($data->tracks->isNotEmpty()) {
-                    $note = e(optional($data->tracks->last())->text);
-                    return "
-            <button
-                style='font-size: 13px;'
-                class='btn btn-info btn-sm note-view-btn d-inline-block'
-                data-note='{$note}'
-            >
-                <i class='fa fa-eye'></i> View
-            </button>
-        ";
+                // tracks eager loaded, তাই extra query নেই
+                $lastTrack = $data->tracks->first();
+                if ($lastTrack) {
+                    $note = e($lastTrack->text);
+                    return "<button style='font-size:13px;' class='btn btn-info btn-sm note-view-btn' data-note='{$note}'>
+                    <i class='fa fa-eye'></i> View</button>";
                 }
                 return 'N/A';
             })
             ->editColumn('customer_name', function (Order $data) {
                 return $data->customer_name . ' || ' . $data->customer_phone;
             })
-
             ->editColumn('order_source', function (Order $data) {
-                if ($data->order_source == 'Website') {
-                    $badge = 'primary';
-                    $source = __('Web');
-                } elseif ($data->order_source == 'Mobile Apps') {
-                    $badge = 'success';
-                    $source = __('App');
-                } elseif ($data->order_source == 'POS') {
-                    $badge = 'info';
-                    $source = __('POS');
-                } else {
-                    $badge = 'dark';
-                    $source = __('Unknown');
-                }
-                return '<span class="badge badge-' . $badge . '">' . $source . '</span>';
+                $map = [
+                    'Website'     => ['primary', 'Web'],
+                    'Mobile Apps' => ['success', 'App'],
+                    'POS'         => ['info',    'POS'],
+                ];
+                [$badge, $source] = $map[$data->order_source] ?? ['dark', 'Unknown'];
+                return '<span class="badge badge-' . $badge . '">' . __($source) . '</span>';
             })
             ->addColumn('action', function (Order $data) {
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
-                $deleteBtn = '<a href="javascript:;"
-        class="delete-order"
-        data-href="' . route('admin-order-delete', $data->id) . '">
-        <i class="fas fa-trash"></i> ' . __('Delete') . '</a>';
-
-                return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '</button><div class="action-list"><a href="' . route('admin-order-show', $data->id) . '" > <i class="fas fa-eye"></i> ' . __('View Details') . '</a><a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a><a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>' . $orders . $deleteBtn . '</div></div>';
+                $deleteBtn = '<a href="javascript:;" class="delete-order" data-href="' . route('admin-order-delete', $data->id) . '"><i class="fas fa-trash"></i> ' . __('Delete') . '</a>';
+                return '<div class="godropdown"><button class="go-dropdown-toggle">' . __('Actions') . '</button><div class="action-list">
+                <a href="' . route('admin-order-show', $data->id) . '"><i class="fas fa-eye"></i> ' . __('View Details') . '</a>
+                <a href="javascript:;" class="send" data-email="' . $data->customer_email . '" data-toggle="modal" data-target="#vendorform"><i class="fas fa-envelope"></i> ' . __('Send') . '</a>
+                <a href="javascript:;" data-href="' . route('admin-order-track', $data->id) . '" class="track" data-toggle="modal" data-target="#modal1"><i class="fas fa-truck"></i> ' . __('Track Order') . '</a>
+                ' . $orders . $deleteBtn . '</div></div>';
+            })
+            ->filterColumn('customer_name', function ($query, $keyword) {
+                // Search both name and phone when user types in global search
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('customer_name', 'like', "%{$keyword}%")
+                        ->orWhere('customer_phone', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('order_number', function ($query, $keyword) {
+                // Global search on the id column searches order_number
+                $query->where('order_number', 'like', "%{$keyword}%");
             })
             ->rawColumns(['date', 'branch', 'customer_address', 'id', 'status', 'custom_note', 'customer_name', 'order_source', 'action'])
-            ->toJson(); //--- Returning Json Data To Client Side
+            ->toJson();
     }
-
     public function assignBranch(Request $request)
     {
         $request->validate([

@@ -37,10 +37,11 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     /* Conditional offer product route start*/
     Route::get('/conditonal-product/{sku}', 'Front\FrontendController@conditioalProduct')->name("front.conditional-product");
     /* Conditional offer product route End*/
-
-
-    Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
+    // sitemap start
+    Route::get('/sitemap.xml', [FrontendController::class, 'sitemap'])->name('sitemap');
+    // sitemap end
     Route::get('/', [FrontendController::class, 'index'])->name('front.index');
+    Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
     Route::get('/view', 'Front\CartController@view_cart')->name('front.cart-view');
     Route::get('/extras', 'Front\FrontendController@extraIndex')->name('front.extraIndex');
 
@@ -76,6 +77,10 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     Route::post("/career/store", [FrontendController::class, 'careerStore'])->name('front.career.store');
     Route::get("/career-details/{slug}", [FrontendController::class, 'careerDetails'])->name('front.career.details');
     // Front CAREER SECTION ENDS
+
+    // Outlet Section
+    Route::get('/outlets', 'Front\FrontendController@outlets')->name('front.outlets');
+
 
     // PRODCT AUTO SEARCH SECTION
     Route::get('/autosearch/product/{slug}', 'Front\FrontendController@autosearch');

@@ -75,7 +75,7 @@
         <div class="container">
             <div class="row justify-content-center content-wrapper">
                 <div class="col-12">
-                    <h2 class="breadcrumb-title">@lang('Career')</h2>
+                    <h1 class="breadcrumb-title h2">@lang('Career')</h1>
                     <ul class="bread-menu">
                         <li><a class="text-white" href="{{ route('front.index') }}">@lang('Home')</a></li>
                         <li class="text-white">@lang('Career')</li>

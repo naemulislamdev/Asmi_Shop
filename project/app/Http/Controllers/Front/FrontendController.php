@@ -8,6 +8,7 @@ use App\Classes\GeniusMailer;
 use App\Models\ArrivalSection;
 use App\Models\Blog;
 use App\Models\BlogCategory;
+use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Childcategory;
 use App\Models\CouponSlider;
@@ -27,9 +28,73 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
+use Illuminate\Support\Facades\Cache;
 
 class FrontendController extends Controller
 {
+    public function sitemap()
+    {
+        $xml = Cache::remember('sitemap_xml', 3600, function () {
+            $siteURL = "https://asmishop.com";
+            $sitemap = Sitemap::create();
+            $sitemap->add(
+                Url::create($siteURL . '/')
+                    ->setLastModificationDate(now())
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+                    ->setPriority(1.0)
+            );
+
+
+            $sitemap->add(
+                Url::create($siteURL . '/contact')
+                    ->setLastModificationDate(now())
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+                    ->setPriority(0.5)
+            );
+
+
+            Category::where('status', 1)
+                ->select(['slug'])
+                ->get()
+                ->each(function ($category) use ($sitemap, $siteURL) {
+                    $sitemap->add(
+                        Url::create($siteURL . '/category/' . $category->slug)
+                            ->setLastModificationDate(now())
+                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                            ->setPriority(0.8)
+                    );
+                });
+
+            Product::where('status', 1)
+                ->latest()
+                ->select(['slug', 'updated_at', 'thumbnail', 'photo'])
+                ->chunk(200, function ($products) use ($sitemap, $siteURL) {
+                    foreach ($products as $product) {
+                        $url = Url::create($siteURL . '/item/' . $product->slug)
+                            ->setLastModificationDate($product->updated_at ?? now())
+                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                            ->setPriority(0.9);
+
+                        // file_exists() বাদ, শুধু DB value check
+                        if (!empty($product->thumbnail)) {
+                            $url->addImage($siteURL . '/assets/images/thumbnails/' . $product->thumbnail);
+                        } elseif (!empty($product->photo)) {
+                            $url->addImage($siteURL . '/assets/images/products/' . $product->photo);
+                        } else {
+                            $url->addImage($siteURL . '/assets/images/noimage.png');
+                        }
+
+                        $sitemap->add($url);
+                    }
+                });
+
+            return $sitemap->render();
+        });
+
+        return response($xml, 200)->header('Content-Type', 'application/xml');
+    }
 
     public function pharmacy()
     {
@@ -153,6 +218,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -162,6 +228,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -181,6 +248,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -202,6 +270,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -222,6 +291,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -240,6 +310,7 @@ class FrontendController extends Controller
             })
             ->orderby('id', 'desc')
             ->withCount('ratings')->withAvg('ratings', 'rating')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -259,6 +330,7 @@ class FrontendController extends Controller
             ->orderby('id', 'desc')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -278,6 +350,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -523,6 +596,7 @@ class FrontendController extends Controller
 
         $prods = Product::with('user')
             ->where('discount', '>', 0)
+
             ->orderByDesc('updated_at') // latest updated discount products first
             ->orderByDesc('stock')
             ->when($cat, function ($query, $cat) {
@@ -1067,5 +1141,10 @@ class FrontendController extends Controller
     {
         $prods = Product::where("sku", $sku)->where("status", 1)->paginate(20);
         return view("includes.frontend.conditional_product", compact('prods'));
+    }
+    public function outlets()
+    {
+        $outlets = Branch::where("status", 1)->orderBy('order')->get();
+        return view("frontend.outlets", compact('outlets'));
     }
 }

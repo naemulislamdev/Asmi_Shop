@@ -90,8 +90,15 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <img style="width: 200px;height:200px;border: 1px solid; border-radius: 10px;"
-                                            id="viewer" src="{{ asset('assets/images/jobs/' . $job->image) }}" />
+
+                                        <img style="width: 200px; height: 200px; border-radius: 10px;" id="viewer"
+                                            src="{{ asset('assets/images/jobs/' . $job->image) }}" />
+                                        @if ($job->image)
+                                            <button type="button" class="btn btn-danger" id="removeImage"
+                                                data-id="{{ $job->id }}">
+                                                Remove Image
+                                            </button>
+                                        @endif
                                     </div>
                                     <div class="col-md-6">
                                         <label for="experience">Experience</label>
@@ -132,6 +139,30 @@
 
         $("#customFileEg1").change(function() {
             readURL(this);
+        });
+    </script>
+    <script>
+        $('#removeImage').on('click', function() {
+            let id = $(this).data('id');
+
+            if (!confirm("Are you sure? Image will be permanently deleted!")) {
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('career.job-remove-image', ':id') }}".replace(':id', id),
+                type: 'DELETE',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(res) {
+                    $('#viewer').hide();
+                    $('#removeImage').hide();
+                },
+                error: function() {
+                    alert('Something went wrong.');
+                }
+            });
         });
     </script>
 @endsection

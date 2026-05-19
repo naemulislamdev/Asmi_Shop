@@ -11,8 +11,8 @@
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-12">
-                    <h4 class="heading">{{ __('Edit Branch') }} <a class="add-btn"
-                            href="{{ route('admin-branch-index') }}"><i class="fas fa-arrow-left"></i>
+                    <h4 class="heading">{{ __('Edit Branch') }} <a class="add-btn" href="{{ route('admin-branch-index') }}"><i
+                                class="fas fa-arrow-left"></i>
                             {{ __('Back') }}</a></h4>
                     <ul class="links">
                         <li>
@@ -22,7 +22,7 @@
                             <a href="{{ route('admin-branch-index') }}">{{ __('Branches') }}</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin-branch-edit',$data->id) }}">{{ __('Edit Branch') }}</a>
+                            <a href="{{ route('admin-branch-edit', $data->id) }}">{{ __('Edit Branch') }}</a>
                         </li>
                     </ul>
                 </div>
@@ -62,8 +62,20 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-7">
-                                        <textarea class="input-field" name="address"
-                                            placeholder="{{ __('Enter Address') }}">{{ $data->address }}</textarea>
+                                        <div class="text-editor">
+                                            <textarea class="nic-edit" name="address">{{ $data->address }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="left-area">
+                                            <h4 class="heading">{{ __('Map URL') }} *</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <input type="text" class="input-field less-width" name="map_url"
+                                            placeholder="{{ __('Enter Map URL') }}" value="{{ $data->map_url }}"><span></span>
                                     </div>
                                 </div>
 
@@ -75,7 +87,8 @@
                                     </div>
                                     <div class="col-lg-7">
                                         <input type="number" class="input-field less-width" name="order"
-                                            placeholder="{{ __('Enter Order') }}" value="{{ $data->order }}"><span></span>
+                                            placeholder="{{ __('Enter Order') }}"
+                                            value="{{ $data->order }}"><span></span>
                                     </div>
                                 </div>
 

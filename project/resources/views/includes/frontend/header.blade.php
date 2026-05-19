@@ -72,9 +72,15 @@
                           </span>
                       </button>
 
-                      <ul class="dropdown-menu dropdown-menu-end shadow" style="margin-left: -98px !important;">
+
+                      <ul class="dropdown-menu dropdown-menu-end shadow pt-0" style="margin-left: -98px !important;">
+                          @if (count($offers) > 0)
+                              <div class="offer-header rounded-top">
+                                  <span>🎁 Special Offer Unlocked</span>
+                              </div>
+                          @endif
                           @forelse($offers as $offer)
-                              <li>
+                              <li class="mb-2">
                                   <a class="dropdown-item"
                                       href="{{ route('front.conditional-product', $offer['sku']) }}">
                                       <img style="width: 40px;" src="{{ $offer['image'] }}">
@@ -82,7 +88,7 @@
                                   </a>
                               </li>
                           @empty
-                              <li class="text-center p-2">No Offers</li>
+                              <li class="text-center p-2">No Offers found!</li>
                           @endforelse
 
                       </ul>

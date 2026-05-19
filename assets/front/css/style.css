@@ -1,9 +1,8 @@
-
 /************************************** base css **************************************/
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap");
-:root{
-  --primary-color:#1bb9cb;
-  --btn-hover:#22cfe2;
+:root {
+  --primary-color: #1bb9cb;
+  --btn-hover: #22cfe2;
 }
 body {
   margin: 0;
@@ -4129,9 +4128,7 @@ p.text-lg {
   width: 100%;
   margin-bottom: 16px;
 }
-.gs-reg-section .reg-area .form-group .form-control {
-  padding: 16px 10px;
-}
+
 .gs-reg-section .reg-area .form-group .form-control:focus {
   border-color: #d9d4d4;
   -webkit-box-shadow: none;
@@ -5296,7 +5293,7 @@ p.text-lg {
   > .has-submenu-icon
   svg
   path {
-  fill: var(--primary-color);;
+  fill: var(--primary-color);
 }
 .header-top .create-navbar .nav-right {
   display: -webkit-box;
@@ -12998,9 +12995,9 @@ ul.tagit li.tagit-choice .tagit-close {
   }
 }
 .template-btn.unique_btn {
-  background-color: #F2C200;
+  background-color: #f2c200;
 }
 
 .template-btn.unique_btn:hover {
-  background-color: #F8E080;
+  background-color: #f8e080;
 }

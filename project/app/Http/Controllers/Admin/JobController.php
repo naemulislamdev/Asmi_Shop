@@ -15,7 +15,23 @@ class JobController extends Controller
     {
         return view('admin.career.jobs.index');
     }
+    // Controller
+    public function removeImage($id)
+    {
 
+        $data = Job::findOrFail($id);
+
+        if ($data->image) {
+            $imagePath = base_path('public/assets/images/jobs/' . $data->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            $data->image = null;
+            $data->save();
+        }
+
+        return response()->json(['success' => true, 'message' => __('Image Removed Successfully.')]);
+    }
     public function create()
     {
         $departments = JobDepartment::where('status', 1)->get();

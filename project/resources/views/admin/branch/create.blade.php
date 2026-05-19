@@ -62,11 +62,25 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-7">
-                                        <textarea class="input-field" name="address"
-                                            placeholder="{{ __('Enter Address') }}"></textarea>
+                                        <div class="text-editor">
+                                            <textarea class="nic-edit" name="address"></textarea>
+                                        </div>
+
                                     </div>
                                 </div>
 
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="left-area">
+                                            <h4 class="heading">{{ __('Map URL') }} *</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <input type="text" class="input-field less-width" name="map_url"
+                                            placeholder="{{ __('Enter Map URL') }}"
+                                            value="{{ old('map_url') }}"><span></span>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <div class="left-area">
@@ -75,7 +89,8 @@
                                     </div>
                                     <div class="col-lg-7">
                                         <input type="number" class="input-field less-width" name="order"
-                                            placeholder="{{ __('Enter Order') }}" value=""><span></span>
+                                            placeholder="{{ __('Enter Order') }}"
+                                            value="{{ old('order') }}"><span></span>
                                     </div>
                                 </div>
 
