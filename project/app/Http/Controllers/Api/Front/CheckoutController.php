@@ -36,7 +36,7 @@ class CheckoutController extends Controller
 
             $input = $request->all();
 
-            // ✅ Decode items safely
+            // Decode items safely
             $items = is_string($input['items'])
                 ? json_decode($input['items'], true)
                 : $input['items'];

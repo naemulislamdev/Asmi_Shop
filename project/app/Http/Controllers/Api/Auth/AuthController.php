@@ -125,13 +125,16 @@ class AuthController extends Controller
             $user->otp = null;
             $user->save();
 
-            $token = JWTAuth::fromUser($user);
+            // 30-day TTL for OTP-issued tokens.
+            $minutes = 60 * 24 * 30;
+            Auth::guard('api')->factory()->setTTL($minutes);
+            $token = Auth::guard('api')->login($user);
 
             return response()->json([
                 'status' => true,
                 'data'   => [
                     'token'      => $token,
-                    'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,
+                    'expires_in' => $minutes * 60,
                     'user'       => new UserResource($user),
                 ],
                 'error'  => [],
@@ -232,13 +235,17 @@ class AuthController extends Controller
                 $order->save();
             }
 
-            $token = JWTAuth::fromUser($user);
+            // 30-day TTL for guest auto-login tokens. Default config ttl is
+            // 60 minutes which is too short for a passive auto-login flow.
+            $minutes = 60 * 24 * 30;
+            Auth::guard('api')->factory()->setTTL($minutes);
+            $token = Auth::guard('api')->login($user);
 
             return response()->json([
                 'status' => true,
                 'data'   => [
                     'token'      => $token,
-                    'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,
+                    'expires_in' => $minutes * 60,
                     'created'    => $created,
                     'force_password_change' => (int) ($user->force_password_change ?? 0),
                     'user'       => new UserResource($user),
