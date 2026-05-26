@@ -53,6 +53,40 @@ class CheckoutController extends Controller
             $cart = new Cart(null);
             $gs = Generalsetting::find(1);
 
+            // --- max_qty enforcement (per-product cap, 0 = no cap) ---
+            // Also collect per-item preorder request flag so the order's cart
+            // JSON later stores which items were placed as preorder requests.
+            $preorderFlags = [];
+            foreach ($items as $item) {
+                $pid = isset($item['id']) ? $item['id'] : null;
+                $qty = (int) ($item['qty'] ?? 0);
+                if ($pid === null) continue;
+
+                $prod = Product::find($pid);
+                if (!$prod) continue;
+
+                $cap = (int) ($prod->max_qty ?? 0);
+                if ($cap > 0 && $qty > $cap) {
+                    return response()->json([
+                        'status' => false,
+                        'data'   => [],
+                        'error'  => [
+                            'message' => 'Maximum ' . $cap . ' allowed for "' . $prod->name . '" per order.',
+                            'product_id' => (int) $pid,
+                            'max_qty' => $cap,
+                        ],
+                    ]);
+                }
+
+                // Per-item preorder request flag. Flutter sends `is_preorder: 1`
+                // for items that user requested as preorder (stock=0,
+                // preordered=2). Falls back to 0 when absent.
+                $isPre = isset($item['is_preorder'])
+                    ? ((int) $item['is_preorder'] === 1 ? 1 : 0)
+                    : 0;
+                $preorderFlags[(string) $pid] = $isPre;
+            }
+
             foreach ($items as $item) {
                 if ($this->validCartItem($item)) {
                     $this->addtocart(
@@ -76,10 +110,28 @@ class CheckoutController extends Controller
             $curr = Currency::where('name', $input['currency_code'] ?? '')
                 ->first() ?? Currency::where('is_default', 1)->first();
 
+            // Stamp each cart item with its is_preorder flag so admin / mobile
+            // can later distinguish "ordered" vs "preorder request" rows.
+            $stampedItems = [];
+            foreach ($cart->items ?? [] as $key => $row) {
+                $itemArr = is_array($row) ? $row : (array) $row;
+                $iid = null;
+                if (isset($itemArr['item'])) {
+                    $inner = (array) $itemArr['item'];
+                    $iid = $inner['id'] ?? null;
+                } else {
+                    $iid = $itemArr['id'] ?? null;
+                }
+                $itemArr['is_preorder'] = $iid !== null && isset($preorderFlags[(string) $iid])
+                    ? $preorderFlags[(string) $iid]
+                    : 0;
+                $stampedItems[$key] = $itemArr;
+            }
+
             $cartData = [
                 'totalQty' => $cart->totalQty,
                 'totalPrice' => $cart->totalPrice,
-                'items' => $cart->items,
+                'items' => $stampedItems,
             ];
 
             $affilate_users = optional(OrderHelper::product_affilate_check($cart))
