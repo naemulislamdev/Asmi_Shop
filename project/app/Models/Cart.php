@@ -60,7 +60,11 @@ class Cart extends Model
 
         // increase quantity
 
-        $storedItem['qty'] = ($storedItem['qty'] ?? 0) + $quantity;
+        if ($isOffer) {
+            $storedItem['qty'] = 1;
+        } else {
+            $storedItem['qty'] = ($storedItem['qty'] ?? 0) + $quantity;
+        }
 
         // decrease stock (if stock is numeric)
         $stck = (string) ($item->stock ?? '');

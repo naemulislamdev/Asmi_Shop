@@ -450,11 +450,7 @@
                             </div>
                         @endif
                         @if ($productt->stock > 0 || $productt->preordered == 2)
-<<<<<<< HEAD
-                            @if (!$isOfferProduct || ($isOfferProduct && $isEligible))
-=======
                             @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
->>>>>>> 58b532872a38a0fd45d4bf263b726045c0a2e465
                                 @if ($existingQty == 0)
                                     {{-- SHOW ADD TO BAG --}}
                                     <div class="w-100 d-block mt-auto add-btn-wrapper">

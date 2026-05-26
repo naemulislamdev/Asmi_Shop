@@ -691,11 +691,33 @@
         }
     </style>
     <style>
-    .qty-btn.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-}
-</style>
+        .qty-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .offer-info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .offer-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .offer-info-icon {
+            font-size: 1.8rem;
+        }
+
+        .offer-amount {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/customize.css">
@@ -1144,6 +1166,28 @@
         </div>
 
         <div id="offerList" class="offer-list"></div>
+    </div>
+
+    <div class="modal fade" id="offerInfoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">🎁 এটি একটি Offer Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="offerInfoModalBody">
+                    <!-- dynamic content -->
+                </div>
+                <div class="modal-footer border-0">
+                    <p class="text-muted small w-100 text-center mb-0">
+                        উপরের পরিমাণ কেনাকাটা করলে এই product টি আপনার cart এ add করতে পারবেন।
+                    </p>
+                    <button type="button" class="btn btn-info w-100" data-bs-dismiss="modal">
+                        বুঝেছি, কেনাকাটা চালিয়ে যাই
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>

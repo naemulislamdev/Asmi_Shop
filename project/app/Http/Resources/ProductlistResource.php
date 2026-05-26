@@ -31,6 +31,8 @@ class ProductlistResource extends JsonResource
             'previous_price' => (string)$discounted,
             'sale_end_date' => $this->when($this->is_discount == 1, $this->discount_date),
             'stock' => $this->stock,
+            'max_qty' => (int)$this->max_qty,
+            'preordered' => $this->preordered,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -134,6 +134,7 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     Route::get('/checkout', 'Front\CartController@cartCheckout')->name('front.checkout');
     Route::get('/addcart/{id}', 'Front\CartController@addcart')->name('product.cart.add');
     Route::post('product/cart/add/{id?}', 'Front\CartController@addcartPost')->name('product.add.to.cart');
+    Route::get('/product/offer-info/{id}', [CartController::class, 'getOfferInfo'])->name('product.offer.info');
     Route::get('/removecart/{id}', 'Front\CartController@removecart')->name('product.cart.remove');
     Route::get('/carts/coupon', 'Front\CouponController@coupon');
 

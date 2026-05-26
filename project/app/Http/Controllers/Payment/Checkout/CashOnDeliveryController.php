@@ -59,9 +59,79 @@ class CashOnDeliveryController extends CheckoutBaseControlller
         $oldCart = Session::get('cart');
 
         $cart = new Cart($oldCart);
+        //dd($cart);
+
+        // Offer product validation
+        $offerItemsInCart = collect($cart->items)->where('is_offer', true);
+        $isOfferActive = $offerItemsInCart->contains(function ($item) {
+            return isset($item['item']->is_offer_active) && $item['item']->is_offer_active == 1;
+        });
+
+        dd($offerItemsInCart, $isOfferActive);
+
+        if ($offerItemsInCart->isNotEmpty() || $isOfferActive) {
+
+            // Non-offer items এর total
+            $nonOfferTotal = collect($cart->items)
+                ->where('is_offer', '!=', true)
+                ->sum('price');
+
+            $cartSkus = collect($cart->items)->pluck('item.sku')->toArray();
+
+            $conditionalOffers = \DB::table('conditional_offers')
+                ->where('is_active', true)
+                ->get();
+
+            foreach ($offerItemsInCart as $offerItem) {
+
+                $offerProductSku = $offerItem['item']->sku;
+                $requiredAmount = null;
+
+                foreach ($conditionalOffers as $offer) {
+
+                    $offerProducts = json_decode($offer->offer_products, true);
+                    $excludeSkus   = json_decode($offer->excluded_sku, true) ?? [];
+
+                    // Exclude check
+                    if (!empty($excludeSkus) && array_intersect($cartSkus, $excludeSkus)) {
+                        continue;
+                    }
+
+                    foreach ($offerProducts as $op) {
+                        if ($op['sku'] === $offerProductSku) {
+                            $requiredAmount = (float) $op['amount'];
+                            break 2; // offer পাওয়া গেছে, বের হও
+                        }
+                    }
+                }
+
+                // Required amount পাওয়া গেছে কিনা এবং eligible কিনা
+                if ($requiredAmount !== null && $nonOfferTotal < $requiredAmount) {
+                    return redirect()->back()->with(
+                        'unsuccess',
+                        '"' . $offerItem['item']->name . '" offer টি পেতে কমপক্ষে ' . $requiredAmount . '৳ এর কেনাকাটা করতে হবে। আপনার বর্তমান কেনাকাটা: ' . $nonOfferTotal . '৳'
+                    );
+                }
+
+                // Offer এর SKU কোনো conditional offer এ নেই মানে invalid offer item
+                if ($requiredAmount === null) {
+                    return redirect()->back()->with(
+                        'unsuccess',
+                        '"' . $offerItem['item']->name . '" একটি valid offer product নয়।'
+                    );
+                }
+            }
+        }
 
         $t_oldCart = Session::get('cart');
         $t_cart = new Cart($t_oldCart);
+        // Offer product এর qty force 1
+        foreach ($t_cart->items as $key => $item) {
+            if (!empty($item['is_offer']) && $item['is_offer'] === true) {
+                $t_cart->items[$key]['qty']        = 1;
+                $t_cart->items[$key]['price']      = $item['item_price'] * 1; // unit price * 1
+            }
+        }
         $new_cart = [];
         $new_cart['totalQty'] = $t_cart->totalQty;
         $new_cart['totalPrice'] = $t_cart->totalPrice;

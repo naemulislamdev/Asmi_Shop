@@ -81,23 +81,37 @@
                 }
             @endphp
 
+            @php
+                $basePath = '/home/asmishop/htdocs/asmishop.com/public';
+
+                $imgSrc = asset('assets/images/noimage.png');
+
+                if (
+                    $product->thumbnail &&
+                    file_exists($basePath . '/assets/images/thumbnails/' . $product->thumbnail)
+                ) {
+                    $imgSrc = asset('assets/images/thumbnails/' . $product->thumbnail);
+                } elseif ($product->photo && file_exists($basePath . '/assets/images/products/' . $product->photo)) {
+                    $imgSrc = asset('assets/images/products/' . $product->photo);
+                }
+            @endphp
+
 
             <a href="{{ route('front.product', $product->slug) }}">
                 {{-- <img class="product-img"
                     src="{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}"
                     alt="product img"> --}}
 
-                <img class="product-img"
-                    src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/products/' . $product->photo) }}"
-                    onerror="this.onerror=null; this.src='{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}';"
+                <img class="product-img" src="{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}"
+                    onerror="this.onerror=null; this.src='{{ asset('assets/images/noimage.png') }}';"
                     alt="product img">
             </a>
             @if ($product->stock <= 0)
                 <div class="outofstock-box flex-column align-content-center justify-content-center">
                     @if ($product->preordered == 2)
-                        <h5>{{ __('Make a Pre Order !') }}</h5>
-                    @else
                         <h5>{{ __('Out of Stock !') }}</h5>
+                    @else
+                        <h5>{{ __('Request a Product !') }}</h5>
                     @endif
                 </div>
             @else

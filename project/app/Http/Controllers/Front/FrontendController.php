@@ -291,7 +291,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
-            ->where('is_offer_active', 0)
+            //->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
