@@ -134,6 +134,15 @@ class CheckoutController extends Controller
                 'items' => $stampedItems,
             ];
 
+            // Order-level preorder flag: true if ANY item in this order is a
+            // preorder request. Lets admin filter / count preorder orders via
+            // SQL without scanning the cart JSON.
+            $orderIsPreorder = false;
+            foreach ($preorderFlags as $f) {
+                if ((int) $f === 1) { $orderIsPreorder = true; break; }
+            }
+            $input['is_preorder'] = $orderIsPreorder ? 1 : 0;
+
             $affilate_users = optional(OrderHelper::product_affilate_check($cart))
                 ? json_encode(OrderHelper::product_affilate_check($cart))
                 : null;
