@@ -41,6 +41,8 @@ class ProductDetailsResource extends JsonResource
       'current_price' => (string)$this->ApishowPrice(),
       'previous_price' => $discounted ? (string)$discounted : null,
       'stock' => $this->stock,
+      'max_qty' => (int) $this->max_qty,
+      'preordered' => (int) $this->preordered,
       'condition' => $this->when($this->product_condition != 0, function () {
         if ($this->product_condition == 2) {
           return 'New';
