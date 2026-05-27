@@ -110,28 +110,17 @@ class CheckoutController extends Controller
             $curr = Currency::where('name', $input['currency_code'] ?? '')
                 ->first() ?? Currency::where('is_default', 1)->first();
 
-            // Stamp each cart item with its is_preorder flag so admin / mobile
-            // can later distinguish "ordered" vs "preorder request" rows.
-            //
-            // NOTE: $cart->items[*]['item'] is an Eloquent Product model at
-            // this point (not yet json-encoded). Casting (array)$model gives
-            // NUL-prefixed keys, so $arr['id'] is null. Read via property
-            // access or getAttribute('id') instead.
+            // Stamp each cart item with its is_preorder flag. data_get handles
+            // both array AND Eloquent Model access ('item.id' resolves to the
+            // Product id whether $row['item'] is an array or a Model).
             $stampedItems = [];
             foreach ($cart->items ?? [] as $key => $row) {
                 $itemArr = is_array($row) ? $row : (array) $row;
-                $iid = null;
-                if (isset($itemArr['item'])) {
-                    $inner = $itemArr['item'];
-                    if (is_object($inner)) {
-                        $iid = $inner->id ?? null;
-                    } elseif (is_array($inner)) {
-                        $iid = $inner['id'] ?? null;
-                    }
-                } else {
-                    $iid = $itemArr['id'] ?? null;
-                }
-                $itemArr['is_preorder'] = $iid !== null && isset($preorderFlags[(string) $iid])
+                $iid = data_get($row, 'item.id')
+                    ?? data_get($row, 'id')
+                    ?? data_get($itemArr, 'item.id')
+                    ?? data_get($itemArr, 'id');
+                $itemArr['is_preorder'] = ($iid !== null && isset($preorderFlags[(string) $iid]))
                     ? $preorderFlags[(string) $iid]
                     : 0;
                 $stampedItems[$key] = $itemArr;
