@@ -112,13 +112,22 @@ class CheckoutController extends Controller
 
             // Stamp each cart item with its is_preorder flag so admin / mobile
             // can later distinguish "ordered" vs "preorder request" rows.
+            //
+            // NOTE: $cart->items[*]['item'] is an Eloquent Product model at
+            // this point (not yet json-encoded). Casting (array)$model gives
+            // NUL-prefixed keys, so $arr['id'] is null. Read via property
+            // access or getAttribute('id') instead.
             $stampedItems = [];
             foreach ($cart->items ?? [] as $key => $row) {
                 $itemArr = is_array($row) ? $row : (array) $row;
                 $iid = null;
                 if (isset($itemArr['item'])) {
-                    $inner = (array) $itemArr['item'];
-                    $iid = $inner['id'] ?? null;
+                    $inner = $itemArr['item'];
+                    if (is_object($inner)) {
+                        $iid = $inner->id ?? null;
+                    } elseif (is_array($inner)) {
+                        $iid = $inner['id'] ?? null;
+                    }
                 } else {
                     $iid = $itemArr['id'] ?? null;
                 }
