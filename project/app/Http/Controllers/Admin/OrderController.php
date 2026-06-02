@@ -31,9 +31,11 @@ class OrderController extends AdminBaseController
     //*** GET Request
     public function orders(Request $request)
     {
+
         $categories = Category::where('status', 1)->get();
         $branchs = Branch::where('status', 1)->get();
-        $riders = Rider::where('status', null)->get();
+        // $riders = Rider::where('status', null)->get();
+
         if ($request->status == 'pending') {
             return view('admin.order.pending', compact('categories', 'branchs'));
         } else if ($request->status == 'hold') {
@@ -44,10 +46,12 @@ class OrderController extends AdminBaseController
             return view('admin.order.completed', compact('categories', 'branchs'));
         } else if ($request->status == 'cancelled') {
             return view('admin.order.cancelled', compact('categories', 'branchs'));
+        } else if ($request->status == 'return') {
+            return view('admin.order.return', compact('categories', 'branchs'));
         } else if ($request->status == 'today-orders') {
             return view('admin.order.today_orders', compact('categories', 'branchs'));
         } else {
-            return view('admin.order.index', compact('categories', 'branchs', 'riders'));
+            return view('admin.order.index', compact('categories', 'branchs'));
         }
     }
 
@@ -73,6 +77,8 @@ class OrderController extends AdminBaseController
             $query->where('status', 'completed');
         } elseif ($status == 'cancelled') {
             $query->where('status', 'cancelled');
+        } elseif ($status == 'return') {
+            $query->where('status', 'return');
         } elseif ($status == 'today-orders') {
             $query->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
         }
@@ -110,17 +116,44 @@ class OrderController extends AdminBaseController
                 $time = Carbon::parse($data->created_at)->format('h:i A');
                 return $date . '<br><small>' . $time . '</small>';
             })
+
             ->editColumn('branch', function (Order $data) {
                 if ($data->branch_id) {
-                    return '<a href="javascript:;" class="select-branch badge badge-success"
+                    return '<div>
+            <a href="javascript:;" class="select-branch badge badge-success"
                 data-id="' . $data->id . '"
                 data-toggle="modal"
-                data-target="#branchModal">' . $data->branch->name . '</a>';
+                data-target="#branchModal">
+                ' . $data->branch->name . '
+            </a>
+
+            <div class="mt-1">
+                ' . ($data->rider_id
+                        ? '<button type="button"
+                                class="badge badge-danger border-0 add-rider-btn"
+                                data-toggle="modal"
+                                data-target="#riderModal"
+                                data-id="' . $data->id . '"
+                                data-branch-id="' . $data->branch_id . '">
+                                Rider Name: ' . ($data->rider->name ?? 'N/A') . '
+                            </button>'
+                        : '<button
+                        data-toggle="modal"
+                        data-target="#riderModal"
+                        data-id="' . $data->id . '"
+                        data-branch-id="' . $data->branch_id . '"
+                        class="btn btn-primary btn-sm add-rider-btn">
+                        Add Rider
+                    </button>') . '
+            </div>
+
+        </div>';
                 }
+
                 return '<a href="javascript:;" class="select-branch btn btn-sm btn-primary"
-                data-id="' . $data->id . '"
-                data-toggle="modal"
-                data-target="#branchModal">' . __('Add') . '</a>';
+        data-id="' . $data->id . '"
+        data-toggle="modal"
+        data-target="#branchModal">' . __('Add Branch') . '</a>';
             })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
@@ -141,6 +174,7 @@ class OrderController extends AdminBaseController
                     'processing'  => ['info',      'Processing'],
                     'on delivery' => ['primary',   'On Delivery'],
                     'cancelled'   => ['danger',    'Cancelled'],
+                    'return'   => ['dark',    'return'],
                 ];
                 [$badge, $source] = $map[$data->status] ?? ['dark', 'Unknown'];
                 return '<span class="badge badge-' . $badge . '">' . __($source) . '</span>';

@@ -167,21 +167,18 @@ class BranchOrderController extends Controller
         $order_status = $request->get('order_status');
         $from_date    = $request->get('from_date');
         $to_date      = $request->get('to_date');
-        $unassigned   = $request->get('unassigned'); // নতুন param
+        $unassigned   = $request->get('unassigned');
 
-        $datas = Order::with(['branch', 'tracks'])
+        $datas = Order::with(['branch', 'tracks', 'rider']) // ✅ rider add করুন
             ->when($unassigned,                fn($q) => $q->whereNull('branch_id'))
-            ->when(!$unassigned && $branch_id, fn($q) => $q->where('branch_id', $branch_id)) // specific branch
-            ->when(!$unassigned && !$branch_id, fn($q) => $q->whereHas('branch'))              // all branch
+            ->when(!$unassigned && $branch_id, fn($q) => $q->where('branch_id', $branch_id))
+            ->when(!$unassigned && !$branch_id, fn($q) => $q->whereHas('branch'))
             ->when($status && $status !== 'all', fn($q) => $q->where('status', $status))
             ->when($order_status,              fn($q) => $q->where('status', $order_status))
             ->when($from_date,                 fn($q) => $q->whereDate('created_at', '>=', $from_date))
             ->when($to_date,                   fn($q) => $q->whereDate('created_at', '<=', $to_date))
-            ->latest()
-            ->get();
-
-
-        return DataTables::of($datas)
+            ->latest('id');
+        return DataTables::eloquent($datas)
             ->editColumn('customer_address', function (Order $data) {
                 return Str::limit($data->customer_address, 30, '...');
             })
@@ -195,21 +192,35 @@ class BranchOrderController extends Controller
                 if ($data->branch_id) {
                     return '<div>
             <a href="javascript:;" class="select-branch badge badge-success"
-            data-id="' . $data->id . '"
-            data-toggle="modal"
-            data-target="#branchModal">' . $data->branch->name . '</a>
-            <button
-                data-toggle="modal"
-                data-target="#riderModal"
                 data-id="' . $data->id . '"
-                data-branch-id="' . $data->branch_id . '"
-                class="btn btn-primary btn-sm add-rider-btn">Add Rider</button>
+                data-toggle="modal"
+                data-target="#branchModal">
+                ' . $data->branch->name . '
+            </a>
+
+            <div class="mt-1">
+                ' . ($data->rider_id
+                        ? '<span class="badge badge-danger btn add-rider-btn"  data-toggle="modal"
+                        data-target="#riderModal"
+                        data-id="' . $data->id . '"
+                        data-branch-id="' . $data->branch_id . '"> Rider Name: ' . ($data->rider->name ?? 'N/A') . '</span>'
+                        : '<button
+                        data-toggle="modal"
+                        data-target="#riderModal"
+                        data-id="' . $data->id . '"
+                        data-branch-id="' . $data->branch_id . '"
+                        class="btn btn-primary btn-sm add-rider-btn">
+                        Add Rider
+                    </button>') . '
+            </div>
+
         </div>';
                 }
+
                 return '<a href="javascript:;" class="select-branch btn btn-sm btn-primary"
-    data-id="' . $data->id . '"
-    data-toggle="modal"
-    data-target="#branchModal">' . __('Add') . '</a>';
+        data-id="' . $data->id . '"
+        data-toggle="modal"
+        data-target="#branchModal">' . __('Add Branch') . '</a>';
             })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
@@ -230,6 +241,7 @@ class BranchOrderController extends Controller
                     'processing'  => ['info',      'Processing'],
                     'on delivery' => ['primary',   'On Delivery'],
                     'cancelled'   => ['danger',    'Cancelled'],
+                    'return'   => ['dark',    'Return'],
                 ];
                 [$badge, $label] = $map[$data->status] ?? ['dark', 'Unknown'];
                 return '<span class="badge badge-' . $badge . '">' . __($label) . '</span>';
@@ -274,12 +286,18 @@ class BranchOrderController extends Controller
     }
     public function assignRider(Request $request)
     {
+
         $order = Order::findOrFail($request->order_id);
 
         $order->rider_id = $request->rider_id ?? null;
         $order->save();
-
-        $deliveryRider = new DeliveryRider();
+        $riders = DeliveryRider::where('order_id', $request->order_id)->first();
+        if ($riders) {
+            $deliveryRider = $riders;
+        } else {
+            $deliveryRider = new DeliveryRider();
+        }
+        // $deliveryRider =  ;
         $deliveryRider->order_id = $request->order_id ?? null;
         $deliveryRider->rider_id = $request->rider_id ?? null;
         $deliveryRider->status = 'pending';
@@ -289,7 +307,8 @@ class BranchOrderController extends Controller
     }
     public function singleBranchOrders($branch_id)
     {
-        $branch = Branch::findOrFail($branch_id);
+        $branch = Branch::find($branch_id);
+        $modalBranch = Branch::where('status', 1)->get();
         $statusCounts = Order::where('branch_id', $branch_id)
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
@@ -297,7 +316,7 @@ class BranchOrderController extends Controller
 
         $totalCount = Order::where('branch_id', $branch_id)->count();
 
-        return view('admin.branch_orders.single', compact('branch', 'statusCounts', 'totalCount'));
+        return view('admin.branch_orders.single', compact('branch', 'modalBranch', 'statusCounts', 'totalCount'));
     }
     public function summary(Request $request, $branch_id = null)
     {

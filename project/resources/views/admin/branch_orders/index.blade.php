@@ -174,6 +174,8 @@
                                         {{ __('Completed') }}</option>
                                     <option value="cancelled">
                                         {{ __('Cancel') }}</option>
+                                    <option value="return">
+                                        {{ __('Return') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-1">
@@ -615,6 +617,35 @@
                 $('#orderStatus').val('');
                 table.ajax.reload();
             });
+            // Rider form submit
+            $('#riderForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{ route('branch-orders.assignRider') }}",
+
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(res) {
+                        $('#riderModal').modal('hide');
+                        $('#geniustable').DataTable().ajax.reload();
+                        table.ajax.reload();
+                        toastr.success(res.message ?? 'Rider assigned!');
+
+                        Swal.fire(
+                            "{{ __('Rider Assigned Success!') }}",
+                            res.message,
+                            'success'
+                        );
+                    },
+                    error: function(res) {
+                        Swal.fire(
+                            "{{ __('Something Went Wrong!') }}",
+                            res.message,
+                            'error'
+                        );
+                    }
+                });
+            });
 
 
             $(function() {
@@ -624,6 +655,7 @@
                     '</a>' +
                     '</div>');
             });
+
 
         })(jQuery);
     </script>
@@ -795,34 +827,6 @@
                 },
                 error: function() {
                     $('#riderLoadMsg').text('Rider load করতে সমস্যা হয়েছে।');
-                }
-            });
-        });
-
-        // Rider form submit
-        $('#riderForm').on('submit', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "{{ route('branch-orders.assignRider') }}",
-
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function(res) {
-                    $('#riderModal').modal('hide');
-                    $('#geniustable').DataTable().ajax.reload();
-                    toastr.success(res.message ?? 'Rider assigned!');
-                    Swal.fire(
-                        "{{ __('Rider Assigned Success!') }}",
-                        res.message,
-                        'success'
-                    );
-                },
-                error: function(res) {
-                    Swal.fire(
-                        "{{ __('Something Went Wrong!') }}",
-                        res.message,
-                        'error'
-                    );
                 }
             });
         });

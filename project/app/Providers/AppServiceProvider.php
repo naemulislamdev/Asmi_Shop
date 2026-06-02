@@ -46,16 +46,8 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 $view->with('langg', Language::where('is_default', '=', 1)->first());
             }
-            // $totalBranchOrders = Order::whereNotNull('branch_id')->count();
 
-            // $branchWiseOrders = Order::select(
-            //     'branch_id',
-            //     DB::raw('COUNT(*) as total')
-            // )
-            //     ->whereNotNull('branch_id')
-            //     ->with('branch')
-            //     ->groupBy('branch_id')
-            //     ->get();
+
             $totalBranchOrders = Order::count(); // সব orders
 
             // branch wise order
@@ -88,7 +80,8 @@ class AppServiceProvider extends ServiceProvider
             SUM(CASE WHEN status = 'hold' THEN 1 ELSE 0 END) as hold,
             SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
             SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled
+            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled,
+            SUM(CASE WHEN status = 'return' THEN 1 ELSE 0 END) as return_count
         ")->first();
 
             $todayOrders = Order::whereDate('created_at', today())->where('status', 'pending')->count();

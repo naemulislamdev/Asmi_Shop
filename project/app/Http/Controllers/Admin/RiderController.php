@@ -24,9 +24,9 @@ class RiderController extends AdminBaseController
     //*** JSON Request
     public function datatables()
     {
-        $datas = Rider::with('orders')->latest('id')->get();
+        $datas = Rider::with('orders')->latest('id');
         //--- Integrating This Collection Into Datatables
-        return Datatables::of($datas)
+        return Datatables::eloquent($datas)
             ->addColumn('total_delivery', function (Rider $data) {
                 return $data->orders->count();
             })
@@ -53,7 +53,10 @@ class RiderController extends AdminBaseController
 
                         </div>';
             })
-            ->rawColumns(['action', 'total_delivery'])
+            ->editColumn('branch', function (Rider $data) {
+                return $data->branch ? $data->branch->name : 'N/A';
+            })
+            ->rawColumns(['action', 'total_delivery', 'branch'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 

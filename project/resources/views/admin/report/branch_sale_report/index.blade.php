@@ -42,6 +42,7 @@
                                 <option value="on delivery">On Delivery</option>
                                 <option value="completed">Completed</option>
                                 <option value="cancelled">Cancelled</option>
+                                <option value="return">Return</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -113,17 +114,25 @@
                                     'qty' => 's_cancelled_qty',
                                     'amt' => 's_cancelled_amount',
                                 ],
+                                [
+                                    'id' => 'return',
+                                    'label' => 'Return',
+                                    'color' => 'linear-gradient(135deg,#1a0a0d,#2a0a10)',
+                                    'qty' => 's_return_qty',
+                                    'amt' => 's_return_amount',
+                                ],
                             ];
                         @endphp
                         @foreach ($cards as $card)
                             <div class="col-md-3 mb-3">
-                                <div style="background:{{ $card['color'] }}; border-radius:14px; padding:16px; color:#fff;">
+                                <a class="d-block" href="{{ route('admin-orders-all') }}?status={{ $card['id'] }}"
+                                    style="background:{{ $card['color'] }}; border-radius:14px; padding:16px; color:#fff;">
                                     <div style="font-weight:700; font-size:14px;">{{ $card['label'] }}</div>
                                     <div style="margin-top:6px; font-size:13px;">
                                         {{ $loop->first ? 'Total' : '' }} Qty: <span id="{{ $card['qty'] }}">0</span><br>
                                         {{ $loop->first ? 'Total' : '' }} Amount: <span id="{{ $card['amt'] }}">0</span>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -178,6 +187,7 @@
                 url: summaryUrl,
                 data: getFilters(),
                 success: function(s) {
+                    console.log(s);
                     $('#s_total_orders').text(s.total_orders);
                     $('#s_total_amount').text(s.total_amount);
                     $('#s_pending_qty').text(s.pending_qty);
@@ -192,6 +202,9 @@
                     $('#s_completed_amount').text(s.completed_amount);
                     $('#s_cancelled_qty').text(s.cancelled_qty);
                     $('#s_cancelled_amount').text(s.cancelled_amount);
+                    $('#s_return_amount').text(s.on_return_amount);
+                    $('#s_return_qty').text(s.on_return_qty);
+
                 }
             });
         }

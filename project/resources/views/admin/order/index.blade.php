@@ -366,11 +366,13 @@
     <!--End Branch modal -->
 
     {{-- Rider Modal Start --}}
-    <div class="modal fade" id="riderModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <div class="modal fade w-100" id="riderModal" data-backdrop="static" tabindex="-1" role="dialog"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered w-100" role="document">
-            <form id="riderForm" class="w-100">
+            <form id="riderForm" class="w-100"> {{-- id পরিবর্তন করুন --}}
                 @csrf
-                <input type="hidden" name="order_id" id="branch_order_id">
+                <input type="hidden" name="order_id" id="rider_order_id"> {{-- আলাদা id --}}
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ __('Select Rider') }}</h5>
@@ -379,12 +381,10 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>{{ __('Rider') }}</label>
-                            <select name="rider_id" class="form-control" required>
+                            <select name="rider_id" id="riderSelect" class="form-control" required>
                                 <option selected disabled>{{ __('Choose Rider') }}</option>
-                                @foreach ($riders as $rider)
-                                    <option value="{{ $rider->id }}">{{ $rider->name }}</option>
-                                @endforeach
                             </select>
+                            <small id="riderLoadMsg" class="text-muted"></small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -563,6 +563,33 @@
                 $('#orderStatus').val('');
                 table.ajax.reload();
             });
+            // Rider form submit
+            $('#riderForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{ route('branch-orders.assignRider') }}",
+
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(res) {
+                        $('#riderModal').modal('hide');
+                        table.ajax.reload();
+                        toastr.success(res.message ?? 'Rider assigned!');
+                        Swal.fire(
+                            "{{ __('Rider Assigned Success!') }}",
+                            res.message,
+                            'success'
+                        );
+                    },
+                    error: function(res) {
+                        Swal.fire(
+                            "{{ __('Something Went Wrong!') }}",
+                            res.message,
+                            'error'
+                        );
+                    }
+                });
+            });
 
             $(function() {
                 $(".btn-area").append('<div class="col-sm-4 table-contents">' +
@@ -654,6 +681,40 @@
             if (e.target.id === 'noteModal') {
                 $('#noteModal').removeClass('active');
             }
+        });
+        // Add Rider বাটন click এ
+        $(document).on('click', '.add-rider-btn', function() {
+            var orderId = $(this).data('id');
+            var branchId = $(this).data('branch-id');
+
+            $('#rider_order_id').val(orderId);
+            $('#riderSelect').html('<option disabled selected>Loading riders...</option>');
+            $('#riderLoadMsg').text('');
+
+            // Branch অনুযায়ী rider fetch
+            $.ajax({
+                url: '{{ route('branch-orders.riders', ['branch_id' => ':branchId']) }}'.replace(
+                    ':branchId', branchId),
+                type: 'GET',
+                success: function(riders) {
+                    $('#riderSelect').html(
+                        '<option disabled selected>{{ __('Choose Rider') }}</option>');
+
+                    if (riders.length === 0) {
+                        $('#riderLoadMsg').text('এই branch এ কোনো rider নেই।');
+                    } else {
+                        $.each(riders, function(i, rider) {
+                            $('#riderSelect').append(
+                                '<option value="' + rider.id + '">' + rider.name +
+                                '</option>'
+                            );
+                        });
+                    }
+                },
+                error: function() {
+                    $('#riderLoadMsg').text('Rider load করতে সমস্যা হয়েছে।');
+                }
+            });
         });
     </script>
 @endsection

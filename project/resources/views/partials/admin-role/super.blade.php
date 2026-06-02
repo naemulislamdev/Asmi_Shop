@@ -72,6 +72,11 @@
                   </a>
               </li>
               <li>
+                  <a href="{{ route('admin-orders-all') }}?status=return"> {{ __('Return Orders') }}
+                      <span class="badge badge-dark float-right">{{ $orderCounts->return_count ?? 0 }}</span>
+                  </a>
+              </li>
+              <li>
                   <a href="{{ route('admin-create-orders') }}"> {{ __('Create Orders') }}</a>
               </li>
               {{-- <li>
@@ -662,7 +667,7 @@
       <li>
           <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
                   class="fas fa-user-secret"></i>{{ __('Manage
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Staffs') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Staffs') }}</a>
       </li>
 
       <li>
@@ -689,7 +694,7 @@
       <li>
           <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
                   class="fas fa-list-alt"></i>{{ __('Addon
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Manager') }}</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Manager') }}</a>
       </li>
 
       <li>

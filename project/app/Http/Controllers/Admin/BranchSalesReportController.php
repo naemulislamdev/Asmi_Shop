@@ -13,7 +13,6 @@ class BranchSalesReportController extends Controller
 {
     public function index()
     {
-
         $branches = Branch::where('status', 1)->get();
         return view('admin.report.branch_sale_report.index', compact('branches'));
     }
@@ -45,7 +44,9 @@ class BranchSalesReportController extends Controller
             SUM(CASE WHEN status='processing'  THEN 1 ELSE 0 END) as processing_qty,
             SUM(CASE WHEN status='processing'  THEN pay_amount ELSE 0 END) as processing_amount,
             SUM(CASE WHEN status='on delivery' THEN 1 ELSE 0 END) as on_delivery_qty,
-            SUM(CASE WHEN status='on delivery' THEN pay_amount ELSE 0 END) as on_delivery_amount
+            SUM(CASE WHEN status='on delivery' THEN pay_amount ELSE 0 END) as on_delivery_amount,
+            SUM(CASE WHEN status='return' THEN 1 ELSE 0 END) as on_return_qty,
+            SUM(CASE WHEN status='return' THEN pay_amount ELSE 0 END) as on_return_amount
         ")
             ->first();
 
@@ -64,6 +65,8 @@ class BranchSalesReportController extends Controller
             'processing_amount'  => number_format($summary->processing_amount ?? 0, 2),
             'on_delivery_qty'    => $summary->on_delivery_qty ?? 0,
             'on_delivery_amount' => number_format($summary->on_delivery_amount ?? 0, 2),
+            'on_return_amount' => number_format($summary->on_return_amount ?? 0, 2),
+            'on_return_qty' => number_format($summary->on_return_qty ?? 0, 2),
         ]);
     }
     public function datatable(Request $request)
@@ -73,72 +76,73 @@ class BranchSalesReportController extends Controller
         $from_date = $request->get('from_date');
         $to_date   = $request->get('to_date');
 
-        $orders = DB::table('orders')
+        $ordersQuery = DB::table('orders')
             ->when($branch_id === 'notAssignedBranch',                                fn($q) => $q->whereNull('branch_id'))
-            ->when($branch_id === 'all' || !$branch_id,                               fn($q) => $q) // সব
             ->when($branch_id && !in_array($branch_id, ['all', 'notAssignedBranch']), fn($q) => $q->where('branch_id', $branch_id))
             ->when($status && $status !== 'all',                                      fn($q) => $q->where('status', $status))
             ->when($from_date,                                                        fn($q) => $q->whereDate('created_at', '>=', $from_date))
             ->when($to_date,                                                          fn($q) => $q->whereDate('created_at', '<=', $to_date))
-            ->get();
+            ->orderBy('id')  // ✅ এটা add করুন
+            ->select('cart');
 
-        // আগে সব product id collect করো
+        // ১. আগে সব product ID collect করো (chunk দিয়ে)
         $productIds = [];
-        foreach ($orders as $order) {
-            $cart = json_decode($order->cart, true);
-            if (!isset($cart['items'])) continue;
-            foreach ($cart['items'] as $item) {
-                $productIds[] = $item['item']['id'];
+        (clone $ordersQuery)->chunk(500, function ($orders) use (&$productIds) {
+            foreach ($orders as $order) {
+                $cart = json_decode($order->cart, true);
+                if (!isset($cart['items'])) continue;
+                foreach ($cart['items'] as $item) {
+                    $productIds[] = $item['item']['id'];
+                }
             }
-        }
+        });
 
-        // একবারে সব SKU নাও
+        // ২. একবারে সব SKU নাও
         $skuMap = DB::table('products')
             ->whereIn('id', array_unique($productIds))
             ->pluck('sku', 'id');
 
-        // Cart JSON থেকে product data বের করো
+        // ৩. Product aggregate করো (chunk দিয়ে)
         $products = [];
+        (clone $ordersQuery)->chunk(500, function ($orders) use (&$products, $skuMap) {
+            foreach ($orders as $order) {
+                $cart = json_decode($order->cart, true);
+                if (!isset($cart['items'])) continue;
 
-        foreach ($orders as $order) {
-            $cart = json_decode($order->cart, true);
-            if (!isset($cart['items'])) continue;
+                foreach ($cart['items'] as $item) {
+                    $product      = $item['item'];
+                    $productId    = $product['id'];
+                    $variationKey = ($item['size'] ?? '') . '-' . ($item['color'] ?? '');
+                    $key          = $productId . '_' . $variationKey;
 
-            foreach ($cart['items'] as $item) {
-                $product      = $item['item'];
-                $productId    = $product['id'];
-                $variationKey = ($item['size'] ?? '') . '-' . ($item['color'] ?? '');
-                $key          = $productId . '_' . $variationKey;
+                    if (!isset($products[$key])) {
+                        $products[$key] = [
+                            'image'        => $product['photo'] ?? '',
+                            'name'         => $product['name'] ?? '',
+                            'sku'          => $skuMap->get($productId) ?? 'N/A',
+                            'slug'         => $product['slug'] ?? '',
+                            'attribute'    => collect([
+                                !empty($item['size'])  ? 'Size: '  . $item['size']  : null,
+                                !empty($item['color']) ? 'Color: ' . $item['color'] : null,
+                            ])->filter()->implode(' | ') ?: 'N/A',
+                            'qty'          => 0,
+                            'total_amount' => 0,
+                        ];
+                    }
 
-                if (!isset($products[$key])) {
-                    $products[$key] = [
-                        'image'        => $product['photo'] ?? '',
-                        'name'         => $product['name'] ?? '',
-                        'sku'          => $skuMap->get($productId) ?? 'N/A',
-                        'slug'         => $product['slug'] ?? '',
-                        'attribute'    => collect([
-                            !empty($item['size'])  ? 'Size: '  . $item['size']  : null,
-                            !empty($item['color']) ? 'Color: ' . $item['color'] : null,
-                        ])->filter()->implode(' | ') ?: 'N/A',
-                        'qty'          => 0,
-                        'total_amount' => 0,
-                    ];
+                    $products[$key]['qty']          += $item['qty'];
+                    $products[$key]['total_amount'] += $item['price'] * $item['qty'];
                 }
-
-                $products[$key]['qty']          += $item['qty'];
-                $products[$key]['total_amount'] += $item['price'];
             }
-        }
+        });
 
-        // qty desc sort
+        // ৪. qty desc sort
         usort($products, fn($a, $b) => $b['qty'] <=> $a['qty']);
 
-        $collection = collect(array_values($products));
-
-        return DataTables::of($collection)
+        return DataTables::of(collect(array_values($products)))
             ->addIndexColumn()
             ->editColumn('image', function ($row) {
-                $src = $row['image']
+                $src = ($row['image'] ?? false)
                     ? asset('assets/images/products/' . $row['image'])
                     : asset('assets/images/noimage.png');
                 return '<img src="' . $src . '" width="50" height="50" style="object-fit:cover; border-radius:6px;">';

@@ -582,72 +582,7 @@
             }
         }
     </style>
-    <style>
-        .flash-sale-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            color: #993C1D;
-            background: #FAECE7;
-            border-radius: 8px;
-            padding: 3px 8px;
-            margin-bottom: 8px;
-        }
 
-        .flash-timer-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-            padding: 8px 10px;
-            background: #f5f5f5;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            width: fit-content;
-            max-width: 100%;
-        }
-
-        .flash-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1 1 44px;
-            min-width: 44px;
-            max-width: 70px;
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 6px 8px 5px;
-        }
-
-        .flash-num {
-            font-size: clamp(18px, 4vw, 26px);
-            /* mobile তে ছোট, desktop এ বড় */
-            font-weight: 500;
-            color: #1a1a1a;
-            line-height: 1.1;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .flash-label {
-            font-size: clamp(9px, 1.8vw, 10px);
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-top: 2px;
-            white-space: nowrap;
-        }
-
-        .flash-sep {
-            font-size: clamp(16px, 3.5vw, 22px);
-            font-weight: 500;
-            color: #aaa;
-            margin-bottom: 12px;
-            flex-shrink: 0;
-        }
-    </style>
     <style>
         .card-timer-badge {
             display: inline-flex;
@@ -691,18 +626,18 @@
         }
     </style>
     <style>
-    .qty-btn.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-}
-</style>
+        .qty-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/customize.css">
     <!-- Meta Pixel Code -->
 
     <!-- Google Tag Manager -->
-    <script>
+    {{-- <script>
         (function(w, d, s, l, i) {
             w[l] = w[l] || [];
             w[l].push({
@@ -717,7 +652,7 @@
                 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
             f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-NGVKWTDQ');
-    </script>
+    </script> --}}
     <!-- End Google Tag Manager -->
 </head>
 
@@ -1448,7 +1383,7 @@
                                             alt="" style="width:40px;height:40px;margin-right:10px;">
                                             <div>
                                                 <strong>${p.name}</strong><br>
-                                                <span>৳ ${parseFloat(p.price).toFixed(2)}</span>
+                                                <span>৳ ${parseFloat(p.price).toFixed(2)} </span>
                                             </div>
                                         </div>
                                     </a>

@@ -8,11 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class DeliveryRider extends Model
 {
     use HasFactory;
-
-    // timestamp
     public $timestamps = false;
 
-    protected $fillable = [];
+    protected $guarded  = ["id"];
 
     public function rider()
     {

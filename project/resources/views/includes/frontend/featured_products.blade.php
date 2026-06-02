@@ -9,6 +9,7 @@
                 </div>
             </div>
         </div>
+
         <!-- tab content -->
         <div class="tab-content" id="myTabContent1">
             <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
