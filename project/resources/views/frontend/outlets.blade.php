@@ -148,7 +148,7 @@
         }
 
         .stats-bar .s-num {
-
+          
             font-size: 1.8rem;
             font-weight: 700;
             color: #fff;
@@ -602,24 +602,19 @@
                 transform: translateY(-50%) rotate(360deg);
             }
         }
-
         @media (max-width: 768px) {
             .outlet-hero {
                 padding: 10px 0 10px !important;
             }
-
             .stats-bar {
                 padding: 5px 0;
             }
-
             .outlet-top {
                 padding: 5px 0;
             }
-
             .outlet-section {
                 padding: 30px 0 76px;
             }
-
             .stats-bar .s-num {
                 font-size: 1.4rem;
             }

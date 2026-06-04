@@ -24,20 +24,6 @@ class OrderCreateController extends AdminBaseController
 {
     public function create(Request $request)
     {
-        // if ($request->products) {
-        //     $selectd_products = $request->products;
-        //     foreach ($selectd_products as $product) {
-        //         $products[] = Product::findOrFail($product);
-        //     }
-        // } else {
-        //     $selectd_products = [];
-        //     $products = [];
-        // }
-
-        // $sign = $this->curr;
-        // Session::forget('order_products');
-        // $custome_products = CustomeProduct::all();
-
         return view('admin.order.create.custome_order');
     }
 

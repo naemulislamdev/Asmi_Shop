@@ -76,7 +76,6 @@
                                                 @endforeach
 
                                             </td>
-
                                             <td>
                                                 <span
                                                     class="text-danger fw-bold">৳{{ number_format($offer->offer_price, 0) }}</span>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
 use App\Models\UserInfo;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -18,7 +19,7 @@ class UserInfoController extends AdminBaseController
         $query = UserInfo::query()->latest('id');
 
         return DataTables::eloquent($query)
-            ->editColumn('date', function (UserInfo $data) {
+            ->addColumn('date', function (UserInfo $data) {
                 return date('Y-m-d H:i:s', strtotime($data->created_at));
             })
             ->editColumn('status', function (UserInfo $data) {

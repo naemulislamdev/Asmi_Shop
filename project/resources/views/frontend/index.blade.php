@@ -1,18 +1,6 @@
 @extends('layouts.front')
-<title>{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh</title>
-<meta name="title" content="{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh">
-<meta name="description"
-    content="Shop fresh groceries, organic foods, and daily essentials at Asmi Super Shop. Get the lowest prices, premium quality, and fastest free home delivery. Order Now!">
-<meta name="keywords" content="asmi, shop, asmishop, supershop, grocery, online, Dhaka, Bangladesh">
-
-<meta property="og:title" content="{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh" />
-<meta property="og:description"
-    content="Shop fresh groceries, organic foods, and daily essentials at Asmi Super Shop. Get the lowest prices, premium quality, and fastest free home delivery. Order Now!" />
-<meta property="og:image" content="{{ asset('assets/images/' . $gs->logo) }}" />
-<meta name="keywords" content="asmi, shop, asmishop, supershop, grocery, online, Dhaka, Bangladesh">
-<meta name="author" content="Asmishop">
-@section('content')
-    <style>
+@section('css')
+ <style>
         .gs-hero-section img {
             width: 100%;
             height: 100%;
@@ -29,6 +17,8 @@
             color: white;
             text-align: center;
             overflow: hidden;
+			border-radius: 8px;
+			margin: 0 auto;
         }
 
         .gs-hero-section {
@@ -38,14 +28,16 @@
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             .gs-hero-section {
-                height: 160px;
+                height: auto;
             }
-
+        	
             .gs-hero-section img {
+            	border-radius: 6px;
                 height: 100%;
                 /* Smaller height for mobile */
                 background-position: center top;
             }
+        	
         }
     </style>
     <style>
@@ -87,31 +79,6 @@
         .slider-section .card img {
             border-radius: 10px !important;
         }
-
-        /* hero slider change styel */
-        .hero-slider-wrapper .slick-prev {
-            left: 0%;
-            background-color: rgba(27, 185, 203, 0.4);
-            /* Blur effect */
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            /* for Safari */
-        }
-
-        .hero-slider-wrapper .slick-next {
-            right: 0%;
-            background-color: rgba(27, 185, 203, 0.4);
-            /* Blur effect */
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            /* for Safari */
-        }
-
-        .hero-slider-wrapper .slick-next:hover,
-        .hero-slider-wrapper .slick-prev:hover {
-            background: #1bb9cb;
-        }
-
         .slider-section .left-promo .card,
         .slider-section .right-promo .card {
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -124,8 +91,8 @@
 
         /* Previous arrow */
         .home-coupon-slider .slick-prev {
-            background-color: rgba(27, 185, 203, 0.4);
-            color: #1bb9cb;
+            background-color: #17a1b1;
+            color: #1598a7;
             height: 30px;
             width: 30px;
             line-height: 30px;
@@ -138,7 +105,7 @@
             text-align: center;
             font-size: 18px;
             cursor: pointer;
-            border: 2px solid #1bb9cb;
+            border: 2px solid #1598a7;
             /* Blur effect */
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
@@ -148,7 +115,7 @@
         /* Next arrow */
         .home-coupon-slider .slick-next {
             background-color: rgba(27, 185, 203, 0.4);
-            color: #1bb9cb;
+            color: #1598a7;
             height: 30px;
             width: 30px;
             line-height: 30px;
@@ -161,7 +128,7 @@
             text-align: center;
             font-size: 18px;
             cursor: pointer;
-            border: 2px solid #1bb9cb;
+            border: 2px solid #1598a7;
             /* Blur effect */
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
@@ -171,7 +138,7 @@
         /* Optional: remove default arrows background on hover */
         .home-coupon-slider .slick-prev:hover,
         .home-coupon-slider .slick-next:hover {
-            background-color: #17a1b1;
+      
             color: #fff;
         }
 
@@ -195,14 +162,8 @@
         .right-promo .slick-dots li.slick-active button {
             width: 30px;
         }
-
-        /* 22 Feb 26 */
-        .hero-slider .swiper-horizontal>.swiper-pagination-bullets,
-        .hero-slider .swiper-pagination-bullets.swiper-pagination-horizontal,
-        .hero-slider .swiper-pagination-custom,
-        .hero-slider .swiper-pagination-fraction {
-            bottom: -1px !important;
-        }
+	
+       
 
         .swiper-button-next,
         .swiper-button-prev {
@@ -227,7 +188,7 @@
             padding-bottom: 0;
         }
 
-        .category-item img {
+   		.category-item img {
             max-width: 100%;
             height: 107px;
             object-fit: contain;
@@ -235,6 +196,7 @@
         }
 
         /* wrapper stretch */
+       /* wrapper stretch */
         .home-category-slider .swiper-wrapper {
             align-items: stretch;
         }
@@ -244,7 +206,6 @@
             height: auto;
             display: flex;
         }
-
         /* link full height */
         .slide-link {
             display: flex;
@@ -257,6 +218,7 @@
             flex-direction: column;
             height: 100%;
             width: 100%;
+      
             background: #fff;
             box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
         }
@@ -272,10 +234,10 @@
         .cate-title {
             margin-top: auto;
             text-align: center;
+        	padding-bottom: 5px;
         }
-
-        .cate-title h6 {
-            font-size: 16px;
+		.cate-title h6 {
+        	font-size: 16px;
         }
 
         .swiper-pagination-bullet {
@@ -286,40 +248,42 @@
         }
 
         .swiper-pagination-bullet-active {
-            background: #1bb9cb !important;
+            background: #1598a7 !important;
         }
     </style>
-    @include('includes.frontend._modals')
-    <!-- hero section start -->
 
-    <section class="slider-section">
-        <div class="row">
-            <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
-                <div class="left-promo">
+@endsection
+@section('content')
+  
+   <!-- hero section start -->
 
-                    @foreach ($left_promo_offers->chunk(2) as $chunk)
-                        {{-- ONE SLIDE --}}
-                        <div class="left-promo-wrapper d-flex flex-column gap-3">
+        <section class="slider-section">
+            <div class="row ">
+                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
+                    <div class="left-promo">
 
-                            @foreach ($chunk as $item)
-                                <div class="card border-0">
-                                    <a href="{{ $item->link }}">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                    </a>
-                                </div>
-                            @endforeach
+                        @foreach ($left_promo_offers->chunk(2) as $chunk)
+                            {{-- ONE SLIDE --}}
+                            <div class="left-promo-wrapper d-flex flex-column gap-3">
 
-                        </div>
-                    @endforeach
+                                @foreach ($chunk as $item)
+                                    <div class="card border-0">
+                                        <a href="{{ $item->link }}">
+                                            <img class="card-img-top slider-side-img"
+                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                        </a>
+                                    </div>
+                                @endforeach
 
+                            </div>
+                        @endforeach
+
+                    </div>
                 </div>
-            </div>
 
-            <div class="@if ($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
-                <div class=" ">
-
-                    <div class="hero-slider">
+                <div class="@if ($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
+                    <div class="hero ">
+                        <div class="hero-slider">
                         <div class="container">
                             <!-- Swiper -->
                             <div class="swiper heroSlider" style="">
@@ -327,7 +291,7 @@
                                     @foreach ($sliders as $slider)
                                         <div class="swiper-slide rounded">
                                             <a href="{{ $slider->link ?? '#' }}" target="_blank" rel="noopener noreferrer">
-                                                <img style="max-width: 100%; height: auto;" class="rounded"
+                                                <img  class="rounded img-fluid"
                                                     src="{{ asset('assets/images/sliders/' . $slider->photo) }}"
                                                     alt="slider image">
                                             </a>
@@ -344,61 +308,61 @@
 
                         </div>
                     </div>
-
                 </div>
-            </div>
-            <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block ps-0">
-                <div class="right-promo">
-
-                    @foreach ($right_promo_offers->chunk(2) as $chunk)
-                        {{-- ONE SLIDE --}}
-                        <div class="right-promo-wrapper d-flex flex-column gap-3">
-
-                            @foreach ($chunk as $item)
-                                <div class="card border-0">
-                                    <a href="{{ $item->link }}">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                    </a>
-                                </div>
-                            @endforeach
-
-                        </div>
-                    @endforeach
-
                 </div>
+                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block ps-0">
+                    <div class="right-promo">
+
+                        @foreach ($right_promo_offers->chunk(2) as $chunk)
+                            {{-- ONE SLIDE --}}
+                            <div class="right-promo-wrapper d-flex flex-column gap-3">
+
+                                @foreach ($chunk as $item)
+                                    <div class="card border-0">
+                                        <a href="{{ $item->link }}">
+                                            <img class="card-img-top slider-side-img"
+                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                        </a>
+                                    </div>
+                                @endforeach
+
+                            </div>
+                        @endforeach
+
+                    </div>
+                </div>
+
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
     <!-- hero section end -->
 
-    {{-- Coupon slider section start --}}
-    @if ($coupon_sliders->count() > 0)
+     <!-- Coupon slider section start -->
+      @if($coupon_sliders->count() > 0)
         <section class="mt-4">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="home-coupon-slider">
-                    @foreach ($coupon_sliders as $slider)
-                        <div class="coupon-item">
-                            <a href="{{ $slider->link }}">
-                                <img src="{{ asset('assets/images/sliders/coupon/' . $slider->image) }}"
-                                    alt="coupon image">
-                            </a>
-                        </div>
+                    @foreach($coupon_sliders as $slider)
+                    <div class="coupon-item">
+                        <a href="{{$slider->link}}">
+                            <img src="{{ asset('assets/images/sliders/coupon/' . $slider->image) }}" alt="coupon image">
+                        </a>
+                    </div>
                     @endforeach
 
                 </div>
             </div>
         </section>
     @endif
-    {{-- Coupon slider section end --}}
-    <!-- categories section start -->
+    <!-- Coupon slider section end -->
+
+   
+	    <!-- categories section start -->
     <div class="gs-cate-section py-2">
         <div class="container">
             <!-- title box -->
-            <div class="row justify-content-center">
+            <div class="row justify-content-center mb-3">
                 <div class="col-lg-7">
                     <div class="gs-title-box text-center">
                         <h2 class="title wow-replaced">
@@ -407,7 +371,7 @@
                 </div>
             </div>
             <div class="d-none d-lg-block">
-                <div class="swiper home-category-slider" style="max-height: 200px; height: 200px;">
+                <div class="swiper home-category-slider">
                     <div class="swiper-wrapper">
 
                         @foreach ($featured_categories as $fcategory)
@@ -417,7 +381,7 @@
                                     <div class="gs-single-cat">
                                         <img class="cate-img"
                                             src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
-                                            alt="category img">
+                                            alt="{{ $fcategory->name }}">
                                         <div class="cate-title">
                                             <h6 class="title text-dark">{{ $fcategory->name }}</h6>
                                         </div>
@@ -432,18 +396,18 @@
                 </div>
             </div>
             {{-- for mobile and tablet --}}
-            <div class="d-block d-lg-none">
+            <div class="d-block d-lg-none mt-3 mt-lg-0">
                 <div class="row">
                     @foreach ($featured_categories as $fcategory)
-                        <div class="col-4 col-sm-4 d-flex " style="padding: 0 11px; margin-bottom: 11px;">
+                        <div class="col-4 col-sm-4 d-flex mobile-category-box">
                             <a href="{{ route('front.category', $fcategory->slug) }}"
                                 class="category-item w-100 position-relative">
 
                                 <img class="cate-img" src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
-                                    alt="category img">
+                                    alt="{{ $fcategory->name }}">
 
-                                <div class="cate-title py-2 w-100">
-                                    <h6 class="title mb-0 mt-2 text-dark">{{ $fcategory->name }}</h6>
+                                <div class="cate-title py-1 w-100">
+                                    <h6 class="title mb-0 mt-0  text-dark">{{ $fcategory->name }}</h6>
                                 </div>
 
                             </a>
@@ -458,19 +422,18 @@
     <!-- Flash Deal Countdown Section -->
     @php
         use Carbon\Carbon;
-        // for flash deal
+
         $flashDeal = \App\Models\FlashDeal::where('status', 1)->first();
         $flashDealExpired = false;
         $flashDealProducts = [];
 
         if ($flashDeal) {
             $ProductsId = json_decode($flashDeal->products);
-            $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->where('status', 1)->get();
+            $flashDealProducts = \App\Models\Product::whereIn('id', $ProductsId)->get();
             $flashDealExpired = Carbon::now()->gt(Carbon::parse($flashDeal->end_date));
         }
         // for promo offer section
         $promoOffers = \App\Models\PromoOffer::where('status', 1)->get();
-
     @endphp
 
     @if ($flashDeal && !$flashDealExpired)
@@ -513,7 +476,7 @@
                 </div>
 
                 <!-- main content -->
-                <div class="row gy-4">
+                <div class="row gy-2">
                     <div class="col-lg-4  wow-replaced" data-wow-delay=".2s">
                         <div class="product-wrapper">
                             <a href="{{ $arrivals[0]['url'] }}" class="">
@@ -598,7 +561,7 @@
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="ex-product-1-pane" role="tabpanel"
                     aria-labelledby="ex-product-1" tabindex="0">
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($latest_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -609,7 +572,7 @@
                 <div class="tab-pane fade" id="ex-product-2-pane" role="tabpanel" aria-labelledby="ex-product-2"
                     tabindex="0">
 
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($trending_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -618,7 +581,7 @@
 
                 <div class="tab-pane fade" id="ex-product-3-pane" role="tabpanel" aria-labelledby="ex-product-3"
                     tabindex="0">
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($best_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -627,7 +590,7 @@
 
                 <div class="tab-pane fade" id="ex-product-4-pane" role="tabpanel" aria-labelledby="ex-product-4"
                     tabindex="0">
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($popular_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -705,7 +668,7 @@
     <!-- Partner Section -->
     <section class="gs-partner-section">
         <div class="container">
-            <div class="gs-partnerss gy-4 row justify-content-center">
+            <div class="gs-partnerss gy-2 row justify-content-center">
 
                 @foreach (DB::table('partners')->get() as $data)
                     <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 col-6 wow-replaced" data-wow-delay=".1s">
@@ -754,9 +717,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>
@@ -810,98 +773,50 @@
             });
         });
     </script>
-    <script>
-        $(function() {
-            // ✅ Get start & end date dynamically from DB
-            var startDate = new Date("{{ $flashDeal->start_date ?? '' }} 00:00:00").getTime();
-            var endDate = new Date("{{ $flashDeal->end_date ?? '' }} 23:59:59").getTime();
+   <script>
+        $(function () {
 
-            var timer = setInterval(function() {
-                var now = new Date().getTime();
+    $('.countdown').each(function () {
 
-                // 1️⃣ Before start date
-                if (now < startDate) {
-                    $("#countdown").html("<h3>⏳ Deal Not Started Yet!</h3>");
-                    return;
-                }
+        let $this = $(this);
 
-                // 2️⃣ After end date
-                if (now > endDate) {
-                    clearInterval(timer);
-                    $("#countdown").html("<h3>⚡ Deal Expired!</h3>");
-                    return;
-                }
+        let startDate = new Date($this.data('start') + " 00:00:00").getTime();
+        let endDate = new Date($this.data('end') + " 23:59:59").getTime();
 
-                // 3️⃣ Countdown running
-                var distance = endDate - now;
+        let timer = setInterval(function () {
 
-                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            let now = new Date().getTime();
 
-                $("#days").text(days < 10 ? "0" + days : days);
-                $("#hours").text(hours < 10 ? "0" + hours : hours);
-                $("#minutes").text(minutes < 10 ? "0" + minutes : minutes);
-                $("#seconds").text(seconds < 10 ? "0" + seconds : seconds);
-            }, 1000);
-        });
-    </script>
-    <script>
-        $(function() {
-
-            $('.countdown').each(function() {
-
-                let $this = $(this);
-
-                let startDate = new Date($this.data('start') + " 00:00:00").getTime();
-                let endDate = new Date($this.data('end') + " 23:59:59").getTime();
-
-                let timer = setInterval(function() {
-
-                    let now = new Date().getTime();
-
-                    // Before start
-                    if (now < startDate) {
-                        $this.html("<h5>⏳ Deal Not Started Yet!</h5>");
-                        return;
-                    }
-
-                    // After end
-                    if (now > endDate) {
-                        clearInterval(timer);
-                        $this.html("<h5>⚡ Deal Expired!</h5>");
-                        return;
-                    }
-
-                    // Running
-                    let distance = endDate - now;
-
-                    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    $this.find('.days').text(days < 10 ? "0" + days : days);
-                    $this.find('.hours').text(hours < 10 ? "0" + hours : hours);
-                    $this.find('.minutes').text(minutes < 10 ? "0" + minutes : minutes);
-                    $this.find('.seconds').text(seconds < 10 ? "0" + seconds : seconds);
-
-                }, 1000);
-
-            });
-
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var closeBtn = document.getElementById('close-pModal');
-            if (closeBtn) { // ← null check অবশ্যই লাগবে
-                closeBtn.addEventListener('click', function() {
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('popup-modal'));
-                    if (modal) modal.hide();
-                });
+            // Before start
+            if (now < startDate) {
+                $this.html("<h5>⏳ Deal Not Started Yet!</h5>");
+                return;
             }
-        });
+
+            // After end
+            if (now > endDate) {
+                clearInterval(timer);
+                $this.html("<h5>⚡ Deal Expired!</h5>");
+                return;
+            }
+
+            // Running
+            let distance = endDate - now;
+
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            $this.find('.days').text(days < 10 ? "0" + days : days);
+            $this.find('.hours').text(hours < 10 ? "0" + hours : hours);
+            $this.find('.minutes').text(minutes < 10 ? "0" + minutes : minutes);
+            $this.find('.seconds').text(seconds < 10 ? "0" + seconds : seconds);
+
+        }, 1000);
+
+    });
+
+});
     </script>
 @endpush

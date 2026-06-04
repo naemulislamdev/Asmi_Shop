@@ -17,9 +17,8 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         //dd($request->all());
-        $gs = Generalsetting::findOrFail(1);
-
-        $request->validate([
+     $gs = Generalsetting::findOrFail(1);
+       $request->validate([
             'name' => 'required|string|max:100',
             'phone' => [
                 'required',

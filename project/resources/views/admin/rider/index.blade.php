@@ -30,6 +30,7 @@
 									<th>{{ __("Name") }}</th>
 									<th>{{ __("Phone") }}</th>
 									<th>{{ __("Email") }}</th>
+									<th>{{ __("Branch") }}</th>
 									<th>{{ __("Total Delivery") }}</th>
 									<th>{{ __("Options") }}</th>
 								</tr>
@@ -138,6 +139,7 @@
                         { data: 'name', name: 'name' },
                         { data: 'phone', name: 'phone' },
                         { data: 'email', name: 'email' },
+                        { data: 'branch', name: 'branch' },
                         { data: 'total_delivery', name: 'total_delivery' },
             			{ data: 'action', searchable: false, orderable: false }
                      ],

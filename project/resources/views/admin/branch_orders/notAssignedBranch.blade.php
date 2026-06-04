@@ -567,13 +567,13 @@
                         $('.select').niceSelect();
                     }
                 });
-                table.on('processing.dt', function(e, settings, processing) {
-                    if (processing) {
-                        $('#loader').fadeIn(100);
-                    } else {
-                        $('#loader').fadeOut(100);
-                    }
-                });
+                // table.on('processing.dt', function(e, settings, processing) {
+                //     if (processing) {
+                //         $('#loader').fadeIn(100);
+                //     } else {
+                //         $('#loader').fadeOut(100);
+                //     }
+                // });
 
                 // Filter button click
                 $('#filter_btn').on('click', function() {

@@ -1,47 +1,28 @@
 <?php
-
-// ************************************ ADMIN SECTION **********************************************
-
-use App\Http\Controllers\Admin\JobApplicationController;
-use App\Http\Controllers\Admin\OrderExportController;
-use App\Http\Controllers\Front\FeedController;
 use App\Http\Controllers\Front\FrontendController;
-use App\Http\Controllers\Admin\JobController;
-use App\Http\Controllers\Admin\JobDepartmentController;
+use App\Http\Controllers\Front\FeedController;
 use App\Http\Controllers\Front\CartController;
-use App\Http\Controllers\Front\PharmacyController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 Route::get('/under-maintenance', 'Front\FrontendController@maintenance')->name('front-maintenance');
 
-// facebook feed route
 Route::get('/feed/facebook', [FeedController::class, 'facebookFeed']);
 
-// ************************************ ADMIN SECTION ENDS**********************************************
+Route::group(['middleware' => 'maintenance'], function () {
 
-Route::group(['middleware' => 'maintenance', 'content_security_policy'], function () {
+  // Outlet Section
+    Route::get('/outlets', 'Front\FrontendController@outlets')->name('front.outlets');
 
     // ************************************ FRONT SECTION **********************************************
-
-    // pharmacy Routes start
-
-    Route::controller(PharmacyController::class)->prefix('/pharmacy')->as('pharmacy.')->group(function () {
-        Route::get('/home', 'index')->name('index');
-        Route::get('/product/details', 'productDetails')->name('details');
-    });
-
-    // pharmacy Routes end
-
-    /* Conditional offer product route start*/
-    Route::get('/conditonal-product/{sku}', 'Front\FrontendController@conditioalProduct')->name("front.conditional-product");
-    /* Conditional offer product route End*/
-    // sitemap start
+        // sitemap start
     Route::get('/sitemap.xml', [FrontendController::class, 'sitemap'])->name('sitemap');
     // sitemap end
-    Route::get('/', [FrontendController::class, 'index'])->name('front.index');
     Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
+    Route::get('/conditonal-product/{sku}', 'Front\FrontendController@conditioalProduct')->name("front.conditional-product");
+    Route::get('/', [FrontendController::class,'index'])->name('front.index');
     Route::get('/view', 'Front\CartController@view_cart')->name('front.cart-view');
     Route::get('/extras', 'Front\FrontendController@extraIndex')->name('front.extraIndex');
 
@@ -51,7 +32,9 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     // BLOG SECTION
     Route::get('/offers/{category?}/{subcategory?}/{childcategory?}', 'Front\FrontendController@offers')->name('front.offers');
     Route::get('/pusti-brand-promo/offers/', 'Front\FrontendController@promoOffers')->name('front.promo_offers');
-    Route::redirect('/Combo-Offers', '/family-pack', 'Front\FrontendController@offers');
+	 Route::get('/category/Combo-Offers', function () {
+        return redirect()->route('front.category', 'family-pack');
+    });
     Route::get('/blog', 'Front\FrontendController@blog')->name('front.blog');
     Route::get('/blog/{slug}', 'Front\FrontendController@blogshow')->name('front.blogshow');
     Route::get('/blog/category/{slug}', 'Front\FrontendController@blogcategory')->name('front.blogcategory');
@@ -62,7 +45,7 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
 
     // FAQ SECTION
     Route::get('/faq', 'Front\FrontendController@faq')->name('front.faq');
-    Route::post('/auto-save/userinfo', 'Front\FrontendController@autoSaveUserInfo')->name('front.save.user.info');
+	Route::post('/auto-save/userinfo', 'Front\FrontendController@autoSaveUserInfo')->name('front.save.user.info');
     // FAQ SECTION ENDS
 
     // CONTACT SECTION
@@ -71,16 +54,12 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     Route::get('/contact/refresh_code', 'Front\FrontendController@refresh_code');
     // CONTACT SECTION  ENDS
 
-    // Front CAREER SECTION START
+	   // Front CAREER SECTION START
     Route::get("/career", [FrontendController::class, 'career'])->name('front.career');
     Route::get("/career/{slug}", [FrontendController::class, 'careerForm'])->name('front.career.applyForm');
     Route::post("/career/store", [FrontendController::class, 'careerStore'])->name('front.career.store');
     Route::get("/career-details/{slug}", [FrontendController::class, 'careerDetails'])->name('front.career.details');
     // Front CAREER SECTION ENDS
-
-    // Outlet Section
-    Route::get('/outlets', 'Front\FrontendController@outlets')->name('front.outlets');
-
 
     // PRODCT AUTO SEARCH SECTION
     Route::get('/autosearch/product/{slug}', 'Front\FrontendController@autosearch');
@@ -90,9 +69,6 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     Route::get('/categories', 'Front\CatalogController@categories')->name('front.categories');
     Route::get('/category/{category?}/{subcategory?}/{childcategory?}', 'Front\CatalogController@category')->name('front.category');
     // CATEGORY SECTION ENDS
-    Route::get('/Combo-Offers', function () {
-        return redirect()->route('front.category', 'family-pack');
-    });
 
     // TAG SECTION
     Route::get('/tag/{slug}', 'Front\CatalogController@tag')->name('front.tag');
@@ -105,7 +81,6 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     // TAG SECTION ENDS
 
     // PRODCT SECTION
-
 
     Route::get('/item/{slug}', 'Front\ProductDetailsController@product')->name('front.product');
     Route::get('/item/show/cross/products/{id}', 'Front\ProductDetailsController@showCrossProduct')->name('front.show.cross.product');
@@ -142,11 +117,11 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     Route::post('/cart/decrement', 'Front\CartController@decrement');
 
     Route::get('/cart/offcanvas', function () {
-        $cart = Session::get('cart');
-        $cartItems = $cart ? $cart->items : [];
-        $cartObject = $cart;
-        return view('includes.frontend.offcanvas-cart', compact('cartItems', 'cartObject'));
-    });
+    $cart = Session::get('cart');
+    $cartItems = $cart ? $cart->items : [];
+    $cartObject = $cart;
+    return view('includes.frontend.offcanvas-cart', compact('cartItems', 'cartObject'));
+});
 
     Route::post('/cart/remove', 'Front\CartController@cartRemove')->name('ajax.cart.remove');
 
@@ -337,11 +312,11 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     Route::get('/{slug}', 'Front\VendorController@index')->name('front.vendor');
 
     Route::get('/cache/clear', function () {
-        Artisan::call('cache:clear');
-        Artisan::call('config:clear');
-        Artisan::call('route:clear');
-        Artisan::call('view:clear');
-        return 'Cache Cleared Successfully';
+            Artisan::call('cache:clear');
+            Artisan::call('config:clear');
+            Artisan::call('route:clear');
+            Artisan::call('view:clear');
+            return 'Cache Cleared Successfully';
     });
 
     // VENDOR AND PAGE SECTION ENDS
@@ -349,7 +324,6 @@ Route::group(['middleware' => 'maintenance', 'content_security_policy'], functio
     // ************************************ FRONT SECTION ENDS**********************************************
 
 });
-
 
 Route::post('the/genius/ocean/2441139', 'Front\FrontendController@subscription');
 Route::get('finalize', 'Front\FrontendController@finalize');

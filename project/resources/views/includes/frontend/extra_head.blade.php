@@ -1,20 +1,28 @@
 @if (isset($page->meta_tag) && isset($page->meta_description))
-    <meta name="keywords" content="{{ $page->meta_tag }}">
+
+<meta name="keywords" content="{{ $page->meta_tag }}">
     <meta name="description" content="{{ $page->meta_description }}">
     <title>{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh</title>
     <meta name="title" content="{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh">
     <meta name="description"
         content="Shop fresh groceries, organic foods, and daily essentials at Asmi Super Shop. Get the lowest prices, premium quality, and fastest free home delivery. Order Now!">
-@elseif(isset($blog->meta_tag) && isset($blog->meta_description))
-    <meta property="og:title" content="{{ $blog->title }}" />
-    <meta property="og:description"
-        content="{{ $blog->meta_description != null ? $blog->meta_description : strip_tags($blog->meta_description) }}" />
-    <meta property="og:image" content="{{ asset('assets/images/blogs/' . $blog->photo) }}" />
+
+@elseif(isset($blog) && isset($blog->meta_tag))
+
     <meta name="keywords" content="{{ $blog->meta_tag }}">
     <meta name="description" content="{{ $blog->meta_description }}">
+
+    <meta property="og:title" content="{{ $blog->title }}">
+    <meta property="og:description" content="{{ $blog->meta_description ?? strip_tags($blog->details) }}">
+    <meta property="og:image" content="{{ url('assets/images/blogs/'.$blog->photo) }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="article">
+
     <title>{{ $gs->title }}</title>
+
 @elseif(isset($productt))
-    <meta name="title" content="{{ substr($productt->name, 0, 60) . '-' }}{{ $gs->title }}">
+
+       <meta name="title" content="{{ substr($productt->name, 0, 60) . '-' }}{{ $gs->title }}">
     <meta name="keywords" content="{{ !empty($productt->meta_tag) ? implode(',', $productt->meta_tag) : '' }}">
     <meta name="description"
         content="{{ $productt->meta_description != null ? $productt->meta_description : strip_tags($productt->description) }}">
@@ -25,19 +33,24 @@
     <meta property="og:image" content="{{ asset('assets/images/thumbnails/' . $productt->thumbnail) }}" />
     <meta name="author" content="Asmishop">
     <title>{{ substr($productt->name, 0, 60) . '-' }}{{ $gs->title }}</title>
+
 @else
-    <title>{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh</title>
+
+  <title>{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh</title>
     <meta name="title" content="{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh">
     <meta name="description"
         content="Shop fresh groceries, organic foods, and daily essentials at Asmi Super Shop. Get the lowest prices, premium quality, and fastest free home delivery. Order Now!">
-    <meta name="keywords" content="asmi, shop, asmishop, supershop, grocery, online, Dhaka, Bangladesh">
 
     <meta property="og:title" content="{{ $gs->title }} | Best Online Grocery Shopping In Bangladesh" />
     <meta property="og:description"
         content="Shop fresh groceries, organic foods, and daily essentials at Asmi Super Shop. Get the lowest prices, premium quality, and fastest free home delivery. Order Now!" />
     <meta property="og:image" content="{{ asset('assets/images/' . $gs->logo) }}" />
+    <meta property="og:url" content="{{ url()->current() === url('/') ? url('/').'/' : url()->current() }}" />
+    <meta property="og:type" content="website" />
+    <meta property="fb:app_id" content="2442682731478086" />
 
     <meta name="author" content="Asmishop">
+
 @endif
 
 @if ($default_font->font_value)
@@ -62,7 +75,6 @@
     <script>
         "use strict";
         window.dataLayer = window.dataLayer || [];
-
         function gtag() {
             dataLayer.push(arguments);
         }
@@ -95,4 +107,5 @@
         fbq('init', '{{ $seo->facebook_pixel }}');
         fbq('track', 'PageView');
     </script>
+   
 @endif

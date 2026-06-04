@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use App\Helpers\PriceHelper;
-use App\Models\DeliveryRider;
-use App\Models\Rider;
+
 
 class BranchOrderController extends Controller
 {
@@ -156,9 +155,7 @@ class BranchOrderController extends Controller
     public function allBranchOrders()
     {
         $branchs = Branch::where('status', 1)->get();
-        $riders = Rider::all();
-
-        return view('admin.branch_orders.index', compact('branchs', 'riders'));
+        return view('admin.branch_orders.index', compact('branchs'));
     }
 
     public function datatables(Request $request, $branch_id = null)
@@ -170,16 +167,16 @@ class BranchOrderController extends Controller
         $unassigned   = $request->get('unassigned'); // নতুন param
 
         $datas = Order::with(['branch', 'tracks'])
-            ->when($unassigned,                fn($q) => $q->whereNull('branch_id'))
-            ->when(!$unassigned && $branch_id, fn($q) => $q->where('branch_id', $branch_id)) // specific branch
-            ->when(!$unassigned && !$branch_id, fn($q) => $q->whereHas('branch'))              // all branch
+            // branch filter logic
+            ->when($unassigned, fn($q) => $q->whereNull('branch_id'))         // not assigned page
+            ->when(!$unassigned && !$branch_id, fn($q) => $q->whereHas('branch')) // all branch page
+            ->when(!$unassigned && $branch_id, fn($q) => $q->where('branch_id', $branch_id)) // single branch
             ->when($status && $status !== 'all', fn($q) => $q->where('status', $status))
-            ->when($order_status,              fn($q) => $q->where('status', $order_status))
-            ->when($from_date,                 fn($q) => $q->whereDate('created_at', '>=', $from_date))
-            ->when($to_date,                   fn($q) => $q->whereDate('created_at', '<=', $to_date))
+            ->when($order_status, fn($q) => $q->where('status', $order_status))
+            ->when($from_date, fn($q) => $q->whereDate('created_at', '>=', $from_date))
+            ->when($to_date,   fn($q) => $q->whereDate('created_at', '<=', $to_date))
             ->latest()
             ->get();
-
 
         return DataTables::of($datas)
             ->editColumn('customer_address', function (Order $data) {
@@ -190,26 +187,23 @@ class BranchOrderController extends Controller
                 $time = \Carbon\Carbon::parse($data->created_at)->format('h:i A');
                 return $date . '<br><small>' . $time . '</small>';
             })
-
             ->editColumn('branch', function (Order $data) {
                 if ($data->branch_id) {
-                    return '<div>
-            <a href="javascript:;" class="select-branch badge badge-success"
-            data-id="' . $data->id . '"
-            data-toggle="modal"
-            data-target="#branchModal">' . $data->branch->name . '</a>
-            <button
-                data-toggle="modal"
-                data-target="#riderModal"
+                    return '<span class="badge badge-success">' . $data->branch->name . '</span>';
+                }
+                return 'N/A';
+            })
+            ->editColumn('branch', function (Order $data) {
+                if ($data->branch_id) {
+                    return '<a href="javascript:;" class="select-branch badge badge-success"
                 data-id="' . $data->id . '"
-                data-branch-id="' . $data->branch_id . '"
-                class="btn btn-primary btn-sm add-rider-btn">Add Rider</button>
-        </div>';
+                data-toggle="modal"
+                data-target="#branchModal">' . $data->branch->name . '</a>';
                 }
                 return '<a href="javascript:;" class="select-branch btn btn-sm btn-primary"
-    data-id="' . $data->id . '"
-    data-toggle="modal"
-    data-target="#branchModal">' . __('Add') . '</a>';
+                data-id="' . $data->id . '"
+                data-toggle="modal"
+                data-target="#branchModal">' . __('Add') . '</a>';
             })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
@@ -266,30 +260,11 @@ class BranchOrderController extends Controller
             ->rawColumns(['date', 'branch', 'customer_address', 'id', 'status', 'custom_note', 'customer_name', 'order_source', 'action'])
             ->toJson();
     }
-    // Controller method
-    public function getBranchRiders($branch_id)
-    {
-        $riders = Rider::where('branch_id', $branch_id)->get();
-        return response()->json($riders);
-    }
-    public function assignRider(Request $request)
-    {
-        $order = Order::findOrFail($request->order_id);
 
-        $order->rider_id = $request->rider_id ?? null;
-        $order->save();
-
-        $deliveryRider = new DeliveryRider();
-        $deliveryRider->order_id = $request->order_id ?? null;
-        $deliveryRider->rider_id = $request->rider_id ?? null;
-        $deliveryRider->status = 'pending';
-        $deliveryRider->save();
-
-        return response()->json(['message' => 'Rider assigned successfully']);
-    }
     public function singleBranchOrders($branch_id)
     {
         $branch = Branch::findOrFail($branch_id);
+        $modalBranch = Branch::where('status', 1)->get();
         $statusCounts = Order::where('branch_id', $branch_id)
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
@@ -297,7 +272,7 @@ class BranchOrderController extends Controller
 
         $totalCount = Order::where('branch_id', $branch_id)->count();
 
-        return view('admin.branch_orders.single', compact('branch', 'statusCounts', 'totalCount'));
+        return view('admin.branch_orders.single', compact('branch', 'modalBranch', 'statusCounts', 'totalCount'));
     }
     public function summary(Request $request, $branch_id = null)
     {

@@ -10,58 +10,57 @@ use Yajra\DataTables\DataTables;
 class ReportController extends AdminBaseController
 {
 
-    //*** JSON Request
-    public function datatables()
-    {
-        $datas = Report::latest('id')->get();
-        //--- Integrating This Collection Into Datatables
-        return DataTables::of($datas)
-            ->addColumn('product', function (Report $data) {
-                $name =  mb_strlen(strip_tags($data->product->name), 'UTF-8') > 50 ? mb_substr(strip_tags($data->product->name), 0, 50, 'UTF-8') . '...' : strip_tags($data->product->name);
-                $product = '<a href="' . route('front.product', $data->product->slug) . '" target="_blank">' . $name . '</a>';
-                return $product;
-            })
-            ->addColumn('reporter', function (Report $data) {
-                $name = $data->user->name;
-                return $name;
-            })
-            ->addColumn('title', function (Report $data) {
-                $text = mb_strlen(strip_tags($data->title), 'UTF-8') > 250 ? mb_substr(strip_tags($data->title), 0, 250, 'UTF-8') . '...' : strip_tags($data->title);
-                return $text;
-            })
-            ->editColumn('created_at', function (Report $data) {
-                return $data->created_at->diffForHumans();
-            })
-            ->addColumn('action', function (Report $data) {
-                return '<div class="action-list"><a data-href="' . route('admin-report-show', $data->id) . '" class="view details-width" data-toggle="modal" data-target="#modal1"> <i class="fas fa-eye"></i>' . __('Details') . '</a><a href="javascript:;" data-href="' . route('admin-report-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i></a></div>';
-            })
-            ->rawColumns(['product', 'action'])
-            ->toJson(); //--- Returning Json Data To Client Side
-    }
+	    //*** JSON Request
+	    public function datatables()
+	    {
+	         $datas = Report::latest('id')->get();
+	         //--- Integrating This Collection Into Datatables
+	         return Datatables::of($datas)
+	                            ->addColumn('product', function(Report $data) {
+									$name =  mb_strlen(strip_tags($data->product->name),'UTF-8') > 50 ? mb_substr(strip_tags($data->product->name),0,50,'UTF-8').'...' : strip_tags($data->product->name);
+	                                $product = '<a href="'.route('front.product', $data->product->slug).'" target="_blank">'.$name.'</a>';
+	                                return $product;
+	                            })
+	                            ->addColumn('reporter', function(Report $data) {
+	                                $name = $data->user->name;
+	                                return $name;
+	                            })
+	                            ->addColumn('title', function(Report $data) {
+	                                $text = mb_strlen(strip_tags($data->title),'UTF-8') > 250 ? mb_substr(strip_tags($data->title),0,250,'UTF-8').'...' : strip_tags($data->title);
+	                                return $text;
+	                            })
+	                            ->editColumn('created_at', function(Report $data) {
+	                                return $data->created_at->diffForHumans();
+	                            })
+	                            ->addColumn('action', function(Report $data) {
+	                                return '<div class="action-list"><a data-href="' . route('admin-report-show',$data->id) . '" class="view details-width" data-toggle="modal" data-target="#modal1"> <i class="fas fa-eye"></i>'.__('Details').'</a><a href="javascript:;" data-href="' . route('admin-report-delete',$data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i></a></div>';
+	                            }) 
+	                            ->rawColumns(['product','action'])
+	                            ->toJson(); //--- Returning Json Data To Client Side
+		}
+		
+		public function index(){
+			return view('admin.report.index');
+		}
 
-    public function index()
-    {
-        return view('admin.report.index');
-    }
+	    //*** GET Request
+	    public function show($id)
+	    {
+	        $data = Report::findOrFail($id);
+	        return view('admin.report.show',compact('data'));
+	    }
 
-    //*** GET Request
-    public function show($id)
-    {
-        $data = Report::findOrFail($id);
-        return view('admin.report.show', compact('data'));
-    }
-
-    //*** GET Request Delete
-    public function destroy($id)
-    {
-        $data = Report::findOrFail($id);
-        $data->delete();
-        //--- Redirect Section
-        $msg = __('Data Deleted Successfully.');
-        return response()->json($msg);
-        //--- Redirect Section Ends
-    }
-    public function orderReportIndex()
+	    //*** GET Request Delete
+		public function destroy($id)
+		{
+		    $data = Report::findOrFail($id);
+		    $data->delete();
+		    //--- Redirect Section     
+		    $msg = __('Data Deleted Successfully.');
+		    return response()->json($msg);      
+		    //--- Redirect Section Ends    
+		}
+public function orderReportIndex()
     {
         //Order report data
         $from = date('Y-m-d') . " 00:00:00";
@@ -86,7 +85,6 @@ class ReportController extends AdminBaseController
         ")
             ->whereBetween('created_at', [$from, $to])
             ->first();
-
         // Convert USD → BDT
         $results->pay_amount        = $results->pay_amount ?? 0;
         $results->pending_amount      = $results->pending_amount ?? 0;
@@ -94,44 +92,6 @@ class ReportController extends AdminBaseController
         $results->declined_amount     = $results->declined_amount ?? 0;
         $results->processing_amount   = $results->processing_amount ?? 0;
         $results->on_delivery_amount  = $results->on_delivery_amount ?? 0;
-
-        // top selling product
-        $ordersCart = Order::where('status', 'completed')
-            ->pluck('cart');
-
-        // dd($ordersCart);
-
-        $productSales = [];
-
-        foreach ($ordersCart as $cartJson) {
-            $cart = json_decode($cartJson, true);
-            // dd($cart);
-
-            if (!isset($cart['items'])) continue;
-
-            foreach ($cart['items'] as $productId => $item) {
-                $qty  = $item['qty'] ?? 0;
-                $name = $item['item']['name'] ?? 'Unknown';
-
-                if (!isset($productSales[$productId])) {
-                    $productSales[$productId] = [
-                        'name' => $name,
-                        'qty'  => 0
-                    ];
-                }
-
-                $productSales[$productId]['qty'] += $qty;
-            }
-        }
-
-        // Sort by qty desc
-        uasort($productSales, fn($a, $b) => $b['qty'] <=> $a['qty']);
-
-        $topSellingProduct = reset($productSales);
-
-        $results->top_selling_product = $topSellingProduct
-            ? $topSellingProduct['name'] . ' Sell Quantity:' . ' (' . $topSellingProduct['qty'] . ')'
-            : 'N/A';
         return view('admin.report.order_report.index', compact('results'));
     }
 
@@ -153,51 +113,10 @@ class ReportController extends AdminBaseController
                 SUM(CASE WHEN status='processing' THEN 1 END) as processing_qty,
                 SUM(CASE WHEN status='processing' THEN pay_amount END) as processing_amount,
                 SUM(CASE WHEN status='on delivery' THEN 1 END) as on_delivery_qty,
-                SUM(CASE WHEN status='on delivery' THEN pay_amount END) as on_delivery_amount,
-
+                SUM(CASE WHEN status='on delivery' THEN pay_amount END) as on_delivery_amount
         ")
             ->whereBetween('created_at', [$from, $to])
             ->first();
-
-        //top selling product
-        // Top selling product logic
-        $ordersCarts = Order::whereBetween('created_at', [$from, $to])
-            ->where('status', 'completed')
-            ->pluck('carts');
-        // dd($ordersCarts);
-
-        $productSales = [];
-
-        foreach ($ordersCarts as $cartJson) {
-            $cart = json_decode($cartJson, true);
-
-            if (!isset($cart['items'])) continue;
-
-            foreach ($cart['items'] as $productId => $item) {
-                $qty  = $item['qty'] ?? 0;
-                $name = $item['item']['name'] ?? 'Unknown';
-
-                if (!isset($productSales[$productId])) {
-                    $productSales[$productId] = [
-                        'name' => $name,
-                        'qty'  => 0
-                    ];
-                }
-
-                $productSales[$productId]['qty'] += $qty;
-            }
-        }
-
-        uasort($productSales, fn($a, $b) => $b['qty'] <=> $a['qty']);
-
-        $topSellingProduct = reset($productSales);
-
-        $results->top_selling_products = $topSellingProduct
-            ? $topSellingProduct['name'] . ' (' . $topSellingProduct['qty'] . ')'
-            : 'N/A';
-
-
-
         // Convert USD → BDT
         $results->pay_amount        = $results->pay_amount ?? 0;
         $results->pending_amount      = $results->pending_amount ?? 0;
@@ -205,8 +124,6 @@ class ReportController extends AdminBaseController
         $results->declined_amount     = $results->declined_amount ?? 0;
         $results->processing_amount   = $results->processing_amount ?? 0;
         $results->on_delivery_amount  = $results->on_delivery_amount ?? 0;
-
-        // dd($results);
         // Return the updated card HTML
         $html = view('admin.report.order_report.order_report_data', compact('results'))->render();
 

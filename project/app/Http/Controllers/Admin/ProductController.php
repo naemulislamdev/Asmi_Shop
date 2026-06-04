@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\ProductExport;
 use App\Helpers\PriceHelper;
-use App\Imports\ProductPriceImport;
+use App\Exports\ProductExport;
 use App\Models\Attribute;
 use App\Models\AttributeOption;
 use App\Models\Category;
@@ -14,88 +13,88 @@ use App\Models\Gallery;
 use App\Models\Product;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Intervention\Image\Facades\Image;
-use Maatwebsite\Excel\Facades\Excel;
+use Image;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends AdminBaseController
 {
     //*** JSON Request
-    public function datatables(Request $request)
-    {
-        $query = Product::query()
-            ->whereProductType('normal')
-            ->latest('id');
+   public function datatables(Request $request)
+{
+    $query = Product::query()
+        ->whereProductType('normal')
+        ->latest('id');
 
-        if ($request->type == 'deactive') {
-            $query->whereStatus(0);
-        }
+    if ($request->type == 'deactive') {
+        $query->whereStatus(0);
+    }
 
-        return DataTables::eloquent($query)
-            ->editColumn('name', function (Product $data) {
-                $name = mb_strlen($data->name, 'UTF-8') > 50
-                    ? mb_substr($data->name, 0, 50, 'UTF-8') . '...'
-                    : $data->name;
+    return DataTables::eloquent($query)
+        ->editColumn('name', function (Product $data) {
+            $name = mb_strlen($data->name, 'UTF-8') > 50 
+                ? mb_substr($data->name, 0, 50, 'UTF-8') . '...' 
+                : $data->name;
 
-                $id = '<small>' . __("ID") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . sprintf("%'.08d", $data->id) . '</a></small>';
+            $id = '<small>' . __("ID") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . sprintf("%'.08d", $data->id) . '</a></small>';
 
-                $sku = $data->type == 'Physical'
-                    ? '<small class="ml-2"> ' . __("SKU") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . $data->sku . '</a></small>'
-                    : '';
+            $sku = $data->type == 'Physical'
+                ? '<small class="ml-2"> ' . __("SKU") . ': <a href="' . route('front.product', $data->slug) . '" target="_blank">' . $data->sku . '</a></small>'
+                : '';
 
-                return $name . '<br>' . $id . $sku . $data->checkVendor();
-            })
+            return $name . '<br>' . $id . $sku . $data->checkVendor();
+        })
 
-            ->editColumn('price', function (Product $data) {
-                $price = $data->price * $this->curr->value;
-                return PriceHelper::showAdminCurrencyPrice($price);
-            })
+        ->editColumn('price', function (Product $data) {
+            $price = $data->price * $this->curr->value;
+            return PriceHelper::showAdminCurrencyPrice($price);
+        })
 
-            ->editColumn('photo', function (Product $data) {
-                $photo = $data->photo
-                    ? asset('assets/images/products/' . $data->photo)
-                    : asset('assets/images/noimage.png');
+        ->editColumn('photo', function (Product $data) {
+            $photo = $data->photo 
+                ? asset('assets/images/products/' . $data->photo) 
+                : asset('assets/images/noimage.png');
 
-                return '<img src="' . $photo . '" class="img-thumbnail" style="width:80px">';
-            })
+            return '<img src="' . $photo . '" class="img-thumbnail" style="width:80px">';
+        })
 
-            ->editColumn('stock', function (Product $data) {
-                if ($data->stock === null) {
-                    return __("Unlimited");
-                }
-                if ($data->stock == 0) {
-                    return __("Out Of Stock");
-                }
+        ->editColumn('stock', function (Product $data) {
+            if ($data->stock === null) {
+                return __("Unlimited");
+            }
+            if ($data->stock == 0) {
+                return __("Out Of Stock");
+            }
 
-                return $data->stock;
-            })
+            return $data->stock;
+        })
 
-            ->addColumn('status', function (Product $data) {
-                $class = $data->status ? 'drop-success' : 'drop-danger';
-                return '
+        ->addColumn('status', function (Product $data) {
+            $class = $data->status ? 'drop-success' : 'drop-danger';
+            return '
                 <div class="action-list">
                     <select class="process select droplinks ' . $class . '">
                         <option data-val="1" value="' . route('admin-prod-status', [$data->id, 1]) . '" ' . ($data->status ? 'selected' : '') . '>' . __("Activated") . '</option>
                         <option data-val="0" value="' . route('admin-prod-status', [$data->id, 0]) . '" ' . (!$data->status ? 'selected' : '') . '>' . __("Deactivated") . '</option>
                     </select>
                 </div>';
-            })
+        })
 
-            ->addColumn('action', function (Product $data) {
-                $catalog = '';
-                if ($data->type == 'Physical') {
-                    if ($data->is_catalog) {
-                        $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 0]) . '" data-toggle="modal" data-target="#catalog-modal" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Remove Catalog") . '</a>';
-                    } else {
-                        $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 1]) . '" data-toggle="modal" data-target="#catalog-modal"><i class="fas fa-plus"></i> ' . __("Add To Catalog") . '</a>';
-                    }
+        ->addColumn('action', function (Product $data) {
+            $catalog = '';
+            if ($data->type == 'Physical') {
+                if ($data->is_catalog) {
+                    $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 0]) . '" data-toggle="modal" data-target="#catalog-modal" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Remove Catalog") . '</a>';
+                } else {
+                    $catalog = '<a href="javascript:;" data-href="' . route('admin-prod-catalog', [$data->id, 1]) . '" data-toggle="modal" data-target="#catalog-modal"><i class="fas fa-plus"></i> ' . __("Add To Catalog") . '</a>';
                 }
+            }
 
-                return '
+            return '
                 <div class="godropdown">
                     <button class="go-dropdown-toggle"> ' . __("Actions") . ' <i class="fas fa-chevron-down"></i></button>
                     <div class="action-list">
@@ -106,12 +105,13 @@ class ProductController extends AdminBaseController
                         <a href="javascript:;" data-href="' . route('admin-prod-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i> ' . __("Delete") . '</a>
                     </div>
                 </div>';
-            })
+        })
 
-            ->rawColumns(['name', 'status', 'action', 'photo'])
-            ->toJson();
-    }
+        ->rawColumns(['name', 'status', 'action', 'photo'])
+        ->toJson();
+}
 
+    //*** JSON Request
     public function catalogdatatables()
     {
         $datas = Product::where('is_catalog', '=', 1)->orderBy('id', 'desc');
@@ -137,6 +137,7 @@ class ProductController extends AdminBaseController
                 } else {
                     return $data->stock;
                 }
+
             })
             ->addColumn('status', function (Product $data) {
                 $class = $data->status == 1 ? 'drop-success' : 'drop-danger';
@@ -188,6 +189,7 @@ class ProductController extends AdminBaseController
             return view('admin.product.create.license', compact('cats', 'sign'));
         } else if (($slug == 'listing')) {
             return view('admin.product.create.listing', compact('cats', 'sign'));
+
         }
     }
 
@@ -250,13 +252,11 @@ class ProductController extends AdminBaseController
     //*** POST Request
     public function store(Request $request)
     {
-
-
         //--- Validation Section
         $rules = [
+            'photo' => 'nullable',
             'file' => 'mimes:zip',
         ];
-
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -276,8 +276,7 @@ class ProductController extends AdminBaseController
             $file->move('assets/files', $name);
             $input['file'] = $name;
         }
-
-
+        
         // product photo (optional)
         if (!empty($request->photo)) {
 
@@ -297,6 +296,8 @@ class ProductController extends AdminBaseController
             }
         }
 
+        
+
         if ($request->type == "Physical" || $request->type == "Listing") {
             $rules = ['sku' => 'min:4|unique:products'];
 
@@ -306,9 +307,6 @@ class ProductController extends AdminBaseController
                 return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
             }
 
-            if ($request->product_type == "combo_offer") {
-                $input['product_type'] = $request->product_type;
-            }
             if ($request->product_condition_check == "") {
                 $input['product_condition'] = 0;
             }
@@ -371,6 +369,7 @@ class ProductController extends AdminBaseController
             }
 
             $input['measure'] = $request->measure_check == 1 ? 1 : 0;
+
         }
 
         if (empty($request->seo_check)) {
@@ -391,6 +390,7 @@ class ProductController extends AdminBaseController
                 $input['license'] = implode(',,', $request->license);
                 $input['license_qty'] = implode(',', $request->license_qty);
             }
+
         }
 
         if (in_array(null, $request->features) || in_array(null, $request->colors)) {
@@ -404,14 +404,12 @@ class ProductController extends AdminBaseController
         if (!empty($request->tags)) {
             $input['tags'] = implode(',', $request->tags);
         }
-        // Video Url
+
+         // Video Url
         if (!empty($request->video_url)) {
             $input['video_url'] = $request->video_url;
         }
-        $input['mfg_date'] = $request->mfg_date ?? null;
-        $input['exp_date'] = $request->exp_date ?? null;
-
-        $input['price'] = (int) ($input['price'] / $sign->value);
+         $input['price'] = (int) ($input['price'] / $sign->value);
         // $input['previous_price'] = (int) ($input['previous_price'] / $sign->value);
         // if ($request->cross_products) {
         //     $input['cross_products'] = implode(',', $request->cross_products);
@@ -493,8 +491,7 @@ class ProductController extends AdminBaseController
 
         // Save Data
         $data->fill($input)->save();
-
-        if ($request->measure_check == 1 && $request->has('measures')) {
+    if ($request->measure_check == 1 && $request->has('measures')) {
             $data->measures()->delete();
 
             foreach ($request->measures as $measure) {
@@ -517,13 +514,15 @@ class ProductController extends AdminBaseController
             $prod->slug = Str::slug($data->name, '-') . '-' . strtolower($data->sku);
         }
 
-        // Set Thumbnail
+         // Set Thumbnail
         if (!empty($prod->photo)) {
             $img = Image::make('assets/images/products/' . $prod->photo)->resize(285, 285);
             $thumbnail = time() . Str::random(8) . '.jpg';
             $img->save('assets/images/thumbnails/' . $thumbnail);
             $prod->thumbnail = $thumbnail;
         }
+         
+        
         $prod->update();
 
         // Add To Gallery If any
@@ -682,9 +681,11 @@ class ProductController extends AdminBaseController
 
                         // Save Data
                         $data->fill($input)->save();
+
                     } else {
                         $log .= "<br>" . __('Row No') . ": " . $i . " - " . __('No Category Found!') . "<br>";
                     }
+
                 } else {
                     $log .= "<br>" . __('Row No') . ": " . $i . " - " . __('Duplicate Product Code!') . "<br>";
                 }
@@ -715,13 +716,12 @@ class ProductController extends AdminBaseController
         } else {
             return view('admin.product.edit.physical', compact('cats', 'data', 'sign'));
         }
+
     }
 
     //*** POST Request
     public function update(Request $request, $id)
     {
-
-
         // return $request;
         //--- Validation Section
         $rules = [
@@ -739,7 +739,7 @@ class ProductController extends AdminBaseController
         $data = Product::findOrFail($id);
         $sign = $this->curr;
         $input = $request->all();
-
+        //dd( $input);
 
         //Check Types
         if ($request->type_check == 1) {
@@ -773,7 +773,7 @@ class ProductController extends AdminBaseController
                 $input['is_flash_deal'] = 1;
                 $input['start_date'] = $request->start_date;
                 $input['end_date'] = $request->end_date;
-            } else {
+            }else{
                 $input['is_flash_deal'] = 0;
                 $input['start_date'] = null;
                 $input['end_date'] = null;
@@ -794,18 +794,9 @@ class ProductController extends AdminBaseController
                 $input['ship'] = null;
             }
 
-
             $input['is_offer_active'] = $request->is_offer_active ? 1 : 0;
-
-
-            // Video Url
-
+             // Video Url
             $input['video_url'] = $request->video_url ?? null;
-
-            $input['mfg_date'] = $request->mfg_date ?? null;
-            $input['exp_date'] = $request->exp_date ?? null;
-
-
             // Check Size
             if (empty($request->stock_check)) {
                 $input['stock_check'] = 0;
@@ -858,7 +849,7 @@ class ProductController extends AdminBaseController
             }
 
             // Check Measure
-            $input['measure'] = $request->measure_check == 1 ? 1 : 0;
+           $input['measure'] = $request->measure_check == 1 ? 1 : 0;
         }
 
         // Check Seo
@@ -888,6 +879,7 @@ class ProductController extends AdminBaseController
                     $input['license_qty'] = implode(',', $license_qty);
                 }
             }
+
         }
 
         if (!in_array(null, $request->colors)) {
@@ -995,16 +987,12 @@ class ProductController extends AdminBaseController
         if ($request->cross_products) {
             $input['cross_products'] = implode(',', $request->cross_products);
         }
-
-        if ($data->slug !== $request->slug) {
-            $data->slug = Str::slug($request->slug, '-');
-        }
-        $input['pre_order'] = $request->pre_order == 1 ? 1 : 0;
+        //$data->slug = Str::slug($data->name, '-') . '-' . strtolower($data->sku);
 
         $data->update($input);
         //-- Logic Section Ends
+     if ($request->measure_check == 1 && $request->has('measures')) {
 
-        if ($request->measure_check == 1 && $request->has('measures')) {
             $data->measures()->delete();
             foreach ($request->measures as $measure) {
                 if (!empty($measure['value']) && !empty($measure['label'])) {
@@ -1089,6 +1077,7 @@ class ProductController extends AdminBaseController
                 }
                 $gal->delete();
             }
+
         }
 
         if ($data->reports->count() > 0) {
@@ -1129,6 +1118,7 @@ class ProductController extends AdminBaseController
                     unlink(public_path() . '/assets/images/products/' . $data->photo);
                 }
             }
+
         }
 
         if (file_exists(public_path() . '/assets/images/thumbnails/' . $data->thumbnail) && $data->thumbnail != "") {
@@ -1146,7 +1136,7 @@ class ProductController extends AdminBaseController
         return response()->json($msg);
         //--- Redirect Section Ends
 
-        // PRODUCT DELETE ENDS
+// PRODUCT DELETE ENDS
     }
 
     public function catalog($id1, $id2)
@@ -1222,7 +1212,6 @@ class ProductController extends AdminBaseController
     }
     public function bulkPriceUpdate(Request $request)
     {
-        // $request->dd();
         $request->validate([
             'csvfile' => 'required|file|mimes:csv,txt'
         ]);
@@ -1383,4 +1372,5 @@ class ProductController extends AdminBaseController
             return back()->with('error', 'Format not supported yet!');
         }
     }
+
 }

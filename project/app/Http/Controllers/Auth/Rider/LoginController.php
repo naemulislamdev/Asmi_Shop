@@ -15,6 +15,7 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+
         $request->validate([
             'phone' => 'required',
             'password' => 'required',
@@ -22,14 +23,11 @@ class LoginController extends Controller
         // Attempt to log the user in
         if (Auth::guard('rider')->attempt(['phone' => $request->phone, 'password' => $request->password])) {
             // if successful, then redirect to their intended location
-
             if (Auth::guard('rider')->user()->ban == 1) {
                 Auth::guard('rider')->logout();
                 return redirect()->back()->with('unsuccess', __('Your Account Has Been Banned.'));
             }
-
             // Login as User
-
             return redirect()->route('rider-dashboard');
         }
 

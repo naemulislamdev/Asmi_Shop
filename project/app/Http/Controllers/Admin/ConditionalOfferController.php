@@ -19,7 +19,7 @@ class ConditionalOfferController extends Controller
     }
     public function create()
     {
-        $products = Product::where("status", 1)->get();
+        $products = Product::where("status", 1)->orderBy('name')->get(['id', 'name', 'sku']);
         return view('admin.conditional_offers.create', compact('products'));
     }
     public function store(Request $request)
@@ -70,7 +70,7 @@ class ConditionalOfferController extends Controller
     // ─── Edit ─────────────────────────────────────────────────────────────────
     public function edit($id)
     {
-        $products = Product::where("status", 1)->orderBy('name')->get(['id', 'name', 'sku']);
+        $products = Product::orderBy('name')->get(['id', 'name', 'sku']);
         $offer    = ConditionalOffer::findOrFail($id);
 
         return view('admin.conditional_offers.edit', compact('offer', 'products'));

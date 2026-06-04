@@ -305,38 +305,6 @@
 
         {{-- ORDER MODAL ENDS --}}
 
-        <!-- Branch Modal -->
-        <div class="modal fade" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <form id="branchForm">
-                    @csrf
-                    <input type="hidden" name="order_id" id="branch_order_id">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{ __('Select Branch') }}</h5>
-                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>{{ __('Branch') }}</label>
-                                <select name="branch_id" class="form-control" required>
-                                    <option selected disabled>{{ __('Choose Branch') }}</option>
-                                    @foreach ($modalBranch as $brch)
-                                        <option value="{{ $brch->id }}">{{ $brch->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!--End Branch modal -->
-
         {{-- MESSAGE MODAL --}}
         <div class="sub-categori">
             <div class="modal" id="vendorform" tabindex="-1" role="dialog" aria-labelledby="vendorformLabel"
@@ -415,6 +383,37 @@
 
         </div>
 
+        <!-- Branch Modal -->
+        <div class="modal fade" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <form id="branchForm">
+                    @csrf
+                    <input type="hidden" name="order_id" id="branch_order_id">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ __('Select Branch') }}</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>{{ __('Branch') }}</label>
+                                <select name="branch_id" class="form-control" required>
+                                    <option selected disabled>{{ __('Choose Branch') }}</option>
+                                    @foreach ($modalBranch as $brch)
+                                        <option value="{{ $brch->id }}">{{ $brch->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--End Branch modal -->
         {{-- ADD / EDIT MODAL ENDS --}}
         <!-- Modal -->
         <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
@@ -489,13 +488,6 @@
 
 @section('scripts')
     {{-- DATA TABLE --}}
-    <script>
-        // single.blade.php এর script এ এটা যোগ করো temporarily
-        console.log('Branch ID: {{ $branch->id }}');
-        console.log('Branch Name: {{ $branch->name }}');
-        console.log('DataTable URL: {{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}');
-        console.log('Summary URL: {{ route('branch-orders.summary', $branch->id) }}');
-    </script>
 
     <script type="text/javascript">
         (function($) {
@@ -571,13 +563,13 @@
                     $('.select').niceSelect();
                 }
             });
-            table.on('processing.dt', function(e, settings, processing) {
-                if (processing) {
-                    $('#loader').fadeIn(100);
-                } else {
-                    $('#loader').fadeOut(100);
-                }
-            });
+            // table.on('processing.dt', function(e, settings, processing) {
+            //     if (processing) {
+            //         $('#loader').fadeIn(100);
+            //     } else {
+            //         $('#loader').fadeOut(100);
+            //     }
+            // });
 
             // Filter button click
             $('#filter_btn').on('click', function() {
@@ -686,7 +678,7 @@
     </script>
     <script>
         // summary route — index বা single অনুযায়ী বদলাও
-        var summaryUrl = '{{ route('branch-orders.summary', $branch->id) }}';
+        var summaryUrl = '{{ route('branch-orders.summary', $branch->id) }}';;
         // single branch হলে:
 
         function loadSummary() {
