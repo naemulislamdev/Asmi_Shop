@@ -99,6 +99,11 @@ class OrderController extends AdminBaseController
             $query->whereDate('created_at', '<=', $to);
         }
 
+        // First-order-discount filter (works on all pages)
+        if ($request->get('first_order') == '1') {
+            $query->where('first_order_discount', '>', 0);
+        }
+
         $query->latest('id');
 
         return DataTables::eloquent($query) // eloquent() ব্যবহার করুন, of() না
@@ -165,7 +170,11 @@ class OrderController extends AdminBaseController
                     'POS'         => ['info',    'POS'],
                 ];
                 [$badge, $source] = $map[$data->order_source] ?? ['dark', 'Unknown'];
-                return '<span class="badge badge-' . $badge . '">' . __($source) . '</span>';
+                $html = '<span class="badge badge-' . $badge . '">' . __($source) . '</span>';
+                if (($data->first_order_discount ?? 0) > 0) {
+                    $html .= ' <span class="badge badge-warning" title="' . __('First order discount') . '">' . __('1st') . '</span>';
+                }
+                return $html;
             })
             ->addColumn('action', function (Order $data) {
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';

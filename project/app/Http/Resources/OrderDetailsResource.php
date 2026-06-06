@@ -45,6 +45,7 @@ class OrderDetailsResource extends JsonResource
         'packing_cost' => $this->packing_cost,
         'charge_id' => $this->charge_id,
         'transaction_id' => $this->txnid,
+        'first_order_discount' => round(($this->first_order_discount ?? 0) * $this->currency_value, 2),
         'ordered_products' => $this->when(!empty($this->cart), function() {
           $cart = json_decode($this->cart,true);
           foreach($cart['items'] as $key=> $item){

@@ -238,6 +238,7 @@ Route::group(['prefix' => 'front'], function () {
     Route::get('/vendor/wise/shipping-packaging','Api\Front\CheckoutController@VendorWisegetShippingPackaging');
     Route::get('/order/details','Api\Front\CheckoutController@orderDetails');
     Route::get('/get/coupon-code','Api\Front\CheckoutController@getCoupon');
+    Route::get('/first-order-eligibility','Api\Front\CheckoutController@firstOrderEligibility');
     Route::post('/checkout/update/{id}','Api\Front\CheckoutController@update');
     Route::get('/checkout/delete/{id}','Api\Front\CheckoutController@delete');
     Route::get('/get/countries','Api\Front\CheckoutController@countries');

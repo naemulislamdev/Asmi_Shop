@@ -154,6 +154,27 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            // ---- First-order app discount (server-authoritative) ----
+            // Keyed on the normalized customer phone (guests included, no login).
+            // The generalsettings percent is the master switch (0 = off).
+            $firstOrderDiscount = 0;
+            $normPhone = \App\Helpers\PhoneHelper::normalize($input['customer_phone'] ?? null);
+            $foPercent = (float) optional(Generalsetting::find(1))->first_order_discount_percent;
+            if ($foPercent > 0 && $normPhone) {
+                $foUsed = Order::where('order_source', 'Mobile Apps')
+                    ->where('status', '!=', 'cancelled')
+                    ->where('customer_phone_normalized', $normPhone)
+                    ->exists();
+                if (!$foUsed) {
+                    $foSubtotal = (float) ($orderCalculate['total_amount_of_product'] ?? 0);
+                    $firstOrderDiscount = round($foSubtotal * $foPercent / 100, 2);
+                    $orderCalculate['total_amount'] -= $firstOrderDiscount;
+                }
+            }
+            $input['customer_phone_normalized'] = $normPhone;
+            $input['first_order_discount'] = $firstOrderDiscount;
+            // ---- end first-order app discount ----
+
             $order = new Order();
             $input['user_id'] = $request->user_id ?? null;
             $input['order_source'] = 'Mobile Apps';
@@ -532,6 +553,25 @@ class CheckoutController extends Controller
             return $cart->items;
         } catch (\Exception $e) {
         }
+    }
+
+    public function firstOrderEligibility(Request $request)
+    {
+        $percent = (float) optional(Generalsetting::find(1))->first_order_discount_percent;
+        $normPhone = \App\Helpers\PhoneHelper::normalize($request->phone);
+        $eligible = false;
+        if ($percent > 0 && $normPhone) {
+            $eligible = ! Order::where('order_source', 'Mobile Apps')
+                ->where('status', '!=', 'cancelled')
+                ->where('customer_phone_normalized', $normPhone)
+                ->exists();
+        }
+
+        return response()->json([
+            'status' => true,
+            'data'   => ['eligible' => $eligible, 'percent' => $percent],
+            'error'  => [],
+        ]);
     }
 
     public function getCoupon(Request $request)

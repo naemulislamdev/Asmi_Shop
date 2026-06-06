@@ -507,6 +507,16 @@
             @endif
         @endif
 
+        {{-- First Order Discount (already reflected in pay_amount) --}}
+        @if (($order->first_order_discount ?? 0) > 0)
+            <tr class="sum-discount">
+                <td class="sum-label">{{ __('First Order Discount') }}</td>
+                <td class="sum-value">
+                    − {{ \PriceHelper::showOrderCurrencyPrice($order->first_order_discount * $order->currency_value, $order->currency_sign) }}
+                </td>
+            </tr>
+        @endif
+
         {{-- Grand Total --}}
         <tr class="grand-total-row">
             <td class="sum-label">{{ __('Grand Total') }}</td>

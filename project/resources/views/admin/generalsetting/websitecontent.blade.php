@@ -62,6 +62,20 @@
                                     </div>
                                 </div>
 
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-3">
+                                        <div class="left-area">
+                                            <h4 class="heading">{{ __('First Order Discount (%) — App') }}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <input type="number" step="0.01" min="0" max="100" class="input-field"
+                                            placeholder="0" name="first_order_discount_percent"
+                                            value="{{ $gs->first_order_discount_percent ?? 0 }}">
+                                        <small class="text-muted">{{ __('0 = off. Set to 5 to give 5% on the first app order per phone (run the phone backfill first).') }}</small>
+                                    </div>
+                                </div>
+
 
                                 <div class="row justify-content-center">
                                     <div class="col-lg-3">

@@ -182,6 +182,13 @@
                                             {{ __('Cancel') }}</option>
                                     </select>
                                 </div>
+                                <div class="col-md-3">
+                                    <label for="firstOrderFilter">{{ __('First Order') }}</label>
+                                    <select name="first_order" id="firstOrderFilter" class="form-control">
+                                        <option value="">{{ __('All') }}</option>
+                                        <option value="1">{{ __('First-order only') }}</option>
+                                    </select>
+                                </div>
                                 <div class="col-md-1">
                                     <button type="button" id="filter_btn" class="btn btn-primary mt-3">Filter</button>
                                 </div>
@@ -486,6 +493,7 @@
                         d.date_from = $('#from_date').val();
                         d.date_to = $('#to_date').val();
                         d.status = $('#orderStatus').val();
+                        d.first_order = $('#firstOrderFilter').val();
                     }
                 },
                 columns: [{
@@ -561,6 +569,7 @@
                 $('#from_date').val('');
                 $('#to_date').val('');
                 $('#orderStatus').val('');
+                $('#firstOrderFilter').val('');
                 table.ajax.reload();
             });
 
