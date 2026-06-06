@@ -527,19 +527,32 @@ Verify: `flutter analyze` (no new errors). Manual: enter an eligible phone at ch
 
 ---
 
-## Task 15: Deploy / backfill runbook (LIVE 144.79.133.74)
+## Task 15: Deploy / backfill runbook (LIVE 144.79.133.74) — zero-downtime
 
-**Order matters — the percent stays 0 until backfill is verified, so no discount can fire early.**
+**Two ordering rules make this safe:**
+- **Migrate BEFORE the new code is live.** The new `checkout()` writes `customer_phone_normalized` + `first_order_discount` on every order; if the controller goes live before the columns exist, checkout 500s with `Unknown column`. (OPcache is OFF, so uploaded code is live instantly — the gap is real.)
+- **Percent stays 0 until backfill is verified**, so no discount can fire early.
 
-1. Backup orders: phpMyAdmin/CloudPanel → export `orders` table.
-2. Deploy backend code (git pull / upload) — OPcache is OFF so no reset needed.
-3. `php artisan migrate` — adds 3 columns (instant), percent defaults 0 (feature OFF).
-4. `php artisan orders:backfill-normalized-phone` — off-peak; chunked.
-5. Spot-check: `SELECT customer_phone, customer_phone_normalized FROM orders LIMIT 20;` and confirm an existing app customer's `customer_phone_normalized` is populated.
-6. **Turn on:** set `first_order_discount_percent = 5` (admin General Settings, or `UPDATE generalsettings SET first_order_discount_percent=5 WHERE id=1;`).
-7. Smoke test: `GET /api/front/first-order-eligibility?phone=<a brand-new number>` → `eligible:true`; a known prior app phone → `eligible:false`.
-8. Ship the Flutter build.
-9. Rollback: set percent back to 0 (instant off). Columns are additive + reversible.
+MySQL 8 builds the secondary index **online** (`ALGORITHM=INPLACE, LOCK=NONE`) → reads/writes keep working during the migration → no maintenance window needed.
+
+0. Backup `orders`: phpMyAdmin/CloudPanel → export.
+1. **Migrate first (columns before code).** Put only the migrations on the server ahead of the controller change, then run migrate. On a single-server git deploy, do:
+   ```
+   git fetch origin
+   git checkout <branch> -- project/database/migrations
+   php artisan migrate          # 3 columns instant + phone index built online
+   ```
+   Verify: `SHOW COLUMNS FROM orders LIKE 'customer_phone_normalized';` (feature still OFF, percent 0).
+2. **Deploy the rest of the code:** `git pull` (or full checkout). Columns already exist → checkout safe. No downtime.
+3. **Backfill** (off-peak, chunked): `php artisan orders:backfill-normalized-phone`
+4. Spot-check: `SELECT customer_phone, customer_phone_normalized FROM orders LIMIT 20;` — existing app customers' normalized phone populated.
+5. **Turn ON:** General Settings → "First Order Discount (%)" = `5`, or `UPDATE generalsettings SET first_order_discount_percent=5 WHERE id=1;`
+6. Smoke: `GET /api/front/first-order-eligibility?phone=<brand-new#>` → `eligible:true`; a known prior app phone → `eligible:false`.
+7. Ship the Flutter build.
+8. Rollback: set percent = 0 (instant off). Columns are additive + reversible (`down()` drops them).
+
+**Fallback (if you can't split step 1/2):** a 5–10s maintenance window —
+`php artisan down && git pull && php artisan migrate && php artisan up`. Downtime ≈ index build time, which scales with `orders` row count (seconds for typical volumes; check `SELECT COUNT(*) FROM orders;`).
 
 ---
 
