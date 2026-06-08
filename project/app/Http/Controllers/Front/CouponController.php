@@ -26,6 +26,20 @@ class CouponController extends Controller
             return response()->json(0);
         }
 
+        // Per-customer limit (web, logged-in by account). Fail-open: never block checkout.
+        try {
+            if ($coupon && (int) ($coupon->per_user_limit ?? 0) > 0 && auth()->check()) {
+                $usedByUser = \App\Models\Order::where('coupon_id', $coupon->id)
+                    ->where('status', '!=', 'cancelled')
+                    ->where('user_id', auth()->id())
+                    ->count();
+                if ($usedByUser >= (int) $coupon->per_user_limit) {
+                    return response()->json(0);
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
         $cart = Session::get('cart');
         foreach ($cart->items as $item) {
             $product = Product::findOrFail($item['item']['id']);
@@ -146,6 +160,20 @@ class CouponController extends Controller
 
         if ((string) ($coupon->channel ?? 'all') === 'app') {
             return response()->json(0);
+        }
+
+        // Per-customer limit (web, logged-in by account). Fail-open: never block checkout.
+        try {
+            if ((int) ($coupon->per_user_limit ?? 0) > 0 && auth()->check()) {
+                $usedByUser = \App\Models\Order::where('coupon_id', $coupon->id)
+                    ->where('status', '!=', 'cancelled')
+                    ->where('user_id', auth()->id())
+                    ->count();
+                if ($usedByUser >= (int) $coupon->per_user_limit) {
+                    return response()->json(0);
+                }
+            }
+        } catch (\Throwable $e) {
         }
         // dd($coupon);
         $cart = Session::get('cart');
