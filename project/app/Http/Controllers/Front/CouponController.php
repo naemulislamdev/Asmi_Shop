@@ -22,6 +22,10 @@ class CouponController extends Controller
         $fnd = Coupon::where('code', '=', $code)->get()->count();
         $coupon = Coupon::where('code', '=', $code)->first();
 
+        if ($coupon && (string) ($coupon->channel ?? 'all') === 'app') {
+            return response()->json(0);
+        }
+
         $cart = Session::get('cart');
         foreach ($cart->items as $item) {
             $product = Product::findOrFail($item['item']['id']);
@@ -137,6 +141,10 @@ class CouponController extends Controller
 
 
         if (!$coupon) {
+            return response()->json(0);
+        }
+
+        if ((string) ($coupon->channel ?? 'all') === 'app') {
             return response()->json(0);
         }
         // dd($coupon);

@@ -158,7 +158,16 @@ class CheckoutController extends Controller
                     $from = $coupon->start_date ? date('Y-m-d', strtotime($coupon->start_date)) : $today;
                     $to   = $coupon->end_date ? date('Y-m-d', strtotime($coupon->end_date)) : $today;
                     $hasUses = is_null($coupon->times) || (int) $coupon->times > 0;
-                    if ($from <= $today && $to >= $today && $hasUses) {
+                    $channelOk = in_array((string) ($coupon->channel ?? 'all'), ['all', 'app'], true);
+                    $perUserOk = true;
+                    $perUserLimit = (int) ($coupon->per_user_limit ?? 0);
+                    if ($perUserLimit > 0) {
+                        $cpnPhone = \App\Helpers\PhoneHelper::normalize($input['customer_phone'] ?? null);
+                        $perUserOk = $cpnPhone
+                            ? (Order::where('coupon_id', $coupon->id)->where('status', '!=', 'cancelled')->where('customer_phone_normalized', $cpnPhone)->count() < $perUserLimit)
+                            : false;
+                    }
+                    if ($from <= $today && $to >= $today && $hasUses && $channelOk && $perUserOk) {
                         $couponSubtotal = (float) $cart->totalPrice;
                         if ((string) $coupon->type === '0') {
                             $couponAmount = $couponSubtotal * ((float) $coupon->price) / 100;
@@ -620,6 +629,9 @@ class CheckoutController extends Controller
         $coupon = Coupon::where('code', '=', $code)->where('status', 1)->first();
 
         if ($coupon) {
+            if ((string) ($coupon->channel ?? 'all') === 'web') {
+                return response()->json(['status' => false, 'data' => [], 'error' => 'Invalid Coupon']);
+            }
 
             $today = date('Y-m-d');
             $from = date('Y-m-d', strtotime($coupon->start_date));

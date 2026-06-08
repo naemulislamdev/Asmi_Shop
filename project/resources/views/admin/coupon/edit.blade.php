@@ -158,14 +158,42 @@
                           </div>
                         </div>
 
-                        <div class="row hidden">
+                        <div class="row">
                           <div class="col-lg-4">
                             <div class="left-area">
-                                <h4 class="heading">{{ __('Value') }} *</h4>
+                                <h4 class="heading">{{ __('Total Usage Limit') }}</h4>
+                                <p class="sub-heading">{{ __('(blank = unlimited)') }}</p>
                             </div>
                           </div>
                           <div class="col-lg-7">
-                            <input type="text" class="input-field less-width" name="times" placeholder="{{ __('Enter Value') }}" value="{{$data->times}}"><span></span>
+                            <input type="text" class="input-field less-width" name="times" placeholder="{{ __('e.g. 100') }}" value="{{$data->times}}"><span></span>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-lg-4">
+                            <div class="left-area">
+                                <h4 class="heading">{{ __('Per Customer Limit') }}</h4>
+                                <p class="sub-heading">{{ __('(0 = unlimited, by phone)') }}</p>
+                            </div>
+                          </div>
+                          <div class="col-lg-7">
+                            <input type="number" min="0" class="input-field less-width" name="per_user_limit" placeholder="0" value="{{ $data->per_user_limit ?? 0 }}"><span></span>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-lg-4">
+                            <div class="left-area">
+                                <h4 class="heading">{{ __('Channel') }}</h4>
+                            </div>
+                          </div>
+                          <div class="col-lg-7">
+                            <select name="channel" class="input-field">
+                                <option value="all" {{ ($data->channel ?? 'all') == 'all' ? 'selected' : '' }}>{{ __('All (App + Web)') }}</option>
+                                <option value="app" {{ ($data->channel ?? '') == 'app' ? 'selected' : '' }}>{{ __('App only') }}</option>
+                                <option value="web" {{ ($data->channel ?? '') == 'web' ? 'selected' : '' }}>{{ __('Web only') }}</option>
+                            </select>
                           </div>
                         </div>
 
