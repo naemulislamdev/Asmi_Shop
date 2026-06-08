@@ -145,6 +145,41 @@ class CheckoutController extends Controller
                 ? json_encode(OrderHelper::product_affilate_check($cart))
                 : null;
 
+            // ---- App coupon (server-authoritative; client-sent amount ignored) ----
+            // App sends coupon_code (+ a raw coupon_discount we do NOT trust).
+            // Re-validate the code and compute the real amount, then set coupon_id
+            // so PriceHelper::getOrderTotal subtracts it.
+            $couponId = null;
+            $couponCode = trim($input['coupon_code'] ?? '');
+            if ($couponCode !== '') {
+                $coupon = Coupon::where('code', $couponCode)->where('status', 1)->first();
+                if ($coupon) {
+                    $today = date('Y-m-d');
+                    $from = $coupon->start_date ? date('Y-m-d', strtotime($coupon->start_date)) : $today;
+                    $to   = $coupon->end_date ? date('Y-m-d', strtotime($coupon->end_date)) : $today;
+                    $hasUses = is_null($coupon->times) || (int) $coupon->times > 0;
+                    if ($from <= $today && $to >= $today && $hasUses) {
+                        $couponSubtotal = (float) $cart->totalPrice;
+                        if ((string) $coupon->type === '0') {
+                            $couponAmount = $couponSubtotal * ((float) $coupon->price) / 100;
+                        } else {
+                            $couponAmount = (float) $coupon->price;
+                        }
+                        $couponAmount = round(min(max($couponAmount, 0), $couponSubtotal), 2);
+                        if ($couponAmount > 0) {
+                            $couponId = $coupon->id;
+                            $input['coupon_id'] = $couponId;
+                            $input['coupon_discount'] = $couponAmount;
+                        }
+                    }
+                }
+            }
+            if ($couponId === null) {
+                unset($input['coupon_id']);
+                $input['coupon_discount'] = 0;
+            }
+            // ---- end app coupon ----
+
             $orderCalculate = PriceHelper::getOrderTotal($input, $cart);
 
             if (!empty($orderCalculate['success']) && !$orderCalculate['success']) {
@@ -193,6 +228,10 @@ class CheckoutController extends Controller
             $input['tax'] = $this->calculateTax($cart, $input);
 
             $order->fill($input)->save();
+
+            if ($couponId) {
+                OrderHelper::coupon_check($couponId);
+            }
 
             $order->tracks()->create([
                 'title' => 'Pending',
