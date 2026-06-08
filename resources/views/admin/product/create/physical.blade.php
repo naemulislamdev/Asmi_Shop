@@ -1,0 +1,1518 @@
+@extends('layouts.admin')
+@section('styles')
+    <link href="{{ asset('assets/admin/css/product.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/admin/css/jquery.Jcrop.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/admin/css/Jcrop-style.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/admin/css/select2.css') }}" rel="stylesheet" />
+@endsection
+@section('content')
+    <div class="content-area">
+        <div class="mr-breadcrumb">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4 class="heading">{{ __('Physical Product') }} <a class="add-btn"
+                            href="{{ route('admin-prod-types') }}"><i class="fas fa-arrow-left"></i> {{ __('Back') }}</a>
+                    </h4>
+                    <ul class="links">
+                        <li>
+                            <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">{{ __('Products') }} </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin-prod-index') }}">{{ __('All Products') }}</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin-prod-types') }}">{{ __('Add Product') }}</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin-prod-create', 'physical') }}">{{ __('Physical Product') }}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <form id="geniusform" action="{{ route('admin-prod-store') }}" method="POST" enctype="multipart/form-data">
+            {{ csrf_field() }}
+            @include('alerts.admin.form-both')
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="add-product-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="product-description">
+                                    <div class="body-area">
+                                        <div class="gocover"
+                                            style="background: url({{ asset('assets/images/' . $gs->admin_loader) }}) no-repeat scroll center center rgba(45, 45, 45, 0.5);">
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Product Name') }}* </h4>
+                                                    <p class="sub-heading">{{ __('(In Any Language)') }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input type="text" class="input-field"
+                                                    placeholder="{{ __('Enter Product Name') }}" name="name"
+                                                    required="">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Product Sku') }}* </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input type="text" class="input-field"
+                                                    placeholder="{{ __('Enter Product Sku') }}" name="sku"
+                                                    required=""
+                                                    value="{{ Str::random(3) . substr(time(), 6, 8) . Str::random(3) }}">
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Product Type') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select id="cat" name="product_type" required="">
+                                                    <option value="normal">Normal</option>
+                                                    <option value="combo_offer">Combo Offer</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Category') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select id="cat" name="category_id" required="">
+                                                    <option value="">{{ __('Select Category') }}</option>
+                                                    @foreach ($cats as $cat)
+                                                        <option data-href="{{ route('admin-subcat-load', $cat->id) }}"
+                                                            value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Sub Category') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select id="subcat" name="subcategory_id" disabled="">
+                                                    <option value="">{{ __('Select Sub Category') }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Child Category') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select id="childcat" name="childcategory_id" disabled="">
+                                                    <option value="">{{ __('Select Child Category') }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <div id="catAttributes"></div>
+                                        <div id="subcatAttributes"></div>
+                                        <div id="childcatAttributes"></div>
+
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="product_condition_check"
+                                                            type="checkbox" id="product_condition_check" value="1">
+                                                        <label
+                                                            for="product_condition_check">{{ __('Allow Product Condition') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="showbox">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Product Condition') }}*</h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <select name="product_condition">
+                                                        <option value="2">{{ __('New') }}</option>
+                                                        <option value="1">{{ __('Used') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="preordered_check"
+                                                            type="checkbox" id="preorderedCheck" value="1">
+                                                        <label
+                                                            for="preorderedCheck">{{ __('Allow Product Preorder') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="showbox">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Product Preorder') }}*</h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <select name="preordered">
+                                                        <option value="1">{{ __('Sale') }}</option>
+                                                        <option value="2">{{ __('Preordered') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="minimum_qty_check"
+                                                            type="checkbox" id="check111" value="1">
+                                                        <label for="check111">{{ __('Allow Minimum Order Qty') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="showbox">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Product Minimum Order Qty') }}* </h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <input type="number" class="input-field" min="1"
+                                                        placeholder="{{ __('Minimum Order Qty') }}" name="minimum_qty">
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="shipping_time_check"
+                                                            type="checkbox" id="check1" value="1">
+                                                        <label
+                                                            for="check1">{{ __('Allow Estimated Shipping Time') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="showbox">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Product Estimated Shipping Time') }}*
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <input type="text" class="input-field"
+                                                        placeholder="{{ __('Estimated Shipping Time') }}" name="ship">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="whole_check" type="checkbox"
+                                                            id="whole_check" value="1">
+                                                        <label
+                                                            for="whole_check">{{ __('Allow Product Whole Sell') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="showbox">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <div class="featured-keyword-area">
+                                                        <div class="feature-tag-top-filds" id="whole-section">
+                                                            <div class="feature-area">
+                                                                <span class="remove whole-remove"><i
+                                                                        class="fas fa-times"></i></span>
+                                                                <div class="row">
+                                                                    <div class="col-lg-6">
+                                                                        <input type="number" name="whole_sell_qty[]"
+                                                                            class="input-field"
+                                                                            placeholder="{{ __('Enter Quantity') }}"
+                                                                            min="0">
+                                                                    </div>
+
+                                                                    <div class="col-lg-6">
+                                                                        <input type="number" name="whole_sell_discount[]"
+                                                                            class="input-field"
+                                                                            placeholder="{{ __('Enter Discount Percentage') }}"
+                                                                            min="0" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <a href="javascript:;" id="whole-btn" class="add-fild-btn"><i
+                                                                class="icofont-plus"></i> {{ __('Add More Field') }}</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclick1" name="measure_check" type="checkbox"
+                                                            id="measure_check" value="1">
+                                                        <label
+                                                            for="measure_check">{{ __('Allow Product Measurement') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="showbox">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Product Measurement') }}*</h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <table class="table" id="measureTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Value</th>
+                                                                <th>Label</th>
+                                                                <th>Price (optional)</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><input type="number" name="measures[0][value]"
+                                                                        class="input-field measure-value"
+                                                                        placeholder="Value" step="0.01"
+                                                                        min="0"></td>
+                                                                <td><input type="text" name="measures[0][label]"
+                                                                        class="input-field measure-label"
+                                                                        placeholder="Label (eg. KG, Gram)">
+                                                                </td>
+                                                                <td><input type="number" name="measures[0][price]"
+                                                                        class="input-field measure-price"
+                                                                        placeholder="Price" step="0.01"
+                                                                        min="0"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                        id="addMeasure">
+                                                        + Add Measure
+                                                    </button>
+                                                </div>
+                                                {{-- <div class="col-lg-12">
+                                                    <select id="product_measure">
+                                                        <option value="">{{ __('None') }}</option>
+                                                        <option value="Gram">{{ __('Gram') }}</option>
+                                                        <option value="KG">{{ __('Kilogram') }}</option>
+                                                        <option value="LTR">{{ __('Litre') }}</option>
+                                                        <option value="POUND">{{ __('Pound') }}</option>
+                                                        <option value="PCS">{{ __('Pieces') }}</option>
+                                                        <option value="ML">{{ __('ML') }}</option>
+                                                        <option value="Custom">{{ __('Custom') }}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-12 hidden" id="measure">
+                                                    <input name="measure" type="text" id="measurement"
+                                                        class="input-field" placeholder="{{ __('Enter Unit') }}">
+                                                </div> --}}
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input class="checkclickc" name="color_check" type="checkbox"
+                                                            id="check3" value="1">
+                                                        <label for="check3">{{ __('Allow Product Colors') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="showbox">
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">
+                                                            {{ __('Product Colors') }}*
+                                                        </h4>
+                                                        <p class="sub-heading">
+                                                            {{ __('(Choose Your Favorite Colors)') }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <div class="select-input-color" id="color-section">
+                                                        <div class="size-area">
+                                                            <span class="remove size-remove"><i
+                                                                    class="fas fa-times"></i></span>
+                                                            <div class="row">
+                                                                <div class="col-md-12 col-sm-12">
+                                                                    <label>
+                                                                        {{ __('Color') }} :
+                                                                    </label>
+                                                                    <div class="color-area">
+                                                                        <div class="input-group colorpicker-component cp">
+                                                                            <input type="text" name="color_all[]"
+                                                                                value=""
+                                                                                class="input-field cp tcolor" />
+                                                                            <span class="input-group-addon"><i></i></span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                {{-- <div class="col-md-6 col-sm-6">
+                                                                    <label>
+                                                                        {{ __('Color Price') }} :
+                                                                        <span>
+                                                                            {{ __('(Added with base price)') }}
+                                                                        </span>
+                                                                    </label>
+                                                                    <input type="number" name="color_price[]" required
+                                                                        class="input-field"
+                                                                        placeholder="{{ __('Color Price') }}"
+                                                                        value="" min="0">
+                                                                </div> --}}
+
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <a href="javascript:;" id="color-btn" class="add-more mt-4 mb-3"><i
+                                                            class="fas fa-plus"></i>{{ __('Add More Color') }} </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul class="list">
+                                                    <li>
+                                                        <input name="stock_check" class="stock-check" type="checkbox"
+                                                            id="size-check" value="200">
+                                                        <label for="size-check"
+                                                            class="stock-text">{{ __('Manage Stock') }}</label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="showbox" id="size-display">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <div class="product-size-details" id="size-section">
+                                                        <div class="size-area">
+                                                            <span class="remove size-remove"><i
+                                                                    class="fas fa-times"></i></span>
+                                                            <div class="row">
+                                                                <div class="col-md-4 col-sm-4">
+                                                                    <label>
+                                                                        {{ __('Size Name') }} :
+                                                                        <span>
+                                                                            {{ __('(eg. S,M,L,XL,3XL,4XL)') }}
+                                                                        </span>
+                                                                    </label>
+                                                                    <input type="text" name="size[]"
+                                                                        class="input-field tsize"
+                                                                        placeholder="{{ __('Enter Product Size') }}"
+                                                                        value="">
+                                                                </div>
+                                                                <div class="col-md-4 col-sm-4">
+                                                                    <label>
+                                                                        {{ __('Size Qty') }} :
+                                                                        <span>
+                                                                            {{ __('(Quantity of this size)') }}
+                                                                        </span>
+                                                                    </label>
+                                                                    <input type="number" name="size_qty[]"
+                                                                        class="input-field"
+                                                                        placeholder="{{ __('Size Qty') }}" value="1"
+                                                                        min="1">
+                                                                </div>
+                                                                <div class="col-md-4 col-sm-4">
+                                                                    <label>
+                                                                        {{ __('Size Price') }} :
+                                                                        <span>
+                                                                            {{ __('(Added with base price)') }}
+                                                                        </span>
+                                                                    </label>
+                                                                    <input type="number" name="size_price[]"
+                                                                        class="input-field"
+                                                                        placeholder="{{ __('Size Price') }}"
+                                                                        value="0" min="0">
+                                                                </div>
+
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <a href="javascript:;" id="size-btn" class="add-more"><i
+                                                            class="fas fa-plus"></i>{{ __('Add More') }} </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="default_stock">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Product Stock') }}*</h4>
+                                                    <p class="sub-heading">
+                                                        {{ __('(Leave Empty will Show Always Available)') }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input name="stock" type="number" class="input-field"
+                                                    placeholder="e.g 20" value="" min="0">
+                                            </div>
+                                        </div>
+
+
+
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">
+                                                        {{ __('Product Description') }}*
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="text-editor">
+                                                    <textarea class="nic-edit" name="details"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">
+                                                        {{ __('Product Buy/Return Policy') }}*
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="text-editor">
+                                                    <textarea class="nic-edit" name="policy"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="checkbox-wrapper">
+                                                    <input type="checkbox" name="seo_check" value="1"
+                                                        class="checkclick" id="allowProductSEO" value="1">
+                                                    <label for="allowProductSEO">{{ __('Allow Product SEO') }}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="showbox">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">{{ __('Meta Tags') }} *</h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <ul id="metatags" class="myTags">
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="left-area">
+                                                        <h4 class="heading">
+                                                            {{ __('Meta Description') }} *
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <div class="text-editor">
+                                                        <textarea name="meta_description" class="input-field" placeholder="{{ __('Meta Description') }}"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" name="type" value="Physical">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="add-product-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="product-description">
+                                    <div class="body-area">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Feature Image') }} *</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="panel panel-body">
+                                                    <div class="span4 cropme text-center" id="landscape"
+                                                        style="width: 100%; height: 285px; border: 1px dashed #ddd; background: #f1f1f1;">
+                                                        <a href="javascript:;" id="crop-image" class=" mybtn1"
+                                                            style="">
+                                                            <i class="icofont-upload-alt"></i>
+                                                            {{ __('Upload Image Here') }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="feature_photo" name="photo" value="">
+                                        <input type="file" name="gallery[]" class="hidden" id="uploadgallery"
+                                            accept="image/*" multiple>
+                                        <div class="row mb-4">
+                                            <div class="col-lg-12 mb-2">
+                                                <div class="left-area">
+                                                    <h4 class="heading">
+                                                        {{ __('Product Gallery Images') }} *
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <a href="#" class="set-gallery" data-toggle="modal"
+                                                    data-target="#setgallery">
+                                                    <i class="icofont-plus"></i> {{ __('Set Gallery') }}
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">
+                                                        {{ __('Product Current Price') }}*
+                                                    </h4>
+                                                    <p class="sub-heading">
+                                                        ({{ __('In') }} {{ $sign->name }})
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input name="price" type="number" class="input-field"
+                                                    placeholder="{{ __('e.g 20') }}" required="" step="any" min="0">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Product Discount Price') }}*</h4>
+                                                    <p class="sub-heading">{{ __('(Optional)') }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input name="discount" type="number" class="input-field"
+                                                    placeholder="Enter discount amount" value="0">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Discount type') }}*</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <select class="form-control" name="discount_type">
+                                                    <option selected disabled>{{ __('Select Type') }}</option>
+                                                    <option value="flat">{{ __('Flat') }}</option>
+                                                    <option value="percent">{{ __('Percentage') }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Youtube Video URL') }}*</h4>
+                                                    <p class="sub-heading">{{ __('(Optional)') }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <input name="youtube" type="text" class="input-field"
+                                                    placeholder="{{ __('Enter Youtube Video URL') }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="featured-keyword-area">
+                                                    <div class="heading-area">
+                                                        <h4 class="title">{{ __('Feature Tags') }}</h4>
+                                                    </div>
+
+                                                    <div class="feature-tag-top-filds" id="feature-section">
+                                                        <div class="feature-area">
+                                                            <span class="remove feature-remove"><i
+                                                                    class="fas fa-times"></i></span>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <input type="text" name="features[]"
+                                                                        class="input-field"
+                                                                        placeholder="{{ __('Enter Your Keyword') }}">
+                                                                </div>
+
+                                                                <div class="col-lg-6">
+                                                                    <div class="input-group colorpicker-component cp">
+                                                                        <input type="text" name="colors[]"
+                                                                            value="#000000" class="input-field cp" />
+                                                                        <span class="input-group-addon"><i></i></span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <a href="javascript:;" id="feature-btn" class="add-fild-btn"><i
+                                                            class="icofont-plus"></i> {{ __('Add More Field') }}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Tags') }} *</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <ul id="tags" class="myTags">
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <label>{{ __('Video URL') }}
+                                                    <small>EX:https://www.youtube.com/embed/gqGbgfdfE</small></label>
+                                                <input type="url" name="video_url" id="video_url"
+                                                    class="input-field"
+                                                    placeholder="{{ __('Enter Product Video URL') }}">
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-lg-12 mt-3">
+                                                <label>{{ __('Product Manufacturing Date') }}
+                                                </label>
+                                                <input type="date" name="mfg_date" id="mfg_date" class="input-field"
+                                                    value="{{ date('Y-m-d') }}">
+                                            </div>
+                                            <div class="col-lg-12 mt-3">
+                                                <label>{{ __('Product Expiry Date') }}
+                                                </label>
+                                                <input type="date" name="exp_date" id="exp_date"
+                                                    class="input-field">
+                                            </div>
+                                        </div>
+
+                                        <div class="row text-center">
+                                            <div class="col-6 offset-3">
+                                                <button class="addProductSubmit-btn"
+                                                    type="submit">{{ __('Create Product') }}</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="setgallery" tabindex="-1" role="dialog" aria-labelledby="setgallery"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">{{ __('Image Gallery') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="top-area">
+                        <div class="row">
+                            <div class="col-sm-6 text-right">
+                                <div class="upload-img-btn">
+                                    <label for="image-upload" id="prod_gallery"><i
+                                            class="icofont-upload-alt"></i>{{ __('Upload File') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <a href="javascript:;" class="upload-done" data-dismiss="modal"> <i
+                                        class="fas fa-check"></i> {{ __('Done') }}</a>
+                            </div>
+                            <div class="col-sm-12 text-center">(
+                                <small>{{ __('You can upload multiple Images.') }}</small> )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-images">
+                        <div class="selected-image">
+                            <div class="row">
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('assets/admin/js/jquery.Jcrop.js') }}"></script>
+    <script src="{{ asset('assets/admin/js/jquery.SimpleCropper.js') }}"></script>
+    <script src="{{ asset('assets/admin/js/select2.js') }}"></script>
+    <script>
+        let index = 1;
+
+        // Add row
+        document.getElementById('addMeasure').addEventListener('click', function() {
+            let row = `
+        <tr>
+            <td>
+                <input type="number" step="0.001" name="measures[${index}][value]"
+                    class="input-field measure-value" readonly>
+            </td>
+            <td>
+                <input type="text" name="measures[${index}][label]"
+                    class="input-field measure-label"
+                    placeholder="eg. 250g, 1kg, 500ml, 1L, 2pcs">
+            </td>
+            <td>
+                <input type="number" step="0.01" name="measures[${index}][price]"
+                    class="input-field measure-price">
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm remove"><i class="fas fa-trash-alt"></i></button>
+            </td>
+        </tr>
+        `;
+            document.querySelector('#measureTable tbody').insertAdjacentHTML('beforeend', row);
+            index++;
+        });
+
+        // Remove row
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        // Auto calculate value & price
+        document.addEventListener('input', function(e) {
+
+            if (!e.target.classList.contains('measure-label')) return;
+
+            let label = e.target.value.toLowerCase(); // keep spaces
+            let row = e.target.closest('tr');
+
+            let valueInput = row.querySelector('.measure-value');
+            let priceInput = row.querySelector('.measure-price');
+
+            let basePrice = parseFloat(document.querySelector('input[name="price"]').value || 0);
+            let value = 0;
+
+            // ===== WEIGHT =====
+            let kgMatch = label.match(/([\d.]+)\s*kg/);
+            let gMatch = label.match(/([\d.]+)\s*(g|gm)/);
+            let lbMatch = label.match(/([\d.]+)\s*(lb|pound)/);
+
+            if (kgMatch) value += parseFloat(kgMatch[1]);
+            if (gMatch) value += parseFloat(gMatch[1]) / 1000;
+            if (lbMatch) value += parseFloat(lbMatch[1]) * 0.453592;
+
+            // ===== LIQUID =====
+            let lMatch = label.match(/([\d.]+)\s*(l|ltr)/);
+            let mlMatch = label.match(/([\d.]+)\s*ml/);
+
+            if (lMatch) value += parseFloat(lMatch[1]);
+            if (mlMatch) value += parseFloat(mlMatch[1]) / 1000;
+
+            // ===== PIECES =====
+            let pcsMatch = label.match(/([\d.]+)\s*(pcs|pc|piece)/);
+            if (pcsMatch) value += parseFloat(pcsMatch[1]);
+
+            if (value > 0) {
+                valueInput.value = value.toFixed(3);
+                
+                // Auto price calculation
+                if (basePrice > 0) {
+                    priceInput.value = (basePrice * value).toFixed(2);
+                }
+            } else {
+                valueInput.value = '';
+                priceInput.value = '';
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        (function($) {
+            "use strict";
+            
+            
+            $(document).ready(function() {
+                $('.select2').select2({
+                    placeholder: "Select Products",
+                    maximumSelectionLength: 4,
+                });
+                });
+
+                // Gallery Section Insert
+                
+            $(document).on('click', '.remove-img', function() {
+                var id = $(this).find('input[type=hidden]').val();
+                $('#galval' + id).remove();
+                $(this).parent().parent().remove();
+            });
+            
+            $(document).on('click', '#prod_gallery', function() {
+                $('#uploadgallery').click();
+                $('.selected-image .row').html('');
+                $('#geniusform').find('.removegal').val(0);
+                });
+                
+
+                $("#uploadgallery").change(function() {
+                var total_file = document.getElementById("uploadgallery").files.length;
+                for (var i = 0; i < total_file; i++) {
+                    $('.selected-image .row').append('<div class="col-sm-6">' +
+                    '<div class="img gallery-img">' +
+                    '<span class="remove-img"><i class="fas fa-times"></i>' +
+                    '<input type="hidden" value="' + i + '">' +
+                        '</span>' +
+                        '<a href="' + URL.createObjectURL(event.target.files[i]) + '" target="_blank">' +
+                        '<img src="' + URL.createObjectURL(event.target.files[i]) +
+                        '" alt="gallery image">' +
+                        '</a>' +
+                        '</div>' +
+                        '</div> '
+                        );
+                        $('#geniusform').append('<input type="hidden" name="galval[]" id="galval' + i +
+                        '" class="removegal" value="' + i + '">')
+                    }
+                    
+                });
+                
+                // Gallery Section Insert Ends
+                
+        })(jQuery);
+        </script>
+
+        <script type="text/javascript">
+    $('.cp').colorpicker();
+        
+    (function($) {
+            "use strict";
+            
+            $('.cropme').simpleCropper();
+
+        })(jQuery);
+        
+        
+        $(document).on('click', '#size-check', function() {
+            if ($(this).is(':checked')) {
+                $('#default_stock').addClass('d-none')
+            } else {
+                $('#default_stock').removeClass('d-none');
+            }
+        })
+        </script>
+
+        <!-- last included er poriborte direct use kortechi -->
+
+        <script>
+    (function($) {
+        "use strict";
+
+        var tsize = "";
+        var tsizeText = "";
+        var tcolor = "";
+        var tcolorText = "";
+
+
+
+        $(document).ready(function() {
+
+            if ($('.size-name option').length > 0) {
+                getSize1();
+            }
+
+            if ($('.color-name option').length > 0) {
+                $('.color-name').each(function() {
+                    $(this).css('background-color', $(this).val());
+                });
+            }
+
+            // Check Clicks :)
+            $(".checkclicks").on("change", function() {
+                if (this.checked) {
+                    $('.tsize').prop('required', true);
+                    $(this).parent().parent().parent().parent().next().removeClass('showbox');
+                } else {
+                    $('.tsize').prop('required', false);
+                    $(this).parent().parent().parent().parent().next().addClass('showbox');
+                }
+            });
+            // Check Clicks Ends :)
+
+            // Check Clickc :)
+            $(".checkclickc").on("change", function() {
+                if (this.checked) {
+                    $('.tcolor').prop('required', true);
+                    $(this).parent().parent().parent().parent().next().removeClass('showbox');
+                } else {
+                    $('.tcolor').prop('required', false);
+                    $(this).parent().parent().parent().parent().next().addClass('showbox');
+                }
+            });
+            // Check Clickc Ends :)
+
+
+            // Product Measure :)
+
+            $("#product_measure").on("change", function() {
+                var val = $(this).val();
+                $('#measurement').val(val);
+                if (val == "Custom") {
+                    $('#measurement').val('');
+                    $('#measure').show();
+                } else {
+                    $('#measure').hide();
+                }
+            });
+
+            // Product Measure Ends :)
+
+        });
+
+        // TAGIT
+
+        $("#metatags").tagit({
+            fieldName: "meta_tag[]",
+            allowSpaces: true
+        });
+
+        $("#tags").tagit({
+            fieldName: "tags[]",
+            allowSpaces: true
+        });
+        // TAGIT ENDS
+
+
+        // Remove White Space
+
+
+        function isEmpty(el) {
+            return !$.trim(el.html())
+        }
+
+
+        // Remove White Space Ends
+
+        // Size Section
+
+        $("#size-btn").on('click', function() {
+
+            $("#size-section").append('' +
+                '<div class="size-area">' +
+                '<span class="remove size-remove"><i class="fas fa-times"></i></span>' +
+                '<div  class="row">' +
+                '<div class="col-md-4 col-sm-4">' +
+                '<label>' +
+                '{{ __('Size Name') }} :' +
+                '<span>{{ __('(eg. S,M,L,XL,3XL,4XL)') }}</span>' +
+                '</label>' +
+                `<input type="text" name="size[]" class="input-field tsize"
+															placeholder="{{ __('Enter Product Size') }}"
+															value="" required="">` +
+                '</div>' +
+                '<div class="col-md-4 col-sm-4">' +
+                '<label>' +
+                '{{ __('Size Qty') }} :' +
+                '<span>{{ __('(Quantity of this size)') }}</span>' +
+                '</label>' +
+                '<input type="number" name="size_qty[]" required class="input-field" placeholder="{{ __('Size Qty') }}" value="1" min="1">' +
+                '</div>' +
+                '<div class="col-md-4 col-sm-4">' +
+                '<label>' +
+                '{{ __('Size Price') }} :' +
+                '<span>{{ __('(Added with base price)') }}</span>' +
+                '</label>' +
+                '<input type="number" name="size_price[]" required class="input-field" placeholder="{{ __('Size Price') }}" value="0" min="0">' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '');
+
+
+        });
+
+        $(document).on('click', '.size-remove', function() {
+
+            $(this.parentNode).remove();
+            if (isEmpty($('#size-section'))) {
+
+                $("#size-section").append('' +
+                    '<div class="size-area">' +
+                    '<span class="remove size-remove"><i class="fas fa-times"></i></span>' +
+                    '<div  class="row">' +
+                    '<div class="col-md-3 col-sm-6">' +
+                    '<label>' +
+                    '{{ __('Size Name') }} :' +
+                    '<span>{{ __('(eg. S,M,L,XL,3XL,4XL)') }}</span>' +
+                    '</label>' +
+                    `<select name="size[]" class="input-field size-name">${tsizeText}</select>` +
+                    '</div>' +
+                    '<div class="col-md-3 col-sm-6">' +
+                    '<label>' +
+                    '{{ __('Size Qty') }} :' +
+                    '<span>{{ __('(Quantity of this size)') }}</span>' +
+                    '</label>' +
+                    '<input type="number" name="size_qty[]" required class="input-field" placeholder="{{ __('Size Qty') }}" value="1" min="1">' +
+                    '</div>' +
+                    '<div class="col-md-3 col-sm-6">' +
+                    '<label>' +
+                    '{{ __('Size Price') }} :' +
+                    '<span>{{ __('(Added with base price)') }}</span>' +
+                    '</label>' +
+                    '<input type="number" name="size_price[]" required class="input-field" placeholder="{{ __('Size Price') }}" value="0" min="0">' +
+                    '</div>' +
+                    '<div class="col-md-3 col-sm-6">' +
+                    '<label>' +
+                    '{{ __('Size Color') }} :' +
+                    '<span>' +
+                    '{{ __('(Select color of this size)') }}' +
+                    '</span>' +
+                    '</label>' +
+                    `<select name="color[]" class="input-field color-name" style="background-color:${tcolor[0]}">${tcolorText}</select>` +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '');
+
+
+            }
+
+
+        });
+
+
+
+        $(document).on('change', '.color-name', function() {
+            $(this).css('background-color', $(this).val());
+        });
+
+
+
+
+        $("#color-btn").on('click', function() {
+
+            $("#color-section").append(`
+            <div class="size-area">
+                                                            <span class="remove size-remove"><i
+                                                                    class="fas fa-times"></i></span>
+                                                            <div class="row">
+                                                                <div class="col-md-12 col-sm-12">
+                                                                    <label>
+                                                                        {{ __('Color') }} :
+                                                                    </label>
+																	<div class="color-area">
+																		<div class="input-group colorpicker-component cp">
+																			<input type="text" name="color_all[]" value="#000000" class="input-field cp tcolor"/>
+																			<span class="input-group-addon"><i></i></span>
+																		</div>
+																	</div>
+                                                                </div>
+
+                                                                
+
+
+                                                            </div>
+                                                        </div>
+            
+            `);
+            $('.cp').colorpicker();
+
+        });
+
+
+        $(document).on('click', '.color-remove', function() {
+
+            $(this.parentNode).remove();
+            if (isEmpty($('#color-section'))) {
+
+                $("#color-section").append(`
+            <div class="size-area">
+                    <span class="remove size-remove"><i
+                            class="fas fa-times"></i></span>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <label>
+                                {{ __('Color') }} :
+                                
+                            </label>
+                            <div class="color-area">
+                                <div class="input-group colorpicker-component cp">
+                                    <input type="text" name="color_all[]" value="#000000" class="input-field cp tcolor"/>
+                                    <span class="input-group-addon"><i></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-sm-6">
+                            <label>
+                                {{ __('Color Price') }} :
+                                <span>
+                                    {{ __('(Added with base price)') }}
+                                </span>
+                            </label>
+                            <input type="number" name="color_price[]" required
+                                class="input-field"
+                                placeholder="{{ __('Color Price') }}"
+                                value="" min="0">
+                        </div>
+
+
+                    </div>
+                </div>
+            
+            `);
+                $('.cp').colorpicker();
+            }
+
+
+
+        });
+
+        // Color Section Ends
+
+
+
+        // Feature Section
+
+        $("#feature-btn").on('click', function() {
+
+            $("#feature-section").append('' +
+                '<div class="feature-area">' +
+                '<span class="remove feature-remove"><i class="fas fa-times"></i></span>' +
+                '<div  class="row">' +
+                '<div class="col-lg-6">' +
+                '<input type="text" name="features[]" class="input-field" placeholder="{{ __('Enter Your Keyword') }}">' +
+                '</div>' +
+                '<div class="col-lg-6">' +
+                '<div class="input-group colorpicker-component cp">' +
+                '<input type="text" name="colors[]" value="#000000" class="input-field cp"/>' +
+                '<span class="input-group-addon"><i></i></span>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '');
+            $('.cp').colorpicker();
+        });
+
+        $(document).on('click', '.feature-remove', function() {
+
+            $(this.parentNode).remove();
+            if (isEmpty($('#feature-section'))) {
+
+                $("#feature-section").append('' +
+                    '<div class="feature-area">' +
+                    '<span class="remove feature-remove"><i class="fas fa-times"></i></span>' +
+                    '<div  class="row">' +
+                    '<div class="col-lg-6">' +
+                    '<input type="text" name="features[]" class="input-field" placeholder="{{ __('Enter Your Keyword') }}">' +
+                    '</div>' +
+                    '<div class="col-lg-6">' +
+                    '<div class="input-group colorpicker-component cp">' +
+                    '<input type="text" name="colors[]" value="#000000" class="input-field cp"/>' +
+                    '<span class="input-group-addon"><i></i></span>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '');
+                $('.cp').colorpicker();
+            }
+
+        });
+
+        // Feature Section Ends
+        // Type Check
+
+        $('#type_check').on('change', function() {
+            var val = $(this).val();
+            if (val == 1) {
+                $('.row.file').css('display', 'flex');
+                $('.row.file').find('input[type=file]').prop('required', true);
+                $('.row.link').find('textarea').val('').prop('required', false);
+                $('.row.link').hide();
+            } else {
+                $('.row.file').hide();
+                $('.row.link').css('display', 'flex');
+                $('.row.file').find('input[type=file]').prop('required', false);
+                $('.row.link').find('textarea').prop('required', true);
+            }
+
+        });
+
+        // Type Check Ends
+
+
+
+        // License Section
+
+        $("#license-btn").on('click', function() {
+
+            $("#license-section").append('' +
+                '<div class="license-area">' +
+                '<span class="remove license-remove"><i class="fas fa-times"></i></span>' +
+                '<div  class="row">' +
+                '<div class="col-lg-6">' +
+                '<input type="text" name="license[]" class="input-field" placeholder="{{ __('License Key') }}" required="">' +
+                '</div>' +
+                '<div class="col-lg-6">' +
+                '<input type="number" name="license_qty[]" min="1" class="input-field" placeholder="{{ __('License Quantity') }}" value="1">' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '');
+        });
+
+        $(document).on('click', '.license-remove', function() {
+
+            $(this.parentNode).remove();
+            if (isEmpty($('#license-section'))) {
+
+                $("#license-section").append('' +
+                    '<div class="license-area">' +
+                    '<span class="remove license-remove"><i class="fas fa-times"></i></span>' +
+                    '<div  class="row">' +
+                    '<div class="col-lg-6">' +
+                    '<input type="text" name="license[]" class="input-field" placeholder="{{ __('License Key') }}" required="">' +
+                    '</div>' +
+                    '<div class="col-lg-6">' +
+                    '<input type="number" name="license_qty[]" min="1" class="input-field" placeholder="{{ __('License Quantity') }}" value="1">' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '');
+            }
+
+        });
+
+        // License Section Ends
+
+        $("#size-check").change(function() {
+            if (this.checked) {
+                $("#size-display").show();
+                $("#stckprod").hide();
+            } else {
+                $("#size-display").hide();
+                $("#stckprod").show();
+
+            }
+        });
+
+        $("#whole_check").change(function() {
+            if (this.checked) {
+                $("#whole-section input").prop('required', true);
+            } else {
+                $("#whole-section input").prop('required', false);
+            }
+        });
+
+
+        // Whole Sell Section
+
+        $("#whole-btn").on('click', function() {
+
+            if (whole_sell > $("[name='whole_sell_qty[]']").length) {
+                $("#whole-section").append('' +
+                    '<div class="feature-area">' +
+                    '<span class="remove whole-remove"><i class="fas fa-times"></i></span>' +
+                    '<div  class="row">' +
+                    '<div class="col-lg-6">' +
+                    '<input type="number" name="whole_sell_qty[]" class="input-field" placeholder="{{ __('Enter Quantity') }}" min="0">' +
+                    '</div>' +
+                    '<div class="col-lg-6">' +
+                    '<input type="number" name="whole_sell_discount[]" class="input-field" placeholder="{{ __('Enter Discount Percentage') }}" min="0">' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '');
+            }
+
+        });
+
+        $(document).on('click', '.whole-remove', function() {
+
+            $(this.parentNode).remove();
+            if (isEmpty($('#whole-section'))) {
+
+                $("#whole-section").append('' +
+                    '<div class="feature-area">' +
+                    '<span class="remove whole-remove"><i class="fas fa-times"></i></span>' +
+                    '<div  class="row">' +
+                    '<div class="col-lg-6">' +
+                    '<input type="number" name="whole_sell_qty[]" class="input-field" placeholder="{{ __('Enter Quantity') }}" min="0">' +
+                    '</div>' +
+                    '<div class="col-lg-6">' +
+                    '<input type="number" name="whole_sell_discount[]" class="input-field" placeholder="{{ __('Enter Discount Percentage') }}" min="0">' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '');
+            }
+
+        });
+
+        // Whole Sell Section Ends
+
+
+    })(jQuery);
+</script>
+
+
+@endsection
