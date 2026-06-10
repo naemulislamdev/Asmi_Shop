@@ -1,7 +1,5 @@
 <div class="col-12">
     <div class="d-flex justify-content-center mt-60">
-
-
         @if ($paginator->hasPages())
             <ul class="gs-pagination">
                 {{-- Previous Page Link --}}

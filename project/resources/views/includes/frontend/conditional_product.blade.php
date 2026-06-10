@@ -1,4 +1,5 @@
 @extends('layouts.front')
+@section('css')
 <style>
     .gs-blog-wrapper {
         padding: 0 !important;
@@ -48,7 +49,9 @@
         }
     }
 </style>
+@endsection
 @section('content')
+
     <section class="category_banner" style="background: #EDEDED;">
 
         @php
@@ -64,7 +67,7 @@
 
     </section>
     <!-- breadcrumb end -->
-    <section class="p-0" style="background: #ededed;"
+      <section class="  p-0"
         data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
         <div class="container">
             <div class="row justify-content-center content-wrapper mt-3">
@@ -80,13 +83,13 @@
         </div>
     </section>
     <h1 class="text-dark text-center h2">Special Deal</h1>
+
     <!-- product wrapper start -->
-    <div class="gs-blog-wrapper pt-3" style="background: #ededed">
+    <div class="gs-blog-wrapper pt-3 bg-white">
         <div class="container">
             <div class="row flex-column-reverse flex-lg-row">
 
                 <div class="col-lg-12 gs-main-blog-wrapper">
-
 
                     @php
                         if (request()->input('view_check') == null || request()->input('view_check') == 'grid-view') {
@@ -96,7 +99,7 @@
                         }
                     @endphp
 
-
+                   
 
                     @if ($prods->count() == 0)
                         <!-- product nav wrapper for no data found -->

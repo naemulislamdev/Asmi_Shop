@@ -1,4 +1,4 @@
-@extends('layouts.front')
+@section('css')
 <style>
     label {
         margin: 0 !important;
@@ -85,9 +85,12 @@
         }
     }
 </style>
+@endsection
+@extends('layouts.front')
+
 
 @section('content')
-    <section class="gs-breadcrumb-section bg-class" style="background: #1bb9cb; padding: 0;">
+    <section class="gs-breadcrumb-section bg-class" style="background: #1598a7; padding: 0;">
         <div class="container">
             <div class="row justify-content-center content-wrapper">
                 <div class="col-12">
@@ -161,8 +164,7 @@
                                 <div class="form-group mb-2">
 
                                     <label for="cv">Upload CV <span class="text-danger">*</span><small
-                                            class="form-text text-muted" style="font-size: 12px">(Allowed formats: PDF, DOC,
-                                            DOCX)</small></label>
+                                            class="form-text text-muted" style="font-size: 12px">(Allowed formats: PDF)</small></label>
                                     <input type="file" name="cv" id="cv"
                                         class="form-control  @error('cv') is-invalid @enderror" accept=".pdf,.doc,.docx">
                                     @error('cv')

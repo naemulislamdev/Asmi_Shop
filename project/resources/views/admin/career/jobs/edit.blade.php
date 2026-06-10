@@ -90,10 +90,9 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-
-                                        <img style="width: 200px; height: 200px; border-radius: 10px;" id="viewer"
-                                            src="{{ asset('assets/images/jobs/' . $job->image) }}" />
-                                        @if ($job->image)
+                                         <img style="width: 200px; height: 200px; border-radius: 10px;"
+                                                id="viewer" src="{{ asset('assets/images/jobs/' . $job->image) }}" />
+                                       @if ($job->image)
                                             <button type="button" class="btn btn-danger" id="removeImage"
                                                 data-id="{{ $job->id }}">
                                                 Remove Image

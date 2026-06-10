@@ -51,6 +51,8 @@
                                                 {{ __('Completed') }}</option>
                                             <option value="cancelled" {{ $data->status == 'cancelled' ? 'selected' : '' }}>
                                                 {{ __('Cancel') }}</option>
+                                            <option value="return" {{ $data->status == 'return' ? 'selected' : '' }}>
+                                                {{ __('Return') }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -85,4 +87,7 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
 @endsection

@@ -123,13 +123,13 @@
             background: #f9fafb;
         }
 
-
-        .inv-table tbody td {
-            padding: 4px 14px;
-            color: #374151;
-            vertical-align: center;
-            font-size: 12px;
-        }
+       
+       .inv-table tbody td {
+    padding: 4px 14px;
+    color: #374151;
+    vertical-align: center;
+    font-size: 12px;
+}
 
         .inv-table tbody td:last-child {
             text-align: right;
@@ -155,7 +155,6 @@
             color: #050507;
             font-weight: 500;
         }
-
         .detail-row {
             color: #111;
         }
@@ -249,7 +248,6 @@
             font-weight: 700;
             color: #15803d;
         }
-
         .inv_table {
             margin-bottom: 50px;
         }
@@ -425,8 +423,7 @@
             @if (DB::table('shippings')->where('price', '=', $price)->count() > 0)
                 <tr>
                     <td class="sum-label">
-                        Delivery Charge
-                        <small>({{ DB::table('shippings')->where('price', '=', $price)->first()->title }})</small>
+                       Delivery Charge <small>({{ DB::table('shippings')->where('price', '=', $price)->first()->title }})</small>
                     </td>
                     <td class="sum-value">
                         {{ \PriceHelper::showOrderCurrencyPrice($order->shipping_cost, $order->currency_sign) }}
@@ -521,10 +518,10 @@
         <tr class="grand-total-row">
             <td class="sum-label">{{ __('Grand Total') }}</td>
             <td class="sum-value">
-                {{ \PriceHelper::showOrderCurrencyPrice(
-                    ($order->pay_amount + $order->wallet_price - $order->discount) * $order->currency_value,
-                    $order->currency_sign,
-                ) }}
+                 {{ \PriceHelper::showOrderCurrencyPrice(
+                                        (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
+                                        $order->currency_sign
+                                    ) }}
             </td>
         </tr>
 

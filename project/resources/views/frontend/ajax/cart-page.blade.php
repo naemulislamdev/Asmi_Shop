@@ -1,13 +1,9 @@
-<form class="address-wrapper checkoutform" method="POST" id="userInfoForm">
-    @csrf
-    <input type="hidden" name="session_id" value="{{ session()->getId() }}">
-
-    <style>
+@section('css')
+ <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
-
         .btn-home {
             display: inline-block;
-            background: linear-gradient(45deg, #1598a7, #1bb9cb);
+            background: linear-gradient(45deg, #1598a7, #1598a7);
             color: #fff;
             padding: 12px 30px;
             border-radius: 50px;
@@ -407,7 +403,7 @@
         .checkout-submit-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #1598a7, #1bb9cb);
+            background: linear-gradient(135deg, #1598a7, #1598a7);
             color: #fff;
             font-size: 15px;
             font-weight: 600;
@@ -436,12 +432,17 @@
             color: #6b7280;
             margin-top: 12px;
         }
-
         .checkout-page .checkout-box-body {
             font-family: "Rubik", sans-serif !important;
         }
     </style>
 
+@endsection
+<form class="address-wrapper checkoutform" method="POST" id="userInfoForm">
+    @csrf
+    <input type="hidden" name="session_id" value="{{ session()->getId() }}">
+
+   
     <div class="container gs-cart-container checkout-page py-0 my-0">
         <nav class="custom-breadcrumb mb-2 mb-lg-0">
             <a href="{{ url('/') }}">Home</a>
@@ -455,8 +456,7 @@
                 @php $discount = 0; @endphp
 
                 <div class="col-lg-7">
-
-
+                   
                     {{-- Personal Information --}}
                     <div class="checkout-box">
                         <div class="checkout-box-header">
@@ -550,8 +550,7 @@
                                     <div class="col-lg-12">
                                         <label class="create-account-toggle" data-bs-toggle="collapse"
                                             data-bs-target="#show_passwords">
-                                            <input type="checkbox" id="showca" name="create_account"
-                                                value="1">
+                                            <input type="checkbox" id="showca" name="create_account" value="1">
                                             <div class="check-box">
                                                 <svg width="12" height="12" viewBox="0 0 12 12"
                                                     fill="none">
@@ -842,8 +841,7 @@
                     {{-- Nearest Outlet Selection --}}
 
                     {{-- Submit --}}
-
-                    <button id="orderBtn" type="submit" class="checkout-submit-btn">
+                    <button type="submit" class="checkout-submit-btn" id="orderBtn">
                         {{ __('Complete Order') }}
                     </button>
 
@@ -914,7 +912,7 @@
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    <script>
+      <script>
         document
             .getElementById('userInfoForm')
             .addEventListener('submit', function() {

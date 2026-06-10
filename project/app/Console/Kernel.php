@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly(); 0409320009760, 00000437
+        // $schedule->command('inspire')->hourly();
         $schedule->command('flash:reset')->hourly();
     }
 

@@ -11,15 +11,15 @@ use Illuminate\Support\Facades\Session;
 class Product extends Model
 {
 
-    protected $guarded = ['id'];
+   protected $guarded = ['id'];
 
-    public $selectable = ['id', 'user_id', 'name', 'slug', 'features', 'colors', 'thumbnail', 'price', 'previous_price', 'attributes', 'size', 'size_price', 'discount_date', 'color_all', 'size_all', 'stock_check', 'category_id', 'details', 'type'];
+    // public $selectable = ['id', 'user_id', 'name', 'slug', 'features', 'colors', 'thumbnail', 'price', 'previous_price', 'attributes', 'size', 'size_price', 'discount_date', 'color_all', 'size_all', 'stock_check', 'category_id', 'details', 'type'];
 
     public function scopeHome($query)
     {
         return $query->where('status', '=', 1)->select($this->selectable)->latest('id');
     }
-    public function measures()
+	public function measures()
     {
         return $this->hasMany(ProductMeasure::class, 'product_id');
     }
@@ -329,7 +329,7 @@ class Product extends Model
         }
 
         $price = $price * $curr->value;
-        $price = PriceHelper::showPrice($price);
+        $price = \PriceHelper::showPrice($price);
 
 
         if ($gs->currency_format == 0) {
@@ -378,7 +378,7 @@ class Product extends Model
             });
         }
         $price = $price * $curr->value;
-        $price = PriceHelper::showPrice($price);
+        $price = \PriceHelper::showPrice($price);
         if ($gs->currency_format == 0) {
             return $curr->sign . $price;
         } else {
@@ -396,7 +396,7 @@ class Product extends Model
         }
 
         $price = $price * $curr->value;
-        $price = PriceHelper::showPrice($price);
+        $price = \PriceHelper::showPrice($price);
         return $price;
     }
 
@@ -681,7 +681,7 @@ class Product extends Model
         }
 
         $price = $price * $curr->value;
-        $price = PriceHelper::apishowPrice($price);
+        $price = \PriceHelper::apishowPrice($price);
         return $price;
     }
 
@@ -740,6 +740,7 @@ class Product extends Model
             return DB::table('generalsettings')->first();
         });
         $price = $this->previous_price;
+        return $price;
         if (!$price) {
             return 0;
         }

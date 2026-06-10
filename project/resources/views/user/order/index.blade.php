@@ -52,6 +52,7 @@
 
                                         <td>
                                             @php
+                                             $class = 'gray-btn'; // default fallback
                                                 if ($order->status == 'pending') {
                                                     $class = 'yellow-btn';
                                                 } elseif ($order->status == 'processing') {

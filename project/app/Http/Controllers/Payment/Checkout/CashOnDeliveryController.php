@@ -27,8 +27,8 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             'email' => 'nullable|string|email|max:255',
             'customer_address' => 'required|string|max:255',
             'order_note' => 'nullable|string|max:255',
-            'branch_id' => 'required',
-        ], [
+             'branch_id' => 'required',
+        ],[
             'branch_id.required' => 'Please select a branch.',
         ]);
         $requestInput = $request->all();
@@ -51,23 +51,20 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
         $authUser = OrderHelper::get_customer_check($request);
 
-        //dd($authUser->ban);
-        if ($authUser->ban == 1) {
+        if($authUser->ban == 1){
             return redirect()->back()->with('unsuccess', __("Your account has been banned. Please contact support."));
         }
 
         $oldCart = Session::get('cart');
 
         $cart = new Cart($oldCart);
-        //dd($cart);
 
         // Offer product validation
         $offerItemsInCart = collect($cart->items)->where('is_offer', true);
+
         $isOfferActive = $offerItemsInCart->contains(function ($item) {
             return isset($item['item']->is_offer_active) && $item['item']->is_offer_active == 1;
         });
-
-        dd($offerItemsInCart, $isOfferActive);
 
         if ($offerItemsInCart->isNotEmpty() || $isOfferActive) {
 
@@ -125,7 +122,7 @@ class CashOnDeliveryController extends CheckoutBaseControlller
 
         $t_oldCart = Session::get('cart');
         $t_cart = new Cart($t_oldCart);
-        // Offer product এর qty force 1
+         // Offer product এর qty force 1
         foreach ($t_cart->items as $key => $item) {
             if (!empty($item['is_offer']) && $item['is_offer'] === true) {
                 $t_cart->items[$key]['qty']        = 1;
@@ -214,23 +211,25 @@ class CashOnDeliveryController extends CheckoutBaseControlller
             $user->save();
             $grandTotal = $orderTotal - $usedPoints;
             $discountType = "loyalty_points";
+
         }
         // loyalty points discount end
-
         $order = new Order;
         $success_url = route('front.payment.return');
         $input['order_source'] = 'Website';
         $input['user_id'] = Auth::check() ? Auth::user()->id : null;
         $input['cart'] = $new_cart;
         $input['affilate_users'] = $affilate_users;
-        $input['pay_amount'] = $grandTotal;
-        $input['order_number'] = 'w' . rand(10000, 99999);
+        $input['pay_amount'] = $orderTotal;
+        $input['order_number'] = 'w' . mt_rand(10000, 99999);
         $input['wallet_price'] = $request->wallet_price / $this->curr->value;
         $input['customer_country'] = 'Bangladesh';
         $input['loyalty_point'] = $earnedPoints ?? 0;
         $input['discount_type'] = $discountType ?? null;
         $input['discount'] = $request->use_points ?? 0;
-        $input['branch_id'] = $request->branch_id ?? null;
+         $input['branch_id'] = $request->branch_id ?? null;
+         
+
         if ($input['tax_type'] == 'state_tax') {
             $input['tax_location'] = State::findOrFail($input['tax'])->state;
         } else {

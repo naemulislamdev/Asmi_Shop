@@ -1,6 +1,14 @@
 @extends('layouts.front')
+@section('css')
+<style>
+.common-wrapper {
+	border-radius: 12px;
+}
+</style>
+@endsection
 @section('content')
-    <section class="gs-breadcrumb-section bg-class p-2"
+
+ <section class="gs-breadcrumb-section bg-class p-2"
         data-background="{{ $gs->breadcrumb_banner ? asset('assets/images/' . $gs->breadcrumb_banner) : asset('assets/images/noimage.png') }}">
         <div class="container">
             <div class="row justify-content-center content-wrapper">
@@ -16,7 +24,9 @@
     </section>
 
     <h1 class="text-dark text-center h2">@lang('Contact Us')</h1>
-    <div class="gs-contact-section p-0 mt-5">
+
+
+    <div class="gs-contact-section pt-0 mt-4">
         <div class="container">
             <div class="row">
                 <div class="col-lg-5 wow-replaced" data-wow-delay=".1s">
@@ -67,33 +77,12 @@
                                 <div class="number-details details-wrapper">
                                     <h5>@lang('Contact Number')</h5>
                                     <h6>{{ $ps->phone }}</h6>
+									
                                 </div>
                             </div>
                         @endif
 
-                        @if ($ps->fax != null)
-                            <div class="fax-number common-wrapper d-flex align-items-center">
-                                <div class="fax-icon icon-wrapper">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-                                        viewBox="0 0 40 40" fill="none">
-                                        <g clip-path="url(#clip0_6740_32531)">
-                                            <path
-                                                d="M18.3333 22.5C18.3333 21.1167 19.45 20 20.8333 20C22.2167 20 23.3333 21.1167 23.3333 22.5C23.3333 23.8833 22.2167 25 20.8333 25C19.45 25 18.3333 23.8833 18.3333 22.5ZM20.8333 33.3333C22.2167 33.3333 23.3333 32.2167 23.3333 30.8333C23.3333 29.45 22.2167 28.3333 20.8333 28.3333C19.45 28.3333 18.3333 29.45 18.3333 30.8333C18.3333 32.2167 19.45 33.3333 20.8333 33.3333ZM29.1667 25C30.55 25 31.6667 23.8833 31.6667 22.5C31.6667 21.1167 30.55 20 29.1667 20C27.7833 20 26.6667 21.1167 26.6667 22.5C26.6667 23.8833 27.7833 25 29.1667 25ZM29.1667 33.3333C30.55 33.3333 31.6667 32.2167 31.6667 30.8333C31.6667 29.45 30.55 28.3333 29.1667 28.3333C27.7833 28.3333 26.6667 29.45 26.6667 30.8333C26.6667 32.2167 27.7833 33.3333 29.1667 33.3333ZM40 6.81667V40H0V11.6667C0 8.91667 2.25 6.66667 5 6.66667H8.33333C11.0833 6.66667 13.3333 8.91667 13.3333 11.6667V13.3333H16.6667V5C16.6667 2.25 18.9167 0 21.6667 0H33.1833L40 6.81667ZM10 11.6667C10 10.75 9.25 10 8.33333 10H5C4.08333 10 3.33333 10.75 3.33333 11.6667V36.6667H10V11.6667ZM36.6667 16.6667H13.3333V36.6667H36.6667V16.6667ZM36.6667 13.3333V8.33333H31.6667V3.33333H21.6667C20.75 3.33333 20 4.08333 20 5V13.3333H36.6667Z"
-                                                fill="white" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_6740_32531">
-                                                <rect width="40" height="40" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </div>
-                                <div class="details-wrapper">
-                                    <h5>@lang('Fax')</h5>
-                                    <h6>{{ $ps->fax }}</h6>
-                                </div>
-                            </div>
-                        @endif
+                       
                         @if ($ps->email != null)
                             <div class="email-address common-wrapper d-flex align-items-center">
                                 <div class="email-icon icon-wrapper">
@@ -113,6 +102,7 @@
                                 <div class="details-wrapper">
                                     <h5>@lang('Email Address')</h5>
                                     <h6>{{ $ps->email }}</h6>
+									<h6>ceo@asmishop.com</h6>
                                 </div>
                             </div>
                         @endif
@@ -122,13 +112,12 @@
                     <div class="leave-reply-section">
                         <h3>@lang('Feel free to message us')</h3>
                         <form class="form-area" action="{{ route('front.contact.submit') }}" method="POST">
-                            @csrf
+                              @csrf
                             <div class="row gy-4 form-row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <input id="name" type="text" name="name" class="form-control"
-                                            placeholder="@lang('Your Name')" required="required"
-                                            data-error="name is required.">
+                                            placeholder="@lang('Your Name')" required="required" data-error="name is required.">
                                     </div>
                                     @error('name')
                                         <p class="my-2 text-danger">{{ $message }}</p>

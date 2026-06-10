@@ -5,16 +5,6 @@
         .order-table-wrap table#example2 {
             margin: 10px 20px;
         }
-
-        .discount-badge {
-            font-size: 11px;
-            font-weight: 500;
-            background: #fff8f0;
-            color: #b05f10;
-            border: 0.5px solid #f5d7b0;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
     </style>
 @endsection
 
@@ -81,7 +71,7 @@
                                             {{ \PriceHelper::showOrderCurrencyPrice($total, $order->currency_sign) }}
                                         </td>
                                     </tr>
-                                    @if ($order->shipping_cost != 0)
+                                       @if ($order->shipping_cost != 0)
                                         <tr>
                                             <th width="45%">{{ __('Shipping Cost') }}</th>
                                             <td width="10%">:</td>
@@ -124,7 +114,7 @@
                                             </td>
                                         </tr>
                                     @endif
-
+                                 
 
                                     @if (($order->first_order_discount ?? 0) > 0)
                                         <tr>
@@ -142,7 +132,7 @@
                                         <td width="45%">
                                             <strong>
                                                 {{ \PriceHelper::showOrderCurrencyPrice(
-                                                    ($order->pay_amount + $order->wallet_price - $order->discount) * $order->currency_value,
+                                                    (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
                                                     $order->currency_sign,
                                                 ) }}
                                             </strong>
@@ -506,8 +496,7 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
+<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
 
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -530,11 +519,10 @@
         </div>
 
     </div>
-
 @endsection
 
 
-@section('scripts')
+@push('scripts')
     <script>
         $(document).on('submit', '#orderNoteForm', function(e) {
             console.log('submit');
@@ -637,61 +625,68 @@
                 alert(xhr.responseJSON?.message || 'Something went wrong while adding product.');
             });
         });
-
-        $(document).on('click', '.remove-item', function() {
-            let productId = $(this).data('product-id');
-            let orderId = $(this).data('order-id');
-
-            $.ajax({
-                url: '{{ url('admin/order') }}/' + orderId + '/remove-product/' + productId,
-                type: 'DELETE',
-                success: function(res) {
-                    if (res.status) {
-                        $('#order-items-wrapper').html(res.html);
-                    }
-                },
-                error: function(xhr) {
-                    alert(xhr.responseJSON?.message || 'Something went wrong while removing product.');
-                }
-            });
-        });
     </script>
     <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    $(document).on('click', '.remove-item', function () {
+        let cartKey = $(this).data('cart-key');
+        let productId = $(this).data('product-id');
+        let orderId = $(this).data('order-id');
+
+        $.ajax({
+            url: '{{ url("admin/order") }}/' + orderId + '/remove-product/' + productId,
+            type: 'DELETE',
+            data: {
+                cart_key: cartKey,
+                product_id: productId
+            },
+            success: function (res) {
+                if (res.status) {
+                    $('#order-items-wrapper').html(res.html);
+                }
+            },
+            error: function (xhr) {
+                alert(xhr.responseJSON?.message || 'Something went wrong while removing product.');
             }
         });
+    });
+</script>
+   <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    });
 
-        let qtyTimer;
+    let qtyTimer;
 
-        $(document).on('input', '.update_qty', function() {
-            let el = $(this);
+    $(document).on('input', '.update_qty', function () {
+        let el = $(this);
 
-            clearTimeout(qtyTimer);
+        clearTimeout(qtyTimer);
 
-            qtyTimer = setTimeout(function() {
-                let qty = parseInt(el.val());
-                let productId = el.data('product-id');
-                let orderId = el.data('order-id');
+        qtyTimer = setTimeout(function () {
+            let qty = parseInt(el.val());
+            let cartKey = el.data('cart-key');
+            let productId = el.data('product-id');
+            let orderId = el.data('order-id');
 
-                if (!qty || qty < 1) {
-                    qty = 1;
-                    el.val(1);
+            if (!qty || qty < 1) {
+                qty = 1;
+                el.val(1);
+            }
+
+            $.post('{{ url("admin/order") }}/' + orderId + '/update-product-qty', {
+                cart_key: cartKey,
+                product_id: productId,
+                qty: qty
+            }, function (res) {
+                if (res.status) {
+                    $('#order-items-wrapper').html(res.html);
                 }
-
-                $.post('{{ url('admin/order') }}/' + orderId + '/update-product-qty', {
-                    product_id: productId,
-                    qty: qty
-                }, function(res) {
-                    if (res.status) {
-                        $('#order-items-wrapper').html(res.html);
-                    }
-                }).fail(function(xhr) {
-                    alert(xhr.responseJSON?.message ||
-                        'Something went wrong while updating quantity.');
-                });
-            }, 400);
-        });
-    </script>
-@endsection
+            }).fail(function (xhr) {
+                alert(xhr.responseJSON?.message || 'Something went wrong while updating quantity.');
+            });
+        }, 400);
+    });
+</script>
+@endpush

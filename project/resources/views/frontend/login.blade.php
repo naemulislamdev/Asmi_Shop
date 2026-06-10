@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-lg-6 mx-auto reg-area">
                     <div class="reg-content">
-                        <h1 class="h2 text-center fw-bold">Login</h1>
+                          <h1 class="h2 text-center fw-bold">Login</h1>
                         <h4 class="text-center">@lang('Welcome Back! Please login') </h4>
                         <form action="{{ route('user.login.submit') }}" method="POST">
                             @csrf
@@ -147,6 +147,7 @@
                                 @if ($socialsetting->f_check == 1)
                                     <a href="{{ route('social-provider', 'facebook') }}"
                                         class="template-btn outline-btn login-outline">
+
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none">

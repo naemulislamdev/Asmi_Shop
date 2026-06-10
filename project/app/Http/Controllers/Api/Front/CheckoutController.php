@@ -52,8 +52,7 @@ class CheckoutController extends Controller
 
             $cart = new Cart(null);
             $gs = Generalsetting::find(1);
-
-            // --- max_qty enforcement (per-product cap, 0 = no cap) ---
+              // --- max_qty enforcement (per-product cap, 0 = no cap) ---
             // Also collect per-item preorder request flag so the order's cart
             // JSON later stores which items were placed as preorder requests.
             $preorderFlags = [];
@@ -91,17 +90,17 @@ class CheckoutController extends Controller
                 if ($this->validCartItem($item)) {
                     $this->addtocart(
                         $cart,
-                        $input['currency_code'],
-                        $item['id'],
-                        $item['qty'],
-                        $item['size'],
-                        $item['color'],
-                        $item['size_qty'],
-                        $item['size_price'],
-                        $item['size_key'],
-                        $item['keys'],
-                        $item['values'],
-                        $item['prices'],
+                         $input['currency_code'],
+                        $item['id'] ?? null,
+                        $item['qty'] ?? 1,
+                        $item['size'] ?? '',
+                        $item['color'] ?? '',
+                        $item['size_qty'] ?? '',
+                        $item['size_price'] ?? '',
+                        $item['size_key'] ?? '',
+                        $item['keys'] ?? '',
+                        $item['values'] ?? '',
+                        $item['prices'] ?? '',
                         $input['affilate_user'] ?? null
                     );
                 }
@@ -110,17 +109,19 @@ class CheckoutController extends Controller
             $curr = Currency::where('name', $input['currency_code'] ?? '')
                 ->first() ?? Currency::where('is_default', 1)->first();
 
-            // Stamp each cart item with its is_preorder flag. data_get handles
-            // both array AND Eloquent Model access ('item.id' resolves to the
-            // Product id whether $row['item'] is an array or a Model).
+           // Stamp each cart item with its is_preorder flag so admin / mobile
+            // can later distinguish "ordered" vs "preorder request" rows.
             $stampedItems = [];
             foreach ($cart->items ?? [] as $key => $row) {
                 $itemArr = is_array($row) ? $row : (array) $row;
-                $iid = data_get($row, 'item.id')
-                    ?? data_get($row, 'id')
-                    ?? data_get($itemArr, 'item.id')
-                    ?? data_get($itemArr, 'id');
-                $itemArr['is_preorder'] = ($iid !== null && isset($preorderFlags[(string) $iid]))
+                $iid = null;
+                if (isset($itemArr['item'])) {
+                    $inner = (array) $itemArr['item'];
+                    $iid = $inner['id'] ?? null;
+                } else {
+                    $iid = $itemArr['id'] ?? null;
+                }
+                $itemArr['is_preorder'] = $iid !== null && isset($preorderFlags[(string) $iid])
                     ? $preorderFlags[(string) $iid]
                     : 0;
                 $stampedItems[$key] = $itemArr;
@@ -230,7 +231,7 @@ class CheckoutController extends Controller
             $input['currency_value'] = $curr->value;
 
             $input['pay_amount'] = $orderCalculate['total_amount'];
-            $input['order_number'] = 'A' . now()->timestamp . rand(100, 999);
+            $input['order_number'] = 'A' . mt_rand(10000, 99999);
 
             $input['wallet_price'] = ($request->wallet_price ?? 0) / $curr->value;
 
@@ -295,17 +296,16 @@ class CheckoutController extends Controller
                 'onumber' => $order->order_number,
             ];
 
-            $mailer = new GeniusMailer();
-            $mailer->sendAutoOrderMail($data, $order->id);
-            $ps = Pagesetting::find(1);
-            //Sending Email To Admin
-            $data = [
-                'to' => $ps->contact_email,
-                'subject' => "New Order Recieved!!",
-                'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is " . $order->order_number . ".Please login to your panel to check. <br>Thank you.",
-            ];
-            $mailer = new GeniusMailer();
-            $mailer->sendCustomMail($data);
+            // $mailer = new GeniusMailer();
+            // $mailer->sendAutoOrderMail($data, $order->id);
+            // $ps = Pagesetting::find(1);
+            // $data = [
+            //     'to' => $ps->contact_email,
+            //     'subject' => "New Order Recieved!!",
+            //     'body' => "Hello Admin!<br>Your store has received a new order.<br>Order Number is " . $order->order_number . ".Please login to your panel to check. <br>Thank you.",
+            // ];
+            // $mailer = new GeniusMailer();
+            // $mailer->sendCustomMail($data);
 
             unset($order['cart']);
             return response()->json(['status' => true, 'data' => route('payment.checkout') . '?order_number=' . $order->order_number, 'error' => []]);
@@ -316,11 +316,7 @@ class CheckoutController extends Controller
 
     private function validCartItem($item)
     {
-        $required = ['id', 'qty', 'size', 'color'];
-        foreach ($required as $field) {
-            if (!isset($item[$field])) return false;
-        }
-        return true;
+        return isset($item['id'], $item['qty']);
     }
 
     private function calculateTax($cart, $input)
@@ -543,7 +539,7 @@ class CheckoutController extends Controller
             }
 
             $size_price = ($size_price / $curr->value);
-            $prod = Product::where('id', '=', $id)->first(['id', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes']);
+            $prod = Product::where('id', '=', $id)->first(['id', 'sku', 'user_id', 'slug', 'name', 'photo', 'size', 'size_qty', 'size_price', 'color', 'price', 'stock', 'type', 'file', 'link', 'license', 'license_qty', 'measure', 'whole_sell_qty', 'whole_sell_discount', 'attributes']);
 
             if ($prod->user_id != 0) {
                 $gs = Generalsetting::find(1);
@@ -724,9 +720,8 @@ class CheckoutController extends Controller
     /**
      * GET /api/front/states/{country_id}
      * States for a country (used by checkout dropdowns).
-     * Note: DB column is `state` (not `name`). Returned as `name` for client friendliness.
      */
-    public function statesByCountry($country_id)
+  public function statesByCountry($country_id)
     {
         try {
             $rows = State::where('country_id', $country_id)
@@ -748,9 +743,8 @@ class CheckoutController extends Controller
     /**
      * GET /api/front/cities/{state_id}
      * Cities for a state (used by checkout dropdowns).
-     * Note: DB column is `city_name`. Returned as `name` for client friendliness.
      */
-    public function citiesByState($state_id)
+public function citiesByState($state_id)
     {
         try {
             $rows = City::where('state_id', $state_id)

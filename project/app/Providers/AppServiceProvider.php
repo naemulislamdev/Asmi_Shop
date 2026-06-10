@@ -25,80 +25,53 @@ class AppServiceProvider extends ServiceProvider
         Cache::flush();
         Paginator::useBootstrap();
         view()->composer('*', function ($view) {
+            // Compute shared view globals ONCE per request (was ~12 queries per partial).
+            if (app()->bound('asmi.viewglobals')) {
+                $view->with(app('asmi.viewglobals'));
+                return;
+            }
 
-            $view->with('gs', DB::table('generalsettings')->first());
-
-            $view->with('ps', DB::table('pagesettings')->first());
-
-            $view->with('seo', DB::table('seotools')->first());
-            $view->with('socialsetting', DB::table('socialsettings')->first());
-
-            $view->with('default_font', Font::whereIsDefault(1)->first());
+            $d = [];
+            $d['gs'] = DB::table('generalsettings')->first();
+            $d['ps'] = DB::table('pagesettings')->first();
+            $d['seo'] = DB::table('seotools')->first();
+            $d['socialsetting'] = DB::table('socialsettings')->first();
+            $d['default_font'] = Font::whereIsDefault(1)->first();
 
             if (Session::has('currency')) {
-                $view->with('curr', Currency::find(Session::get('currency')));
+                $d['curr'] = Currency::find(Session::get('currency'));
             } else {
-                $view->with('curr', Currency::where('is_default', '=', 1)->first());
+                $d['curr'] = Currency::where('is_default', '=', 1)->first();
             }
 
             if (Session::has('language')) {
-                $view->with('langg', Language::find(Session::get('language')));
+                $d['langg'] = Language::find(Session::get('language'));
             } else {
-                $view->with('langg', Language::where('is_default', '=', 1)->first());
+                $d['langg'] = Language::where('is_default', '=', 1)->first();
             }
-            // $totalBranchOrders = Order::whereNotNull('branch_id')->count();
 
-            // $branchWiseOrders = Order::select(
-            //     'branch_id',
-            //     DB::raw('COUNT(*) as total')
-            // )
-            //     ->whereNotNull('branch_id')
-            //     ->with('branch')
-            //     ->groupBy('branch_id')
-            //     ->get();
-            $totalBranchOrders = Order::count(); // সব orders
+            $d['totalBranchOrders'] = Order::count();
 
-            // branch wise order
-            $branchWiseOrders = Order::select(
-                'branch_id',
-                DB::raw('COUNT(*) as total')
-            )
+            // branchWiseOrders MUST be Order objects with the `branch` relation:
+            // admin super.blade.php reads $item->branch_id and $item->branch->name.
+            $d['branchWiseOrders'] = Order::select('branch_id', DB::raw('COUNT(*) as total'))
+                ->with('branch')
                 ->groupBy('branch_id')
                 ->get();
 
-            // branch গুলো একবারে নাও
-            $branchIds = $branchWiseOrders->pluck('branch_id')->filter()->unique()->values();
-            $branchMap = Branch::whereIn('id', $branchIds)->get()->keyBy('id')->toArray();
+            $d['orderCounts'] = Order::selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+                SUM(CASE WHEN status = 'hold' THEN 1 ELSE 0 END) as hold,
+                SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
+                SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+                SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled
+            ")->first();
 
-            // result prepare করো
-            $result = $branchWiseOrders->map(function ($item) use ($branchMap) {
-                return [
-                    'branch_id'   => $item->branch_id,
-                    'total'       => $item->total,
-                    'branch_name' => $item->branch_id
-                        ? ($branchMap[$item->branch_id]['name'] ?? 'Unknown')
-                        : null,
-                ];
-            });
-            // branch wise order
+            $d['todayOrders'] = Order::whereDate('created_at', today())->where('status', 'pending')->count();
 
-            $orderCounts = Order::selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-            SUM(CASE WHEN status = 'hold' THEN 1 ELSE 0 END) as hold,
-            SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
-            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled
-        ")->first();
-
-            $todayOrders = Order::whereDate('created_at', today())->where('status', 'pending')->count();
-
-            $view->with([
-                'orderCounts' => $orderCounts,
-                'todayOrders' => $todayOrders,
-                'totalBranchOrders' => $totalBranchOrders,
-                'branchWiseOrders' => $result,
-            ]);
+            app()->instance('asmi.viewglobals', $d);
+            $view->with($d);
         });
     }
 

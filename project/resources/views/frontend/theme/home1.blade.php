@@ -63,85 +63,18 @@
             font-size: 14px;
             color: #555;
         }
-
-        .gs-partner-section .col-xl-2 {
-            flex: 0 0 auto;
-            width: 16%;
-        }
-
-        .slider-section .card img {
-            border-radius: 10px !important;
-        }
-
-        /* hero slider change styel */
-        .hero-slider-wrapper .slick-prev {
-            left: 17%;
-        }
-
-        .hero-slider-wrapper .slick-next {
-            right: 17%;
-        }
-
-        .slider-section .left-promo .card,
-        .slider-section .right-promo .card {
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-        }
+		.gs-partner-section .col-xl-2 {
+		flex: 0 0 auto;
+		width: 16%;
+		}
+		.col-xl-2 {
+		flex: 0 0 auto;
+		width: 16.6666%;
+		padding: 0  4px !important;
+		}
     </style>
 
-    <!-- hero section start -->
-    <section class="slider-section">
-        <div class="hero-slider-wrapper">
-            @foreach ($sliders as $slider)
-                <div class="gs-hero-section" style="height: auto;">
-                    <div class="row my-lg-3">
-                        <div class="col-lg-2 left-promo d-none d-lg-block">
-                            <div class="d-flex flex-column gap-3">
-                                <div class="card border-0 ">
-                                    <a href="">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/front/images/banner-side-3.png') }}" alt="Title" />
-                                    </a>
-                                </div>
-                                <div class="card border-0 ">
-                                    <a href="">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/front/images/banner-side-4.png') }}" alt="Title" />
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="col-lg-8">
-                            <img class="home-slider" style="max-width: 100%"
-                                src="{{ asset('assets/images/sliders/' . $slider->photo) }}" alt="Slider Image"
-                                style="cursor: pointer;" data-href="{{ $slider->link ?? '#' }}">
-                        </div>
-                        <div class="col-lg-2 right-promo d-none d-lg-block">
-                            <div class="d-flex flex-column gap-3">
-                                <div class="card border-0 ">
-                                    <a href="">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/front/images/banner-side-1.png') }}" alt="Title" />
-                                    </a>
-                                </div>
-                                <div class="card border-0 ">
-                                    <a href="">
-                                        <img class="card-img-top slider-side-img"
-                                            src="{{ asset('assets/front/images/banner-side-2.png') }}" alt="Title" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </section>
-    <!-- hero section end -->
-
-    {{-- Coupon slider section start --}}
-
-    {{-- Coupon slider section end --}}
+ 
 
     <!-- categories section start -->
     <div class="gs-cate-section ">
@@ -214,7 +147,7 @@
                 </div>
 
                 <!-- main content -->
-                <div class="row gy-4">
+                <div class="row gy-2">
                     <div class="col-lg-4  wow-replaced" data-wow-delay=".2s">
                         <div class="product-wrapper">
                             <a href="{{ $arrivals[0]['url'] }}" class="">
@@ -299,7 +232,7 @@
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="ex-product-1-pane" role="tabpanel"
                     aria-labelledby="ex-product-1" tabindex="0">
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($latest_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -310,7 +243,7 @@
                 <div class="tab-pane fade" id="ex-product-2-pane" role="tabpanel" aria-labelledby="ex-product-2"
                     tabindex="0">
 
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($trending_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -319,7 +252,7 @@
 
                 <div class="tab-pane fade" id="ex-product-3-pane" role="tabpanel" aria-labelledby="ex-product-3"
                     tabindex="0">
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($best_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -328,7 +261,7 @@
 
                 <div class="tab-pane fade" id="ex-product-4-pane" role="tabpanel" aria-labelledby="ex-product-4"
                     tabindex="0">
-                    <div class="row gy-4">
+                    <div class="row gy-2">
                         @foreach ($popular_products as $product)
                             @include('includes.frontend.home_product')
                         @endforeach
@@ -406,7 +339,7 @@
     <!-- Partner Section -->
     <section class="gs-partner-section">
         <div class="container">
-            <div class="gs-partnerss gy-4 row justify-content-center">
+            <div class="gs-partnerss gy-2 row justify-content-center">
 
                 @foreach (DB::table('partners')->get() as $data)
                     <div class="col-xl-2 col-lg-2 col-md-4 col-sm-6 col-6 wow-replaced" data-wow-delay=".1s">
@@ -455,9 +388,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>

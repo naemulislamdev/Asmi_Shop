@@ -145,10 +145,10 @@
     }
 
     .invoice-table tbody td {
-        padding: 3px 16px;
-        color: #111;
-        vertical-align: center;
-    }
+    padding: 3px 16px;
+    color: #111;
+    vertical-align: center;
+}
 
     .invoice-table tbody td:last-child {
         text-align: right;
@@ -207,10 +207,10 @@
         font-weight: 600;
     }
 
-    .tfoot-label {
-        color: #111;
-        font-weight: 700;
-    }
+   .tfoot-label {
+    color: #111;
+    font-weight: 700;
+}
 
     .tfoot-value {
         color: #111827;
@@ -469,8 +469,7 @@
                                 @if (DB::table('shippings')->where('price', '=', $price)->count() > 0)
                                     <tr>
                                         <td colspan="2" class="tfoot-label">
-                                            Delivery Charge
-                                            <small>({{ DB::table('shippings')->where('price', '=', $price)->first()->title }})</small>
+                                            Delivery Charge <small>({{ DB::table('shippings')->where('price', '=', $price)->first()->title }})</small>
                                         </td>
                                         <td class="tfoot-value">
                                             {{ \PriceHelper::showOrderCurrencyPrice($order->shipping_cost, $order->currency_sign) }}
@@ -566,8 +565,8 @@
                                 <td colspan="2" class="tfoot-label grand-total-label">{{ __('Grand Total') }}</td>
                                 <td class="tfoot-value grand-total-value">
                                     {{ \PriceHelper::showOrderCurrencyPrice(
-                                        ($order->pay_amount + $order->wallet_price - $order->discount) * $order->currency_value,
-                                        $order->currency_sign,
+                                        (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
+                                        $order->currency_sign
                                     ) }}
                                 </td>
                             </tr>
