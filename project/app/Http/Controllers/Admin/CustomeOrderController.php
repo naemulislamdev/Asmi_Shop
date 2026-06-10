@@ -44,41 +44,46 @@ class CustomeOrderController extends Controller
 
         foreach ($products as $key => $product) {
 
-            $qty        = (int) $product['qty'];
-            $unitPrice  = (float) $product['unit_price'];
-            $lineTotal  = (float) $product['line_total'];
+            $qty       = (float) $product['qty'];      // (int) থেকে (float) — 1.5 kg ঠিক থাকবে
+            $unitPrice = (float) $product['unit_price'];
+            $lineTotal = (float) $product['line_total'];
+            $unit      = $product['unit'] ?? 'pc';     // frontend থেকে unit নাও
 
             $dbProduct = $productData[$product['product_id']] ?? null;
             if (!$dbProduct) continue;
 
-            $totalQty += $qty;
+            // Stock deduction — gram হলে kg এ convert করে বাদ দাও
+            $qtyInBaseUnit = $unit === 'gram' ? $qty / 1000 : $qty;
+
+            $totalQty   += $qty;
             $totalPrice += $lineTotal;
 
             $items[$product['product_id']] = [
                 "user_id" => 0,
-                "qty" => $qty,
-                "stock" => $dbProduct->stock - $qty,
-                "price" => $lineTotal,
-                "item" => [
-                    "id" => $dbProduct->id,
-                    "user_id" => $dbProduct->user_id ?? 0,
-                    "slug" => $dbProduct->slug ?? '',
-                    "name" => $dbProduct->name,
-                    "sku" => $dbProduct->sku,
-                    "photo" => $dbProduct->photo ?? '',
-                    "price" => $unitPrice,
-                    "discount" => $dbProduct->discount ?? 0,
+                "qty"     => $qty,
+                "unit"    => $unit,                                        // unit save করো
+                "stock"   => $dbProduct->stock - $qtyInBaseUnit,          // correct deduction
+                "price"   => $lineTotal,
+                "item"    => [
+                    "id"            => $dbProduct->id,
+                    "user_id"       => $dbProduct->user_id ?? 0,
+                    "slug"          => $dbProduct->slug ?? '',
+                    "name"          => $dbProduct->name,
+                    "sku"           => $dbProduct->sku,
+                    "photo"         => $dbProduct->photo ?? '',
+                    "price"         => $unitPrice,
+                    "discount"      => $dbProduct->discount ?? 0,
                     "discount_type" => $dbProduct->discount_type,
-                    "stock" => $dbProduct->stock,
-                    "type" => $dbProduct->type ?? 'Physical',
-                    "stock_check" => 0,
+                    "stock"         => $dbProduct->stock,
+                    "type"          => $dbProduct->type ?? 'Physical',
+                    "stock_check"   => 0,
                 ],
-                "license" => "",
-                "dp" => "0",
-                "keys" => "",
-                "values" => "",
+                "license"    => "",
+                "dp"         => "0",
+                "keys"       => "",
+                "values"     => "",
                 "item_price" => $unitPrice,
-                "discount" => 0,
+                "discount"   => 0,
             ];
         }
 

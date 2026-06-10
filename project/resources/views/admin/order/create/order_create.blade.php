@@ -21,13 +21,11 @@
                                     <label class="form-label">Search Customer <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="search_customer"
                                         placeholder="Search by name or mobile phone">
-
                                     <small class="text-danger d-none" id="customer_not_found">
                                         Customer does not exist
                                     </small>
                                 </div>
                             </div>
-
                         </div>
                         <input type="hidden" id="customer_id" name="customer_id">
 
@@ -35,7 +33,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Customer Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="customer_name" name="customer_name">
+                                    <input type="text" class="form-control" id="customer_name" name="customer_name" required>
                                     @error('customer_name')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -45,7 +43,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Customer Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="customer_phone" name="customer_phone">
+                                    <input type="text" class="form-control" id="customer_phone" name="customer_phone" required>
                                     <span id="phoneFeedback" class="small text-danger"></span>
                                     @error('customer_phone')
                                         <span class="text-danger">{{ $message }}</span>
@@ -56,8 +54,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Customer Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="customer_address"
-                                        name="customer_address">
+                                    <input type="text" class="form-control" id="customer_address" name="customer_address" required>
                                     @error('customer_address')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -78,7 +75,6 @@
                                         <small class="text-danger d-none" id="barcode_error"></small>
                                     </div>
                                 </div>
-
                             </div>
 
                             {{-- Cart / Table Area --}}
@@ -88,7 +84,7 @@
                                         <tr>
                                             <th>SKU</th>
                                             <th>Product</th>
-                                            <th>Qty</th>
+                                            <th>Qty / Unit</th>
                                             <th>Price</th>
                                             <th>Subtotal</th>
                                             <th>Action</th>
@@ -96,14 +92,14 @@
                                     </thead>
                                     <tbody id="pos_tbody">
                                         <tr id="empty_row">
-                                            <td colspan="7" class="text-center">No products added!</td>
+                                            <td colspan="6" class="text-center">No products added!</td>
                                         </tr>
                                     </tbody>
-
                                 </table>
                             </div>
                         </div>
                     </div>
+
                     {{-- RIGHT PANEL --}}
                     <div class="col-lg-4">
                         <div class="card pos-side">
@@ -119,7 +115,7 @@
 
                                 {{-- Totals --}}
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="fw-bold"><b>Subtotal: </b> </span>
+                                    <span class="fw-bold"><b>Subtotal: </b></span>
                                     <span class="fw-semibold" id="subtotal">0</span>
                                 </div>
 
@@ -130,7 +126,7 @@
 
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="fw-bold"><b>Total: </b></span>
-                                    <span class="fw-semibold" id="total"> 0</span>
+                                    <span class="fw-semibold" id="total">0</span>
                                 </div>
 
                                 <hr>
@@ -138,7 +134,6 @@
                                 <div class="row mb-3">
                                     <div class="col-sm-12">
                                         <div class="accordion" id="accordionExample">
-
                                             <div class="card">
                                                 <div class="" id="headingTwo">
                                                     <h2 class="mb-0">
@@ -162,18 +157,17 @@
                                                         </div>
                                                     </div>
                                                     <input type="hidden" name="coupon_id" id="coupon_id">
-                                                    <input type="hidden" name="coupon_discount" id="coupon_discount"
-                                                        value="0">
+                                                    <input type="hidden" name="coupon_discount" id="coupon_discount" value="0">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row g-3">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label class="form-label">Select Area <span
-                                                    class="text-danger">*</span></label>
+                                            <label class="form-label">Select Area <span class="text-danger">*</span></label>
                                             <select class="form-control" name="shipping_area" id="area">
                                                 <option selected disabled>Select</option>
                                                 @foreach ($shippings as $shipping)
@@ -224,6 +218,7 @@
                                                 class="form-control bg-light" value="0" readonly>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-12 mb-3">
                                         <div class="form-group">
                                             <label class="form-label">Courier <span class="text-danger">*</span></label>
@@ -251,9 +246,9 @@
             </form>
         </div>
     </div>
+
     <!-- Modal -->
-    <div class="modal fade" id="create_customer_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="create_customer_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form action="{{ route('admin-create-customer') }}" method="POST">
@@ -265,29 +260,26 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <!-- Customer creation form -->
-
                         <div class="form-group">
-                            <label for="customer_name">Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="customer_name" id="customer_name"
+                            <label for="modal_customer_name">Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="customer_name" id="modal_customer_name"
                                 placeholder="Enter customer name">
                         </div>
                         <div class="form-group">
-                            <label for="customer_email">Email (Optional)</label>
-                            <input type="email" class="form-control" name="customer_email" id="customer_email"
+                            <label for="modal_customer_email">Email (Optional)</label>
+                            <input type="email" class="form-control" name="customer_email" id="modal_customer_email"
                                 placeholder="Enter customer email">
                         </div>
                         <div class="form-group">
-                            <label for="customer_phone">Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="customer_phone" id="customer_phone"
+                            <label for="modal_customer_phone">Phone <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="customer_phone" id="modal_customer_phone"
                                 placeholder="Enter customer phone">
                         </div>
                         <div class="form-group">
-                            <label for="customer_address">Address <span class="text-danger">*</span></label>
-                            <textarea type="text" class="form-control" name="customer_address" id="customer_address"
+                            <label for="modal_customer_address">Address <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="customer_address" id="modal_customer_address"
                                 placeholder="Enter customer address"></textarea>
                         </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -298,285 +290,316 @@
         </div>
     </div>
 @endsection
+
 @push('scripts')
-    <script>
-        let timer = null;
+<script>
+    // ─── CUSTOMER SEARCH ───────────────────────────────────────────────────────
+    let timer = null;
 
-        $('#search_customer').on('keyup', function() {
-            clearTimeout(timer);
+    $('#search_customer').on('keyup', function () {
+        clearTimeout(timer);
+        let query = $(this).val().trim();
 
-            let query = $(this).val().trim();
-
-            if (query.length < 3) {
-                resetCustomerFields();
-                return;
-            }
-
-            timer = setTimeout(function() {
-                $.ajax({
-                    url: "{{ route('admin-customer-search') }}",
-                    type: "GET",
-                    data: {
-                        search: query
-                    },
-                    success: function(res) {
-
-                        if (res.status === 'found') {
-                            $('#customer_not_found').addClass('d-none');
-
-                            $('#customer_id').val(res.data.id);
-                            $('#customer_name').val(res.data.name);
-                            $('#customer_phone').val(res.data.phone);
-                            $('#customer_address').val(res.data.address);
-                        } else {
-                            resetCustomerFields();
-                            $('#customer_not_found').css('display', 'block');
-                        }
-                    }
-                });
-            }, 400);
-        });
-
-        function resetCustomerFields() {
-            $('#customer_id').val('');
-            $('#customer_name').val('');
-            $('#customer_phone').val('');
-            $('#customer_address').val('');
-            $('#customer_not_found').addClass('d-none');
-        }
-    </script>
-
-
-
-
-    <script>
-        let cart = {};
-        let barcodeTimer = null;
-        let barcodeBuffer = "";
-
-        // AUTO BARCODE
-        $('input[name="product_code"]').on('input', function() {
-            clearTimeout(barcodeTimer);
-            barcodeBuffer = $(this).val();
-
-            barcodeTimer = setTimeout(() => {
-                if (barcodeBuffer.length < 2) return;
-
-                fetchProduct(barcodeBuffer);
-                $(this).val('');
-                barcodeBuffer = '';
-            }, 500);
-        });
-
-        // FETCH PRODUCT
-        function fetchProduct(code) {
-            $('#barcode_error').addClass('d-none');
-
-            $.get("{{ route('admin-get-product') }}", {
-                code
-            }, function(res) {
-
-                if (!res.success) {
-                    $('#barcode_error').removeClass('d-none').text('Product not found!');
-                    return;
-                }
-
-                addToCart(res.product);
-            });
+        if (query.length < 3) {
+            resetCustomerFields();
+            return;
         }
 
-        // ADD PRODUCT
-        function addToCart(product) {
-
-            let key = product.id;
-
-            if (cart[key]) {
-                cart[key].qty += 1;
-            } else {
-                cart[key] = {
-                    key: key,
-                    product_id: product.id,
-                    code: product.code,
-                    name: product.name,
-                    price: parseFloat(product.price),
-                    qty: 1
-                };
-            }
-
-            renderCart();
-        }
-
-        // REMOVE ITEM
-        $(document).on('click', '.remove-item', function() {
-            delete cart[$(this).data('key')];
-            renderCart();
-        });
-
-        // QTY CHANGE
-        $(document).on('change', '.qty', function() {
-            let key = $(this).data('key');
-            cart[key].qty = parseInt($(this).val());
-            renderCart();
-        });
-
-        // RENDER CART
-        function renderCart() {
-
-            let tbody = $('#pos_tbody');
-            tbody.html('');
-            let subtotal = 0;
-
-            $.each(cart, function(_, item) {
-
-                let rowSubtotal = item.qty * item.price;
-                subtotal += rowSubtotal;
-
-                tbody.append(`
-            <tr>
-                <input type="hidden" name="products[${item.key}][product_id]" value="${item.product_id}">
-                <input type="hidden" name="products[${item.key}][unit_price]" value="${item.price}">
-                <input type="hidden" name="products[${item.key}][line_total]" value="${rowSubtotal.toFixed(2)}">
-
-                <td>${item.code}</td>
-                <td>${item.name}</td>
-                <td>
-                    <input type="number" min="1"
-                        class="form-control qty"
-                        name="products[${item.key}][qty]"
-                        data-key="${item.key}"
-                        value="${item.qty}">
-                </td>
-                <td>${item.price.toFixed(2)}</td>
-                <td>${rowSubtotal.toFixed(2)}</td>
-                <td>
-                    <button type="button"
-                        class="btn btn-danger btn-sm remove-item"
-                        data-key="${item.key}">X</button>
-                </td>
-            </tr>
-        `);
-            });
-
-            if ($.isEmptyObject(cart)) {
-                tbody.html(`<tr><td colspan="6" class="text-center">No products added!</td></tr>`);
-            }
-
-            calculateTotals(subtotal);
-        }
-
-        // TOTAL
-        $('#discount_amount').on('input', function() {
-            calculateTotals();
-        });
-        $('#paid-amount').on('input', function() {
-            calculateTotals();
-        });
-
-        $('#area').on('change', function() {
-            calculateTotals();
-        });
-
-        function calculateTotals(forceSubtotal = null) {
-
-            let subtotal = forceSubtotal ?? getSubtotal();
-
-            let manualDiscount = parseFloat($('#discount_amount').val()) || 0;
-
-            let totalDiscount = manualDiscount + couponDiscount;
-
-            let total = subtotal - totalDiscount;
-            if (total < 0) total = 0;
-
-            $('#subtotal').text(subtotal.toFixed(2));
-            $('#discount').text(totalDiscount.toFixed(2));
-            $('#total').text(total.toFixed(2));
-
-            let areaAmount = parseFloat($('#area').val()) || 0;
-            let finalTotal = total + areaAmount;
-
-            $('#total-bill').val(finalTotal.toFixed(2));
-
-            let paidAmount = parseFloat($('#paid-amount').val()) || 0;
-            let changeAmount = paidAmount - finalTotal;
-
-            $('#change-amount').val(changeAmount.toFixed(2));
-        }
-
-        function getSubtotal() {
-            let sum = 0;
-            $.each(cart, (_, item) => sum += item.qty * item.price);
-            return sum;
-        }
-
-        //coupon ajax
-        let couponDiscount = 0;
-
-        $('#apply_coupon_btn').on('click', function() {
-
-            let code = $('#coupon_code').val();
-            let subtotal = getSubtotal();
-
-            if (!code) {
-                alert('Enter coupon code');
-                return;
-            }
-
+        timer = setTimeout(function () {
             $.ajax({
-                url: "{{ route('admin-apply-coupon') }}",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    code: code,
-                    subtotal: subtotal
-                },
-                success: function(res) {
-
-                    if (!res.success) {
-                        alert(res.message);
-                        return;
+                url: "{{ route('admin-customer-search') }}",
+                type: "GET",
+                data: { search: query },
+                success: function (res) {
+                    if (res.status === 'found') {
+                        $('#customer_not_found').addClass('d-none');
+                        $('#customer_id').val(res.data.id);
+                        $('#customer_name').val(res.data.name);
+                        $('#customer_phone').val(res.data.phone);
+                        $('#customer_address').val(res.data.address);
+                    } else {
+                        resetCustomerFields();
+                        $('#customer_not_found').removeClass('d-none');
                     }
-
-                    couponDiscount = parseFloat(res.discount);
-
-                    $('#coupon_id').val(res.coupon_id);
-                    $('#coupon_discount').val(couponDiscount);
-
-                    alert(res.message);
-
-                    calculateTotals();
                 }
             });
-        });
-    </script>
-    <script>
-        document.getElementById('customer_phone').addEventListener('input', function() {
-            const phoneInput = this.value;
-            const phoneFeedback = document.getElementById('phoneFeedback');
-            const regex = /^(01[3-9]\d{8})$/;
+        }, 400);
+    });
 
-            if (phoneInput === '') {
-                phoneFeedback.textContent = '';
-            } else if (!regex.test(phoneInput)) {
-                phoneFeedback.classList.add('text-danger');
-                phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
-            } else {
-                phoneFeedback.textContent = 'Valid phone number!';
-                phoneFeedback.classList.remove('text-danger');
-                phoneFeedback.classList.add('text-success');
+    function resetCustomerFields() {
+        $('#customer_id').val('');
+        $('#customer_name').val('');
+        $('#customer_phone').val('');
+        $('#customer_address').val('');
+        $('#customer_not_found').addClass('d-none');
+    }
+
+    // ─── CART ──────────────────────────────────────────────────────────────────
+    let cart = {};
+    let barcodeTimer = null;
+    let barcodeBuffer = "";
+    let couponDiscount = 0;
+
+    // Barcode / product code input
+    $('input[name="product_code"]').on('input', function () {
+        clearTimeout(barcodeTimer);
+        barcodeBuffer = $(this).val();
+
+        barcodeTimer = setTimeout(() => {
+            if (barcodeBuffer.length < 2) return;
+            fetchProduct(barcodeBuffer);
+            $(this).val('');
+            barcodeBuffer = '';
+        }, 500);
+    });
+
+    function fetchProduct(code) {
+        $('#barcode_error').addClass('d-none').text('');
+
+        $.get("{{ route('admin-get-product') }}", { code }, function (res) {
+            if (!res.success) {
+                $('#barcode_error').removeClass('d-none').text('Product not found!');
+                return;
+            }
+            addToCart(res.product);
+        });
+    }
+
+    // ── Helper: effective qty (gram → divide by 1000) ──────────────────────────
+    function effectiveQty(item) {
+        return item.unit === 'gram' ? item.qty / 1000 : item.qty;
+    }
+
+    // ── Helper: row subtotal ───────────────────────────────────────────────────
+    function rowSubtotal(item) {
+        return effectiveQty(item) * item.price;
+    }
+
+    // ── ADD TO CART ────────────────────────────────────────────────────────────
+    function addToCart(product) {
+        let key = product.id;
+
+        if (cart[key]) {
+            // already in cart: bump qty by 1 (works for pc; for kg/gram user can edit)
+            cart[key].qty += cart[key].unit === 'pc' ? 1 : 0;
+        } else {
+            cart[key] = {
+                key        : key,
+                product_id : product.id,
+                code       : product.code,
+                name       : product.name,
+                price      : parseFloat(product.price),
+                qty        : 1,
+                unit       : 'pc'
+            };
+        }
+
+        renderCart();
+    }
+
+    // ── REMOVE ─────────────────────────────────────────────────────────────────
+    $(document).on('click', '.remove-item', function () {
+        delete cart[$(this).data('key')];
+        renderCart();
+    });
+
+    // ── QTY CHANGE — NO full re-render ─────────────────────────────────────────
+    $(document).on('change', '.qty', function () {
+        let key = $(this).data('key');
+        let val = parseFloat($(this).val());
+
+        // Fallback for invalid input
+        if (isNaN(val) || val <= 0) {
+            val = cart[key].unit === 'pc' ? 1 : 0.1;
+        }
+
+        cart[key].qty = val;
+        $(this).val(val);
+
+        let rs = rowSubtotal(cart[key]);
+
+        // Update hidden line_total
+        $(this).closest('tr').find('.hidden-line-total').val(rs.toFixed(2));
+
+        // Update visible subtotal cell (6th td = index 5, but hidden inputs
+        // are INSIDE the first td now, so td order: sku=0 name=1 qty=2 price=3 subtotal=4 action=5)
+        $(this).closest('tr').find('.row-subtotal').text(rs.toFixed(2));
+
+        calculateTotals();
+    });
+
+    // ── UNIT CHANGE — NO full re-render ───────────────────────────────────────
+    $(document).on('change', '.unit-select', function () {
+        let key  = $(this).data('key');
+        let unit = $(this).val();
+        cart[key].unit = unit;
+
+        let qtyInput = $(this).closest('td').find('.qty');
+
+        if (unit === 'pc') {
+            cart[key].qty = 1;
+            qtyInput.attr({ min: '1', step: '1' }).val(1);
+        } else if (unit === 'kg') {
+            cart[key].qty = 1;
+            qtyInput.attr({ min: '0.001', step: '0.001' }).val(1);
+        } else if (unit === 'gram') {
+            cart[key].qty = 500;
+            qtyInput.attr({ min: '1', step: '1' }).val(500);
+        }
+
+        let rs = rowSubtotal(cart[key]);
+        $(this).closest('tr').find('.hidden-line-total').val(rs.toFixed(2));
+        $(this).closest('tr').find('.row-subtotal').text(rs.toFixed(2));
+
+        calculateTotals();
+    });
+
+    // ── RENDER CART (only called on add / remove) ──────────────────────────────
+    function renderCart() {
+        let tbody = $('#pos_tbody');
+        tbody.html('');
+
+        if ($.isEmptyObject(cart)) {
+            tbody.html('<tr><td colspan="6" class="text-center">No products added!</td></tr>');
+            calculateTotals(0);
+            return;
+        }
+
+        let subtotal = 0;
+
+        $.each(cart, function (_, item) {
+            let rs = rowSubtotal(item);
+            subtotal += rs;
+
+            let isDecimal = (item.unit !== 'pc');
+            let minVal    = item.unit === 'gram' ? '1'     : (isDecimal ? '0.001' : '1');
+            let stepVal   = item.unit === 'gram' ? '1'     : (isDecimal ? '0.001' : '1');
+
+            tbody.append(`
+                <tr>
+                    <td>
+                        ${item.code}
+                        <input type="hidden" name="products[${item.key}][product_id]"  value="${item.product_id}" class="hidden-product-id">
+                        <input type="hidden" name="products[${item.key}][unit_price]"  value="${item.price}">
+                        <input type="hidden" name="products[${item.key}][line_total]"  value="${rs.toFixed(2)}" class="hidden-line-total">
+                        <input type="hidden" name="products[${item.key}][unit]" value="${item.unit}">
+
+                    </td>
+                    <td>${item.name}</td>
+                    <td>
+                        <select class="form-control form-control-sm unit-select mb-1" data-key="${item.key}">
+                            <option value="pc"   ${item.unit === 'pc'   ? 'selected' : ''}>PC</option>
+                            <option value="kg"   ${item.unit === 'kg'   ? 'selected' : ''}>KG</option>
+                            <option value="gram" ${item.unit === 'gram' ? 'selected' : ''}>Gram</option>
+                        </select>
+                        <input type="number"
+                            min="${minVal}"
+                            step="${stepVal}"
+                            class="form-control form-control-sm qty"
+                            name="products[${item.key}][qty]"
+                            data-key="${item.key}"
+                            value="${item.qty}">
+                    </td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td class="row-subtotal">${rs.toFixed(2)}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-item" data-key="${item.key}">X</button>
+                    </td>
+                </tr>
+            `);
+        });
+
+        calculateTotals(subtotal);
+    }
+
+    // ── TOTALS ─────────────────────────────────────────────────────────────────
+    function getSubtotal() {
+        let sum = 0;
+        $.each(cart, function (_, item) {
+            sum += rowSubtotal(item); // gram-aware
+        });
+        return sum;
+    }
+
+    function calculateTotals(forceSubtotal = null) {
+        let subtotal       = (forceSubtotal !== null) ? forceSubtotal : getSubtotal();
+        let manualDiscount = parseFloat($('#discount_amount').val()) || 0;
+        let totalDiscount  = manualDiscount + couponDiscount;
+
+        let total = Math.max(subtotal - totalDiscount, 0);
+
+        $('#subtotal').text(subtotal.toFixed(2));
+        $('#discount').text(totalDiscount.toFixed(2));
+        $('#total').text(total.toFixed(2));
+
+        let areaAmount = parseFloat($('#area').val()) || 0;
+        let finalTotal = total + areaAmount;
+
+        $('#total-bill').val(finalTotal.toFixed(2));
+
+        let paidAmount   = parseFloat($('#paid-amount').val()) || 0;
+        let changeAmount = paidAmount - finalTotal;
+        $('#change-amount').val(changeAmount.toFixed(2));
+    }
+
+    $('#discount_amount').on('input', function () { calculateTotals(); });
+    $('#paid-amount').on('input',     function () { calculateTotals(); });
+    $('#area').on('change',           function () { calculateTotals(); });
+
+    // ── COUPON ─────────────────────────────────────────────────────────────────
+    $('#apply_coupon_btn').on('click', function () {
+        let code     = $('#coupon_code').val();
+        let subtotal = getSubtotal();
+
+        if (!code) { alert('Enter coupon code'); return; }
+
+        $.ajax({
+            url  : "{{ route('admin-apply-coupon') }}",
+            type : "POST",
+            data : {
+                _token   : "{{ csrf_token() }}",
+                code     : code,
+                subtotal : subtotal
+            },
+            success: function (res) {
+                if (!res.success) { alert(res.message); return; }
+
+                couponDiscount = parseFloat(res.discount);
+                $('#coupon_id').val(res.coupon_id);
+                $('#coupon_discount').val(couponDiscount);
+
+                alert(res.message);
+                calculateTotals();
             }
         });
+    });
 
-        // Also validate when the field loses focus
-        document.getElementById('customer_phone').addEventListener('blur', function() {
-            const phoneInput = this.value;
-            const phoneFeedback = document.getElementById('phoneFeedback');
-            const regex = /^(01[3-9]\d{8})$/;
+    // ─── PHONE VALIDATION ──────────────────────────────────────────────────────
+    const phoneRegex = /^(01[3-9]\d{8})$/;
 
-            if (phoneInput === '') {
-                phoneFeedback.textContent = 'Phone number is required';
-            } else if (!regex.test(phoneInput)) {
-                phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
-            }
-        });
-    </script>
+    document.getElementById('customer_phone').addEventListener('input', function () {
+        const phoneFeedback = document.getElementById('phoneFeedback');
+        if (this.value === '') {
+            phoneFeedback.textContent = '';
+            phoneFeedback.className = 'small text-danger';
+        } else if (!phoneRegex.test(this.value)) {
+            phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
+            phoneFeedback.className = 'small text-danger';
+        } else {
+            phoneFeedback.textContent = 'Valid phone number!';
+            phoneFeedback.className = 'small text-success';
+        }
+    });
+
+    document.getElementById('customer_phone').addEventListener('blur', function () {
+        const phoneFeedback = document.getElementById('phoneFeedback');
+        if (this.value === '') {
+            phoneFeedback.textContent = 'Phone number is required';
+            phoneFeedback.className = 'small text-danger';
+        } else if (!phoneRegex.test(this.value)) {
+            phoneFeedback.textContent = 'Please enter a valid Bangladeshi phone number (e.g. 0171XXXXXXX)';
+            phoneFeedback.className = 'small text-danger';
+        }
+    });
+</script>
 @endpush
