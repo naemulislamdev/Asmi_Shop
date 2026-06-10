@@ -123,6 +123,21 @@ class AuthController extends Controller
 
             // Clear OTP — single-use.
             $user->otp = null;
+
+            // Accounts that never chose their own password (auto-created via
+            // checkout, or empty password): reset it to the phone number so
+            // phone+password sign-in works and the app can tell the user
+            // "your password is your phone number" (force_password_change=1).
+            $neverChosePassword = empty($user->password)
+                || (Schema::hasColumn('users', 'force_password_change')
+                    && (int) ($user->force_password_change ?? 0) === 1);
+            if ($neverChosePassword) {
+                $user->password = bcrypt($user->phone);
+                if (Schema::hasColumn('users', 'force_password_change')) {
+                    $user->force_password_change = 1;
+                }
+            }
+
             $user->save();
 
             // 30-day TTL for OTP-issued tokens.
@@ -210,7 +225,11 @@ class AuthController extends Controller
 
             if (!$user) {
                 $autoEmail    = $last10 . '@asmi.local';
-                $autoPassword = 'asmi_' . substr($last10, -6) . '_2026';
+                // Auto-created accounts: default password = the phone number
+                // itself, so the customer can sign in with phone+password
+                // right away. force_password_change=1 lets the app show
+                // "your password is your phone number — please change it".
+                $autoPassword = $phone;
 
                 $user                        = new User();
                 $user->name                  = $order->customer_name ?: 'Customer';

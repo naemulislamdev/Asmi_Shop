@@ -34,6 +34,9 @@ class UserResource extends JsonResource
         'affilate_code' => $this->affilate_code,
         'affilate_income' => $this->affilate_income,
         'ban' => $this->ban,
+        // 1 = account still uses its default password (the phone number);
+        // the app shows "your password is your phone number" until changed.
+        'force_password_change' => (int) ($this->force_password_change ?? 0),
       ];
     }
 }

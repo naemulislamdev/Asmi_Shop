@@ -129,6 +129,11 @@ class ProfileController extends Controller
             if (Hash::check($request->current_password, $user->password)) {
                 if ($request->new_password == $request->renew_password) {
                     $input['password'] = Hash::make($request->new_password);
+                    // User picked their own password — stop telling the app
+                    // that the password is still the default (phone number).
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'force_password_change')) {
+                        $input['force_password_change'] = 0;
+                    }
                 } else {
                     return response()->json(['status' => true, 'data' => [], 'error' => ['message' => 'Confirm password does not match.']]);
                 }
