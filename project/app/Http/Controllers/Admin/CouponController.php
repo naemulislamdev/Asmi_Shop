@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helpers\PriceHelper;
 use App\Models\Category;
 use App\Models\Childcategory;
 use App\Models\Coupon;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
-use Yajra\DataTables\DataTables;
+use Datatables;
+use Validator;
 
 class CouponController extends AdminBaseController
 {
@@ -19,13 +18,13 @@ class CouponController extends AdminBaseController
     {
         $datas = Coupon::latest('id')->get();
         //--- Integrating This Collection Into Datatables
-        return DataTables::of($datas)
+        return Datatables::of($datas)
             ->editColumn('type', function (Coupon $data) {
                 $type = $data->type == 0 ? "Discount By Percentage" : "Discount By Amount";
                 return $type;
             })
             ->editColumn('price', function (Coupon $data) {
-                $price = $data->type == 0 ? $data->price . '%' : PriceHelper::showAdminCurrencyPrice($data->price * $this->curr->value);
+                $price = $data->type == 0 ? $data->price . '%' : \PriceHelper::showAdminCurrencyPrice($data->price * $this->curr->value);
                 return $price;
             })
             ->addColumn('status', function (Coupon $data) {
@@ -87,10 +86,10 @@ class CouponController extends AdminBaseController
         $data->fill($input)->save();
         //--- Logic Section Ends
 
-        //--- Redirect Section
+        //--- Redirect Section        
         $msg = __('New Data Added Successfully.') . '<a href="' . route("admin-coupon-index") . '">' . __("View Coupon Lists") . '</a>';
         return response()->json($msg);
-        //--- Redirect Section Ends
+        //--- Redirect Section Ends   
     }
 
     //*** GET Request
@@ -137,10 +136,10 @@ class CouponController extends AdminBaseController
         $data->update($input);
         //--- Logic Section Ends
 
-        //--- Redirect Section
+        //--- Redirect Section     
         $msg = __('Data Updated Successfully.') . '<a href="' . route("admin-coupon-index") . '">' . __("View Coupon Lists") . '</a>';
         return response()->json($msg);
-        //--- Redirect Section Ends
+        //--- Redirect Section Ends           
     }
     //*** GET Request Status
     public function status($id1, $id2)
@@ -160,9 +159,9 @@ class CouponController extends AdminBaseController
     {
         $data = Coupon::findOrFail($id);
         $data->delete();
-        //--- Redirect Section
+        //--- Redirect Section     
         $msg = __('Data Deleted Successfully.');
         return response()->json($msg);
-        //--- Redirect Section Ends
+        //--- Redirect Section Ends   
     }
 }

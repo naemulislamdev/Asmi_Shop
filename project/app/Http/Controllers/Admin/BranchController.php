@@ -23,11 +23,11 @@ class BranchController extends Controller
                 $ns = $data->status == 0 ? 'selected' : '';
                 return '<div class="action-list"><select class="process select droplinks ' . $class . '"><option data-val="1" value="' . route('admin-branch-status', ['id1' => $data->id, 'id2' => 1]) . '" ' . $s . '>' . __("Activated") . '</option><option data-val="0" value="' . route('admin-branch-status', ['id1' => $data->id, 'id2' => 0]) . '" ' . $ns . '>' . __("Deactivated") . '</option></select></div>';
             })
-            ->editColumn('address', function ($row) {
-                return $row->address;
-            })
             ->addColumn('action', function (Branch $data) {
                 return '<div class="action-list"><a href="' . route('admin-branch-edit', $data->id) . '"> <i class="fas fa-edit"></i>' . __('Edit') . '</a><a href="javascript:;" data-href="' . route('admin-branch-delete', $data->id) . '" data-toggle="modal" data-target="#confirm-delete" class="delete"><i class="fas fa-trash-alt"></i></a></div>';
+            })
+            ->editColumn('address', function ($row) {
+                return $row->address;
             })
             ->rawColumns(['status', 'action', 'address'])
             ->toJson(); //--- Returning Json Data To Client Side

@@ -132,7 +132,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <!-----Export button dropdown----->
                     <div class="btn-group float-right">
                         <a href="{{ route('admin-order-create') }}" class="btn btn-primary mr-2">
@@ -180,6 +180,8 @@
                                             {{ __('Completed') }}</option>
                                         <option value="cancelled">
                                             {{ __('Cancel') }}</option>
+                                        <option value="return">
+                                            {{ __('Return') }}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-1">
@@ -336,8 +338,8 @@
     <!--Branch modal -->
     <!-- Branch Modal -->
     <div class="modal fade" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered w-100" role="document">
-            <form id="branchForm" class="w-100">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <form id="branchForm">
                 @csrf
                 <input type="hidden" name="order_id" id="branch_order_id">
                 <div class="modal-content">
@@ -402,7 +404,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exportModalLabel">Export Expired Products</h5>
+                    <h5 class="modal-title" id="exportModalLabel">Export Orders</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -449,7 +451,7 @@
         <div class="note-modal-box">
 
             <div class="note-modal-header">
-                <span class="note-modal-title">📄 Status Note</span>
+                <span class="note-modal-title">? Status Note</span>
                 <span style="height: 30px; width: 30px; text-align: center;line-height: 30px" title="Close"
                     class="note-modal-close border rounded-circle border-danger ">&times;</span>
             </div>
@@ -468,6 +470,7 @@
 
 @section('scripts')
     {{-- DATA TABLE --}}
+
     <script type="text/javascript">
         var currentStatus = 'all';
         (function($) {

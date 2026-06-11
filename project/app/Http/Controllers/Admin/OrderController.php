@@ -82,7 +82,6 @@ class OrderController extends AdminBaseController
         } elseif ($status == 'today-orders') {
             $query->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
         }
-        // 'none' = all orders page, তখন dropdown filter কাজ করবে
 
         // Dropdown status filter — শুধু 'none' page-এ কাজ করবে
         $filterStatus = $request->get('status');
@@ -107,7 +106,7 @@ class OrderController extends AdminBaseController
 
         $query->latest('id');
 
-        return DataTables::eloquent($query) // eloquent() ব্যবহার করুন, of() না
+        return DataTables::eloquent($query)
             ->editColumn('customer_address', function (Order $data) {
                 return Str::limit($data->customer_address, 30, '...');
             })
@@ -224,6 +223,7 @@ class OrderController extends AdminBaseController
             ->rawColumns(['date', 'branch', 'customer_address', 'id', 'status', 'custom_note', 'customer_name', 'order_source', 'action'])
             ->toJson();
     }
+
     public function assignBranch(Request $request)
     {
         $request->validate([
@@ -639,54 +639,6 @@ class OrderController extends AdminBaseController
     }
 
     //*** POST Request
-    // public function update(Request $request, $id)
-    // {
-
-    //     $data = Order::findOrFail($id);
-    //     $input = $request->all();
-
-
-    //     if ($request->has('status')) {
-    //         $data->payment_status = $input['payment_status'];
-    //         $data->status = $input['status'];
-    //         if ($input['status'] == 'cancelled') {
-    //             if ($data->user) {
-    //                 $data->user->decrement('wallet_points', $data->loyalty_point);
-    //             }
-    //         }
-
-    //         if ($input['status'] == 'completed') {
-    //             if ($data->user) {
-    //                 $data->user->increment('wallet_points', $data->loyalty_point);
-    //             }
-    //         }
-    //         $data->update();
-
-    //         if ($request->track_text) {
-    //             $title = ucwords($request->status);
-    //             $ck = OrderTrack::where('order_id', '=', $id)->where('title', '=', $title)->first();
-    //             if ($ck) {
-    //                 $ck->order_id = $id;
-    //                 $ck->title = $title;
-    //                 $ck->text = $request->track_text;
-    //                 $ck->update();
-    //             } else {
-    //                 $data = new OrderTrack;
-    //                 $data->order_id = $id;
-    //                 $data->title = $title;
-    //                 $data->text = $request->track_text;
-    //                 $data->save();
-    //             }
-    //         }
-    //         $msg = __('Status Updated Successfully.');
-    //         return response()->json($msg);
-    //     }
-
-
-    //     $data->update($input);
-    //     $msg = __('Data Updated Successfully.');
-    //     return redirect()->back()->with('success', $msg);
-    // }
     public function update(Request $request, $id)
     {
         //--- Logic Section

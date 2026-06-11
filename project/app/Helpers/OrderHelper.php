@@ -49,7 +49,7 @@ class OrderHelper
         } catch (\Exception $e) {
         }
     }
-
+    
     public static function get_customer_check($request = null)
     {
         // Already logged in (session + remember me)

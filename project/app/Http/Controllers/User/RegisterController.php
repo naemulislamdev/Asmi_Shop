@@ -101,7 +101,11 @@ class RegisterController extends Controller
             $notification->user_id = $user->id;
             $notification->save();
             Auth::guard('web')->login($user);
-            return response()->json(1);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Registration successful. Please wait while we redirect you.',
+                'redirect_url' => route('user-dashboard')
+            ]);
         }
 
     }

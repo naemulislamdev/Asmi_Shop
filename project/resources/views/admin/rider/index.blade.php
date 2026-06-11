@@ -129,50 +129,92 @@
 
     <script type="text/javascript">
         (function($) {
-            "use strict";
+                "use strict";
 
-            var table = $('#geniustable').DataTable({
-                ordering: false,
-                responsive: true,
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('admin-rider-datatables') }}',
-                columns: [{
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'phone',
-                        name: 'phone'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'branch',
-                        name: 'branch'
-                    },
-                    {
-                        data: 'total_delivery',
-                        name: 'total_delivery'
-                    },
-                    {
-                        data: 'action',
-                        searchable: false,
-                        orderable: false
-                    }
-                ],
-                language: {
-                    processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">'
-                },
-                drawCallback: function(settings) {
-                    $('.select').niceSelect();
-                }
-            });
+                <<
+                << << < HEAD
+                var table = $('#geniustable').DataTable({
+                            ordering: false,
+                            responsive: true,
+                            processing: true,
+                            serverSide: true,
+                            ajax: '{{ route('admin-rider-datatables') }}',
+                            columns: [{
+                                    data: 'name',
+                                    name: 'name'
+                                },
+                                {
+                                    data: 'phone',
+                                    name: 'phone'
+                                },
+                                {
+                                    data: 'email',
+                                    name: 'email'
+                                },
+                                {
+                                    data: 'branch',
+                                    name: 'branch'
+                                },
+                                {
+                                    data: 'total_delivery',
+                                    name: 'total_delivery'
+                                },
+                                {
+                                    data: 'action',
+                                    searchable: false,
+                                    orderable: false
+                                }
+                            ],
+                            language: {
+                                processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">' ===
+                                    === = <
+                                    script type = "text/javascript" >
+                                    (function($) {
+                                        "use strict";
+
+                                        var table = $('#geniustable').DataTable({
+                                            ordering: false,
+                                            responsive: true,
+                                            processing: true,
+                                            serverSide: true,
+                                            ajax: '{{ route('admin-rider-datatables') }}',
+                                            columns: [{
+                                                    data: 'name',
+                                                    name: 'name'
+                                                },
+                                                {
+                                                    data: 'phone',
+                                                    name: 'phone'
+                                                },
+                                                {
+                                                    data: 'email',
+                                                    name: 'email'
+                                                },
+                                                {
+                                                    data: 'branch',
+                                                    name: 'branch'
+                                                },
+                                                {
+                                                    data: 'total_delivery',
+                                                    name: 'total_delivery'
+                                                },
+                                                {
+                                                    data: 'action',
+                                                    searchable: false,
+                                                    orderable: false
+                                                }
+                                            ],
+                                            language: {
+                                                processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">' >>>
+                                                    >>> > a5f17146630c9f7b2c5fb425c16e81a23cb7a0d7
+                                            },
+                                            drawCallback: function(settings) {
+                                                $('.select').niceSelect();
+                                            }
+                                        });
 
 
-        })(jQuery);
+                                    })(jQuery);
     </script>
 
     {{-- DATA TABLE --}}

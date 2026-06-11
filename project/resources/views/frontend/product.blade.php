@@ -23,8 +23,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                    Breadcumb style start
-                                                                                                                                                                                                                =====================================*/
+                                                                                                                                                                                                                Breadcumb style start
+                                                                                                                                                                                                            =====================================*/
 
         .custom-breadcrumb {
             display: flex;
@@ -75,8 +75,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                                Breadcumb style End
-                                                                                                                                                                                                                =====================================*/
+                                                                                                                                                                                                                            Breadcumb style End
+                                                                                                                                                                                                            =====================================*/
 
         .single-product-details-content-wrapper .qty-box,
         .single-product-details-content-wrapper .add-btn-wrapper {
@@ -94,8 +94,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                                Promo Offer style start
-                                                                                                                                                                                                                 =====================================*/
+                                                                                                                                                                                                                            Promo Offer style start
+                                                                                                                                                                                                             =====================================*/
 
         .promoOfferWrap {
             padding: 10px 0 4px;
@@ -282,8 +282,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                Promo Offer style End
-                                                                                                                                                                                                            =====================================*/
+                                                                                                                                                                                                            Promo Offer style End
+                                                                                                                                                                                                        =====================================*/
 
 
         .discount-pill {
@@ -320,8 +320,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                                    Flash Deal timer style Start
-                                                                                                                                                                                ========================================== */
+                                                                                                                                                                                Flash Deal timer style Start
+                                                                                                                                                                            ========================================== */
         .product-countdown {
             margin-top: 30px;
             background: #E1F5EE;
@@ -382,8 +382,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                                                                    Flash Deal timer style End
-                                                                                                                                                                                                                ========================================== */
+                                                                                                                                                                                                                Flash Deal timer style End
+                                                                                                                                                                                                            ========================================== */
         /* stock and sku section */
         .product-meta-flex {
             display: flex;
@@ -1317,7 +1317,7 @@
                             <div class="promoOfferLabel">
                                 🎁 বিশেষ অফার
                             </div>
-
+                            @endif
                             @if ($productt->stock > 0 || $productt->preordered == 2)
                                 @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
                                     @if ($existingQty == 0)
@@ -1330,9 +1330,6 @@
                                                 <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
                                             </button>
                                         </div>
-                                    @endif
-                                @endif
-                            @endif
                         </div>
 
                         <div class="promoOfferCard promoOfferCard--amber">

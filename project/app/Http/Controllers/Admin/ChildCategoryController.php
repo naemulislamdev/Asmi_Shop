@@ -22,7 +22,7 @@ class ChildCategoryController extends AdminBaseController
             ->addColumn('category', function (Childcategory $data) {
                 return $data->subcategory->category->name;
             })
-            ->addColumn('featured', function (Childcategory $data) {
+          ->addColumn('featured', function (Childcategory $data) {
                 $class = $data->featured == 1 ? 'drop-success' : 'drop-danger';
                 $s = $data->featured == 1 ? 'selected' : '';
                 $ns = $data->featured == 0 ? 'selected' : '';
@@ -57,18 +57,6 @@ class ChildCategoryController extends AdminBaseController
     {
         return view('admin.childcategory.index');
     }
-
-    public function featured($id1, $id2)
-    {
-        $data = Childcategory::findOrFail($id1);
-        $data->featured  = $id2;
-        $data->update();
-        //--- Redirect Section
-        $msg = __('Featured Status Updated Successfully.');
-        return response()->json($msg);
-        //--- Redirect Section Ends
-    }
-
 
     //*** GET Request
     public function create()
@@ -111,6 +99,18 @@ class ChildCategoryController extends AdminBaseController
         return response()->json($msg);
         //--- Redirect Section Ends
     }
+
+    public function featured($id1, $id2)
+    {
+        $data = Childcategory::findOrFail($id1);
+        $data->featured  = $id2;
+        $data->update();
+        //--- Redirect Section
+        $msg = __('Featured Status Updated Successfully.');
+        return response()->json($msg);
+        //--- Redirect Section Ends
+    }
+
 
     //*** GET Request
     public function edit($id)

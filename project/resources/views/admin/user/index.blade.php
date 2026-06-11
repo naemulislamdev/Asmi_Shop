@@ -215,11 +215,15 @@
                     },
                     {
                         data: 'total_orders',
-                        name: 'total_orders'
+                        name: 'total_orders',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         data: 'total_points',
-                        name: 'total_points'
+                        name: 'total_points',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         data: 'action',

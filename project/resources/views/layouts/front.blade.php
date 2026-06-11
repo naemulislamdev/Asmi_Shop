@@ -6,73 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="https://asmishop.com/">
-    <!--Essential css files-->
-    {{-- json Schema start --}}
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@graph": [
-                {
-                    "@type": "WebSite",
-                    "@id": "https://asmishop.com/#website",
-                    "name": "Asmi Shop",
-                    "url": "https://asmishop.com/",
-                    "potentialAction": {
-                        "@type": "SearchAction",
-                        "target": {
-                            "@type": "EntryPoint",
-                            "urlTemplate": "https://asmishop.com/category?search={search_term_string}"
-                        },
-                        "query-input": "required name=search_term_string"
-                    }
-                },
-                {
-                    "@type": "ItemList",
-                    "name": "Asmi Shop Important Pages",
-                    "itemListElement": [
-                        {
-                            "@type": "ListItem",
-                            "position": 1,
-                            "name": "Food",
-                            "url": "https://asmishop.com/category/food"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 2,
-                            "name": "Our Special Offers",
-                            "url": "https://asmishop.com/offers"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 3,
-                            "name": "Fish",
-                            "url": "https://asmishop.com/category/food/Meat-and-fish/fish"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 4,
-                            "name": "Baby Food & Care",
-                            "url": "https://asmishop.com/category/baby-food-and-care"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 6,
-                            "name": "Our Outlets",
-                            "url": "https://asmishop.com/outlets"
-                        },
-                        {
-                            "@type": "ListItem",
-                            "position": 7,
-                            "name": "Contact Us",
-                            "url": "https://asmishop.com/contact"
-                        }
-                    ]
-                }
-            ]
-        }
-        </script>
-    {{-- json Schema end --}}
 
+    <!--Essential css files-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
 
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/all.css">
@@ -84,8 +20,6 @@
     <link rel="stylesheet" href="{{ asset('assets/front/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/datatables.min.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/swiper-bundle.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/glightbox.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/front') }}/css/pharmacy.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/style.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/custom.css">
 
@@ -153,7 +87,7 @@
         }
 
         .gs-explore-product-section {
-            padding: 22px 0px;
+            padding: 0px;
         }
 
         .gs-offer-section {
@@ -181,14 +115,9 @@
         .gs-single-cat .cate-img {
             width: 190px;
             height: 190px;
-            border-radius: 0;
             border: 0px solid #858585;
+            border-radius: 0;
             margin-bottom: 4px;
-        }
-
-        .gs-single-cat {
-            background: #2cc1db;
-            border-radius: 12px;
         }
 
         .gs-single-cat .title {
@@ -214,17 +143,9 @@
             margin-top: 5px;
         }
 
-        /* .single-product .img-wrapper .product-badge,
-        .single-product-list-view .img-wrapper .product-badge {
-            width: 70px;
-            padding: 3px 6px;
-            border-radius: 4px;
-            background: #1bb9cb;
-            font-size: 12px;
-            font-weight: 600;
-        } */
 
-        /* from ai */
+
+        /* for discount box*/
         .single-product .discount-box span {
             position: relative;
             display: inline-block;
@@ -235,7 +156,32 @@
             padding: 4px 8px;
             text-align: center;
             font-family: "Rubik", sans-serif;
+            z-index: 999;
+
         }
+
+        .flash_timer {
+            background: #fff12e;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 5px 5px;
+            min-width: 80px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 11px;
+        }
+
+        @media (min-width: 0px) and (max-width: 600px) {
+            .single-product .discount-box span::after {
+                bottom: -3px;
+                height: 3px;
+                background-size: 7px 7px;
+            }
+
+            .flash_timer {
+                font-size: 10px;
+            }
+        }
+
 
         .single-product .discount-box span small {
             display: block;
@@ -256,8 +202,22 @@
             background-size: 7px 7px;
         }
 
-        /* from ai */
+        .single-product {
+            height: 100% !important;
+            width: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: left !important;
 
+        }
+
+        .row {
+            align-items: stretch;
+        }
+
+        /* from ai */
         .outofstock-box {
             position: absolute;
             top: 0;
@@ -279,18 +239,10 @@
             border-radius: 5px;
         }
 
-        .flash_timer {
-            background: #fff12e;
-            border: 2px solid #ff9800;
-            border-radius: 8px;
-            padding: 5px 5px;
-            min-width: 80px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
 
         .single-product {
             border: 1px solid #ddd;
-            border-radius: 10px
+
         }
 
         * .container {
@@ -302,7 +254,7 @@
         }
 
         .searchResults::-webkit-scrollbar-thumb {
-            background: #1bb9cb;
+            background: #1598a7;
             border-radius: 10px;
         }
 
@@ -312,6 +264,7 @@
 
         .single-product .img-wrapper {
             background: #fff;
+
         }
 
         .mobile-offcanvas button:not(.collapsed) i.fa-plus {
@@ -325,10 +278,6 @@
         .product-cat-widget {
             padding-top: 24px;
             padding-bottom: 90px !important;
-        }
-
-        .single-product:hover {
-            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         }
 
         .gs-single-cat:hover .title {
@@ -367,7 +316,6 @@
                 position: relative;
                 left: -30px;
             }
-
         }
 
         .outofstock-box-2 {
@@ -384,9 +332,9 @@
             .single-product-list-view .img-wrapper {
                 overflow: hidden;
                 position: relative;
-                height: 127px !important;
-                object-fit: contain !important;
+                /* height: 180px !important; */
             }
+
 
             .single-product .img-wrapper a {
                 display: block;
@@ -398,46 +346,59 @@
             .single-product .img-wrapper .product-img,
             .single-product-list-view .img-wrapper .product-img {
                 width: 100%;
-                height: 100% !important;
                 object-fit: contain;
             }
 
-            .offer-popup {
-                top: 120px !important;
+            .single-product .content-wrapper a {
+                font-size: 13px !important;
             }
 
         }
 
-        .chat-item {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 22px;
-            text-decoration: none;
-            transition: transform 0.2s;
+        .mobile-offcanvas {
+            height: calc(100vh - 70px) !important;
+            padding-bottom: 100px !important;
+            margin-bottom: 100px important;
+            overflow-y: auto;
         }
 
-        .social-item {
-            width: 52px;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            color: #fff;
-            font-size: 22px;
-            text-decoration: none;
-            transition: transform 0.2s;
+        .slick-slider {
+            margin-bottom: 25px;
         }
 
-        .chat-item:hover {
-            transform: scale(1.1);
-            color: #fff;
+        .single-product .content-wrapper a {
+            color: #111;
+            font-size: 15px;
         }
+
+        .single-product .content-wrapper a:hover {
+            color: #1598a7;
+        }
+
+        @media (max-width: 768px) {
+            .product-colum {
+                padding: 0 9px !important;
+            }
+
+            .row.gy-2 {
+                --bs-gutter-y: 15px !important;
+            }
+        }
+
+        .gs-explore-product-section {
+            padding-bottom: 20px;
+        }
+
+        @media (min-width: 992px) {
+            .swiper.home-category-slider {
+                height: 222px;
+            }
+
+            .single-product .img-wrapper {
+                height: 200px;
+            }
+        }
+
 
         /*  For search placheloder animation*/
 
@@ -447,11 +408,11 @@
 
         .typing-placeholder {
             position: absolute;
-            left: 214px;
+            left: 192px;
             top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
-            color: #1bb9cb;
+            color: #1598a7;
             font-size: 14px;
             white-space: nowrap;
         }
@@ -476,16 +437,51 @@
         }
 
         .search-box input {
-            border-color: #1bb9cb !important;
+            border-color: #1598a7 !important;
         }
 
         .search-box input::placeholder {
-            color: #1bb9cb;
+            color: #1598a7;
         }
 
-        #popup-modal .modal-content {
-            background-color: transparent !important;
-            border: none !important;
+        .mobile-category-box {
+            padding: 0 11px;
+            margin-bottom: 11px;
+        }
+
+        @media (max-width: 768px) {
+            .typing-placeholder {
+                left: 203px;
+            }
+
+            .search-box.d-lg-none {
+                padding: 0 !important;
+            }
+
+            .category-item img {
+                object-fit: cover !important;
+            }
+
+            .mobile-category-box {
+                padding: 0 5px !important;
+
+            }
+
+            .countdown-box .time-box {
+                min-width: 60px;
+            }
+
+            .add-cart-btn.btn-info {
+                padding: 3px 5px;
+            }
+
+            .offer-popup {
+                top: 120px !important;
+            }
+        }
+
+        .searchResults {
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
         }
     </style>
     <style>
@@ -569,63 +565,72 @@
         .offer-btn:hover {
             background: #e64a19;
         }
-
-        /* header changes 1 May 26 */
-        .qty-btn.disabled {
-            opacity: 0.4;
-            pointer-events: none;
-        }
-
-        @media (max-width: 768px) {
-            .offer-popup {
-                top: 120px !important;
-            }
-        }
-    </style>
-
-    <style>
-        .card-timer-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: #e4f8fb;
-            border: hsl(188, 74%, 94%);
-            color: #0d988d;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
-        .cd-unit {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            line-height: 1.1;
-        }
-
-        .cd-unit span {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .cd-unit small {
-            font-size: 8px;
-            /* label খুব ছোট */
-            font-weight: 400;
-            color: #0d988d;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .cd-sep {
-            color: #f59e0b;
-            font-size: 13px;
-            margin-bottom: 8px;
-            /* separator উপরে রাখতে */
-        }
     </style>
     <style>
+        /* ✅ Toastr Global */
+        #toast-container>div {
+            background-position: 15px center !important;
+            background-size: 20px !important;
+            padding: 12px 12px 12px 50px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+            opacity: 1 !important;
+            min-width: 250px !important;
+        }
+
+        #toast-container .toast-close-button {
+            color: #fff !important;
+            font-size: 16px !important;
+        }
+
+        #toast-container .toast-progress {
+            opacity: 0.4 !important;
+        }
+
+        /* ✅ Success */
+        #toast-container .toast-success {
+            background-color: #27ae60 !important;
+            color: #fff !important;
+        }
+
+        #toast-container .toast-success .toast-message,
+        #toast-container .toast-success .toast-title {
+            color: #fff !important;
+        }
+
+        /* ⚠️ Warning */
+        #toast-container .toast-warning {
+            background-color: #f39c12 !important;
+            color: #fff !important;
+        }
+
+        #toast-container .toast-warning .toast-message,
+        #toast-container .toast-warning .toast-title {
+            color: #fff !important;
+        }
+
+        /* ❌ Error */
+        #toast-container .toast-error {
+            background-color: #e74c3c !important;
+            color: #fff !important;
+        }
+
+        #toast-container .toast-error .toast-message,
+        #toast-container .toast-error .toast-title {
+            color: #fff !important;
+        }
+
+        /* ℹ️ Info */
+        #toast-container .toast-info {
+            background-color: #2980b9 !important;
+            color: #fff !important;
+        }
+
+        #toast-container .toast-info .toast-message,
+        #toast-container .toast-info .toast-title {
+            color: #fff !important;
+        }
+
         .qty-btn.disabled {
             opacity: 0.4;
             pointer-events: none;
@@ -653,13 +658,93 @@
             font-size: 1.1rem;
         }
     </style>
+
+    <style>
+        .card-timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .cd-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+
+        .cd-unit span {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .cd-unit small {
+            font-size: 8px;
+            /* label খুব ছোট */
+            font-weight: 400;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .cd-sep {
+            color: #f59e0b;
+            font-size: 13px;
+            margin-bottom: 8px;
+            /* separator উপরে রাখতে */
+        }
+
+        @media (min-width: 992px) {
+            .heroSlider {
+                height: 47vh;
+                max-height: 47vh;
+            }
+        }
+
+        @media (max-width: 991px) {
+            .heroSlider {
+                height: 15vh;
+                max-height: 15vh;
+            }
+        }
+
+        .heroSlider .swiper-slide {
+            height: 100%;
+        }
+
+        .heroSlider .swiper-slide a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .heroSlider .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .cate-title h6 {
+                font-size: 13px;
+            }
+        }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/customize.css">
     <!-- Meta Pixel Code -->
 
     <!-- Google Tag Manager -->
-    {{-- <script>
+    <script>
         (function(w, d, s, l, i) {
             w[l] = w[l] || [];
             w[l].push({
@@ -674,7 +759,7 @@
                 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
             f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-NGVKWTDQ');
-    </script> --}}
+    </script>
     <!-- End Google Tag Manager -->
 </head>
 
@@ -697,6 +782,7 @@
     <!-- header area -->
     @include('includes.frontend.header')
 
+
     <!-- Desktop Sidebar Start -->
     <aside id="sidebar" class="sidebar active pt-4 shadow">
 
@@ -704,25 +790,26 @@
         <div class="offers-container">
             @foreach ($categories as $category)
                 @if ($category->name == 'Family Pack')
-                    <a style="font-size: 15px; color: #1bb9cb" href="{{ route('front.category', $category->slug) }}">
+                    <a style="font-size: 15px; color: #1598a7" href="{{ route('front.category', $category->slug) }}">
 
                         {{ $category->name }}
                         <img class="rounded ms-3" style="width: 50px"
-                            src="{{ asset('assets/images/categories') }}/{{ $category->image }}" alt="">
+                            src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                            alt="{{ $category->name }}">
                     </a>
                 @endif
             @endforeach
             <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center mb-2 ">
-                <p style="font-size: 15px; color: #1bb9cb" class="pb-0 mb-0">
+                <p style="font-size: 15px; color: #1598a7" class="pb-0 mb-0 d-flex">
                     Offers
-                    <span class="offer-outline-btn">
+                    <span class="offer-outline-btn ms-3">
                         {{ App\Models\Product::where('discount', '>', 0)->count() }}
                     </span>
-                    <img class="ms-3" style="width: 100px; height: auto;"
-                        src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
+
                 </p>
+                <img class="ms-3" style="width: 100px; height: auto;"
+                    src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
             </a>
-            <a class="btn btn-sm btn-success mb-3" href="{{ route('pharmacy.index') }}">Pharmacy 🩺</a>
             {{-- <a href="#" class="d-flex gap-2 align-items-center mb-2 offers">
                 <p class="pb-0 mb-0">Egg Club</p>
             </a> --}}
@@ -826,10 +913,9 @@
                         @else
                             <a href="{{ route('front.category', $category->slug) }}"
                                 class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
-
                                 <img class="rounded me-1" style="width: 30px"
                                     src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
-                                    alt="">
+                                    alt="{{ $category->name }}">
                                 {{ $category->name }}
                             </a>
                         @endif
@@ -844,8 +930,19 @@
     <!-- Mobile Offcanvas Start-->
     <div id="mobile-offcanvas" class="mobile-offcanvas shadow ">
         <div class="offers-container mb-0">
-            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center align-items-stretch">
-                <p style="font-size: 15px; color: #1bb9cb" class="pb-0 mb-0">
+            @foreach ($categories as $category)
+                @if ($category->name == 'Family Pack')
+                    <a style="font-size: 15px; color: #1598a7" href="{{ route('front.category', $category->slug) }}">
+
+                        {{ $category->name }}
+                        <img class="rounded ms-3" style="width: 50px"
+                            src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                            alt="{{ $category->name }}">
+                    </a>
+                @endif
+            @endforeach
+            <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center">
+                <p style="font-size: 15px; color: #1598a7" class="pb-0 mb-0">
                     Offers
                     <span class="offer-outline-btn">
                         {{ App\Models\Product::where('discount', '>', 0)->count() }}
@@ -937,14 +1034,15 @@
                     @else
                         <a href="{{ route('front.category', $category->slug) }}"
                             class="{{ Request::segment(2) === $category->slug ? 'active' : '' }}">
-
+                            <img class="rounded me-1" style="width: 30px"
+                                src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
+                                alt="{{ $category->name }}">
                             {{ $category->name }}
                         </a>
                     @endif
                 </li>
             @endforeach
         </ul>
-
 
     </div>
     <!-- Mobile Offcanvas End-->
@@ -972,12 +1070,17 @@
 
     <div class="overlay"></div>
     <!-- Main Content -->
-    <main id="main-content" class="main-content ">
+    <main id="main-content" class="main-content">
 
         @yield('content')
 
-        @if (!request()->is('career') && !request()->is('career/*'))
-            <div class="container product-cart-offcanvas">
+        @if (
+            !request()->is('career') &&
+                !request()->is('career/*') &&
+                !request()->is('outlets') &&
+                !request()->is('outlets/*') &&
+                Route::currentRouteName() !== 'front.outlets')
+            <div class="container product-cart-offcanvas position-relative">
                 <div class="text-end position-fixed" style="right: 1%; top: 50%; z-index: 999">
                     @php
                         $cartObject = Session::has('cart') ? Session::get('cart') : null;
@@ -989,7 +1092,7 @@
                         <div class="cart-top">
                             <img style="height: 40px; width: auto" src="{{ asset('assets/front/images/bag.gif ') }}"
                                 alt="bag" />
-                            <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Items</p>
+                            <p><span class="cart-count">{{ $cartItems ? count($cartItems) : 0 }}</span> Item</p>
                         </div>
 
                         <div class="cart-bottom">
@@ -999,7 +1102,7 @@
 
                 </div>
 
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
+                <div class="offcanvas offcanvas-end cartOffCanva" tabindex="-1" id="offcanvasRight"
                     aria-labelledby="offcanvasRightLabel" data-bs-backdrop="false" data-bs-scroll="true">
                     <div class="offcanvas-header">
                         <h5 id="offcanvasRightLabel" class="mb-0 d-flex align-items-center">
@@ -1014,12 +1117,7 @@
                             Close
                         </button>
                     </div>
-                    <!-- Super Express Delivery -->
-                    <div style="background-color: #eee" class="p-1">
-                        <img style="height: 40px; width: auto"
-                            src="{{ asset('/assets/front/images/fast-delivery.png') }}" alt="fast delivery" />
-                        <strong style="font-size: 13px; margin-left: 8px">We deliver within 1 to 2 hours.</strong>
-                    </div>
+
                     <div class="offcanvas-body p-0 position-relative">
 
 
@@ -1029,75 +1127,32 @@
                         </div>
                         <!-- Cart Items end -->
                         <!-- cart footer start -->
-
-                        <div
-                            style=" position: sticky;
-                            left: 0;
-                            bottom: 0;
-                            height: 99px;
-                            background: #fff;">
+                        <div class="order-btn-box">
                             <a href="{{ route('front.checkout') }}" class="order-btn">
-                                <span class="order-text">Place Order</span>
+                                <span class="order-text">অর্ডার করুন</span>
                                 <span
-                                    class="order-price total_price">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
+                                    class="order-price total_price text-start">{{ $cartObject ? $cartObject->totalPrice : 0 }}</span>
                             </a>
                         </div>
-
+                        <!-- cart footer end -->
                     </div>
 
-                    <!-- cart footer end -->
-                    <div class="left-close">
-                        <button data-bs-dismiss="offcanvas" title="close">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
+
                 </div>
             </div>
             <!-- cart offcanvas End -->
         @endif
-
         <!-- footer section -->
         @include('includes.frontend.footer')
         <!-- footer section -->
-
         {{-- Mobile bottom Shortcut Offer --}}
-        {{-- <div style="position: fixed; left: 0; bottom: -2px; width: 100%; height: auto; z-index: 9999; box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;"
-            class="bottom-bar bg-white shadow rounded-top d-block d-md-none">
-            <div class="d-flex align-items-center justify-content-between gap-3">
-                <div class="container mb-0 border-0 d-flex justify-content-between ">
-                    @foreach ($categories as $category)
-                        @if ($category->name == 'Family Pack')
-                            <a class="d-flex align-items-center mb-0" style="font-size: 14px; color: #1bb9cb"
-                                href="{{ route('front.category', $category->slug) }}">
-                                {{ $category->name }}
-                                <img class="rounded ms-2" style="width: 50px"
-                                    src="{{ asset('assets/images/categories') }}/{{ $category->image }}"
-                                    alt="">
-                            </a>
-                        @endif
-                    @endforeach
-                    <a href="{{ route('front.offers') }}" class=" ms-5 d-flex align-items-center p-0">
-                        <p style="font-size: 14px; color: #1bb9cb" class="pb-0 mb-0 d-flex">
-                            Offers
-                            <span class="ms-2 offer-outline-btn">
-                                {{ App\Models\Product::where('discount', '>', 0)->count() }}
-                            </span>
 
-                        </p>
-                        <img class="ms-2" style="width: 50px; height: auto;"
-                            src="{{ asset('assets/front/images/offer.gif') }}" alt="best offer">
-                    </a>
-
-
-                </div>
-            </div>
-        </div> --}}
     </main>
 
     <div id="offerPopup" class="offer-popup d-none">
         <div class="offer-header">
             <span>🎁 Special Offer Unlocked</span>
-            <button class="btn btn-sm btn-danger" onclick="closeOfferPopup()">X</button>
+            <button title="Close" class="btn btn-sm btn-danger" onclick="closeOfferPopup()">X</button>
         </div>
 
         <div id="offerList" class="offer-list"></div>
@@ -1125,22 +1180,23 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <!--Esential Js Files-->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="{{ asset('assets/front') }}/js/jquery.min.js"></script>
     <script src="{{ asset('assets/front') }}/js/slick.js"></script>
-    <script src="{{ asset('assets/front') }}/js/swiper-bundle.min.js"></script>
-    <script src="{{ asset('assets/front') }}/js/glightbox.min.js"></script>
+    <script src="{{ asset('assets/front') }}/js/jquery-ui.js"></script>
     <script src="{{ asset('assets/front') }}/js/nice-select.js"></script>
 
     <script src="{{ asset('assets/front') }}/js/wow.js"></script>
     <script src="{{ asset('assets/front') }}/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('assets/front') }}/js/swiper-bundle.min.js"></script>
+
     <script src="{{ asset('assets/front/js/toastr.min.js') }}"></script>
 
     <script src="{{ asset('assets/front') }}/js/script.js"></script>
     <script src="{{ asset('assets/front/js/myscript.js') }}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
     <script>
         const closeOfferPopup = () => {
             let popup = document.getElementById("offerPopup");
@@ -1150,15 +1206,11 @@
             setTimeout(() => popup.classList.add("show"), 10);
         }
     </script>
-
     <script>
         const lightbox = GLightbox({
-            selector: '.glightbox:not(.swiper-slide-duplicate)',
             touchNavigation: true,
             loop: true,
-            zoomable: true,
-            keyboardNavigation: true
-
+            zoomable: true
         });
     </script>
     <script>
@@ -1205,109 +1257,49 @@
             </script>';
         }
     @endphp
-    <!--Start of Tawk.to Script-->
-    {{-- --<script type="text/javascript">
-        var Tawk_API = Tawk_API || {},
-            Tawk_LoadStart = new Date();
-        (function() {
-            var s1 = document.createElement("script"),
-                s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = 'https://embed.tawk.to/68ce640071624f1929ac0656/1j5j3d8mt';
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0.parentNode.insertBefore(s1, s0);
-        })();
-    </script>--- --}}
-    <!--End of Tawk.to Script-->
 
     @yield('script')
+
     @stack('scripts')
-    <script>
-        const routeTemplate = "{{ route('front.conditional-product', ':sku') }}";
-    </script>
-    <script>
-        var cateSlider = new Swiper(".home-category-slider", {
-            slidesPerView: 6,
-            spaceBetween: 10,
-            loop: true,
-            speed: 500,
-            autoplay: {
-                delay: 2000,
-                disableOnInteraction: false,
-            },
-
-
-
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-        });
-        var heroSlider = new Swiper(".heroSlider", {
-            slidesPerView: 1,
-            spaceBetween: 10,
-            loop: true,
-            speed: 600,
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-            },
-
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-            },
-
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-        });
-    </script>
     <script>
         // $(function() {
         //     $(".product-countdown").each(function() {
         //         var $this = $(this);
         //         var startDate = new Date($this.data("start") + " 00:00:00").getTime();
         //         var endDate = new Date($this.data("end") + " 23:59:59").getTime();
-        //         var $wrap = $this.find(".flash-timer-wrap");
-
-        //         function pad(n) {
-        //             return n < 10 ? "0" + n : "" + n;
-        //         }
+        //         var $timer = $this.find(".flash_timer");
 
         //         var interval = setInterval(function() {
         //             var now = new Date().getTime();
 
         //             if (now < startDate) {
-        //                 $wrap.html(
-        //                     '<span style="font-size:13px;color:#888;">⏳ Deal not started yet</span>'
-        //                 );
+        //                 $timer.html("⏳ Deal Not Started Yet!");
         //                 return;
         //             }
+
         //             if (now > endDate) {
         //                 clearInterval(interval);
-        //                 $wrap.html(
-        //                     '<span style="font-size:13px;color:#888;">⚡ Deal expired</span>');
+        //                 $timer.html("⚡ Deal Expired!");
         //                 return;
         //             }
 
-        //             var dist = endDate - now;
-        //             var d = Math.floor(dist / (1000 * 60 * 60 * 24));
-        //             var h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        //             var m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-        //             var s = Math.floor((dist % (1000 * 60)) / 1000);
+        //             var distance = endDate - now;
 
-        //             $this.find('[data-unit="days"]').text(pad(d));
-        //             $this.find('[data-unit="hours"]').text(pad(h));
-        //             $this.find('[data-unit="mins"]').text(pad(m));
-        //             $this.find('[data-unit="secs"]').text(pad(s));
+        //             let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        //             let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        //             let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        //             let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
+        //             $timer.text(
+        //                 (days < 10 ? "0" + days : days) + " D:" +
+        //                 (hours < 10 ? "0" + hours : hours) + " H:" +
+        //                 (minutes < 10 ? "0" + minutes : minutes) + " M:" +
+        //                 (seconds < 10 ? "0" + seconds : seconds) + " S Left"
+        //             );
         //         }, 1000);
         //     });
         // });
+
         $(function() {
             $(".product-countdown").each(function() {
                 var $this = $(this);
@@ -1349,41 +1341,43 @@
                 }, 1000);
             });
         });
-        $(".card-countdown").each(function() {
-            var $this = $(this);
-            var startDate = new Date($this.data("start") + " 00:00:00").getTime();
-            var endDate = new Date($this.data("end") + " 23:59:59").getTime();
-            var $badge = $this.find(".card-timer-badge");
+        $(function() {
+            $(".card-countdown").each(function() {
+                var $this = $(this);
+                var startDate = new Date($this.data("start") + " 00:00:00").getTime();
+                var endDate = new Date($this.data("end") + " 23:59:59").getTime();
+                var $badge = $this.find(".card-timer-badge");
 
-            function pad(n) {
-                return n < 10 ? "0" + n : "" + n;
-            }
-
-            var interval = setInterval(function() {
-                var now = new Date().getTime();
-
-                if (now < startDate) {
-                    $badge.html('<i class="ti ti-clock"></i> Soon');
-                    return;
-                }
-                if (now > endDate) {
-                    clearInterval(interval);
-                    $this.hide(); // expired হলে hide করে দাও
-                    return;
+                function pad(n) {
+                    return n < 10 ? "0" + n : "" + n;
                 }
 
-                var dist = endDate - now;
-                var d = Math.floor(dist / (1000 * 60 * 60 * 24));
-                var h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-                var s = Math.floor((dist % (1000 * 60)) / 1000);
+                var interval = setInterval(function() {
+                    var now = new Date().getTime();
 
-                $this.find('[data-unit="days"]').text(pad(d));
-                $this.find('[data-unit="hours"]').text(pad(h));
-                $this.find('[data-unit="mins"]').text(pad(m));
-                $this.find('[data-unit="secs"]').text(pad(s));
+                    if (now < startDate) {
+                        $badge.html('<i class="ti ti-clock"></i> Soon');
+                        return;
+                    }
+                    if (now > endDate) {
+                        clearInterval(interval);
+                        $this.hide(); // expired হলে hide করে দাও
+                        return;
+                    }
 
-            }, 1000);
+                    var dist = endDate - now;
+                    var d = Math.floor(dist / (1000 * 60 * 60 * 24));
+                    var h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                    var s = Math.floor((dist % (1000 * 60)) / 1000);
+
+                    $this.find('[data-unit="days"]').text(pad(d));
+                    $this.find('[data-unit="hours"]').text(pad(h));
+                    $this.find('[data-unit="mins"]').text(pad(m));
+                    $this.find('[data-unit="secs"]').text(pad(s));
+
+                }, 1000);
+            });
         });
     </script>
 
@@ -1413,8 +1407,6 @@
                             if (products.length > 0) {
                                 let html = '';
                                 products.forEach(p => {
-                                    console.log(p);
-
                                     const productUrl =
                                         `{{ route('front.product', ':slug') }}`
                                         .replace(':slug', p.slug);
@@ -1455,6 +1447,46 @@
                     searchResults.style.display = 'none';
                 }
             });
+        });
+    </script>
+    <script>
+        var heroSlider = new Swiper(".heroSlider", {
+            slidesPerView: 1,
+            spaceBetween: 10,
+            loop: true,
+            speed: 800,
+            autoplay: {
+                delay: 8000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        var cateSlider = new Swiper(".home-category-slider", {
+            slidesPerView: 6,
+            spaceBetween: 10,
+            loop: true,
+            speed: 500,
+            autoplay: {
+                delay: 1000,
+                disableOnInteraction: false,
+            },
+
+
+
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
         });
     </script>
     <script>
@@ -1548,6 +1580,7 @@
             });
         });
     </script>
+    <!-- Search Placeholder typing animation script -->
     <script>
         const words = [
             "Fish",
@@ -1559,7 +1592,6 @@
             "Vegetables",
             "Oil",
             "Snacks",
-            "Medicine",
             "Drinks",
             "Baby Food",
             "Diapers",
@@ -1619,9 +1651,14 @@
             });
         });
     </script>
-
-
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000",
+        };
+    </script>
 </body>
-
 
 </html>

@@ -26,9 +26,9 @@ class UserController extends AdminBaseController
 {
     public function datatables()
     {
-        $datas = User::latest('id')->get();
-        return DataTables::of($datas)
-            ->addColumn('total_orders', function (User $data) {
+        $datas = User::latest('id');
+        return datatables()->eloquent($datas)
+          ->addColumn('total_orders', function (User $data) {
                 $total_orders = $data->orders->count();
                 return '<span class="badge badge-success">' . $total_orders . '</span>';
             })
@@ -59,7 +59,7 @@ class UserController extends AdminBaseController
                                             </a>
                                             </div>';
             })
-            ->rawColumns(['action', 'total_orders', 'total_points'])
+           ->rawColumns(['action', 'total_orders', 'total_points'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
 

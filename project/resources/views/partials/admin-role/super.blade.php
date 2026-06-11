@@ -4,7 +4,6 @@
 
 
   @if ($admin && $admin->email == 'hr.asmishop@gmail.com')
-
       {{-- Only Career Management --}}
       <li>
           <a href="#menuCareer" class="accordion-toggle wave-effect" data-toggle="collapse">
@@ -105,15 +104,14 @@
                       'badge-dark',
                   ];
               @endphp
-
               @foreach ($branchWiseOrders as $index => $item)
                   <li>
                       <a
-                          href="{{ $item['branch_id'] ? route('branch-orders.single', $item['branch_id']) : route('branch-orders.not-assigned') }}">
-                          {{ $item['branch_id'] ? $item['branch_name'] : __('Not Assigned Branch') }}
+                          href="{{ $item->branch_id ? route('branch-orders.single', $item->branch_id) : route('branch-orders.not-assigned') }}">
+                          {{ $item->branch_id ? $item->branch->name ?? 'Unknown' : __('Not Assigned Branch') }}
                           <span
                               class="text-center align-self-center badge {{ $badges[$index % count($badges)] }} float-right">
-                              {{ $item['total'] ?? 0 }}
+                              {{ $item->total ?? 0 }}
                           </span>
                       </a>
                   </li>
@@ -135,6 +133,7 @@
               </li>
           </ul>
       </li>
+
       <li>
           <a href="#all_user_infos" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
                   class="fas fa-hand-holding-usd"></i>{{ __('User Infos') }}</a>
@@ -183,33 +182,11 @@
               <li>
                   <a href="{{ route('admin-commission-income') }}"> {{ __('Commission Earning') }}</a>
               </li>
+
           </ul>
-      </li>
-      <li>
-          <a href="{{ route('schedule.index') }}"><i class="fas fa-sitemap"></i>{{ __('Order Schedule') }}</a>
       </li>
 
-      <li>
-          <a href="#menu5" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
-                  class="fas fa-sitemap"></i>{{ __('Manage Customer') }}</a>
-          <ul class="collapse list-unstyled
-        @if (request()->is('admin/attribute/*/manage') && request()->input('type') == 'category') show
-        @elseif(request()->is('admin/attribute/*/manage') && request()->input('type') == 'subcategory')
-          show
-        @elseif(request()->is('admin/attribute/*/manage') && request()->input('type') == 'childcategory')
-          show @endif"
-              id="menu5" data-parent="#accordion">
-              <li class="@if (request()->is('admin/attribute/*/manage') && request()->input('type') == 'category') active @endif">
-                  <a href="{{ route('admin-cat-index') }}"><span>{{ __('Main Category') }}</span></a>
-              </li>
-              <li class="@if (request()->is('admin/attribute/*/manage') && request()->input('type') == 'subcategory') active @endif">
-                  <a href="{{ route('admin-subcat-index') }}"><span>{{ __('Sub Category') }}</span></a>
-              </li>
-              <li class="@if (request()->is('admin/attribute/*/manage') && request()->input('type') == 'childcategory') active @endif">
-                  <a href="{{ route('admin-childcat-index') }}"><span>{{ __('Child Category') }}</span></a>
-              </li>
-          </ul>
-      </li>
+
       <li>
           <a href="#menu5" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
                   class="fas fa-sitemap"></i>{{ __('Manage Categories') }}</a>
@@ -261,7 +238,6 @@
               </li>
           </ul>
       </li>
-
       <li>
           <a href="#affiliateprod" class="accordion-toggle wave-effect" data-toggle="collapse"
               aria-expanded="false">
@@ -278,6 +254,7 @@
               </li>
           </ul>
       </li>
+
       <li>
           <a href="#affiliateprod" class="accordion-toggle wave-effect" data-toggle="collapse"
               aria-expanded="false">
@@ -312,7 +289,7 @@
               </li>
           </ul>
       </li>
-      {{-- Career Management --}}
+
       <li>
           <a href="#menuCareer" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false">
               <i class="icofont-bag-alt"></i>{{ __('Career Management') }}
@@ -369,6 +346,7 @@
               <li>
                   <a href="{{ route('admin-rider-withdraw-index') }}"><span>{{ __('Withdraws') }}</span></a>
               </li>
+
           </ul>
       </li>
 
@@ -532,7 +510,6 @@
                   <a
                       href="{{ route('admin-coupon-slider-index') }}"><span>{{ __('Coupon Offer Sliders') }}</span></a>
               </li>
-
               <li>
                   <a href="{{ route('admin-arrival-index') }}"><span>{{ __('Best Month Offer') }}</span></a>
               </li>
@@ -664,50 +641,65 @@
           </ul>
       </li>
 
-      <li>
+      <<<<<<< HEAD <li>
           <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
                   class="fas fa-user-secret"></i>{{ __('Manage
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Staffs') }}</a>
-      </li>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Staffs') }}</a>
+          </li>
+          =======
+          <li>
+              <a href="{{ route('admin-staff-index') }}" class=" wave-effect"><i
+                      class="fas fa-user-secret"></i>{{ __('Manage
+                                                                  Staffs') }}</a>
+          </li>
+          >>>>>>> a5f17146630c9f7b2c5fb425c16e81a23cb7a0d7
 
-      <li>
-          <a href="{{ route('admin-subs-index') }}" class=" wave-effect"><i
-                  class="fas fa-users-cog mr-2"></i>{{ __('Subscribers') }}</a>
-      </li>
-
-
-      <li>
-          <a href="{{ route('admin-role-index') }}" class=" wave-effect"><i
-                  class="fas fa-user-tag"></i>{{ __('Manage Roles') }}</a>
-      </li>
-
-      <li>
-          <a href="{{ route('admin-sitemap') }}" class=" wave-effect"><i
-                  class="fas fa-download"></i>{{ __('Download Sitemap') }}</a>
-      </li>
-
-      <li>
-          <a href="{{ route('admin-cache-clear') }}" class=" wave-effect"><i
-                  class="fas fa-sync"></i>{{ __('Clear Cache') }}</a>
-      </li>
-
-      <li>
-          <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
-                  class="fas fa-list-alt"></i>{{ __('Addon
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Manager') }}</a>
-      </li>
-
-      <li>
-          <a href="#sactive" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false">
-              <i class="fas fa-cog"></i>{{ __('System Activation') }}
-          </a>
-          <ul class="collapse list-unstyled" id="sactive" data-parent="#accordion">
-
-              <li><a href="{{ route('admin-activation-form') }}"> {{ __('Activation') }}</a></li>
-              <li><a href="{{ route('admin-generate-backup') }}"> {{ __('Generate Backup') }}</a></li>
-          </ul>
-      </li>
+          <li>
+              <a href="{{ route('admin-subs-index') }}" class=" wave-effect"><i
+                      class="fas fa-users-cog mr-2"></i>{{ __('Subscribers') }}</a>
+          </li>
 
 
+          <li>
+              <a href="{{ route('admin-role-index') }}" class=" wave-effect"><i
+                      class="fas fa-user-tag"></i>{{ __('Manage Roles') }}</a>
+          </li>
+          <li>
+              <a href="{{ route('admin-sitemap') }}" class=" wave-effect"><i
+                      class="fas fa-download"></i>{{ __('Download Sitemap') }}</a>
+          </li>
+
+          <li>
+              <a href="{{ route('admin-cache-clear') }}" class=" wave-effect"><i
+                      class="fas fa-sync"></i>{{ __('Clear Cache') }}</a>
+          </li>
+
+          <li>
+              <a href="{{ route('admin-addon-index') }}" class=" wave-effect"><i
+                      class="fas fa-list-alt"></i>{{ __('Addon
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Manager') }}</a>
+          </li>
+
+          <li>
+              <a href="#sactive" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false">
+                  <i class="fas fa-cog"></i>{{ __('System Activation') }}
+              </a>
+              <ul class="collapse list-unstyled" id="sactive" data-parent="#accordion">
+
+                  <li><a href="{{ route('admin-activation-form') }}"> {{ __('Activation') }}</a></li>
+                  <li><a href="{{ route('admin-generate-backup') }}"> {{ __('Generate Backup') }}</a></li>
+              </ul>
+          </li>
+
+          <li>
+              <a href="#sactive" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false">
+                  <i class="fas fa-cog"></i>{{ __('System Activation') }}
+              </a>
+              <ul class="collapse list-unstyled" id="sactive" data-parent="#accordion">
+
+                  <li><a href="{{ route('admin-activation-form') }}"> {{ __('Activation') }}</a></li>
+                  <li><a href="{{ route('admin-generate-backup') }}"> {{ __('Generate Backup') }}</a></li>
+              </ul>
+          </li>
 
   @endif

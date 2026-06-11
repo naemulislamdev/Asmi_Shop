@@ -35,7 +35,7 @@
                                         <th>{{ __('Name') }}</th>
                                         <th>{{ __('Type') }}</th>
                                         <th>{{ __('Stock') }}</th>
-                                        <th>{{ __('SKU') }}</th>
+        								<th>{{ __('SKU') }}</th>
                                         <th>{{ __('Price') }}</th>
                                         <th>{{ __('Status') }}</th>
                                         <th>{{ __('Options') }}</th>
@@ -177,8 +177,7 @@
                                         class="fas fa-check"></i> {{ __('Done') }}</a>
                             </div>
                             <div class="col-sm-12 text-center">(
-                                <small>{{ __('You can upload multiple Images.') }}</small> )
-                            </div>
+                                <small>{{ __('You can upload multiple Images.') }}</small> )</div>
                         </div>
                     </div>
                     <div class="gallery-images">
@@ -208,11 +207,12 @@
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('admin-prod-datatables') }}?type=all',
-                columns: [{
+                columns: [
+					{
                         data: 'photo',
                         name: 'photo'
                     },
-                    {
+					{
                         data: 'name',
                         name: 'name'
                     },
@@ -224,7 +224,7 @@
                         data: 'stock',
                         name: 'stock'
                     },
-                    {
+                   {
                         data: 'sku',
                         name: 'SKU'
                     },
@@ -300,13 +300,11 @@
                                     '<input type="hidden" value="' + arr[k]['id'] + '">' +
                                     '</span>' +
                                     '<a href="' +
-                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k]
-                                    [
+                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k][
                                         'photo'
                                     ] + '" target="_blank">' +
                                     '<img src="' +
-                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k]
-                                    [
+                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k][
                                         'photo'
                                     ] + '" alt="gallery image">' +
                                     '</a>' +
@@ -364,13 +362,11 @@
                                     '<input type="hidden" value="' + arr[k]['id'] + '">' +
                                     '</span>' +
                                     '<a href="' +
-                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k]
-                                    [
+                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k][
                                         'photo'
                                     ] + '" target="_blank">' +
                                     '<img src="' +
-                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k]
-                                    [
+                                    '{{ asset('assets/images/galleries') . '/' }}' + arr[k][
                                         'photo'
                                     ] + '" alt="gallery image">' +
                                     '</a>' +

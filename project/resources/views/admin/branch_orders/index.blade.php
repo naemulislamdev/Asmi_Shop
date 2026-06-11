@@ -308,67 +308,6 @@
 
         {{-- ORDER MODAL ENDS --}}
 
-        <!-- Branch Modal -->
-        <div class="modal fade w-100" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered w-100" role="document">
-                <form id="branchForm" class="w-100">
-                    @csrf
-                    <input type="hidden" name="order_id" id="branch_order_id">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{ __('Select Branch') }}</h5>
-                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>{{ __('Branch') }}</label>
-                                <select name="branch_id" class="form-control" required>
-                                    <option selected disabled>{{ __('Choose Branch') }}</option>
-                                    @foreach ($branchs as $branch)
-                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!--End Branch modal -->
-
-        <!-- Rider Modal -->
-        <div class="modal fade w-100" id="riderModal" data-backdrop="static" tabindex="-1" role="dialog"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered w-100" role="document">
-                <form id="riderForm" class="w-100"> {{-- id পরিবর্তন করুন --}}
-                    @csrf
-                    <input type="hidden" name="order_id" id="rider_order_id"> {{-- আলাদা id --}}
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{ __('Select Rider') }}</h5>
-                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>{{ __('Rider') }}</label>
-                                <select name="rider_id" id="riderSelect" class="form-control" required>
-                                    <option selected disabled>{{ __('Choose Rider') }}</option>
-                                </select>
-                                <small id="riderLoadMsg" class="text-muted"></small>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         {{-- MESSAGE MODAL --}}
         <div class="sub-categori">
             <div class="modal" id="vendorform" tabindex="-1" role="dialog" aria-labelledby="vendorformLabel"
@@ -418,6 +357,38 @@
         </div>
 
         {{-- MESSAGE MODAL ENDS --}}
+
+        <!-- Branch Modal -->
+        <div class="modal fade" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <form id="branchForm">
+                    @csrf
+                    <input type="hidden" name="order_id" id="branch_order_id">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ __('Select Branch') }}</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>{{ __('Branch') }}</label>
+                                <select name="branch_id" class="form-control" required>
+                                    <option selected disabled>{{ __('Choose Branch') }}</option>
+                                    @foreach ($branchs as $branch)
+                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--End Branch modal -->
 
         {{-- ADD / EDIT MODAL --}}
 
@@ -597,13 +568,13 @@
                     $('.select').niceSelect();
                 }
             });
-            table.on('processing.dt', function(e, settings, processing) {
-                if (processing) {
-                    $('#loader').fadeIn(100);
-                } else {
-                    $('#loader').fadeOut(100);
-                }
-            });
+            // table.on('processing.dt', function(e, settings, processing) {
+            //     if (processing) {
+            //         $('#loader').fadeIn(100);
+            //     } else {
+            //         $('#loader').fadeOut(100);
+            //     }
+            // });
 
             // Filter button click
             $('#filter_btn').on('click', function() {

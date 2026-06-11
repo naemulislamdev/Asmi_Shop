@@ -1,5 +1,6 @@
 @extends('layouts.front')
 
+@section('css')
 <style>
     /* From Uiverse.io by adeladel522 */
     .button {
@@ -70,8 +71,9 @@
         }
     }
 </style>
+@endsection
 @section('content')
-    <section class="gs-breadcrumb-section bg-class" style="background: #1bb9cb; padding: 0;">
+    <section class="gs-breadcrumb-section bg-class" style="background: #1598a7; padding: 0;">
         <div class="container">
             <div class="row justify-content-center content-wrapper">
                 <div class="col-12">

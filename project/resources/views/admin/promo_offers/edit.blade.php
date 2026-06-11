@@ -91,7 +91,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label class="control-label" for="image">Icon Image (optional)</label>

@@ -41,6 +41,7 @@
                         </span>
                     @endif
                 @endif
+
             </div>
 
             @if (Auth::check())
@@ -98,9 +99,14 @@
 
 
             <a href="{{ route('front.product', $product->slug) }}">
-                {{-- <img class="product-img"
-                    src="{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}"
-                    alt="product img"> --}}
+
+                <!-- <img class="product-img"
+                    src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/noimage.png') }}"
+                    alt="product img"> -->
+                <!-- <img class="product-img"
+                        src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/products/' . $product->photo) }}"
+                        onerror="this.onerror=null; this.src='{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}';"
+                        alt="product img"> -->
 
                 <img class="product-img"
                     src="{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}"
@@ -110,9 +116,9 @@
             @if ($product->stock <= 0)
                 <div class="outofstock-box flex-column align-content-center justify-content-center">
                     @if ($product->preordered == 2)
-                        <h5>{{ __('Out of Stock !') }}</h5>
-                    @else
                         <h5>{{ __('Request a Product !') }}</h5>
+                    @else
+                        <h5>{{ __('Out of Stock !') }}</h5>
                     @endif
                 </div>
             @else
@@ -214,7 +220,6 @@
 
                     @endif
                 </div>
-
                 @if ($product->start_date != null && $product->end_date != null)
                     <div style="position: absolute; left: 2px; bottom: 45%" class="card-countdown"
                         data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">

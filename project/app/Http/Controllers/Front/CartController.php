@@ -88,6 +88,7 @@ class CartController extends Controller
     {
         $id = $request->product_id;
         $prod = Product::findOrFail($id);
+
         // Max qty check
         if (!is_null($prod->max_qty) && $prod->max_qty > 0) {
 
@@ -197,13 +198,7 @@ class CartController extends Controller
         foreach ($cart->items as $key => $row) {
             if ($row['unique_key'] == $request->unique_key) {
 
-                if (!empty($row['is_offer']) && $row['is_offer'] === true) {
-                    return response()->json([
-                        'error' => true,
-                        'message' => 'Offer product quantity cannot be changed'
-                    ]);
-                }
-                // Max qty check
+            // Max qty check
                 $product = $row['item'];
                 if (!is_null($product->max_qty) && $product->max_qty > 0) {
                     if ($cart->items[$key]['qty'] >= $product->max_qty) {
@@ -303,7 +298,7 @@ class CartController extends Controller
 
     private function updateOfferSession($cart, $productId = null)
     {
-        // 1️⃣ Offer Meta & Eligible Products
+        // Offer Meta & Eligible Products
         $offerMeta = $this->getOfferMeta($cart);
         $offers = $this->getEligibleOfferProducts($cart);
 
@@ -340,7 +335,7 @@ class CartController extends Controller
 
         $cart->recalculateTotals();
 
-        // 6️⃣ Session update
+        // Session update
         Session::put('cart', $cart);
         Session::put('offer_meta', $offerMeta);
         Session::put('offers', $offers);
@@ -465,51 +460,52 @@ class CartController extends Controller
 
         return collect($eligibleProducts)->unique('sku')->values()->toArray();
     }
+public function getOfferInfo($id)
+{
+    $product = Product::findOrFail($id);
 
-    public function getOfferInfo($id)
-    {
-        $product = Product::findOrFail($id);
+    if (!$product->is_offer_active) {
+        return response()->json(['is_offer' => false]);
+    }
 
-        if (!$product->is_offer_active) {
-            return response()->json(['is_offer' => false]);
-        }
+    // ✅ Current cart total (non-offer items)
+    $cartTotal = 0;
+    if (Session::has('cart')) {
+        $cart = Session::get('cart');
+        $cartTotal = collect($cart->items)
+            ->where('is_offer', '!=', true)
+            ->sum('price');
+    }
 
-        // ✅ Current cart total (non-offer items)
-        $cartTotal = 0;
-        if (Session::has('cart')) {
-            $cart = Session::get('cart');
-            $cartTotal = collect($cart->items)
-                ->where('is_offer', '!=', true)
-                ->sum('price');
-        }
+    $offers = \DB::table('conditional_offers')->where('is_active', true)->get();
 
-        $offers = \DB::table('conditional_offers')->where('is_active', true)->get();
+    $offerDetails = [];
 
-        $offerDetails = [];
+    foreach ($offers as $offer) {
+        $offerProducts = json_decode($offer->offer_products, true);
+        foreach ($offerProducts as $op) {
+            $matchProduct = Product::where('sku', $op['sku'])->first();
+            if ($matchProduct && $matchProduct->id == $id) {
 
-        foreach ($offers as $offer) {
-            $offerProducts = json_decode($offer->offer_products, true);
-            foreach ($offerProducts as $op) {
-                $matchProduct = Product::where('sku', $op['sku'])->first();
-                if ($matchProduct && $matchProduct->id == $id) {
-
-                    // ✅ Eligible হলে popup দেখাবে না
-                    if ($cartTotal >= (float) $op['amount']) {
-                        return response()->json(['is_offer' => false]);
-                    }
-
-                    $offerDetails[] = [
-                        'amount'     => $op['amount'],
-                        'offer_name' => $matchProduct->name,
-                        'price'      => $matchProduct->price,
-                    ];
+                // ✅ Eligible হলে popup দেখাবে না
+                if ($cartTotal >= (float) $op['amount']) {
+                    return response()->json(['is_offer' => false]);
                 }
+
+                $offerDetails[] = [
+                    'amount'     => $op['amount'],
+                    'offer_name' => $matchProduct->name,
+                    'price'      => $matchProduct->price,
+                ];
             }
         }
-
-        return response()->json([
-            'is_offer'      => true,
-            'offer_details' => $offerDetails,
-        ]);
     }
+
+    return response()->json([
+        'is_offer'      => true,
+        'offer_details' => $offerDetails,
+    ]);
+}
+
+    //////////////////////Chnage///////////////////////////
 }

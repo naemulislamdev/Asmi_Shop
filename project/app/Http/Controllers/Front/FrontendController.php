@@ -7,18 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Classes\GeniusMailer;
 use App\Models\ArrivalSection;
 use App\Models\Blog;
-use App\Models\BlogCategory;
 use App\Models\Branch;
+use App\Models\Slider;
+use App\Models\CouponSlider;
+
+use App\Models\BlogCategory;
 use App\Models\Category;
 use App\Models\Childcategory;
-use App\Models\CouponSlider;
 use App\Models\Generalsetting;
-use App\Models\Job;
-use App\Models\JobApplication;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Rating;
-use App\Models\Slider;
 use App\Models\Subcategory;
 use App\Models\Subscriber;
 use App\Models\UserInfo;
@@ -28,13 +27,15 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use App\Models\Job;
+use App\Models\JobApplication;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 use Illuminate\Support\Facades\Cache;
 
 class FrontendController extends Controller
 {
-    public function sitemap()
+     public function sitemap()
     {
         $xml = Cache::remember('sitemap_xml', 3600, function () {
             $siteURL = "https://asmishop.com";
@@ -67,7 +68,7 @@ class FrontendController extends Controller
                     );
                 });
 
-            Product::where('status', 1)
+              Product::where('status', 1)
                 ->latest()
                 ->select(['slug', 'updated_at', 'thumbnail', 'photo'])
                 ->chunk(200, function ($products) use ($sitemap, $siteURL) {
@@ -95,37 +96,31 @@ class FrontendController extends Controller
 
         return response($xml, 200)->header('Content-Type', 'application/xml');
     }
-
-    public function pharmacy()
-    {
-        return view("pharmacy.index");
-    }
-    public function pharmacyDetails()
-    {
-        return view("pharmacy.details");
-    }
     // LANGUAGE SECTION
-
     public function language($id)
     {
         Session::put('language', $id);
         return redirect()->route('front.index');
     }
-    public function promoOffers()
+
+    // LANGUAGE SECTION ENDS
+
+    // CURRENCY SECTION
+public function promoOffers()
     {
         $sku = [
             "8941153503197",
             "8941153503180",
             "8941153503166",
             "8941153503173",
-            "8941153503319", //nai
+            "8941153503319",
             "8941153503258",
             "8941153501087",
             "3885132250250",
             "3885132250502",
             "3885132251004",
             "3885132252001",
-            "8941153511048", // nai
+            "8941153511048",
             "8941153512670",
             "8941153512663",
             "3885283901001",
@@ -137,14 +132,10 @@ class FrontendController extends Controller
             ->where('status', 1)
             ->latest()
             ->get();
+            //dd($prods);
 
         return view('frontend.promo_offers.promo_offers', compact('prods'));
     }
-
-    // LANGUAGE SECTION ENDS
-
-    // CURRENCY SECTION
-
     public function currency($id)
     {
 
@@ -182,13 +173,14 @@ class FrontendController extends Controller
             ->where('type', 'web')
             ->where('published', 1)
             ->get();
+    
         $promoOffers = Slider::where('type', 'promo_offer')
             ->where('published', 1)
             ->orderBy('order', 'asc')
             ->get();
 
         $total = $promoOffers->count();
-        $half  = ceil($total / 2);
+        $half  = ceil($total / 2); 
 
         $data['left_promo_offers']  = $promoOffers->take($half);
         $data['right_promo_offers'] = $promoOffers->slice($half);
@@ -291,7 +283,7 @@ class FrontendController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->orderby('id', 'desc')
-            //->where('is_offer_active', 0)
+            ->where('is_offer_active', 0)
             ->inRandomOrder()
             ->get();
 
@@ -370,8 +362,9 @@ class FrontendController extends Controller
             ->latest()->first();
 
         $data['blogs'] = Blog::latest()->take(2)->get();
-        $data['promoOffers'] = $promoOffers;
+     $data['promoOffers'] = $promoOffers;
         $data['coupon_sliders'] = CouponSlider::where('published', 1)->get();
+
         return view('frontend.index', $data);
     }
 
@@ -544,19 +537,14 @@ class FrontendController extends Controller
 
         $data['blogs'] = Blog::latest()->take(2)->get();
         $data['ps'] = $this->ps;
-
+		$data['promoOffers'] = $promoOffers;
+        $data['coupon_sliders'] = CouponSlider::where('published', 1)->get();
         return view('partials.theme.extraindex', $data);
     }
 
     // -------------------------------- HOME PAGE SECTION ENDS ----------------------------------------
     public function offers(Request $request, $slug = null, $slug1 = null, $slug2 = null, $slug3 = null)
     {
-        if ($slug == null && $slug1 == null && $slug2 == null && $slug3 == null) {
-            $data['offerCats'] = Category::whereHas('products', function ($q) {
-                $q->where('discount', '>', 0);
-            })->get();
-            return view('frontend.offer_categories', $data);
-        }
         $data['categories'] = Category::where('status', 1)->get();
 
         if ($request->view_check) {
@@ -596,7 +584,6 @@ class FrontendController extends Controller
 
         $prods = Product::with('user')
             ->where('discount', '>', 0)
-
             ->orderByDesc('updated_at') // latest updated discount products first
             ->orderByDesc('stock')
             ->when($cat, function ($query, $cat) {
@@ -715,7 +702,6 @@ class FrontendController extends Controller
         return view('frontend.offers', $data);
     }
 
-
     // -------------------------------- BLOG SECTION ----------------------------------------
 
     public function blog(Request $request)
@@ -810,6 +796,7 @@ class FrontendController extends Controller
 
     public function blogshow($slug)
     {
+
         // BLOG TAGS
         $tags = null;
         $tagz = '';
@@ -864,10 +851,12 @@ class FrontendController extends Controller
     }
 
     // -------------------------------- AUTOSEARCH SECTION ENDS ----------------------------------------
+
     // -------------------------------- CONTACT SECTION ----------------------------------------
 
     public function contact()
     {
+
         if (DB::table('pagesettings')->first()->contact == 0) {
             return redirect()->back();
         }
@@ -879,6 +868,8 @@ class FrontendController extends Controller
     public function contactemail(Request $request)
     {
         $gs = $this->gs;
+
+       
         if ($gs->is_capcha == 1) {
             $request->validate(
                 [
@@ -1055,7 +1046,7 @@ class FrontendController extends Controller
     {
         return view('frontend.thank', compact('get'));
     }
-    public function autoSaveUserInfo(Request $request)
+	public function autoSaveUserInfo(Request $request)
     {
         $request->validate([
             'session_id'       => 'nullable|string',
@@ -1068,7 +1059,7 @@ class FrontendController extends Controller
         $sessionId = $request->input('session_id');
         $identifier = ['session_id' => $sessionId];
 
-        $cartObject = Session::has('cart') ? Session::get('cart') : null;
+       $cartObject = Session::has('cart') ? Session::get('cart') : null;
         $cartItems = $cartObject ? $cartObject->items : [];
 
 
@@ -1087,7 +1078,7 @@ class FrontendController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // Career section
+	  // Career section
     public function career()
     {
         $careers = Job::where("status", 1)->get();
@@ -1098,9 +1089,8 @@ class FrontendController extends Controller
         $career = Job::where("slug", $slug)->first();
         return view("career.create_application", compact('career'));
     }
-    public function careerStore(Request $request)
+   public function careerStore(Request $request)
     {
-
 
         $request->validate([
             'full_name'  => 'required|string|max:255',
@@ -1136,13 +1126,12 @@ class FrontendController extends Controller
         $career = Job::where("slug", $slug)->first();
         return view("career.career_details", compact('career'));
     }
-
     public function conditioalProduct($sku)
     {
         $prods = Product::where("sku", $sku)->where("status", 1)->paginate(20);
         return view("includes.frontend.conditional_product", compact('prods'));
     }
-    public function outlets()
+     public function outlets()
     {
         $outlets = Branch::where("status", 1)->orderBy('order')->get();
         return view("frontend.outlets", compact('outlets'));

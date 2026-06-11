@@ -11,7 +11,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 class BranchSalesReportController extends Controller
 {
-    public function index()
+     public function index()
     {
         $branches = Branch::where('status', 1)->get();
         return view('admin.report.branch_sale_report.index', compact('branches'));

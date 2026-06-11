@@ -1,16 +1,15 @@
 @extends('layouts.front')
+@section('css')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+       @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
     .order-success-wrapper {
         background: #f9fafb;
         font-family: "Rubik", sans-serif;
     }
-
     .shipping-cost {
         font-family: "Rubik";
     }
-
     .order-success-wrapper {
         background: #f9fafb;
     }
@@ -38,7 +37,7 @@
 
     .btn-home {
         display: inline-block;
-        background: linear-gradient(45deg, #1598a7, #1bb9cb);
+        background: linear-gradient(45deg, #1598a7, #1598a7);
         color: #fff;
         padding: 12px 30px;
         border-radius: 50px;
@@ -439,7 +438,9 @@
         }
     }
 </style>
+@endsection
 @section('content')
+
     <div class="order-success-wrapper">
         <div class="container">
 
@@ -478,6 +479,7 @@
                             Total Balance: {{ auth()->user() ? auth()->user()->wallet_points : 0 }}
                         </div>
                         <p><i>N.B: Minimum 100 reward point is required to withdraw.</i></p>
+                    
                     @else
                         <div class="total-points text-success">
                             Total Balance: {{ auth()->user() ? auth()->user()->wallet_points : 0 }}

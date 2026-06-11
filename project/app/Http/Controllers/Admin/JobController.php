@@ -15,8 +15,7 @@ class JobController extends Controller
     {
         return view('admin.career.jobs.index');
     }
-    // Controller
-    public function removeImage($id)
+      public function removeImage($id)
     {
 
         $data = Job::findOrFail($id);
@@ -32,6 +31,7 @@ class JobController extends Controller
 
         return response()->json(['success' => true, 'message' => __('Image Removed Successfully.')]);
     }
+
     public function create()
     {
         $departments = JobDepartment::where('status', 1)->get();
@@ -48,8 +48,6 @@ class JobController extends Controller
             'circular_date'  => 'nullable|date',
             'deadline'       => 'nullable|date',
             'experience'     => 'nullable|string|max:100',
-            'image' => 'nullable|image|max:5120', // 5MB
-
         ]);
 
         $job = new Job();
@@ -65,12 +63,15 @@ class JobController extends Controller
         $job->status = 1;
 
         // image upload (optional)
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $name = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('assets/images/jobs/'), $name);
-            $job->image = $name;
-        }
+       if ($request->file('image')) {
+        $image = $request->file('image');
+        $name = time() . '.' . $image->getClientOriginalExtension();
+        
+        $uploadPath = base_path('public/assets/images/jobs/');
+        
+        $image->move($uploadPath, $name);
+        $job->image = $name;
+    }
 
 
         if ($job->save()) {
@@ -148,14 +149,21 @@ class JobController extends Controller
     }
     public function delete($id)
     {
-        $data = Job::findOrFail($id);
-        $data->delete();
-        //--- Redirect Section
+    $data = Job::findOrFail($id);
 
-        $msg = __('Job Deleted Successfully.');
-        return response()->json($msg);
-        //--- Redirect Section Ends
+    // image delete
+    if ($data->image) {
+        $imagePath = base_path('public/assets/images/jobs/' . $data->image);
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
     }
+
+    $data->delete();
+
+    $msg = __('Job Deleted Successfully.');
+    return response()->json($msg);
+}
     public function show($id)
     {
         $job = Job::findOrFail($id);
@@ -169,7 +177,7 @@ class JobController extends Controller
     }
     public function update(Request $request, $id)
     {
-
+        
         $request->validate([
             'title'          => 'required|string|max:255',
             'department_id'     => 'nullable|integer',
@@ -179,11 +187,12 @@ class JobController extends Controller
             'circular_date'  => 'nullable|date',
             'deadline'       => 'nullable|date',
             'experience'     => 'nullable|string|max:100',
-            'image' => 'nullable|image|max:5120', // 5MB
 
         ]);
+        
+     
 
-        $job = Job::findOrFail($id);
+        $job = Job::find($id);
         $job->title = $request->title;
         $job->slug = Str::slug($request->title);
         $job->department_id = $request->department_id;
@@ -195,10 +204,19 @@ class JobController extends Controller
         $job->experience = $request->experience;
 
         // image upload (optional)
-        if ($request->hasFile('image')) {
+
+        if ($request->file('image')) {
             $image = $request->file('image');
             $name = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('assets/images/jobs/'), $name);
+            
+            $uploadPath = base_path('public/assets/images/jobs/');
+            
+            // folder না থাকলে create করো
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            
+            $image->move($uploadPath, $name);
             $job->image = $name;
         }
         $job->update();

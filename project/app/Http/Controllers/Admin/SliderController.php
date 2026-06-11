@@ -11,7 +11,7 @@ use Yajra\DataTables\Facades\DataTables;
 class SliderController extends AdminBaseController
 {
 
-    public function datatables()
+   public function datatables()
     {
         $datas = Slider::orderBy('order', 'asc')->get();
         //--- Integrating This Collection Into Datatables
@@ -37,18 +37,7 @@ class SliderController extends AdminBaseController
             ->toJson(); //--- Returning Json Data To Client Side
     }
 
-    public function index()
-    {
-        return view('admin.slider.index');
-    }
-
-
-    public function create()
-    {
-        return view('admin.slider.create');
-    }
-
-    public function status($id1, $id2)
+	   public function status($id1, $id2)
     {
         $data = Slider::findOrFail($id1);
         $data->published = $id2;
@@ -58,12 +47,23 @@ class SliderController extends AdminBaseController
         return response()->json($msg);
         //--- Redirect Section Ends
     }
+
+    public function index()
+    {
+        return view('admin.slider.index');
+    }
+
+    public function create()
+    {
+        return view('admin.slider.create');
+    }
+
     //*** POST Request
     public function store(Request $request)
     {
         //--- Validation Section
         $rules = [
-            'photo'      => 'required|mimes:jpeg,jpg,png,svg',
+            'photo'      => 'required',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -101,9 +101,9 @@ class SliderController extends AdminBaseController
     public function update(Request $request, $id)
     {
         //--- Validation Section
-        $rules = [
-            'photo'      => 'mimes:jpeg,jpg,png,svg',
-        ];
+       $rules = [
+    'photo' => 'image|mimes:jpeg,jpg,png,svg,gif,webp', // max size 2MB
+];
 
         $validator = Validator::make($request->all(), $rules);
 

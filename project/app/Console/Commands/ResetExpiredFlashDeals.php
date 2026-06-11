@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class ResetExpiredFlashDeals extends Command
 {
-    protected $signature   = 'flash:reset';
+   protected $signature   = 'flash:reset';
     protected $description = 'Reset discount to 0 for all expired flash deal products';
 
     public function handle(): void

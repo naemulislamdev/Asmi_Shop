@@ -34,7 +34,7 @@ class FeedController extends Controller
                 htmlspecialchars(strip_tags($product->details ?? $product->name)),
                 'http://base.google.com/ns/1.0'
             );
-            $item->addChild('g:link', url('/product/' . $product->slug), 'http://base.google.com/ns/1.0');
+            $item->addChild('g:link', url('/item/' . $product->slug), 'http://base.google.com/ns/1.0');
 
             // Image (photo / thumbnail fallback)
             if (!empty($product->photo)) {

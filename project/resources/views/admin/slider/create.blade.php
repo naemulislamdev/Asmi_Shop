@@ -1,7 +1,5 @@
 @extends('layouts.admin')
 
-
-
 @section('content')
     <div class="content-area">
         <div class="mr-breadcrumb">
@@ -168,7 +166,7 @@
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <div class="left-area">
-                                            {{-- <h4 class="heading">{{ __('Current Featured Image') }} *</h4> --}}
+                                            <h4 class="heading">{{ __('Current Featured Image') }} *</h4>
                                         </div>
                                     </div>
                                     <div class="col-lg-7">
@@ -224,6 +222,7 @@
                                         </select>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <div class="left-area">

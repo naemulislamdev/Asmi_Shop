@@ -1,5 +1,5 @@
 @extends('layouts.front')
-
+@section('css')
 <style>
     /* From Uiverse.io by adeladel522 */
     .button {
@@ -70,8 +70,10 @@
         }
     }
 </style>
+@endsection
+
 @section('content')
-    <section class="gs-breadcrumb-section bg-class" style="background: #1bb9cb; padding: 0;">
+    <section class="gs-breadcrumb-section bg-class" style="background: #1598a7; padding: 0;">
         <div class="container">
             <div class="row justify-content-center content-wrapper">
                 <div class="col-12">
@@ -86,11 +88,11 @@
     </section>
     <section class="gs-career-section my-3" style="min-height: 100vh">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row align-items-stretch">
                 @if ($careers->count() > 0)
                     @foreach ($careers as $career)
-                        <div class="col-md-12">
-                            <div class="card mb-4 job-card"
+                        <div class="col-md-6 d-flex">
+                            <div class="card mb-4 job-card w-100"
                                 style="box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px; border-radius: 15px">
                                 <div class="row ">
                                     <!-- Image -->
@@ -108,7 +110,7 @@
                                             </div>
                                         @else
                                             <div class="ps-3">
-                                                {!! $career->description !!}
+                                              {{--  {!! $career->description !!}--}}
                                             </div>
                                         @endif
                                     </div>
@@ -129,7 +131,7 @@
                                                 @if ($career->experience)
                                                     <span class="text-muted me-3"><i class="fas fa-briefcase"></i>
                                                         {{ $career->experience }}
-                                                        Years</span>
+                                                        </span>
                                                 @endif
                                                 @if ($career->job_location)
                                                     <span class="me-3 text-muted"><i class="fas fa-map-marker-alt"></i>

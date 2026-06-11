@@ -53,21 +53,9 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <input type="text" class="input-field"
-                                                    placeholder="{{ __(' Enter Product Name') }}" name="name"
-                                                    required="" value="{{ $data->name }}">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <div class="left-area">
-                                                    <h4 class="heading">{{ __('Product Slug') }}* </h4>
-                                                    <p class="sub-heading">{{ __('(In Any Language)') }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-12">
-                                                <input type="text" class="input-field"
-                                                    placeholder="{{ __(' Enter Product slug') }}" name="slug"
-                                                    required="" value="{{ $data->slug }}">
+                                                    placeholder="{{ __(" Enter Product
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                												Name") }}"
+                                                    name="name" required="" value="{{ $data->name }}">
                                             </div>
                                         </div>
 
@@ -396,7 +384,7 @@
                                                                                         value="{{ !empty(
                                                                                             $selectedAttrs[
                                                                                                 "
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                																		$inName"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                																		$inName"
                                                                                             ]['prices'][$i]
                                                                                         ) && $checked == 1
                                                                                             ? round($selectedAttrs["$inName"]['prices'][$i] * $sign->value, 2)
@@ -475,8 +463,7 @@
                                                                         <input type="number"
                                                                             name="measures[{{ $index }}][price]"
                                                                             class="input-field measure-price"
-                                                                            step="0.01"
-                                                                            value="{{ $measure->price }}">
+                                                                            step="0.01" value="{{ $measure->price }}">
                                                                     </td>
 
                                                                     <td>
@@ -784,6 +771,7 @@
                                                 </ul>
                                             </div>
                                         </div>
+
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 <div class="left-area">
@@ -817,13 +805,13 @@
                                                     placeholder="e.g 20" value="{{ $data->stock }}" min="0">
                                             </div>
                                         </div>
+
                                         <div class="form-group">
-                                            <label>Maximum Order Quantity <small class="text-muted">(খালি রাখলে
-                                                    unlimited)</small></label>
-                                            <input type="number" name="max_qty" class="form-control"
-                                                value="{{ old('max_qty', $data->max_qty ?? '') }}" min="1"
-                                                placeholder="e.g. 5">
-                                        </div>
+    <label>Maximum Order Quantity <small class="text-muted">(খালি রাখলে unlimited)</small></label>
+    <input type="number" name="max_qty" class="form-control" 
+           value="{{ old('max_qty', $data->max_qty ?? '') }}" 
+           min="1" placeholder="e.g. 5">
+</div>
 
 
                                         @php
@@ -1280,7 +1268,7 @@
 
                                             </div>
                                         </div>
-                                        <div class="row">
+                                      <div class="row">
 
                                             <div class="col-lg-12 mt-3">
                                                 <label>{{ __('Product Manufacturing Date') }}
@@ -1361,6 +1349,11 @@
 @endsection
 
 @section('scripts')
+
+   <script src="{{ asset('assets/admin/js/jquery.Jcrop.js') }}"></script>
+
+    <script src="{{ asset('assets/admin/js/jquery.SimpleCropper.js') }}"></script>
+    <script src="{{ asset('assets/admin/js/select2.js') }}"></script>
     <script>
         let index = {{ $data->measures->count() }};
 
@@ -1560,10 +1553,7 @@
         // Gallery Section Update Ends
     </script>
 
-    <script src="{{ asset('assets/admin/js/jquery.Jcrop.js') }}"></script>
-
-    <script src="{{ asset('assets/admin/js/jquery.SimpleCropper.js') }}"></script>
-    <script src="{{ asset('assets/admin/js/select2.js') }}"></script>
+ 
 
     <script type="text/javascript">
         (function($) {
@@ -1580,6 +1570,8 @@
 
         })(jQuery);
     </script>
+
+    
 
 
     <script type="text/javascript">
@@ -1668,5 +1660,5 @@
     </script>
 
 
-    @include('partials.admin.product.product-scripts')
+@include('partials.admin.product.product-scripts')
 @endsection

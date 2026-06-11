@@ -71,8 +71,8 @@ class Kernel extends HttpKernel
         'super' => \App\Http\Middleware\SuperAdmin::class,
         'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
         'setapi' => \App\Http\Middleware\SetApiGuard::class,
-        'hr.only' => \App\Http\Middleware\HrOnly::class,
+    	'hr.only' => \App\Http\Middleware\HrOnly::class,
         'not.hr' => \App\Http\Middleware\NotHr::class,
-        'content_security_policy' => \App\Http\Middleware\ContentSecurityPolicy::class,
+         'content_security_policy' => \App\Http\Middleware\ContentSecurityPolicy::class,
     ];
 }

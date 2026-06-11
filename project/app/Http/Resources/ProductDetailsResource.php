@@ -19,7 +19,7 @@ class ProductDetailsResource extends JsonResource
    */
   public function toArray($request)
   {
-        $discounted = null;
+    $discounted = null;
         if ($this->discount > 0) {
             if ($this->discount_type === 'percent') {
                 $discounted = (int) $this->price - ($this->price * ($this->discount / 100));
@@ -27,7 +27,7 @@ class ProductDetailsResource extends JsonResource
                 $discounted = (int) $this->price - $this->discount;
             }
         }
-
+        
     return [
       'id' => $this->id,
       'user_id' => $this->user_id,
@@ -39,7 +39,7 @@ class ProductDetailsResource extends JsonResource
       'images' => GalleryResource::collection($this->galleries),
       'rating' =>  $this->ratings()->avg('rating') > 0 ? (string) round($this->ratings()->avg('rating'), 2) : (string) round(0.00, 2),
       'current_price' => (string)$this->ApishowPrice(),
-      'previous_price' => $discounted ? (string)$discounted : null,
+      'previous_price' => (string)$discounted,
       'stock' => $this->stock,
       'max_qty' => (int) $this->max_qty,
       'preordered' => (int) $this->preordered,

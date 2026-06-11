@@ -9,7 +9,6 @@
                 </div>
             </div>
         </div>
-
         <!-- tab content -->
         <div class="tab-content" id="myTabContent1">
             <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
@@ -21,6 +20,19 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- tab content -->
+    <div class="tab-content" id="myTabContent1">
+        <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane" role="tabpanel"
+            aria-labelledby="ex-product-1" tabindex="0">
+            <div class="product-cards-slider">
+                @foreach ($popular_products as $product)
+                    @include('includes.frontend.home_product')
+                @endforeach
+            </div>
+        </div>
+    </div>
     </div>
 </section>
 <!-- Featured Product Section Completed -->

@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use App\Helpers\PriceHelper;
-use App\Models\DeliveryRider;
-use App\Models\Rider;
+
 
 class BranchOrderController extends Controller
 {
@@ -156,9 +155,7 @@ class BranchOrderController extends Controller
     public function allBranchOrders()
     {
         $branchs = Branch::where('status', 1)->get();
-        $riders = Rider::all();
-
-        return view('admin.branch_orders.index', compact('branchs', 'riders'));
+        return view('admin.branch_orders.index', compact('branchs'));
     }
 
     public function datatables(Request $request, $branch_id = null)
@@ -187,7 +184,6 @@ class BranchOrderController extends Controller
                 $time = \Carbon\Carbon::parse($data->created_at)->format('h:i A');
                 return $date . '<br><small>' . $time . '</small>';
             })
-
             ->editColumn('branch', function (Order $data) {
                 if ($data->branch_id) {
                     return '<div>
