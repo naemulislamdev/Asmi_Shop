@@ -17,6 +17,7 @@
 <div class="row">
     <div class="col-lg-12 order-details-table">
         @forelse ($resultArray as $vendorId => $productt)
+
             <div class="mr-table mb-4">
                 <div class="table-responsive">
                     <table class="table table-hover dt-responsive" cellspacing="0" width="100%">

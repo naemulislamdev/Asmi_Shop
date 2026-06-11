@@ -515,15 +515,6 @@
 @endsection
 
 @section('scripts')
-    {{-- DATA TABLE --}}
-    <script>
-        // single.blade.php এর script এ এটা যোগ করো temporarily
-        console.log('Branch ID: {{ $branch->id }}');
-        console.log('Branch Name: {{ $branch->name }}');
-        console.log('DataTable URL: {{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}');
-        console.log('Summary URL: {{ route('branch-orders.summary', $branch->id) }}');
-    </script>
-
     <script type="text/javascript">
         (function($) {
             "use strict";
@@ -532,8 +523,9 @@
                 ordering: false,
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}',
+                // ajax: '{{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}',
                 ajax: {
+
                     url: '{{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}',
                     data: function(d) {
                         d.from_date = $('#from_date').val();

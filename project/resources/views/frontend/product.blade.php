@@ -23,8 +23,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                        Breadcumb style start
-                                                                                                                                                                                                    =====================================*/
+                                                                                                                                                                                                                    Breadcumb style start
+                                                                                                                                                                                                                =====================================*/
 
         .custom-breadcrumb {
             display: flex;
@@ -75,8 +75,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                    Breadcumb style End
-                                                                                                                                                                                                    =====================================*/
+                                                                                                                                                                                                                                Breadcumb style End
+                                                                                                                                                                                                                =====================================*/
 
         .single-product-details-content-wrapper .qty-box,
         .single-product-details-content-wrapper .add-btn-wrapper {
@@ -94,8 +94,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                    Promo Offer style start
-                                                                                                                                                                                                     =====================================*/
+                                                                                                                                                                                                                                Promo Offer style start
+                                                                                                                                                                                                                 =====================================*/
 
         .promoOfferWrap {
             padding: 10px 0 4px;
@@ -282,8 +282,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                    Promo Offer style End
-                                                                                                                                                                                                =====================================*/
+                                                                                                                                                                                                                Promo Offer style End
+                                                                                                                                                                                                            =====================================*/
 
 
         .discount-pill {
@@ -320,8 +320,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                        Flash Deal timer style Start
-                                                                                                                                                                    ========================================== */
+                                                                                                                                                                                    Flash Deal timer style Start
+                                                                                                                                                                                ========================================== */
         .product-countdown {
             margin-top: 30px;
             background: #E1F5EE;
@@ -382,8 +382,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                                                        Flash Deal timer style End
-                                                                                                                                                                                                    ========================================== */
+                                                                                                                                                                                                                    Flash Deal timer style End
+                                                                                                                                                                                                                ========================================== */
         /* stock and sku section */
         .product-meta-flex {
             display: flex;
@@ -1317,154 +1317,151 @@
                             <div class="promoOfferLabel">
                                 🎁 বিশেষ অফার
                             </div>
-                            <div class="promoOfferList">
 
-                                <div class="promoOfferCard promoOfferCard--green">
-                                    <div class="promoOfferAccent"></div>
-                                    <div class="promoOfferBody">
-                                        <div class="promoOfferIcon">🥔</div>
-                                        <div class="promoOfferText">
-                                            <div class="promoOfferThreshold">১০০০ টাকার কেনাকাটায়</div>
-                                            <div class="promoOfferDesc">২ কেজি তাজা আলু পাবেন</div>
+                            @if ($productt->stock > 0 || $productt->preordered == 2)
+                                @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
+                                    @if ($existingQty == 0)
+                                        {{-- SHOW ADD TO BAG --}}
+                                        <div class="w-100 d-block mt-auto add-btn-wrapper">
+                                            <button
+                                                class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_details"
+                                                data-href="{{ route('product.add.to.cart', $productt->id) }}"
+                                                data-product-id="{{ $productt->id }}">
+                                                <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
+                                            </button>
                                         </div>
-                                        <div class="promoOfferBadge">বিনামূল্যে</div>
-                                    </div>
-                                </div>
-
-                                <div class="promoOfferCard promoOfferCard--amber">
-                                    <div class="promoOfferAccent"></div>
-                                    <div class="promoOfferBody">
-                                        <div class="promoOfferIcon">🥩</div>
-                                        <div class="promoOfferText">
-                                            <div class="promoOfferThreshold">১৫০০ টাকার কেনাকাটায়</div>
-                                            <div class="promoOfferDesc">গরুর মাংসের মসলা পাবেন</div>
-                                        </div>
-                                        <div class="promoOfferBadge">মাত্র ১ ৳</div>
-                                    </div>
-                                </div>
-
-                                <div class="promoOfferCard promoOfferCard--blue">
-                                    <div class="promoOfferAccent"></div>
-                                    <div class="promoOfferBody">
-                                        <div class="promoOfferIcon">🥚</div>
-                                        <div class="promoOfferText">
-                                            <div class="promoOfferThreshold">২০০০ টাকার বেশি কেনাকাটায়</div>
-                                            <div class="promoOfferDesc">১ ডজন ডিম পাবেন</div>
-                                        </div>
-                                        <div class="promoOfferBadge">মাত্র ১ ৳</div>
-                                    </div>
-                                </div>
-
-                                <div class="promoOfferCard promoOfferCard--coral">
-                                    <div class="promoOfferAccent"></div>
-                                    <div class="promoOfferBody">
-                                        <div class="promoOfferIcon">🛢️</div>
-                                        <div class="promoOfferText">
-                                            <div class="promoOfferThreshold">২৫০০ টাকার বেশি কেনাকাটায়</div>
-                                            <div class="promoOfferDesc">১ লিটার সয়াবিন তেল পাবেন</div>
-                                        </div>
-                                        <div class="promoOfferBadge">মাত্র ১ ৳</div>
-                                    </div>
-                                </div>
-
-                                <div class="promoOfferCard promoOfferCard--pink">
-                                    <div class="promoOfferAccent"></div>
-                                    <div class="promoOfferBody">
-                                        <div class="promoOfferIcon">🛒</div>
-                                        <div class="promoOfferText">
-                                            <div class="promoOfferThreshold">৫০০০ টাকার কেনাকাটায়</div>
-                                            <div class="promoOfferDesc">২ লিটার সয়াবিন তেল পাবেন</div>
-                                        </div>
-                                        <div class="promoOfferBadge">মাত্র ২ ৳</div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <script async src="https://static.addtoany.com/menu/page.js"></script>
-                        <!-- store & seller -->
-
-                        <div class="product-video-content-area">
-                            @php
-
-                                $videoUrl = $productt->video_url;
-                                $embedUrl = '';
-                                $width = '100%'; // Default width
-                                $height = '500'; // Default height
-                                $col = '6'; // Default col
-                                $ratio = '56.25%'; // default (16:9)
-
-                                if (strpos($videoUrl, 'facebook.com') !== false) {
-                                    if (strpos($videoUrl, '/reel/') !== false) {
-                                        // Facebook Reel URL
-                                        $videoId = explode('/reel/', $videoUrl)[1];
-                                        $videoId = explode('?', $videoId)[0];
-                                        $embedUrl = "https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/watch/?v={$videoId}";
-                                        $height = '800'; // Facebook Reel height
-                                        $col = '4';
-                                        $ratio = '177.77%'; // 9:16 (vertical video)
-                                    } elseif (
-                                        strpos($videoUrl, 'watch?v=') !== false ||
-                                        strpos($videoUrl, '/watch/') !== false
-                                    ) {
-                                        // Facebook Watch Video URL
-                                        if (strpos($videoUrl, 'v=') !== false) {
-                                            $videoId = explode('v=', $videoUrl)[1];
-                                        } else {
-                                            $videoId = explode('/watch/', $videoUrl)[1];
-                                        }
-                                        $videoId = explode('&', $videoId)[0]; // Remove trailing query parameters
-                                        $embedUrl = "https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/watch/?v={$videoId}";
-                                        $height = '530'; // Facebook Watch video height
-                                        $ratio = '177.77%'; // 9:16 (vertical video)
-                                    }
-                                } elseif (
-                                    strpos($videoUrl, 'youtube.com') !== false ||
-                                    strpos($videoUrl, 'youtu.be') !== false
-                                ) {
-                                    if (strpos($videoUrl, 'youtube.com/watch') !== false) {
-                                        // Standard YouTube Video URL
-                                        $videoId = explode('v=', $videoUrl)[1];
-                                        $videoId = explode('&', $videoId)[0];
-                                        $embedUrl = "https://www.youtube.com/embed/{$videoId}";
-                                    } elseif (strpos($videoUrl, 'youtu.be') !== false) {
-                                        // Shortened YouTube URL
-                                        $videoId = explode('/', $videoUrl)[3];
-                                        $videoId = explode('?', $videoId)[0];
-                                        $embedUrl = "https://www.youtube.com/embed/{$videoId}";
-                                    } elseif (strpos($videoUrl, '/embed/') !== false) {
-                                        // YouTube Embed URL
-                                        $embedUrl = $videoUrl;
-                                    } elseif (strpos($videoUrl, 'shorts') !== false) {
-                                        // YouTube Shorts URL
-                                        //https://www.youtube.com/shorts/zIDDpjTJRjU?feature=share
-                                        $videoId = explode('/', $videoUrl)[4];
-                                        $videoId = explode('?', $videoId)[0];
-                                        $embedUrl = "https://www.youtube.com/shorts/{$videoId}";
-                                    }
-                                    // Adjust height for YouTube Shorts
-                                    if (strpos($videoUrl, 'shorts') !== false) {
-                                        $height = '700'; // YouTube Shorts height
-                                        $col = '4';
-                                    }
-                                }
-                            @endphp
-
-                            @if ($embedUrl)
-                                <div style="position: relative; width: 100%; padding-top: {{ $ratio }};">
-                                    <iframe
-                                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;"
-                                        src="{{ $embedUrl }}" title="Video Player"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        allowfullscreen>
-                                    </iframe>
-                                </div>
+                                    @endif
+                                @endif
                             @endif
                         </div>
-                    </form>
+
+                        <div class="promoOfferCard promoOfferCard--amber">
+                            <div class="promoOfferAccent"></div>
+                            <div class="promoOfferBody">
+                                <div class="promoOfferIcon">🥩</div>
+                                <div class="promoOfferText">
+                                    <div class="promoOfferThreshold">১৫০০ টাকার কেনাকাটায়</div>
+                                    <div class="promoOfferDesc">গরুর মাংসের মসলা পাবেন</div>
+                                </div>
+                                <div class="promoOfferBadge">মাত্র ১ ৳</div>
+                            </div>
+                        </div>
+
+                        <div class="promoOfferCard promoOfferCard--blue">
+                            <div class="promoOfferAccent"></div>
+                            <div class="promoOfferBody">
+                                <div class="promoOfferIcon">🥚</div>
+                                <div class="promoOfferText">
+                                    <div class="promoOfferThreshold">২০০০ টাকার বেশি কেনাকাটায়</div>
+                                    <div class="promoOfferDesc">১ ডজন ডিম পাবেন</div>
+                                </div>
+                                <div class="promoOfferBadge">মাত্র ১ ৳</div>
+                            </div>
+                        </div>
+
+                        <div class="promoOfferCard promoOfferCard--coral">
+                            <div class="promoOfferAccent"></div>
+                            <div class="promoOfferBody">
+                                <div class="promoOfferIcon">🛢️</div>
+                                <div class="promoOfferText">
+                                    <div class="promoOfferThreshold">২৫০০ টাকার বেশি কেনাকাটায়</div>
+                                    <div class="promoOfferDesc">১ লিটার সয়াবিন তেল পাবেন</div>
+                                </div>
+                                <div class="promoOfferBadge">মাত্র ১ ৳</div>
+                            </div>
+                        </div>
+
+                        <div class="promoOfferCard promoOfferCard--pink">
+                            <div class="promoOfferAccent"></div>
+                            <div class="promoOfferBody">
+                                <div class="promoOfferIcon">🛒</div>
+                                <div class="promoOfferText">
+                                    <div class="promoOfferThreshold">৫০০০ টাকার কেনাকাটায়</div>
+                                    <div class="promoOfferDesc">২ লিটার সয়াবিন তেল পাবেন</div>
+                                </div>
+                                <div class="promoOfferBadge">মাত্র ২ ৳</div>
+                            </div>
+                        </div>
+
                 </div>
             </div>
+            <script async src="https://static.addtoany.com/menu/page.js"></script>
+            <!-- store & seller -->
+
+            <div class="product-video-content-area">
+                @php
+
+                    $videoUrl = $productt->video_url;
+                    $embedUrl = '';
+                    $width = '100%'; // Default width
+                    $height = '500'; // Default height
+                    $col = '6'; // Default col
+                    $ratio = '56.25%'; // default (16:9)
+
+                    if (strpos($videoUrl, 'facebook.com') !== false) {
+                        if (strpos($videoUrl, '/reel/') !== false) {
+                            // Facebook Reel URL
+                            $videoId = explode('/reel/', $videoUrl)[1];
+                            $videoId = explode('?', $videoId)[0];
+                            $embedUrl = "https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/watch/?v={$videoId}";
+                            $height = '800'; // Facebook Reel height
+                            $col = '4';
+                            $ratio = '177.77%'; // 9:16 (vertical video)
+                        } elseif (strpos($videoUrl, 'watch?v=') !== false || strpos($videoUrl, '/watch/') !== false) {
+                            // Facebook Watch Video URL
+                            if (strpos($videoUrl, 'v=') !== false) {
+                                $videoId = explode('v=', $videoUrl)[1];
+                            } else {
+                                $videoId = explode('/watch/', $videoUrl)[1];
+                            }
+                            $videoId = explode('&', $videoId)[0]; // Remove trailing query parameters
+                            $embedUrl = "https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/watch/?v={$videoId}";
+                            $height = '530'; // Facebook Watch video height
+                            $ratio = '177.77%'; // 9:16 (vertical video)
+                        }
+                    } elseif (strpos($videoUrl, 'youtube.com') !== false || strpos($videoUrl, 'youtu.be') !== false) {
+                        if (strpos($videoUrl, 'youtube.com/watch') !== false) {
+                            // Standard YouTube Video URL
+                            $videoId = explode('v=', $videoUrl)[1];
+                            $videoId = explode('&', $videoId)[0];
+                            $embedUrl = "https://www.youtube.com/embed/{$videoId}";
+                        } elseif (strpos($videoUrl, 'youtu.be') !== false) {
+                            // Shortened YouTube URL
+                            $videoId = explode('/', $videoUrl)[3];
+                            $videoId = explode('?', $videoId)[0];
+                            $embedUrl = "https://www.youtube.com/embed/{$videoId}";
+                        } elseif (strpos($videoUrl, '/embed/') !== false) {
+                            // YouTube Embed URL
+                            $embedUrl = $videoUrl;
+                        } elseif (strpos($videoUrl, 'shorts') !== false) {
+                            // YouTube Shorts URL
+                            //https://www.youtube.com/shorts/zIDDpjTJRjU?feature=share
+                            $videoId = explode('/', $videoUrl)[4];
+                            $videoId = explode('?', $videoId)[0];
+                            $embedUrl = "https://www.youtube.com/shorts/{$videoId}";
+                        }
+                        // Adjust height for YouTube Shorts
+                        if (strpos($videoUrl, 'shorts') !== false) {
+                            $height = '700'; // YouTube Shorts height
+                            $col = '4';
+                        }
+                    }
+                @endphp
+
+                @if ($embedUrl)
+                    <div style="position: relative; width: 100%; padding-top: {{ $ratio }};">
+                        <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;"
+                            src="{{ $embedUrl }}" title="Video Player"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                @endif
+            </div>
+            </form>
         </div>
+    </div>
+    </div>
     </div>
     <!-- single product details content wrapper end -->
     <!--  tab-product-des-wrapper start -->

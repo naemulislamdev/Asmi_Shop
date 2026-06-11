@@ -250,13 +250,10 @@ class ProductController extends AdminBaseController
     //*** POST Request
     public function store(Request $request)
     {
-
-
         //--- Validation Section
         $rules = [
             'file' => 'mimes:zip',
         ];
-
 
         $validator = Validator::make($request->all(), $rules);
 

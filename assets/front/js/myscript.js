@@ -50,7 +50,7 @@
       "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
     },
   });
-  $(document).on("click", ".add_cart_click", function (e) {
+ $(document).on("click", ".add_cart_click", function (e) {
     e.preventDefault();
 
     const $btn = $(this);
@@ -59,41 +59,58 @@
 
     const measureType = wrap.find(".measure-select").data("measure-type");
     const measureValue = parseFloat(wrap.find(".measure-select").val() || 1);
-    const basePrice = parseFloat(
-      wrap.find(".product-price").data("base-price"),
-    );
+    const basePrice = parseFloat(wrap.find(".product-price").data("base-price"));
     const finalPrice = basePrice * measureValue;
 
+    // ✅ আগে offer check করো
     $.ajax({
-      url: $btn.data("href"),
-      method: "POST",
-      data: {
-        product_id: pid,
-        measure_type: measureType,
-        measure_value: measureValue,
-        final_price: finalPrice,
-        quantity: 1,
-      },
-      success: function (data) {
-        console.log(data);
-        
-        updateCartUI(data);
-        reloadOffcanvasCart();
+        url: mainurl + "/product/offer-info/" + pid,
+        method: "GET",
+        success: function (offerData) {
+            if (offerData.is_offer) {
+                // Offer product — popup দেখাও, cart এ add করো না
+                showOfferInfoModal(offerData.offer_details);
+                return;
+            }
 
-        if (data.offers) {
-          showOfferPopup(data.offers);
-          updateOfferHeader(data.offers);
-
-          // reset shownOffers if empty
-          if (data.offers.length === 0) {
-            lastShownOffers = [];
-          }
+            // Normal product — সরাসরি cart এ add করো
+            doAddToCart($btn, pid, measureType, measureValue, finalPrice);
         }
+    });
+});
 
-        const uniqueKey = data.unique_key;
+// ✅ Actual add to cart function (আলাদা করা হয়েছে)
+function doAddToCart($btn, pid, measureType, measureValue, finalPrice) {
+    $.ajax({
+        url: $btn.data("href"),
+        method: "POST",
+        data: {
+            product_id: pid,
+            measure_type: measureType,
+            measure_value: measureValue,
+            final_price: finalPrice,
+            quantity: 1,
+        },
+        success: function (data) {
+          
+            if (data.error) {
+                toastr.warning(data.message);
+                return;
+            }
 
-        // OVERLAY UI
-        $(`.overlay-add-btn[data-product-id="${pid}"]`).html(`
+            updateCartUI(data);
+            reloadOffcanvasCart();
+
+            if (data.offers) {
+                showOfferPopup(data.offers);
+                updateOfferHeader(data.offers);
+                if (data.offers.length === 0) lastShownOffers = [];
+            }
+
+            const uniqueKey = data.unique_key;
+
+            // OVERLAY UI
+            $(`.overlay-add-btn[data-product-id="${pid}"]`).html(`
                 <div class="outofstock-box-2 qty-plus-wrap qty-wrapper-overlay flex-row justify-content-evenly align-items-center"
                     data-product-id="${pid}" data-unique-key="${uniqueKey}">
                     <button class="btn btn-outline-light border-2 btn-sm qty-minus rounded-circle">
@@ -106,8 +123,8 @@
                 </div>
             `);
 
-        // NORMAL UI
-        $(`.add-btn-wrapper[data-product-id="${pid}"]`).html(`
+            // NORMAL UI
+            $(`.add-btn-wrapper[data-product-id="${pid}"]`).html(`
                 <div class="qty-box mt-auto qty-plus-wrap qty-wrapper-normal"
                     data-product-id="${pid}" data-unique-key="${uniqueKey}">
                     <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
@@ -115,9 +132,29 @@
                     <button class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
                 </div>
             `);
-      },
+        }
     });
-  });
+}
+
+// ✅ Offer info popup
+function showOfferInfoModal(offerDetails) {
+    let html = '';
+    offerDetails.forEach(function (o) {
+        html += `
+            <div class="offer-info-row">
+                <span class="offer-info-icon">🎁</span>
+                <div>
+                    <strong>${o.offer_name}</strong> পেতে
+                    <span class="offer-amount">${o.amount}৳</span> এর কেনাকাটা করুন
+                    <br>
+                    <small class="text-muted">মূল্য: মাত্র ${o.price}৳</small>
+                </div>
+            </div>`;
+    });
+
+    $('#offerInfoModalBody').html(html);
+    $('#offerInfoModal').modal('show');
+}
 
   /////////////// Start product details page cart
   $(document).on("click", ".add_cart_details", function (e) {
@@ -185,6 +222,10 @@
       data: { unique_key: unique_key, product_id: pid },
       success: function (data) {
         //const pid = data.product_id;
+        if (data.error) {
+                toastr.warning(data.message);
+                return;
+            }
         const qty = data.qty;
 
         $(".cart-count").text(data.cart_count);

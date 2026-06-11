@@ -93,11 +93,11 @@
                             @forelse ($orders as $order)
                                 <tr>
                                     <td data-label="{{ __('#Order') }}">
-                                        {{ $order->order->order_number }}
+                                        {{ $order->order->order_number}}
                                     </td>
                                     <td data-label="{{ __('Service Area') }}">
                                         <p>
-                                            {{ $order->order->customer_city }}
+                                            {{ $order->order->customer_city}}
                                         </p>
                                     </td>
 

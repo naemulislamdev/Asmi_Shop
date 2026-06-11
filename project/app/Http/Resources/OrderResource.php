@@ -19,6 +19,7 @@ class OrderResource extends JsonResource
         'number' => $this->order_number,
         'total' => $this->currency_sign . "" . round($this->pay_amount * $this->currency_value , 2),
         'status' => $this->status,
+        'is_preorder' => (int) ($this->is_preorder ?? 0),
         'details' => route('order', $this->id),
         'created_at' => $this->created_at,
         'updated_at' => $this->updated_at,

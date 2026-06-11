@@ -36,7 +36,7 @@ class CheckoutController extends Controller
 
             $input = $request->all();
 
-            // ✅ Decode items safely
+            // Decode items safely
             $items = is_string($input['items'])
                 ? json_decode($input['items'], true)
                 : $input['items'];
@@ -52,6 +52,40 @@ class CheckoutController extends Controller
 
             $cart = new Cart(null);
             $gs = Generalsetting::find(1);
+
+            // --- max_qty enforcement (per-product cap, 0 = no cap) ---
+            // Also collect per-item preorder request flag so the order's cart
+            // JSON later stores which items were placed as preorder requests.
+            $preorderFlags = [];
+            foreach ($items as $item) {
+                $pid = isset($item['id']) ? $item['id'] : null;
+                $qty = (int) ($item['qty'] ?? 0);
+                if ($pid === null) continue;
+
+                $prod = Product::find($pid);
+                if (!$prod) continue;
+
+                $cap = (int) ($prod->max_qty ?? 0);
+                if ($cap > 0 && $qty > $cap) {
+                    return response()->json([
+                        'status' => false,
+                        'data'   => [],
+                        'error'  => [
+                            'message' => 'Maximum ' . $cap . ' allowed for "' . $prod->name . '" per order.',
+                            'product_id' => (int) $pid,
+                            'max_qty' => $cap,
+                        ],
+                    ]);
+                }
+
+                // Per-item preorder request flag. Flutter sends `is_preorder: 1`
+                // for items that user requested as preorder (stock=0,
+                // preordered=2). Falls back to 0 when absent.
+                $isPre = isset($item['is_preorder'])
+                    ? ((int) $item['is_preorder'] === 1 ? 1 : 0)
+                    : 0;
+                $preorderFlags[(string) $pid] = $isPre;
+            }
 
             foreach ($items as $item) {
                 if ($this->validCartItem($item)) {
@@ -76,11 +110,36 @@ class CheckoutController extends Controller
             $curr = Currency::where('name', $input['currency_code'] ?? '')
                 ->first() ?? Currency::where('is_default', 1)->first();
 
+            // Stamp each cart item with its is_preorder flag. data_get handles
+            // both array AND Eloquent Model access ('item.id' resolves to the
+            // Product id whether $row['item'] is an array or a Model).
+            $stampedItems = [];
+            foreach ($cart->items ?? [] as $key => $row) {
+                $itemArr = is_array($row) ? $row : (array) $row;
+                $iid = data_get($row, 'item.id')
+                    ?? data_get($row, 'id')
+                    ?? data_get($itemArr, 'item.id')
+                    ?? data_get($itemArr, 'id');
+                $itemArr['is_preorder'] = ($iid !== null && isset($preorderFlags[(string) $iid]))
+                    ? $preorderFlags[(string) $iid]
+                    : 0;
+                $stampedItems[$key] = $itemArr;
+            }
+
             $cartData = [
                 'totalQty' => $cart->totalQty,
                 'totalPrice' => $cart->totalPrice,
-                'items' => $cart->items,
+                'items' => $stampedItems,
             ];
+
+            // Order-level preorder flag: true if ANY item in this order is a
+            // preorder request. Lets admin filter / count preorder orders via
+            // SQL without scanning the cart JSON.
+            $orderIsPreorder = false;
+            foreach ($preorderFlags as $f) {
+                if ((int) $f === 1) { $orderIsPreorder = true; break; }
+            }
+            $input['is_preorder'] = $orderIsPreorder ? 1 : 0;
 
             $affilate_users = optional(OrderHelper::product_affilate_check($cart))
                 ? json_encode(OrderHelper::product_affilate_check($cart))
@@ -574,11 +633,21 @@ class CheckoutController extends Controller
     /**
      * GET /api/front/states/{country_id}
      * States for a country (used by checkout dropdowns).
+     * Note: DB column is `state` (not `name`). Returned as `name` for client friendliness.
      */
     public function statesByCountry($country_id)
     {
         try {
-            $states = State::where('country_id', $country_id)->orderBy('name')->get(['id', 'country_id', 'name']);
+            $rows = State::where('country_id', $country_id)
+                ->orderBy('state')
+                ->get(['id', 'country_id', 'state']);
+            $states = $rows->map(function ($s) {
+                return [
+                    'id'         => $s->id,
+                    'country_id' => $s->country_id,
+                    'state'       => $s->state,
+                ];
+            });
             return response()->json(['status' => true, 'data' => $states, 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
@@ -588,11 +657,21 @@ class CheckoutController extends Controller
     /**
      * GET /api/front/cities/{state_id}
      * Cities for a state (used by checkout dropdowns).
+     * Note: DB column is `city_name`. Returned as `name` for client friendliness.
      */
     public function citiesByState($state_id)
     {
         try {
-            $cities = City::where('state_id', $state_id)->orderBy('name')->get(['id', 'state_id', 'name']);
+            $rows = City::where('state_id', $state_id)
+                ->orderBy('city_name')
+                ->get(['id', 'state_id', 'city_name']);
+            $cities = $rows->map(function ($c) {
+                return [
+                    'id'       => $c->id,
+                    'state_id' => $c->state_id,
+                    'name'     => $c->city_name,
+                ];
+            });
             return response()->json(['status' => true, 'data' => $cities, 'error' => []]);
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);

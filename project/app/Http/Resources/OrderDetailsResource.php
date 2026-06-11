@@ -38,6 +38,7 @@ class OrderDetailsResource extends JsonResource
         'customer_city' => $this->customer_city,
         'customer_country' => $this->customer_country,
         'shipping' => $this->shipping,
+        'is_preorder' => (int) ($this->is_preorder ?? 0),
         'paid_amount' => $this->currency_sign . '' . round($this->pay_amount * $this->currency_value , 2),
         'payment_method' => $this->method,
         'shipping_cost' => $this->shipping_cost,
