@@ -47,7 +47,7 @@ class CustomeOrderController extends Controller
             $qty       = (float) $product['qty'];      // (int) থেকে (float) — 1.5 kg ঠিক থাকবে
             $unitPrice = (float) $product['unit_price'];
             $lineTotal = (float) $product['line_total'];
-            $unit      = $product['unit'] ?? 'pc';     // frontend থেকে unit নাও
+            $unit      = $product['unit'] ?? 'pc';     // frontend থেকে unit নাও, default 'pc' ধরে নাও
 
             $dbProduct = $productData[$product['product_id']] ?? null;
             if (!$dbProduct) continue;
@@ -93,8 +93,22 @@ class CustomeOrderController extends Controller
             "items" => $items
         ];
 
+        // find user by phone in user table, if not found create new user with name and phone, and default password 12345678
+        $customer = User::where('phone', $request->customer_phone)->first();
+
+        if (!$customer) {
+            $customer = User::create([
+                'name' => $request->customer_name,
+                'phone' => $request->customer_phone,
+                'email' => $request->customer_phone .'bd@gmail.com',
+                'password' => bcrypt('12345678'),
+                'address' => $request->customer_address
+            ]);
+        }
+
         $order = new Order();
 
+        $order->user_id = $customer->id;
         $order->cart = json_encode($new_cart);
         $order->method = $request->payment_method;
         $order->totalQty = $totalQty;
@@ -178,7 +192,7 @@ class CustomeOrderController extends Controller
                     'id' => $customer->id,
                     'name' => $customer->name,
                     'phone' => $customer->phone,
-                    'address' => $customer->address_line_1,
+                    'address' => $customer->address,
                 ]
             ]);
         }

@@ -71,7 +71,7 @@
                                             {{ \PriceHelper::showOrderCurrencyPrice($total, $order->currency_sign) }}
                                         </td>
                                     </tr>
-                                       @if ($order->shipping_cost != 0)
+                                    @if ($order->shipping_cost != 0)
                                         <tr>
                                             <th width="45%">{{ __('Shipping Cost') }}</th>
                                             <td width="10%">:</td>
@@ -114,7 +114,7 @@
                                             </td>
                                         </tr>
                                     @endif
-                                 
+
 
                                     <tr>
                                         <th width="45%">{{ __('Total Cost') }}</th>
@@ -122,7 +122,7 @@
                                         <td width="45%">
                                             <strong>
                                                 {{ \PriceHelper::showOrderCurrencyPrice(
-                                                    (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
+                                                    ($order->pay_amount + $order->wallet_price - $order->discount) * $order->currency_value,
                                                     $order->currency_sign,
                                                 ) }}
                                             </strong>
@@ -486,7 +486,7 @@
             </div>
         </div>
     </div>
-<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
+    <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1" aria-hidden="true">
 
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -617,66 +617,73 @@
         });
     </script>
     <script>
-    $(document).on('click', '.remove-item', function () {
-        let cartKey = $(this).data('cart-key');
-        let productId = $(this).data('product-id');
-        let orderId = $(this).data('order-id');
+        $(document).on('click', '.remove-item', function() {
+            let cartKey = $(this).data('cart-key');
+            let productId = $(this).data('product-id');
+            let orderId = $(this).data('order-id');
 
-        $.ajax({
-            url: '{{ url("admin/order") }}/' + orderId + '/remove-product/' + productId,
-            type: 'DELETE',
-            data: {
-                cart_key: cartKey,
-                product_id: productId
-            },
-            success: function (res) {
-                if (res.status) {
-                    $('#order-items-wrapper').html(res.html);
+            $.ajax({
+                url: '{{ url('admin/order') }}/' + orderId + '/remove-product/' + productId,
+                type: 'DELETE',
+                data: {
+                    cart_key: cartKey,
+                    product_id: productId
+                },
+                success: function(res) {
+                    if (res.status) {
+                        $('#order-items-wrapper').html(res.html);
+                    }
+                },
+                error: function(xhr) {
+                    alert(xhr.responseJSON?.message || 'Something went wrong while removing product.');
                 }
-            },
-            error: function (xhr) {
-                alert(xhr.responseJSON?.message || 'Something went wrong while removing product.');
+            });
+        });
+    </script>
+    {{-- order details page এর @push('scripts') এ এই script টা replace করুন --}}
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
-    });
-</script>
-   <script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    });
 
-    let qtyTimer;
+        let qtyTimer;
 
-    $(document).on('input', '.update_qty', function () {
-        let el = $(this);
+        $(document).on('input', '.update_qty', function() {
+            let el = $(this);
 
-        clearTimeout(qtyTimer);
+            clearTimeout(qtyTimer);
 
-        qtyTimer = setTimeout(function () {
-            let qty = parseInt(el.val());
-            let cartKey = el.data('cart-key');
-            let productId = el.data('product-id');
-            let orderId = el.data('order-id');
+            qtyTimer = setTimeout(function() {
+                let unit = el.data('unit') || 'pc';
+                // parseInt বাদ — parseFloat করা হয়েছে decimal support এর জন্য
+                let qty = parseFloat(el.val());
+                let cartKey = el.data('cart-key');
+                let productId = el.data('product-id');
+                let orderId = el.data('order-id');
 
-            if (!qty || qty < 1) {
-                qty = 1;
-                el.val(1);
-            }
-
-            $.post('{{ url("admin/order") }}/' + orderId + '/update-product-qty', {
-                cart_key: cartKey,
-                product_id: productId,
-                qty: qty
-            }, function (res) {
-                if (res.status) {
-                    $('#order-items-wrapper').html(res.html);
+                // Fallback
+                let minVal = (unit === 'pc') ? 1 : 0.001;
+                if (isNaN(qty) || qty < minVal) {
+                    qty = minVal;
+                    el.val(qty);
                 }
-            }).fail(function (xhr) {
-                alert(xhr.responseJSON?.message || 'Something went wrong while updating quantity.');
-            });
-        }, 400);
-    });
-</script>
+
+                $.post('{{ url('admin/order') }}/' + orderId + '/update-product-qty', {
+                    cart_key: cartKey,
+                    product_id: productId,
+                    qty: qty,
+                    unit: unit // unit ও পাঠাও backend এ
+                }, function(res) {
+                    if (res.status) {
+                        $('#order-items-wrapper').html(res.html);
+                    }
+                }).fail(function(xhr) {
+                    alert(xhr.responseJSON?.message ||
+                        'Something went wrong while updating quantity.');
+                });
+            }, 600);
+        });
+    </script>
 @endpush
