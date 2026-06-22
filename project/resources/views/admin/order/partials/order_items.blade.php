@@ -28,7 +28,7 @@
                                 <th>Image</th>
                                 <th>Name</th>
                                 <th>Price</th>
-                                <th style="width: 120px;">Qty</th>
+                                <th style="width: 140px;">Qty</th>
                                 <th>Discount</th>
                                 <th>Subtotal</th>
                                 <th>Action</th>
@@ -51,12 +51,21 @@
                                     $productPhoto = $itemData['photo'] ?? null;
 
                                     $itemPrice = (float) ($product['item_price'] ?? ($itemData['price'] ?? 0));
-                                    $qty = (int) ($product['qty'] ?? 0);
+                                    // (int) বাদ দিয়ে (float) করা হয়েছে — decimal qty support
+                                    $qty = (float) ($product['qty'] ?? 0);
+                                    $unit = $product['unit'] ?? 'pc';
                                     $itemDiscount = (float) ($product['discount'] ?? 0);
-                                    $subtotal = $itemPrice * $qty;
+
+                                    // gram হলে price kg হিসেবে, তাই qty/1000 করে subtotal
+                                    $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+                                    $subtotal = $itemPrice * $effectiveQty;
 
                                     $vendorSubTotal += $subtotal;
                                     $grandSubTotal += $subtotal;
+
+                                    // qty input এর step আর min unit অনুযায়ী
+                                    $qtyStep = $unit === 'pc' ? '1' : ($unit === 'gram' ? '1' : '0.001');
+                                    $qtyMin = $unit === 'pc' ? '1' : ($unit === 'gram' ? '1' : '0.001');
                                 @endphp
 
                                 <tr>
@@ -83,17 +92,20 @@
                                     </td>
 
                                     <td>
+                                        {{-- unit badge --}}
+                                        <span class="badge badge-secondary mb-1">{{ strtoupper($unit) }}</span>
                                         <input type="number" class="form-control d-inline-block update_qty"
-                                            style="width: 80px;" name="update_qty" min="1"
-                                            value="{{ $qty }}" data-cart-key="{{ $cartKey }}"
-                                            data-product-id="{{ $productId }}" data-order-id="{{ $order->id }}">
+                                            style="width: 90px;" name="update_qty" min="{{ $qtyMin }}"
+                                            step="{{ $qtyStep }}" value="{{ $qty }}"
+                                            data-cart-key="{{ $cartKey }}" data-product-id="{{ $productId }}"
+                                            data-order-id="{{ $order->id }}" data-unit="{{ $unit }}">
                                     </td>
 
                                     <td>
                                         {{ \PriceHelper::showCurrencyPrice($itemDiscount * $order->currency_value) }}
                                     </td>
 
-                                    <td>
+                                    <td class="row-subtotal-cell">
                                         {{ \PriceHelper::showCurrencyPrice($subtotal * $order->currency_value) }}
                                     </td>
 
@@ -162,10 +174,19 @@
                         <strong>-
                             {{ \PriceHelper::showCurrencyPrice($orderDiscount * $order->currency_value) }}</strong>
                     </dd>
+                    <dt class="col-sm-6">First Order Discount</dt>
+                    <dd class="col-sm-6 border-bottom">
+                        <strong>-
+                            {{ \PriceHelper::showCurrencyPrice($order->first_order_discount) }}</strong>
+                    </dd>
 
                     <dt class="col-sm-6">Total</dt>
                     <dd class="col-sm-6">
-                        <strong>{{ \PriceHelper::showCurrencyPrice($grandTotal * $order->currency_value) }}</strong>
+                        <strong>
+                            {{ \PriceHelper::showCurrencyPrice(
+                                ($grandTotal - ($order->first_order_discount ?? 0)) * $order->currency_value,
+                            ) }}
+                        </strong>
                     </dd>
                 </dl>
             </div>

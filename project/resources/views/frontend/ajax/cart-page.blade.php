@@ -1,6 +1,7 @@
 @section('css')
- <style>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
         .btn-home {
             display: inline-block;
             background: linear-gradient(45deg, #1598a7, #1598a7);
@@ -432,307 +433,533 @@
             color: #6b7280;
             margin-top: 12px;
         }
+
         .checkout-page .checkout-box-body {
             font-family: "Rubik", sans-serif !important;
         }
+
+        /* checkout product */
+        /* ===== Checkout Product Section ===== */
+        .checkout-product {
+            background: #f9fafb;
+            padding: 16px 0 24px;
+        }
+
+        /* ===== Slider wrapper ===== */
+        .checkout-product-slider {
+            position: relative;
+            padding: 0 0 32px;
+
+        }
+
+        /* ===== Slide card ===== */
+        .checkout-product-slider .swiper-slide {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            flex-direction: row;
+            height: 130px;
+        }
+
+        /* ===== Image ===== */
+        .checkout-product-slider .slide-img {
+            width: 95px;
+            min-width: 95px;
+            background: #fff;
+            border-right: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .checkout-product-slider .slide-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform: scale(0.8);
+        }
+
+        /* ===== Body ===== */
+        .checkout-product-slider .slide-body {
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ===== Product name ===== */
+        .checkout-product-slider .slide-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #111;
+            white-space: pre-wrap;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* ===== Price group ===== */
+        .checkout-product-slider .slide-price-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px 6px;
+        }
+
+        .checkout-product-slider .slide-price-current {
+            font-size: 13px;
+            font-weight: 600;
+            color: #007182;
+            font-family: "Rubik", sans-serif;
+        }
+
+        .checkout-product-slider .slide-price-original {
+            font-size: 11px;
+            color: #9ca3af;
+            text-decoration: line-through;
+        }
+
+        .checkout-product-slider .slide-discount-pill {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: #fef2f2;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .checkout-product-slider .slide-measure {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        /* ===== Add to cart button ===== */
+        .checkout-product-slider .slide-btn {
+            align-self: flex-start;
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #007182;
+            background: #007182;
+            color: #fff;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .checkout-product-slider .slide-btn:hover {
+            background: #005f6e;
+        }
+
+        /* ===== Nav buttons ===== */
+        .cps-nav {
+            position: absolute;
+            top: 31%;
+            z-index: 10;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #374151;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            transition: background .15s;
+        }
+
+        .cps-nav:hover {
+            background: #f3f4f6;
+        }
+
+        .cps-nav.prev {
+            left: 0;
+        }
+
+        .cps-nav.next {
+            right: 0;
+        }
+
+        .cps-nav.swiper-button-disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* ===== Pagination ===== */
+        .checkout-product-slider .swiper-pagination {
+            bottom: 4px;
+            top: auto;
+        }
+
+        .checkout-product-slider .swiper-pagination-bullet {
+            background: #9ca3af;
+            opacity: 1;
+        }
+
+        .checkout-product-slider .swiper-pagination-bullet-active {
+            background: #374151;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 575px) {
+            .checkout-product-slider .swiper-slide {
+                height: 110px;
+            }
+
+            .checkout-product-slider .slide-img {
+                width: 80px;
+                min-width: 80px;
+            }
+
+            .checkout-product-slider .slide-name {
+                font-size: 12px;
+            }
+
+            .checkout-product-slider .slide-btn {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+
+            .cps-nav {
+                width: 26px;
+                height: 26px;
+                font-size: 11px;
+            }
+        }
     </style>
-
 @endsection
-<form class="address-wrapper checkoutform" method="POST" id="userInfoForm">
-    @csrf
-    <input type="hidden" name="session_id" value="{{ session()->getId() }}">
+<div style="background: #f9fafb;">
+    {{-- suggested product slider start --}}
+    @include('frontend.ajax.suggestedProduct')
+    {{-- suggested product slider start --}}
 
-   
-    <div class="container gs-cart-container checkout-page py-0 my-0">
-        <nav class="custom-breadcrumb mb-2 mb-lg-0">
-            <a href="{{ url('/') }}">Home</a>
-            <span class="separator"><i class="fa fa-chevron-right"></i></span>
-            <span class="active">Checkout</span>
-        </nav>
-        <h1 class="text-center h3">Cart Checkout</h1>
-        <div class="row gs-cart-row justify-content-center">
+    <form class="address-wrapper checkoutform mt-4" method="POST" id="userInfoForm">
+        @csrf
+        <input type="hidden" name="session_id" value="{{ session()->getId() }}">
 
-            @if (Session::has('cart'))
-                @php $discount = 0; @endphp
 
-                <div class="col-lg-7">
-                   
-                    {{-- Personal Information --}}
-                    <div class="checkout-box">
-                        <div class="checkout-box-header">
-                            <div class="checkout-box-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="8" r="4" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5"
-                                        stroke-linecap="round" />
-                                </svg>
+        <div class="container gs-cart-container checkout-page py-0 my-0">
+
+            <h1 class="text-center h3">Cart Checkout</h1>
+            <div class="row gs-cart-row justify-content-center">
+
+                @if (Session::has('cart'))
+                    @php $discount = 0; @endphp
+
+                    <div class="col-lg-8">
+
+                        {{-- Personal Information --}}
+                        <div class="checkout-box">
+                            <div class="checkout-box-header">
+                                <div class="checkout-box-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="4" stroke="currentColor"
+                                            stroke-width="1.5" />
+                                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
+                                <h6>{{ __('Personal Information') }}</h6>
                             </div>
-                            <h6>{{ __('Personal Information') }}</h6>
-                        </div>
-                        <div class="checkout-box-body">
-                            <div class="row g-3">
-                                <div class="col-lg-6">
-                                    <div class="field-group">
-                                        <label class="field-label" for="customer_name">
-                                            {{ __('Full Name') }} <span class="text-danger">*</span>
-                                        </label>
-                                        <input class="field-input auto-save" id="customer_name" type="text"
-                                            name="customer_name" placeholder="{{ __('Full Name') }}"
-                                            value="{{ Auth::check() ? Auth::user()->name : '' }}">
-                                        @error('customer_name')
-                                            <span class="field-error">{{ $message }}</span>
-                                        @enderror
+                            <div class="checkout-box-body">
+                                <div class="row g-3">
+                                    <div class="col-lg-6">
+                                        <div class="field-group">
+                                            <label class="field-label" for="customer_name">
+                                                {{ __('Full Name') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <input class="field-input auto-save" id="customer_name" type="text"
+                                                name="customer_name" placeholder="{{ __('Full Name') }}"
+                                                value="{{ Auth::check() ? Auth::user()->name : '' }}">
+                                            @error('customer_name')
+                                                <span class="field-error">{{ $message }}</span>
+                                            @enderror
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-lg-6">
-                                    <div class="field-group">
-                                        <label class="field-label" for="phone">
-                                            {{ __('Phone Number') }} <span class="text-danger">*</span>
-                                        </label>
-                                        <input class="field-input auto-save" id="phone" type="tel"
-                                            placeholder="{{ __('Phone Number') }}" name="customer_phone"
-                                            value="{{ Auth::check() ? Auth::user()->phone : '' }}">
-                                        <span id="phoneFeedback" class="field-error"></span>
-                                        @error('customer_phone')
-                                            <span class="field-error">{{ $message }}</span>
-                                        @enderror
+                                    <div class="col-lg-6">
+                                        <div class="field-group">
+                                            <label class="field-label" for="phone">
+                                                {{ __('Phone Number') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <input class="field-input auto-save" id="phone" type="tel"
+                                                placeholder="{{ __('Phone Number') }}" name="customer_phone"
+                                                value="{{ Auth::check() ? Auth::user()->phone : '' }}">
+                                            <span id="phoneFeedback" class="field-error"></span>
+                                            @error('customer_phone')
+                                                <span class="field-error">{{ $message }}</span>
+                                            @enderror
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-lg-6">
-                                    <div class="field-group">
-                                        <label class="field-label" for="email">
-                                            {{ __('Email') }} <span class="text-muted"
-                                                style="font-weight:400;">({{ __('Optional') }})</span>
-                                        </label>
-                                        <input class="field-input auto-save" id="email" type="email"
-                                            name="customer_email" placeholder="{{ __('Enter Your Email') }}"
-                                            value="{{ Auth::check() ? Auth::user()->email : '' }}"
-                                            {{ Auth::check() ? 'readonly' : '' }}>
-                                        @error('customer_email')
-                                            <span class="field-error">{{ $message }}</span>
-                                        @enderror
+                                    <div class="col-lg-6">
+                                        <div class="field-group">
+                                            <label class="field-label" for="email">
+                                                {{ __('Email') }} <span class="text-muted"
+                                                    style="font-weight:400;">({{ __('Optional') }})</span>
+                                            </label>
+                                            <input class="field-input auto-save" id="email" type="email"
+                                                name="customer_email" placeholder="{{ __('Enter Your Email') }}"
+                                                value="{{ Auth::check() ? Auth::user()->email : '' }}"
+                                                {{ Auth::check() ? 'readonly' : '' }}>
+                                            @error('customer_email')
+                                                <span class="field-error">{{ $message }}</span>
+                                            @enderror
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-lg-6">
-                                    <div class="field-group">
-                                        <label class="field-label" for="address">
-                                            {{ __('Address') }} <span class="text-danger">*</span>
-                                        </label>
-                                        <input class="field-input auto-save" id="address" type="text"
-                                            placeholder="{{ __('Address') }}" name="customer_address"
-                                            value="{{ Auth::check() ? Auth::user()->address : '' }}">
-                                        @error('customer_address')
-                                            <span class="field-error">{{ $message }}</span>
-                                        @enderror
+                                    <div class="col-lg-6">
+                                        <div class="field-group">
+                                            <label class="field-label" for="address">
+                                                {{ __('Address') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <input class="field-input auto-save" id="address" type="text"
+                                                placeholder="{{ __('Address') }}" name="customer_address"
+                                                value="{{ Auth::check() ? Auth::user()->address : '' }}">
+                                            @error('customer_address')
+                                                <span class="field-error">{{ $message }}</span>
+                                            @enderror
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-lg-12">
-                                    <div class="field-group">
-                                        <label class="field-label" for="Order-Note">
-                                            {{ __('Order Note') }}
-                                            <span class="text-muted"
-                                                style="font-weight:400;">({{ __('Optional') }})</span>
-                                        </label>
-                                        <input class="field-input" id="Order-Note" name="order_note" type="text"
-                                            placeholder="{{ __('Any special instructions?') }}">
-                                        @error('order_note')
-                                            <span class="field-error">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                @if (!Auth::check())
                                     <div class="col-lg-12">
-                                        <label class="create-account-toggle" data-bs-toggle="collapse"
-                                            data-bs-target="#show_passwords">
-                                            <input type="checkbox" id="showca" name="create_account" value="1">
-                                            <div class="check-box">
-                                                <svg width="12" height="12" viewBox="0 0 12 12"
-                                                    fill="none">
-                                                    <path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.5"
-                                                        stroke-linecap="round" stroke-linejoin="round" />
-                                                </svg>
-                                            </div>
-                                            <span>{{ __('Create an account?') }}</span>
-                                        </label>
+                                        <div class="field-group">
+                                            <label class="field-label" for="Order-Note">
+                                                {{ __('Order Note') }}
+                                                <span class="text-muted"
+                                                    style="font-weight:400;">({{ __('Optional') }})</span>
+                                            </label>
+                                            <input class="field-input" id="Order-Note" name="order_note" type="text"
+                                                placeholder="{{ __('Any special instructions?') }}">
+                                            @error('order_note')
+                                                <span class="field-error">{{ $message }}</span>
+                                            @enderror
+                                        </div>
                                     </div>
 
-                                    <div class="col-12 collapse" id="show_passwords">
-                                        <div class="row g-3">
-                                            <div class="col-lg-6">
-                                                <div class="field-group">
-                                                    <label class="field-label"
-                                                        for="crpass">{{ __('Create Password') }}</label>
-                                                    <input class="field-input" id="crpass" type="password"
-                                                        placeholder="{{ __('Create Your Password') }}"
-                                                        name="password">
+                                    @if (!Auth::check())
+                                        <div class="col-lg-12">
+                                            <label class="create-account-toggle" data-bs-toggle="collapse"
+                                                data-bs-target="#show_passwords">
+                                                <input type="checkbox" id="showca" name="create_account"
+                                                    value="1">
+                                                <div class="check-box">
+                                                    <svg width="12" height="12" viewBox="0 0 12 12"
+                                                        fill="none">
+                                                        <path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.5"
+                                                            stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
                                                 </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="field-group">
-                                                    <label class="field-label"
-                                                        for="conpass">{{ __('Confirm Password') }}</label>
-                                                    <input class="field-input" id="conpass" type="password"
-                                                        placeholder="{{ __('Confirm Password') }}"
-                                                        name="password_confirmation">
+                                                <span>{{ __('Create an account?') }}</span>
+                                            </label>
+                                        </div>
+
+                                        <div class="col-12 collapse" id="show_passwords">
+                                            <div class="row g-3">
+                                                <div class="col-lg-6">
+                                                    <div class="field-group">
+                                                        <label class="field-label"
+                                                            for="crpass">{{ __('Create Password') }}</label>
+                                                        <input class="field-input" id="crpass" type="password"
+                                                            placeholder="{{ __('Create Your Password') }}"
+                                                            name="password">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="field-group">
+                                                        <label class="field-label"
+                                                            for="conpass">{{ __('Confirm Password') }}</label>
+                                                        <input class="field-input" id="conpass" type="password"
+                                                            placeholder="{{ __('Confirm Password') }}"
+                                                            name="password_confirmation">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Loyalty Points --}}
+                        <div class="mb-3">
+                            @php
+                                $totalLoyaltyPoints = auth()->user() ? (int) round(auth()->user()->wallet_points) : 0;
+                            @endphp
+
+                            <div class="loyalty-redeem-box">
+                                <div class="loyalty-redeem-header">
+                                    <div class="loyalty-icon">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"
+                                                fill="#f59e0b" stroke="#f59e0b" stroke-width="1"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="loyalty-title">Reward Points</p>
+                                        <p class="loyalty-balance">
+                                            Balance: <strong>{{ number_format($totalLoyaltyPoints) }} pts</strong>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                @if ($totalLoyaltyPoints >= 100)
+                                    <div class="loyalty-input-wrap">
+                                        <input type="number" name="use_points" id="use_points"
+                                            class="loyalty-input" min="100" max="{{ $totalLoyaltyPoints }}"
+                                            totalPrice="{{ $totalPrice }}"
+                                            placeholder="Enter points to redeem (min 100)">
+                                        <button type="button" class="loyalty-apply-btn"
+                                            onclick="applyMax()">Withdraw
+                                            All Points</button>
+                                    </div>
+                                    <p id="points-error" class="loyalty-error"></p>
+                                    <p class="loyalty-hint">1 point = 1 BDT &nbsp;·&nbsp; Min: 100 &nbsp;·&nbsp; Max:
+                                        {{ number_format($totalLoyaltyPoints) }} pts</p>
+                                @else
+                                    <div class="loyalty-insufficient">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="10" stroke="#9ca3af"
+                                                stroke-width="1.5" />
+                                            <path d="M12 8v4M12 16h.01" stroke="#9ca3af" stroke-width="1.5"
+                                                stroke-linecap="round" />
+                                        </svg>
+                                        You need at least <strong>100 points</strong> to Withdraw. You have
+                                        {{ $totalLoyaltyPoints }} pts.
                                     </div>
                                 @endif
                             </div>
                         </div>
-                    </div>
 
-                    {{-- Loyalty Points --}}
-                    <div class="mb-3">
+                        {{-- Shipping Method --}}
                         @php
-                            $totalLoyaltyPoints = auth()->user() ? (int) round(auth()->user()->wallet_points) : 0;
+                            $shipping = App\Models\Shipping::where('user_id', 0)->get();
+                            $vendor_id = 0;
                         @endphp
 
-                        <div class="loyalty-redeem-box">
-                            <div class="loyalty-redeem-header">
-                                <div class="loyalty-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"
-                                            fill="#f59e0b" stroke="#f59e0b" stroke-width="1"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="loyalty-title">Reward Points</p>
-                                    <p class="loyalty-balance">
-                                        Balance: <strong>{{ number_format($totalLoyaltyPoints) }} pts</strong>
-                                    </p>
-                                </div>
-                            </div>
-
-                            @if ($totalLoyaltyPoints >= 100)
-                                <div class="loyalty-input-wrap">
-                                    <input type="number" name="use_points" id="use_points" class="loyalty-input"
-                                        min="100" max="{{ $totalLoyaltyPoints }}"
-                                        totalPrice="{{ $totalPrice }}"
-                                        placeholder="Enter points to redeem (min 100)">
-                                    <button type="button" class="loyalty-apply-btn" onclick="applyMax()">Withdraw
-                                        All Points</button>
-                                </div>
-                                <p id="points-error" class="loyalty-error"></p>
-                                <p class="loyalty-hint">1 point = 1 BDT &nbsp;·&nbsp; Min: 100 &nbsp;·&nbsp; Max:
-                                    {{ number_format($totalLoyaltyPoints) }} pts</p>
-                            @else
-                                <div class="loyalty-insufficient">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="12" r="10" stroke="#9ca3af"
+                        <div class="checkout-box">
+                            <div class="checkout-box-header">
+                                <div class="checkout-box-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" stroke="currentColor"
+                                            stroke-width="1.5" stroke-linejoin="round" />
+                                        <circle cx="5.5" cy="18.5" r="1.5" stroke="currentColor"
                                             stroke-width="1.5" />
-                                        <path d="M12 8v4M12 16h.01" stroke="#9ca3af" stroke-width="1.5"
-                                            stroke-linecap="round" />
+                                        <circle cx="18.5" cy="18.5" r="1.5" stroke="currentColor"
+                                            stroke-width="1.5" />
                                     </svg>
-                                    You need at least <strong>100 points</strong> to Withdraw. You have
-                                    {{ $totalLoyaltyPoints }} pts.
                                 </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Shipping Method --}}
-                    @php
-                        $shipping = App\Models\Shipping::where('user_id', 0)->get();
-                        $vendor_id = 0;
-                    @endphp
-
-                    <div class="checkout-box">
-                        <div class="checkout-box-header">
-                            <div class="checkout-box-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" stroke="currentColor"
-                                        stroke-width="1.5" stroke-linejoin="round" />
-                                    <circle cx="5.5" cy="18.5" r="1.5" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle cx="18.5" cy="18.5" r="1.5" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                </svg>
+                                <h6>{{ __('Shipping Method') }}</h6>
                             </div>
-                            <h6>{{ __('Shipping Method') }}</h6>
+                            <div class="checkout-box-body">
+                                <div class="shipping-options">
+                                    @forelse($shipping as $data)
+                                        <label class="shipping-option-card" for="free-shepping{{ $data->id }}">
+                                            <input type="radio" class="shipping" ref="{{ $vendor_id }}"
+                                                data-price="{{ round($data->price * $curr->value, 2) }}"
+                                                view="{{ $curr->sign }}{{ round($data->price * $curr->value, 2) }}"
+                                                data-form="{{ $data->title }}"
+                                                id="free-shepping{{ $data->id }}"
+                                                name="shipping[{{ $vendor_id }}]" value="{{ $data->id }}"
+                                                {{ $loop->first ? 'checked' : '' }}>
+
+                                            <div class="shipping-icon">
+                                                <svg width="16" height="16" viewBox="0 0 24 24"
+                                                    fill="none">
+                                                    <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" stroke="currentColor"
+                                                        stroke-width="1.5" stroke-linejoin="round" />
+                                                    <circle cx="5.5" cy="18.5" r="1.5"
+                                                        stroke="currentColor" stroke-width="1.5" />
+                                                    <circle cx="18.5" cy="18.5" r="1.5"
+                                                        stroke="currentColor" stroke-width="1.5" />
+                                                </svg>
+                                            </div>
+
+                                            <div class="shipping-info">
+                                                <span class="shipping-title">{{ $data->title }}</span>
+                                                @if ($data->subtitle)
+                                                    <span class="shipping-subtitle">{{ $data->subtitle }}</span>
+                                                @endif
+                                            </div>
+
+                                            <div>
+                                                @if ($data->price == 0)
+                                                    <span class="badge-free">Free</span>
+                                                @else
+                                                    <span class="shipping-cost">
+                                                        +{{ $curr->sign }}{{ round($data->price * $curr->value, 2) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </label>
+                                    @empty
+                                        <p class="text-muted small">{{ __('No Shipping Method Available') }}</p>
+                                    @endforelse
+                                </div>
+                            </div>
                         </div>
-                        <div class="checkout-box-body">
-                            <div class="shipping-options">
-                                @forelse($shipping as $data)
-                                    <label class="shipping-option-card" for="free-shepping{{ $data->id }}">
-                                        <input type="radio" class="shipping" ref="{{ $vendor_id }}"
-                                            data-price="{{ round($data->price * $curr->value, 2) }}"
-                                            view="{{ $curr->sign }}{{ round($data->price * $curr->value, 2) }}"
-                                            data-form="{{ $data->title }}" id="free-shepping{{ $data->id }}"
-                                            name="shipping[{{ $vendor_id }}]" value="{{ $data->id }}"
-                                            {{ $loop->first ? 'checked' : '' }}>
 
-                                        <div class="shipping-icon">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                                <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" stroke="currentColor"
-                                                    stroke-width="1.5" stroke-linejoin="round" />
-                                                <circle cx="5.5" cy="18.5" r="1.5" stroke="currentColor"
-                                                    stroke-width="1.5" />
-                                                <circle cx="18.5" cy="18.5" r="1.5" stroke="currentColor"
-                                                    stroke-width="1.5" />
-                                            </svg>
-                                        </div>
-
-                                        <div class="shipping-info">
-                                            <span class="shipping-title">{{ $data->title }}</span>
-                                            @if ($data->subtitle)
-                                                <span class="shipping-subtitle">{{ $data->subtitle }}</span>
-                                            @endif
-                                        </div>
-
-                                        <div>
-                                            @if ($data->price == 0)
-                                                <span class="badge-free">Free</span>
+                        {{-- Payment Method --}}
+                        <div class="checkout-box">
+                            <div class="checkout-box-header">
+                                <div class="checkout-box-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <rect x="2" y="5" width="20" height="14" rx="2"
+                                            stroke="currentColor" stroke-width="1.5" />
+                                        <path d="M2 10h20" stroke="currentColor" stroke-width="1.5" />
+                                    </svg>
+                                </div>
+                                <h6>{{ __('Payment Method') }}</h6>
+                            </div>
+                            <div class="checkout-box-body">
+                                <div class="payment-options">
+                                    @foreach ($gateways as $gt)
+                                        @if ($gt->checkout == 1)
+                                            @if ($gt->type == 'manual')
+                                                @if ($digital == 0)
+                                                    <label class="payment-option-card payment"
+                                                        for="pl{{ $gt->id }}"
+                                                        data-show="{{ $gt->showForm() }}"
+                                                        data-form="{{ $gt->showCheckoutLink() }}"
+                                                        data-href="{{ route('front.load.payment', ['slug1' => $gt->showKeyword(), 'slug2' => $gt->id]) }}">
+                                                        <input type="radio" id="pl{{ $gt->id }}"
+                                                            name="payment_1">
+                                                        <div class="payment-info">
+                                                            <span class="payment-title">{{ $gt->title }}</span>
+                                                            @if ($gt->subtitle)
+                                                                <span
+                                                                    class="payment-subtitle">{{ $gt->subtitle }}</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="payment-check">
+                                                            <svg width="12" height="12" viewBox="0 0 24 24"
+                                                                fill="none">
+                                                                <path d="M5 13l4 4L19 7" stroke="currentColor"
+                                                                    stroke-width="2.5" stroke-linecap="round"
+                                                                    stroke-linejoin="round" />
+                                                            </svg>
+                                                        </div>
+                                                    </label>
+                                                @endif
                                             @else
-                                                <span class="shipping-cost">
-                                                    +{{ $curr->sign }}{{ round($data->price * $curr->value, 2) }}
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </label>
-                                @empty
-                                    <p class="text-muted small">{{ __('No Shipping Method Available') }}</p>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Payment Method --}}
-                    <div class="checkout-box">
-                        <div class="checkout-box-header">
-                            <div class="checkout-box-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <rect x="2" y="5" width="20" height="14" rx="2"
-                                        stroke="currentColor" stroke-width="1.5" />
-                                    <path d="M2 10h20" stroke="currentColor" stroke-width="1.5" />
-                                </svg>
-                            </div>
-                            <h6>{{ __('Payment Method') }}</h6>
-                        </div>
-                        <div class="checkout-box-body">
-                            <div class="payment-options">
-                                @foreach ($gateways as $gt)
-                                    @if ($gt->checkout == 1)
-                                        @if ($gt->type == 'manual')
-                                            @if ($digital == 0)
                                                 <label class="payment-option-card payment"
-                                                    for="pl{{ $gt->id }}" data-show="{{ $gt->showForm() }}"
+                                                    for="pl{{ $gt->id }}" data-val="{{ $gt->keyword }}"
+                                                    data-show="{{ $gt->showForm() }}"
                                                     data-form="{{ $gt->showCheckoutLink() }}"
                                                     data-href="{{ route('front.load.payment', ['slug1' => $gt->showKeyword(), 'slug2' => $gt->id]) }}">
                                                     <input type="radio" id="pl{{ $gt->id }}"
                                                         name="payment_1">
                                                     <div class="payment-info">
-                                                        <span class="payment-title">{{ $gt->title }}</span>
-                                                        @if ($gt->subtitle)
-                                                            <span class="payment-subtitle">{{ $gt->subtitle }}</span>
+                                                        <span class="payment-title">{{ $gt->name }}</span>
+                                                        @if ($gt->information != null)
+                                                            <span
+                                                                class="payment-subtitle">{{ $gt->getAutoDataText() }}</span>
                                                         @endif
                                                     </div>
                                                     <div class="payment-check">
@@ -745,81 +972,60 @@
                                                     </div>
                                                 </label>
                                             @endif
-                                        @else
-                                            <label class="payment-option-card payment" for="pl{{ $gt->id }}"
-                                                data-val="{{ $gt->keyword }}" data-show="{{ $gt->showForm() }}"
-                                                data-form="{{ $gt->showCheckoutLink() }}"
-                                                data-href="{{ route('front.load.payment', ['slug1' => $gt->showKeyword(), 'slug2' => $gt->id]) }}">
-                                                <input type="radio" id="pl{{ $gt->id }}" name="payment_1">
-                                                <div class="payment-info">
-                                                    <span class="payment-title">{{ $gt->name }}</span>
-                                                    @if ($gt->information != null)
-                                                        <span
-                                                            class="payment-subtitle">{{ $gt->getAutoDataText() }}</span>
-                                                    @endif
-                                                </div>
-                                                <div class="payment-check">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24"
-                                                        fill="none">
-                                                        <path d="M5 13l4 4L19 7" stroke="currentColor"
-                                                            stroke-width="2.5" stroke-linecap="round"
-                                                            stroke-linejoin="round" />
-                                                    </svg>
-                                                </div>
-                                            </label>
                                         @endif
-                                    @endif
-                                @endforeach
+                                    @endforeach
+                                </div>
+                                <div class="transection-wrapper pay-area mt-3"></div>
                             </div>
-                            <div class="transection-wrapper pay-area mt-3"></div>
                         </div>
-                    </div>
 
-                    {{-- Select your outlet --}}
-                    {{-- Nearest Outlet Selection --}}
-                    @php
-                        $outlets = App\Models\Branch::where('status', 1)->get();
+                        {{-- Select your outlet --}}
+                        {{-- Nearest Outlet Selection --}}
+                        @php
+                            $outlets = App\Models\Branch::where('status', 1)->get();
 
-                    @endphp
+                        @endphp
 
-                    <div class="checkout-box  @error('branch_id') border border-danger @enderror">
-                        <div class="checkout-box-header">
-                            <div class="checkout-box-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-                                    <circle cx="12" cy="9" r="2.5" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                </svg>
+                        <div class="checkout-box  @error('branch_id') border border-danger @enderror">
+                            <div class="checkout-box-header">
+                                <div class="checkout-box-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                                        <circle cx="12" cy="9" r="2.5" stroke="currentColor"
+                                            stroke-width="1.5" />
+                                    </svg>
+                                </div>
+                                <h6>{{ __('Select Your Nearest Outlet') }}</h6>
                             </div>
-                            <h6>{{ __('Select Your Nearest Outlet') }}</h6>
-                        </div>
-                        <div class="checkout-box-body  ">
-                            <div class="shipping-options">
-                                @forelse($outlets as $outlet)
-                                    <label class="shipping-option-card" for="outlet_{{ $outlet->id }}">
-                                        <input type="radio" id="outlet_{{ $outlet->id }}" name="branch_id"
-                                            value="{{ $outlet->id }}">
+                            <div class="checkout-box-body  ">
+                                <div class="shipping-options">
+                                    @forelse($outlets as $outlet)
+                                        <label class="shipping-option-card" for="outlet_{{ $outlet->id }}">
+                                            <input type="radio" id="outlet_{{ $outlet->id }}" name="branch_id"
+                                                value="{{ $outlet->id }}">
 
-                                        <div class="shipping-icon">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                                <path
-                                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                                                    stroke="currentColor" stroke-width="1.5"
-                                                    stroke-linejoin="round" />
-                                                <circle cx="12" cy="9" r="2.5" stroke="currentColor"
-                                                    stroke-width="1.5" />
-                                            </svg>
-                                        </div>
+                                            <div class="shipping-icon">
+                                                <svg width="16" height="16" viewBox="0 0 24 24"
+                                                    fill="none">
+                                                    <path
+                                                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                                                        stroke="currentColor" stroke-width="1.5"
+                                                        stroke-linejoin="round" />
+                                                    <circle cx="12" cy="9" r="2.5"
+                                                        stroke="currentColor" stroke-width="1.5" />
+                                                </svg>
+                                            </div>
 
-                                        <div class="shipping-info">
-                                            <span class="shipping-title">{{ $outlet->name }}</span>
-                                            @if ($outlet->address)
-                                                <span class="shipping-subtitle">{!! $outlet->address !!}</span>
-                                            @endif
-                                        </div>
+                                            <div class="shipping-info">
+                                                <span class="shipping-title">{{ $outlet->name }}</span>
+                                                @if ($outlet->address)
+                                                    <span class="shipping-subtitle">{!! $outlet->address !!}</span>
+                                                @endif
+                                            </div>
 
-                                        {{-- <div>
+                                            {{-- <div>
                                             @if ($outlet->is_open)
                                                 <span class="badge-free">Open</span>
                                             @else
@@ -827,92 +1033,121 @@
                                                     style="font-size:11px;font-weight:600;background:#fef3c7;color:#92400e;border:0.5px solid #fcd34d;padding:3px 10px;border-radius:20px;">Closed</span>
                                             @endif
                                         </div> --}}
-                                    </label>
-                                @empty
-                                    <p class="text-muted small">{{ __('No Outlet Available') }}</p>
-                                @endforelse
+                                        </label>
+                                    @empty
+                                        <p class="text-muted small">{{ __('No Outlet Available') }}</p>
+                                    @endforelse
+                                </div>
+                                @error('branch_id')
+                                    <span class="field-error mt-2 d-block">{{ $message }}</span>
+                                @enderror
                             </div>
-                            @error('branch_id')
-                                <span class="field-error mt-2 d-block">{{ $message }}</span>
-                            @enderror
+                        </div>
+                        {{-- Select your outlet --}}
+                        {{-- Nearest Outlet Selection --}}
+
+                        {{-- Submit --}}
+                        <button type="submit" class="checkout-submit-btn" id="orderBtn">
+                            {{ __('Complete Order') }}
+                        </button>
+
+                        {{-- Hidden fields --}}
+                        <input type="hidden" name="dp" value="{{ $digital }}">
+                        <input type="hidden" id="input_tax" name="tax" value="">
+                        <input type="hidden" id="input_tax_type" name="tax_type" value="">
+                        <input type="hidden" name="totalQty" value="{{ $totalQty }}">
+                        <input type="hidden" name="currency_sign" value="{{ $curr->sign }}">
+                        <input type="hidden" name="currency_name" value="{{ $curr->name }}">
+                        <input type="hidden" name="currency_value" value="{{ $curr->value }}">
+
+                        @if (Session::has('coupon_total'))
+                            <input type="hidden" name="total" id="grandtotal"
+                                value="{{ round($totalPrice * $curr->value, 2) }}">
+                            <input type="hidden" id="tgrandtotal" value="{{ $totalPrice }}">
+                        @elseif (Session::has('coupon_total1'))
+                            <input type="hidden" name="total" id="grandtotal"
+                                value="{{ preg_replace(' /[^0-9,.]/', '', Session::get('coupon_total1')) }}">
+                            <input type="hidden" id="tgrandtotal"
+                                value="{{ preg_replace(' /[^0-9,.]/', '', Session::get('coupon_total1')) }}">
+                        @else
+                            <input type="hidden" name="total" id="grandtotal"
+                                value="{{ round($totalPrice * $curr->value, 2) }}">
+                            <input type="hidden" id="tgrandtotal"
+                                value="{{ round($totalPrice * $curr->value, 2) }}">
+                        @endif
+
+                        <input type="hidden" id="original_tax" value="0">
+                        <input type="hidden" id="wallet-price" name="wallet_price" value="0">
+                        <input type="hidden" id="ttotal"
+                            value="{{ Session::has('cart') ? App\Models\Product::convertPrice(Session::get('cart')->totalPrice) : '0' }}">
+                        <input type="hidden" name="coupon_code" id="coupon_code"
+                            value="{{ Session::has('coupon_code') ? Session::get('coupon_code') : '' }}">
+                        <input type="hidden" name="coupon_discount" id="coupon_discount"
+                            value="{{ Session::has('coupon') ? Session::get('coupon') : '' }}">
+                        <input type="hidden" name="coupon_id" id="coupon_id"
+                            value="{{ Session::has('coupon') ? Session::get('coupon_id') : '' }}">
+                        <input type="hidden" name="user_id" id="user_id"
+                            value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
+
+                    </div>
+                @else
+                    <div class="col-xl-8">
+                        <div class="empty-cart-box">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                style="color:#d1d5db;">
+                                <path
+                                    d="M6 2H4a1 1 0 00-1 1v1a1 1 0 001 1h1l1.68 8.39A2 2 0 008.6 15h8.81a2 2 0 001.96-1.61L20.5 7H6"
+                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <circle cx="9" cy="19" r="1.5" stroke="currentColor"
+                                    stroke-width="1.5" />
+                                <circle cx="17" cy="19" r="1.5" stroke="currentColor"
+                                    stroke-width="1.5" />
+                            </svg>
+                            <p>{{ __('Your cart is empty. Add some products first!') }}</p>
+                            <a href="{{ route('front.index') }}" class="btn-home">
+                                Go Shopping
+                            </a>
                         </div>
                     </div>
-                    {{-- Select your outlet --}}
-                    {{-- Nearest Outlet Selection --}}
+                @endif
 
-                    {{-- Submit --}}
-                    <button type="submit" class="checkout-submit-btn" id="orderBtn">
-                        {{ __('Complete Order') }}
-                    </button>
-
-                    {{-- Hidden fields --}}
-                    <input type="hidden" name="dp" value="{{ $digital }}">
-                    <input type="hidden" id="input_tax" name="tax" value="">
-                    <input type="hidden" id="input_tax_type" name="tax_type" value="">
-                    <input type="hidden" name="totalQty" value="{{ $totalQty }}">
-                    <input type="hidden" name="currency_sign" value="{{ $curr->sign }}">
-                    <input type="hidden" name="currency_name" value="{{ $curr->name }}">
-                    <input type="hidden" name="currency_value" value="{{ $curr->value }}">
-
-                    @if (Session::has('coupon_total'))
-                        <input type="hidden" name="total" id="grandtotal"
-                            value="{{ round($totalPrice * $curr->value, 2) }}">
-                        <input type="hidden" id="tgrandtotal" value="{{ $totalPrice }}">
-                    @elseif (Session::has('coupon_total1'))
-                        <input type="hidden" name="total" id="grandtotal"
-                            value="{{ preg_replace(' /[^0-9,.]/', '', Session::get('coupon_total1')) }}">
-                        <input type="hidden" id="tgrandtotal"
-                            value="{{ preg_replace(' /[^0-9,.]/', '', Session::get('coupon_total1')) }}">
-                    @else
-                        <input type="hidden" name="total" id="grandtotal"
-                            value="{{ round($totalPrice * $curr->value, 2) }}">
-                        <input type="hidden" id="tgrandtotal" value="{{ round($totalPrice * $curr->value, 2) }}">
-                    @endif
-
-                    <input type="hidden" id="original_tax" value="0">
-                    <input type="hidden" id="wallet-price" name="wallet_price" value="0">
-                    <input type="hidden" id="ttotal"
-                        value="{{ Session::has('cart') ? App\Models\Product::convertPrice(Session::get('cart')->totalPrice) : '0' }}">
-                    <input type="hidden" name="coupon_code" id="coupon_code"
-                        value="{{ Session::has('coupon_code') ? Session::get('coupon_code') : '' }}">
-                    <input type="hidden" name="coupon_discount" id="coupon_discount"
-                        value="{{ Session::has('coupon') ? Session::get('coupon') : '' }}">
-                    <input type="hidden" name="coupon_id" id="coupon_id"
-                        value="{{ Session::has('coupon') ? Session::get('coupon_id') : '' }}">
-                    <input type="hidden" name="user_id" id="user_id"
-                        value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
-
-                </div>
-            @else
-                <div class="col-xl-8">
-                    <div class="empty-cart-box">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-                            style="color:#d1d5db;">
-                            <path
-                                d="M6 2H4a1 1 0 00-1 1v1a1 1 0 001 1h1l1.68 8.39A2 2 0 008.6 15h8.81a2 2 0 001.96-1.61L20.5 7H6"
-                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <circle cx="9" cy="19" r="1.5" stroke="currentColor"
-                                stroke-width="1.5" />
-                            <circle cx="17" cy="19" r="1.5" stroke="currentColor"
-                                stroke-width="1.5" />
-                        </svg>
-                        <p>{{ __('Your cart is empty. Add some products first!') }}</p>
-                        <a href="{{ route('front.index') }}" class="btn-home">
-                            Go Shopping
-                        </a>
-                    </div>
-                </div>
-            @endif
-
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
 @section('script')
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="https://js.stripe.com/v3/"></script>
-      <script>
+    <script>
+        new Swiper('.checkout-product-slider', {
+            slidesPerView: 1,
+            spaceBetween: 12,
+            loop: true,
+            autoplay: true,
+            navigation: {
+                nextEl: '#cpsNext',
+                prevEl: '#cpsPrev',
+            },
+            pagination: {
+                el: '.checkout-product-slider .swiper-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                576: {
+                    slidesPerView: 1
+                },
+                768: {
+                    slidesPerView: 2
+                },
+                992: {
+                    slidesPerView: 4
+                },
+            }
+        });
+    </script>
+    <script>
         document
             .getElementById('userInfoForm')
             .addEventListener('submit', function() {

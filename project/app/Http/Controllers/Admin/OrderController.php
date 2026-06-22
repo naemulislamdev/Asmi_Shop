@@ -31,10 +31,8 @@ class OrderController extends AdminBaseController
     //*** GET Request
     public function orders(Request $request)
     {
-
         $categories = Category::where('status', 1)->get();
         $branchs = Branch::where('status', 1)->get();
-        // $riders = Rider::where('status', null)->get();
 
         if ($request->status == 'pending') {
             return view('admin.order.pending', compact('categories', 'branchs'));
@@ -104,6 +102,11 @@ class OrderController extends AdminBaseController
             $query->whereDate('created_at', '<=', $to);
         }
 
+        // First-order-discount filter (works on all pages)
+        if ($request->get('first_order') == '1') {
+            $query->where('first_order_discount', '>', 0);
+        }
+
         $query->latest('id');
 
         return DataTables::eloquent($query)
@@ -115,44 +118,17 @@ class OrderController extends AdminBaseController
                 $time = Carbon::parse($data->created_at)->format('h:i A');
                 return $date . '<br><small>' . $time . '</small>';
             })
-
             ->editColumn('branch', function (Order $data) {
                 if ($data->branch_id) {
-                    return '<div>
-            <a href="javascript:;" class="select-branch badge badge-success"
+                    return '<a href="javascript:;" class="select-branch badge badge-success"
                 data-id="' . $data->id . '"
                 data-toggle="modal"
-                data-target="#branchModal">
-                ' . $data->branch->name . '
-            </a>
-
-            <div class="mt-1">
-                ' . ($data->rider_id
-                        ? '<button type="button"
-                                class="badge badge-danger border-0 add-rider-btn"
-                                data-toggle="modal"
-                                data-target="#riderModal"
-                                data-id="' . $data->id . '"
-                                data-branch-id="' . $data->branch_id . '">
-                                Rider Name: ' . ($data->rider->name ?? 'N/A') . '
-                            </button>'
-                        : '<button
-                        data-toggle="modal"
-                        data-target="#riderModal"
-                        data-id="' . $data->id . '"
-                        data-branch-id="' . $data->branch_id . '"
-                        class="btn btn-primary btn-sm add-rider-btn">
-                        Add Rider
-                    </button>') . '
-            </div>
-
-        </div>';
+                data-target="#branchModal">' . $data->branch->name . '</a>';
                 }
-
                 return '<a href="javascript:;" class="select-branch btn btn-sm btn-primary"
-        data-id="' . $data->id . '"
-        data-toggle="modal"
-        data-target="#branchModal">' . __('Add Branch') . '</a>';
+                data-id="' . $data->id . '"
+                data-toggle="modal"
+                data-target="#branchModal">' . __('Add') . '</a>';
             })
             ->editColumn('id', function (Order $data) {
                 $id = '<a href="' . route('admin-order-invoice', $data->id) . '">' . $data->order_number . '</a>';
@@ -198,7 +174,11 @@ class OrderController extends AdminBaseController
                     'POS'         => ['info',    'POS'],
                 ];
                 [$badge, $source] = $map[$data->order_source] ?? ['dark', 'Unknown'];
-                return '<span class="badge badge-' . $badge . '">' . __($source) . '</span>';
+                $html = '<span class="badge badge-' . $badge . '">' . __($source) . '</span>';
+                if (($data->first_order_discount ?? 0) > 0) {
+                    $html .= ' <span class="badge badge-warning" title="' . __('First order discount') . '">' . __('1st') . '</span>';
+                }
+                return $html;
             })
             ->addColumn('action', function (Order $data) {
                 $orders = '<a href="javascript:;" data-href="' . route('admin-order-edit', $data->id) . '" class="delivery" data-toggle="modal" data-target="#modal1"><i class="fas fa-dollar-sign"></i> ' . __('Delivery Status') . '</a>';
@@ -429,15 +409,15 @@ class OrderController extends AdminBaseController
     public function updateProductQty(Request $request, $id)
     {
         $request->validate([
-            'qty' => 'required|integer|min:1',
+            'qty' => 'required|numeric|min:0.001',
         ]);
 
         $order = Order::findOrFail($id);
-        $cart = json_decode($order->cart, true);
+        $cart  = json_decode($order->cart, true);
 
         if (!$cart || !isset($cart['items']) || !is_array($cart['items'])) {
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Cart is empty'
             ], 404);
         }
@@ -450,7 +430,6 @@ class OrderController extends AdminBaseController
 
             foreach ($cart['items'] as $key => $item) {
                 $keyProductId = explode('_', (string) $key)[0];
-
                 if ((string) $keyProductId === $productId) {
                     $cartKey = $key;
                     break;
@@ -460,23 +439,24 @@ class OrderController extends AdminBaseController
 
         if (!$cartKey || !array_key_exists($cartKey, $cart['items'])) {
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Product not found in cart',
-                'debug' => [
-                    'request_cart_key' => $request->cart_key,
+                'debug'   => [
+                    'request_cart_key'   => $request->cart_key,
                     'request_product_id' => $request->product_id,
-                    'cart_item_keys' => array_keys($cart['items'] ?? [])
+                    'cart_item_keys'     => array_keys($cart['items'] ?? [])
                 ]
             ], 404);
         }
 
-        $qty = (int) $request->qty;
-        $item = $cart['items'][$cartKey];
+        $qty  = (float) $request->qty;
+        $unit = $request->unit ?? ($cart['items'][$cartKey]['unit'] ?? 'pc');
 
+        $item      = $cart['items'][$cartKey];
         $itemPrice = (float) ($item['item_price'] ?? (($item['item']['price'] ?? $item['price']) ?? 0));
-        $oldQty = (int) ($item['qty'] ?? 1);
 
-        // safest discount logic
+        $oldQty = (float) ($item['qty'] ?? 1);
+
         if (isset($item['unit_discount'])) {
             $unitDiscount = (float) $item['unit_discount'];
         } else {
@@ -484,11 +464,14 @@ class OrderController extends AdminBaseController
             $unitDiscount = $oldQty > 0 ? ($oldTotalDiscount / $oldQty) : 0;
         }
 
-        $cart['items'][$cartKey]['item_price'] = $itemPrice;
-        $cart['items'][$cartKey]['qty'] = $qty;
+        $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+
+        $cart['items'][$cartKey]['qty']           = $qty;
+        $cart['items'][$cartKey]['unit']          = $unit;
+        $cart['items'][$cartKey]['item_price']    = $itemPrice;
         $cart['items'][$cartKey]['unit_discount'] = $unitDiscount;
-        $cart['items'][$cartKey]['discount'] = $unitDiscount * $qty;
-        $cart['items'][$cartKey]['price'] = ($itemPrice * $qty) - ($unitDiscount * $qty);
+        $cart['items'][$cartKey]['discount']      = $unitDiscount * $effectiveQty;
+        $cart['items'][$cartKey]['price']         = ($itemPrice * $effectiveQty) - ($unitDiscount * $effectiveQty);
 
         $this->recalculateOrderCart($order, $cart);
 
@@ -496,11 +479,12 @@ class OrderController extends AdminBaseController
         $html = view('admin.order.partials.order_items', compact('order', 'cart'))->render();
 
         return response()->json([
-            'status' => true,
+            'status'  => true,
             'message' => 'Quantity updated successfully',
-            'html' => $html
+            'html'    => $html
         ]);
     }
+
     private function recalculateOrderCart($order, array $cart)
     {
         $totalQty = 0;
@@ -511,42 +495,47 @@ class OrderController extends AdminBaseController
         }
 
         foreach ($cart['items'] as $cartKey => $item) {
-            $qty = (int) ($item['qty'] ?? 0);
+            // (int) থেকে (float)
+            $qty       = (float) ($item['qty'] ?? 0);
+            $unit      = $item['unit'] ?? 'pc';
             $itemPrice = (float) ($item['item_price'] ?? (($item['item']['price'] ?? $item['price']) ?? 0));
 
             if (isset($item['unit_discount'])) {
                 $unitDiscount = (float) $item['unit_discount'];
             } else {
                 $existingDiscount = (float) ($item['discount'] ?? 0);
-                $oldQty = $qty > 0 ? $qty : 1;
-                $unitDiscount = $oldQty > 0 ? ($existingDiscount / $oldQty) : 0;
+                $unitDiscount     = $qty > 0 ? ($existingDiscount / $qty) : 0;
             }
 
-            $lineDiscount = $unitDiscount * $qty;
-            $lineTotal = ($itemPrice * $qty) - $lineDiscount;
+            // gram হলে effective qty দিয়ে calculate
+            $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
 
-            $cart['items'][$cartKey]['item_price'] = $itemPrice;
+            $lineDiscount = $unitDiscount * $effectiveQty;
+            $lineTotal    = ($itemPrice * $effectiveQty) - $lineDiscount;
+
+            $cart['items'][$cartKey]['item_price']    = $itemPrice;
+            $cart['items'][$cartKey]['unit']          = $unit;
             $cart['items'][$cartKey]['unit_discount'] = $unitDiscount;
-            $cart['items'][$cartKey]['discount'] = $lineDiscount;
-            $cart['items'][$cartKey]['price'] = $lineTotal;
+            $cart['items'][$cartKey]['discount']      = $lineDiscount;
+            $cart['items'][$cartKey]['price']         = $lineTotal;
 
             $totalQty += $qty;
             $subTotal += $lineTotal;
         }
 
-        $cart['totalQty'] = $totalQty;
+        $cart['totalQty']   = $totalQty;
         $cart['totalPrice'] = $subTotal;
 
-        $shippingCost = (float) ($order->shipping_cost ?? 0);
-        $packingCost = (float) ($order->packing_cost ?? 0);
-        $tax = (float) ($order->tax ?? 0);
+        $shippingCost   = (float) ($order->shipping_cost   ?? 0);
+        $packingCost    = (float) ($order->packing_cost    ?? 0);
+        $tax            = (float) ($order->tax             ?? 0);
         $couponDiscount = (float) ($order->coupon_discount ?? 0);
-        $orderDiscount = (float) ($order->discount ?? 0);
+        $orderDiscount  = (float) ($order->discount        ?? 0);
 
         $grandTotal = $subTotal + $shippingCost + $packingCost + $tax - $couponDiscount - $orderDiscount;
 
-        $order->cart = json_encode($cart);
-        $order->totalQty = $totalQty;
+        $order->cart      = json_encode($cart);
+        $order->totalQty  = $totalQty;
         $order->pay_amount = $grandTotal;
         $order->save();
     }

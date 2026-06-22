@@ -50,10 +50,9 @@ class AppServiceProvider extends ServiceProvider
                 $d['langg'] = Language::where('is_default', '=', 1)->first();
             }
 
+            $d['totalBranchOrders'] = Order::count();
 
-            $totalBranchOrders = Order::count(); // সব orders
-
-            // branchWiseOrders MUST be Order objects with the `branch` relation:
+            // branchWiseOrders MUST be Order objects with the branch relation:
             // admin super.blade.php reads $item->branch_id and $item->branch->name.
             $d['branchWiseOrders'] = Order::select('branch_id', DB::raw('COUNT(*) as total'))
                 ->with('branch')
@@ -70,46 +69,9 @@ class AppServiceProvider extends ServiceProvider
             ")->first();
 
             $d['todayOrders'] = Order::whereDate('created_at', today())->where('status', 'pending')->count();
-            // branch wise order
-            $branchWiseOrders = Order::select(
-                'branch_id',
-                DB::raw('COUNT(*) as total')
-            )
-                ->groupBy('branch_id')
-                ->get();
 
-            // branch গুলো একবারে নাও
-            $branchIds = $branchWiseOrders->pluck('branch_id')->filter()->unique()->values();
-            $branchMap = Branch::whereIn('id', $branchIds)->get()->keyBy('id')->toArray();
-            // result prepare করো
-            $result = $branchWiseOrders->map(function ($item) use ($branchMap) {
-                return [
-                    'branch_id'   => $item->branch_id,
-                    'total'       => $item->total,
-                    'branch_name' => $item->branch_id
-                        ? ($branchMap[$item->branch_id]['name'] ?? 'Unknown')
-                        : null,
-                ];
-            });
-            // branch wise order
-            $orderCounts = Order::selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-            SUM(CASE WHEN status = 'hold' THEN 1 ELSE 0 END) as hold,
-            SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
-            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-            SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled,
-            SUM(CASE WHEN status = 'return' THEN 1 ELSE 0 END) as return_count
-        ")->first();
-
-            $todayOrders = Order::whereDate('created_at', today())->where('status', 'pending')->count();
-
-            $view->with([
-                'orderCounts' => $orderCounts,
-                'todayOrders' => $todayOrders,
-                'totalBranchOrders' => $totalBranchOrders,
-                'branchWiseOrders' => $result,
-            ]);
+            app()->instance('asmi.viewglobals', $d);
+            $view->with($d);
         });
     }
 

@@ -46,7 +46,9 @@ class CartController extends Controller
         $mainTotal = $totalPrice;
         $totalQty = $cart->totalQty;
 
-        return view('frontend.cart', compact('products', 'totalPrice', 'mainTotal', 'gateways', 'digital', 'totalQty'));
+        $suggestedProducts = Product::limit(10)->get();
+
+        return view('frontend.cart', compact('products', 'totalPrice', 'mainTotal', 'gateways', 'digital', 'totalQty', 'suggestedProducts'));
     }
 
     public function cartview()
@@ -198,7 +200,7 @@ class CartController extends Controller
         foreach ($cart->items as $key => $row) {
             if ($row['unique_key'] == $request->unique_key) {
 
-            // Max qty check
+                // Max qty check
                 $product = $row['item'];
                 if (!is_null($product->max_qty) && $product->max_qty > 0) {
                     if ($cart->items[$key]['qty'] >= $product->max_qty) {
@@ -460,52 +462,52 @@ class CartController extends Controller
 
         return collect($eligibleProducts)->unique('sku')->values()->toArray();
     }
-public function getOfferInfo($id)
-{
-    $product = Product::findOrFail($id);
+    public function getOfferInfo($id)
+    {
+        $product = Product::findOrFail($id);
 
-    if (!$product->is_offer_active) {
-        return response()->json(['is_offer' => false]);
-    }
+        if (!$product->is_offer_active) {
+            return response()->json(['is_offer' => false]);
+        }
 
-    // ✅ Current cart total (non-offer items)
-    $cartTotal = 0;
-    if (Session::has('cart')) {
-        $cart = Session::get('cart');
-        $cartTotal = collect($cart->items)
-            ->where('is_offer', '!=', true)
-            ->sum('price');
-    }
+        // ✅ Current cart total (non-offer items)
+        $cartTotal = 0;
+        if (Session::has('cart')) {
+            $cart = Session::get('cart');
+            $cartTotal = collect($cart->items)
+                ->where('is_offer', '!=', true)
+                ->sum('price');
+        }
 
-    $offers = \DB::table('conditional_offers')->where('is_active', true)->get();
+        $offers = \DB::table('conditional_offers')->where('is_active', true)->get();
 
-    $offerDetails = [];
+        $offerDetails = [];
 
-    foreach ($offers as $offer) {
-        $offerProducts = json_decode($offer->offer_products, true);
-        foreach ($offerProducts as $op) {
-            $matchProduct = Product::where('sku', $op['sku'])->first();
-            if ($matchProduct && $matchProduct->id == $id) {
+        foreach ($offers as $offer) {
+            $offerProducts = json_decode($offer->offer_products, true);
+            foreach ($offerProducts as $op) {
+                $matchProduct = Product::where('sku', $op['sku'])->first();
+                if ($matchProduct && $matchProduct->id == $id) {
 
-                // ✅ Eligible হলে popup দেখাবে না
-                if ($cartTotal >= (float) $op['amount']) {
-                    return response()->json(['is_offer' => false]);
+                    // ✅ Eligible হলে popup দেখাবে না
+                    if ($cartTotal >= (float) $op['amount']) {
+                        return response()->json(['is_offer' => false]);
+                    }
+
+                    $offerDetails[] = [
+                        'amount'     => $op['amount'],
+                        'offer_name' => $matchProduct->name,
+                        'price'      => $matchProduct->price,
+                    ];
                 }
-
-                $offerDetails[] = [
-                    'amount'     => $op['amount'],
-                    'offer_name' => $matchProduct->name,
-                    'price'      => $matchProduct->price,
-                ];
             }
         }
-    }
 
-    return response()->json([
-        'is_offer'      => true,
-        'offer_details' => $offerDetails,
-    ]);
-}
+        return response()->json([
+            'is_offer'      => true,
+            'offer_details' => $offerDetails,
+        ]);
+    }
 
     //////////////////////Chnage///////////////////////////
 }
