@@ -118,16 +118,15 @@
             @if ($product->stock <= 0)
                 <div class="outofstock-box flex-column align-content-center justify-content-center">
                     @if ($product->preordered == 2)
-                        <h5>{{ __('Request a Product !') }}</h5>
+                        <h5>{{ __('Request Item') }}</h5>
                     @else
                         <h5>{{ __('Out of Stock !') }}</h5>
                     @endif
                 </div>
             @else
-                <div>
+               {{-- <div>
                     @if ($product->product_type == 'affiliate')
                         @if (false)
-                            <!-- Condition Here -->
                             <a href="{{ $product->affiliate_link }}" class="outofstock-box-2">
                                 <div class="d-block text-center">
 
@@ -178,14 +177,29 @@
                         @endif
                     @endif
 
-                </div>
+                </div> --}}
             @endif
         </div>
         <div class="content-wrapper">
             <a href="{{ route('front.product', $product->slug) }}">
                 <h6 class="product-title">{{ $product->showName() }}</h6>
             </a>
-            @if ($product->stock > 0 || $product->preordered == 2)
+            @php
+                $checkUser = Auth::guard('web')->check();
+            @endphp
+           @if ($product->stock <= 0)
+                @if ($product->preordered == 2)
+                    <div class="w-100 d-block mt-auto" data-product-id="{{ $product->id }}">
+                       <button
+                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center @if ($checkUser) click_to_request_item @endif"
+                            type="button" @if ($checkUser) data-href="{{ route('request.product', $product->id) }}"
+                            data-product-id="{{ $product->id }}" @else data-bs-toggle="modal"
+                                            data-bs-target="#userLoginFirst" @endif>
+                            <i class="fa fa-bell me-2"></i> Request Item
+                        </button>
+                    </div>
+                @endif
+            @else
                 <div class="price-wrapper">
                     @php
                         $basePrice =
@@ -222,7 +236,7 @@
                     @endif
                 </div>
                @if ($product->start_date != null && $product->end_date != null)
-                <div style="position: absolute; left: 2px; bottom: 45%" class="card-countdown" data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">
+                <div style="position: absolute; right: 0; top: 0;" class="card-countdown" data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">
                     <div class="card-timer-badge">
                         <i class="ti ti-bolt"></i>
                         <div class="cd-unit">

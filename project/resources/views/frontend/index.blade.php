@@ -250,6 +250,155 @@
         .swiper-pagination-bullet-active {
             background: #1598a7 !important;
         }
+          /* new category card design */
+        /* ===== Category Section ===== */
+        .category {
+            background-color: #fdf9f5;
+            padding: 2rem 0;
+        }
+
+        .section-heading-title h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #3a2f25;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ===== Slider Wrapper — এটাই clip করবে ===== */
+        .category-slider-wrapper {
+            position: relative;
+            overflow: hidden;
+            /* padding: 0 40px; */
+        }
+
+        /* ===== Swiper — overflow visible রাখবে ===== */
+        .home-category-slider {
+            position: relative;
+            padding: 0 !important;
+            overflow: visible !important;
+        }
+
+        .home-category-slider .swiper-wrapper {
+            padding: 4px 0;
+        }
+
+        .home-category-slider .swiper-slide {
+            height: auto !important;
+        }
+
+        /* ===== Card ===== */
+        .cat-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        /* Image box */
+        .cat-card__img-wrap {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 16px;
+            border: 1.5px solid #ede4d8;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .cat-card:hover .cat-card__img-wrap {
+            transform: scale(1.05);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.13);
+        }
+
+        .cat-card__img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Title */
+        .cat-card__name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #3a2f25;
+            text-align: center;
+            background: none;
+            margin: 0;
+            line-height: 1.3;
+            white-space: wrap;
+            width: 100%;
+        }
+
+        /* ===== Swiper Nav Buttons ===== */
+        .home-category-slider .swiper-button-next,
+        .home-category-slider .swiper-button-prev {
+            width: 30px !important;
+            height: 30px !important;
+            min-width: 30px !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            border-radius: 50% !important;
+            top: 43% !important;
+            transform: translateY(-50%) !important;
+            margin-top: 0 !important;
+        }
+
+        .home-category-slider .swiper-button-next::after,
+        .home-category-slider .swiper-button-prev::after {
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+        }
+
+        .home-category-slider .swiper-button-prev {
+            left: 0 !important;
+        }
+
+        .home-category-slider .swiper-button-next {
+            right: 0 !important;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 480px) {
+            .cat-card__name {
+                font-size: 12px;
+            }
+
+            .cat-card__img-wrap {
+                border-radius: 12px;
+            }
+
+            .home-category-slider .swiper-button-next,
+            .home-category-slider .swiper-button-prev {
+                width: 24px !important;
+                height: 24px !important;
+                min-width: 24px !important;
+                top: 43% !important;
+            }
+
+            .home-category-slider .swiper-button-next::after,
+            .home-category-slider .swiper-button-prev::after {
+                font-size: 10px !important;
+            }
+        }
+
+        @media (min-width: 481px) and (max-width: 767px) {
+            .cat-card__name {
+                font-size: 11px;
+            }
+
+            .cat-card__img-wrap {
+                border-radius: 14px;
+            }
+
+            .home-category-slider .swiper-button-next,
+            .home-category-slider .swiper-button-prev {
+                top: 42% !important;
+            }
+
+        }
     </style>
 
 @endsection
@@ -370,23 +519,19 @@
                     </div>
                 </div>
             </div>
-            <div class="d-none d-lg-block">
+           <div class="category-slider-wrapper">
                 <div class="swiper home-category-slider">
                     <div class="swiper-wrapper">
-
                         @foreach ($featured_categories as $fcategory)
                             <div class="swiper-slide">
                                 <a href="{{ route('front.category', $fcategory->slug) }}" class="slide-link">
-
-                                    <div class="gs-single-cat">
-                                        <img class="cate-img"
-                                            src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
-                                            alt="{{ $fcategory->name }}">
-                                        <div class="cate-title">
-                                            <h6 class="title text-dark">{{ $fcategory->name }}</h6>
+                                    <div class="cat-card">
+                                        <div class="cat-card__img-wrap">
+                                            <img src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
+                                                alt="{{ $fcategory->name }}">
                                         </div>
+                                        <p class="cat-card__name">{{ $fcategory->name }}</p>
                                     </div>
-
                                 </a>
                             </div>
                         @endforeach
@@ -396,7 +541,7 @@
                 </div>
             </div>
             {{-- for mobile and tablet --}}
-            <div class="d-block d-lg-none mt-3 mt-lg-0">
+            <!-- <div class="d-block d-lg-none mt-3 mt-lg-0">
                 <div class="row">
                     @foreach ($featured_categories as $fcategory)
                         <div class="col-4 col-sm-4 d-flex mobile-category-box">
@@ -414,7 +559,7 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -446,13 +591,13 @@
 
     {{-- 🟢 Featured products always show --}}
     @include('includes.frontend.featured_products', ['popular_products' => $popular_products])
-    @if ($flashDeal && $flashDealExpired)
-        {{-- 🔴 Flash deal expired: show it at the bottom --}}
-        @include('includes.frontend.flash_deal', [
+
+    {{-- @if ($flashDeal && $flashDealExpired)
+        @include('frontend.includes.flash_deal', [
             'flashDeal' => $flashDeal,
             'flashDealProducts' => $flashDealProducts,
         ])
-    @endif
+    @endif --}}
 
     @if ($promoOffers->count() > 0)
         @include('includes.frontend.promo_offers', [
@@ -541,11 +686,6 @@
                                 aria-controls="ex-product-2-pane" aria-selected="false">@lang('TRENDING')</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="ex-product-3" data-bs-toggle="tab"
-                                data-bs-target="#ex-product-3-pane" type="button" role="tab"
-                                aria-controls="ex-product-3-pane" aria-selected="false">@lang('BEST SELLING')</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="ex-product-4" data-bs-toggle="tab"
                                 data-bs-target="#ex-product-4-pane" type="button" role="tab"
                                 aria-controls="ex-product-4-pane" aria-selected="false">@lang('POPULAR')</button>
@@ -577,15 +717,13 @@
                             @include('includes.frontend.home_product')
                         @endforeach
                     </div>
-                </div>
-
-                <div class="tab-pane fade" id="ex-product-3-pane" role="tabpanel" aria-labelledby="ex-product-3"
-                    tabindex="0">
-                    <div class="row gy-2">
-                        @foreach ($best_products as $product)
-                            @include('includes.frontend.home_product')
-                        @endforeach
-                    </div>
+                    @if ($trending_products->count() >= 8)
+                        <div class="text-center mt-4">
+                            <a href="{{ route('front.trending.products') }}" class="btn btn-outline-primary px-5">
+                                View More <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="tab-pane fade" id="ex-product-4-pane" role="tabpanel" aria-labelledby="ex-product-4"
@@ -595,6 +733,13 @@
                             @include('includes.frontend.home_product')
                         @endforeach
                     </div>
+                    @if ($popular_products->count() >= 8)
+                        <div class="text-center mt-4">
+                            <a href="{{ route('front.popular.products') }}" class="btn btn-outline-primary px-5">
+                                View More <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -639,32 +784,6 @@
         @endforeach
     @endif
     <!-- Category wise product Section Completed -->
-
-    <!-- Faetured Products Section Started -->
-    <section class="gs-explore-product-section bg-white">
-        <div class="container">
-            <!-- title box  & nav-tab -->
-            <div class="row mb-36 justify-content-center">
-                <div class="col-12">
-                    <div class="gs-title-box text-center">
-                        <h2 class="title wow-replaced">@lang('Our Featured Products')</h2>
-                    </div>
-                </div>
-            </div>
-            <!-- tab content -->
-            <div class="tab-content" id="myTabContent1">
-                <div class="tab-pane fade show active wow-replaced" data-wow-delay=".1s" id="ex-product-5-pane"
-                    role="tabpanel" aria-labelledby="ex-product-1" tabindex="0">
-                    <div class="product-cards-slider">
-                        @foreach ($popular_products as $product)
-                            @include('includes.frontend.home_product')
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Featured Product Section Completed -->
     <!-- Partner Section -->
     <section class="gs-partner-section">
         <div class="container">

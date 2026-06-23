@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
 use App\Http\Controllers\Admin\OrderExportController;
 use App\Http\Controllers\Admin\PromoOffersController;
+use App\Http\Controllers\Admin\PreOrderController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ConditionalOfferController;
@@ -182,6 +183,13 @@ Route::as('admin-')->group(function () {
         Route::get('/branch-sales', 'index')->name('admin.branch.sales');
         Route::get('/branch-sales/summary', 'summary')->name('admin.branch.sales.summary');
         Route::get('/branch-sales/datatable', 'datatable')->name('admin.branch.sales.datatable');
+    });
+
+    Route::controller(PreOrderController::class)->group(function () {
+        Route::get('/pre-order/list', 'index')->name('admin.pre_order.index');
+        Route::get('/pre-order/datatables/{status}', 'datatables')->name('admin.pre_order.datatables');
+        Route::post('/pre-order/confirm/{id}', 'confirm')->name('admin.pre_order.confirm');
+        Route::post('/pre-order/update-status/{id}', 'updateStatus')->name('admin.pre_order.update_status');
     });
 
     /////////////////////////////// ////////////////////////////////////////////

@@ -22,6 +22,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     // sitemap end
     Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
     Route::get('/conditonal-product/{sku}', 'Front\FrontendController@conditioalProduct')->name("front.conditional-product");
+    Route::get('/conditonal-offers', 'Front\FrontendController@conditioalOffers')->name("front.conditional-offers");
     Route::get('/', [FrontendController::class,'index'])->name('front.index');
     Route::get('/view', 'Front\CartController@view_cart')->name('front.cart-view');
     Route::get('/extras', 'Front\FrontendController@extraIndex')->name('front.extraIndex');
@@ -63,6 +64,8 @@ Route::group(['middleware' => 'maintenance'], function () {
 
     // PRODCT AUTO SEARCH SECTION
     Route::get('/autosearch/product/{slug}', 'Front\FrontendController@autosearch');
+    Route::get('/popular-products', 'Front\FrontendController@popularProducts')->name('front.popular.products');
+    Route::get('/trending-products', 'Front\FrontendController@trendingProducts')->name('front.trending.products');
     // PRODCT AUTO SEARCH SECTION ENDS
 
     // CATEGORY SECTION
@@ -77,7 +80,9 @@ Route::group(['middleware' => 'maintenance'], function () {
     // TAG SECTION
     Route::get('/search', 'Front\CatalogController@homeSearch')->name('front.search');
     Route::get('/ajax-search', 'Front\CatalogController@ajaxSearch')->name('front.ajax.search');
-
+      // Mobile search
+    Route::get('/mobileajax-search', 'Front\CatalogController@mobileAjaxSearch')->name('front-mobile.ajax.search');
+    Route::get('/mobile-search', 'Front\CatalogController@mobileHomeSearch')->name('front-mobile.search');
     // TAG SECTION ENDS
 
     // PRODCT SECTION
@@ -111,6 +116,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::post('product/cart/add/{id?}', 'Front\CartController@addcartPost')->name('product.add.to.cart');
     Route::get('/product/offer-info/{id}', [CartController::class, 'getOfferInfo'])->name('product.offer.info');
     Route::get('/removecart/{id}', 'Front\CartController@removecart')->name('product.cart.remove');
+    Route::post('/request/product/{id}', 'Front\CartController@requestItem')->name('request.product');
     Route::get('/carts/coupon', 'Front\CouponController@coupon');
 
     Route::post('/cart/increment', 'Front\CartController@increment');

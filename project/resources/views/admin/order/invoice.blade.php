@@ -368,8 +368,9 @@
                     <div class="meta-row">
                         <span class="meta-item"><strong>{{ __('Branch') }}:</strong>
                             {{ $order->branch->name ?? 'N/A' }}</span>
-                        <span class="meta-item"><strong>{{ __('Address') }}:</strong>
-                            {{ $order->branch->address ?? 'N/A' }}</span>
+                                    <span class="meta-item">
+                {{ __('Address') }}:   {{ $order->branch?->address ?? 'N/A' }}
+            </span>
                     </div>
                 </div>
 
@@ -389,6 +390,19 @@
                         <tbody>
                             @php $subtotal = 0; @endphp
                             @foreach ($cart['items'] as $product)
+                             @php
+                                    $productId = $product['item']['id'];
+                                    $measureLabel = null;
+                                    if (isset($product['measure_value']) && $productId) {
+                                        $measureValueFloat = (float) $product['measure_value'];
+
+                                        $measured = \App\Models\ProductMeasure::where('product_id', $productId)
+                                            ->whereRaw('CAST(value AS DECIMAL(10,3)) = ?', [$measureValueFloat])
+                                            ->first();
+
+                                        $measureLabel = $measured->label ?? null;
+                                    }
+                                @endphp
                                 <tr>
                                     <td>
                                         @if ($product['item']['user_id'] != 0)
@@ -425,7 +439,12 @@
                                             {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
                                         </p>
                                         <p class="product-detail-row">
-                                            <strong>{{ __('Qty') }}:</strong> {{ $product['qty'] }}
+                                            @if ($measureLabel)
+                                                <span class="badge badge-info ml-1">{{ $measureLabel }}</span>
+                                            @else
+                                                <strong>{{ __('Qty') }}:</strong> {{ $product['qty'] }}
+                                            @endif
+
                                         </p>
                                         @if (!empty($product['keys']))
                                             @foreach (array_combine(explode(',', $product['keys']), explode(',', $product['values'])) as $key => $value)
@@ -482,6 +501,7 @@
                                     <td class="tfoot-value"><span class="badge-free">Free</span></td>
                                 </tr>
                             @endif
+                        
 
                             {{-- Packing --}}
                             @if ($order->packing_cost != 0)
@@ -550,23 +570,16 @@
                                 @endif
                             @endif
 
-                            {{-- First Order Discount (already reflected in pay_amount) --}}
-                            @if (($order->first_order_discount ?? 0) > 0)
-                                <tr class="discount-row">
-                                    <td colspan="2" class="tfoot-label">{{ __('First Order Discount') }}</td>
-                                    <td class="tfoot-value discount-value">
-                                        − {{ \PriceHelper::showOrderCurrencyPrice($order->first_order_discount * $order->currency_value, $order->currency_sign) }}
-                                    </td>
-                                </tr>
-                            @endif
+                      
 
                             {{-- Grand Total --}}
                             <tr class="grand-total-row">
                                 <td colspan="2" class="tfoot-label grand-total-label">{{ __('Grand Total') }}</td>
                                 <td class="tfoot-value grand-total-value">
                                     {{ \PriceHelper::showOrderCurrencyPrice(
-                                        (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
-                                        $order->currency_sign
+                                        ($order->pay_amount + $order->wallet_price - $order->discount) *
+                                            $order->currency_value,
+                                        $order->currency_sign,
                                     ) }}
                                 </td>
                             </tr>

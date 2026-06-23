@@ -341,7 +341,7 @@
             <h6>{{ __('Billing Details') }}</h6>
             <p>
                 <strong>{{ __('Branch') }}:</strong> {{ $order->branch->name ?? 'N/A' }}<br>
-                <strong>{{ __('Address') }}:</strong> {{ $order->branch->address ?? 'N/A' }}
+                <strong>{{ __('Address') }}:</strong>{{ $order->branch?->address ?? 'N/A' }}
             </p>
         </div>
 
@@ -360,6 +360,19 @@
         </thead>
         <tbody>
             @foreach ($cart['items'] as $product)
+             @php
+                                    $productId = $product['item']['id'];
+                                    $measureLabel = null;
+                                    if (isset($product['measure_value']) && $productId) {
+                                        $measureValueFloat = (float) $product['measure_value'];
+
+                                        $measured = \App\Models\ProductMeasure::where('product_id', $productId)
+                                            ->whereRaw('CAST(value AS DECIMAL(10,3)) = ?', [$measureValueFloat])
+                                            ->first();
+
+                                        $measureLabel = $measured->label ?? null;
+                                    }
+                                @endphp
                 <tr>
                     <td>
                         <div class="product-name">{{ $product['item']['name'] }}</div>
@@ -382,8 +395,11 @@
                             {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
                         </div>
                         <div class="detail-row">
-                            <strong>{{ __('Qty') }}:</strong>
-                            {{ $product['qty'] }} {{ $product['item']['measure'] ?? '' }}
+                            @if ($measureLabel)
+                                <span class="badge badge-info ml-1">{{ $measureLabel }}</span>
+                            @else
+                                <strong>{{ __('Qty') }}:</strong> {{ $product['qty'] }}
+                            @endif
                         </div>
                         @if (!empty($product['keys']))
                             @foreach (array_combine(explode(',', $product['keys']), explode(',', $product['values'])) as $key => $value)
@@ -435,8 +451,9 @@
                 <td class="sum-label">{{ __('Delivery Charge') }}</td>
                 <td class="sum-value"><span class="badge-free">Free</span></td>
             </tr>
-        @endif
 
+        @endif
+       
         {{-- Packing --}}
         @if ($order->packing_cost != 0)
             @php $pprice = round(($order->packing_cost / $order->currency_value), 2); @endphp
@@ -504,24 +521,16 @@
             @endif
         @endif
 
-        {{-- First Order Discount (already reflected in pay_amount) --}}
-        @if (($order->first_order_discount ?? 0) > 0)
-            <tr class="sum-discount">
-                <td class="sum-label">{{ __('First Order Discount') }}</td>
-                <td class="sum-value">
-                    − {{ \PriceHelper::showOrderCurrencyPrice($order->first_order_discount * $order->currency_value, $order->currency_sign) }}
-                </td>
-            </tr>
-        @endif
-
+       
         {{-- Grand Total --}}
         <tr class="grand-total-row">
             <td class="sum-label">{{ __('Grand Total') }}</td>
             <td class="sum-value">
-                 {{ \PriceHelper::showOrderCurrencyPrice(
-                                        (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
-                                        $order->currency_sign
-                                    ) }}
+                  {{ \PriceHelper::showOrderCurrencyPrice(
+                    ($order->pay_amount + $order->wallet_price - $order->discount ) *
+                        $order->currency_value,
+                    $order->currency_sign,
+                ) }}
             </td>
         </tr>
 

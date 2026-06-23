@@ -266,26 +266,36 @@ public function promoOffers()
             ->inRandomOrder()
             ->get();
 
-        $data['popular_products'] = Product::whereStatus(1)->whereFeatured(1)
+       // সব order এর cart থেকে product sell count 
+        $orders = Order::whereNotNull('cart')->get(['cart']);
 
-            ->take($gs->popular_count)
-            ->with(['user' => function ($query) {
-                $query->select('id', 'is_vendor');
-            }])
+        $sellCount = [];
 
-            ->when('user', function ($query) {
-                foreach ($query as $q) {
-                    if ($q->is_vendor == 2) {
-                        return $q;
-                    }
-                }
-            })
-            ->withCount('ratings')
-            ->withAvg('ratings', 'rating')
-            ->orderby('id', 'desc')
-            ->where('is_offer_active', 0)
-            ->inRandomOrder()
-            ->get();
+        foreach ($orders as $order) {
+            $cart = json_decode($order->cart, true);
+            if (empty($cart['items'])) continue;
+
+            foreach ($cart['items'] as $item) {
+                $productId = $item['item']['id'] ?? null;
+                if (!$productId) continue;
+
+                $qty  = (float) ($item['qty'] ?? 0);
+                $unit = $item['unit'] ?? 'pc';
+
+                // gram হলে kg convert করে count করো
+                $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+
+                $sellCount[$productId] = ($sellCount[$productId] ?? 0) + $effectiveQty;
+            }
+        }
+
+        arsort($sellCount);
+        $topProductIds = array_slice(array_keys($sellCount), 0, 24); // top 24
+
+        $data['popular_products'] = Product::whereIn('id', $topProductIds)
+            ->get()
+            ->sortBy(fn($p) => array_search($p->id, $topProductIds))
+            ->values();
 
         $data['top_products'] = Product::whereStatus(1)->whereTop(1)
 
@@ -326,25 +336,46 @@ public function promoOffers()
             ->inRandomOrder()
             ->get();
 
-        $data['trending_products'] = Product::whereStatus(1)->whereTrending(1)
+       // শুধু last 7 days এর orders
+        $orders = Order::whereNotNull('cart')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->get(['cart']);
 
-            ->take($gs->trending_count)
-            ->with(['user' => function ($query) {
-                $query->select('id', 'is_vendor');
-            }])
-            ->when('user', function ($query) {
-                foreach ($query as $q) {
-                    if ($q->is_vendor == 2) {
-                        return $q;
-                    }
-                }
-            })
-            ->withCount('ratings')
-            ->withAvg('ratings', 'rating')
-            ->orderby('id', 'desc')
-            ->where('is_offer_active', 0)
-            ->inRandomOrder()
-            ->get();
+        $sellCount = [];
+
+        foreach ($orders as $order) {
+            $cart = json_decode($order->cart, true);
+            if (empty($cart['items'])) continue;
+
+            foreach ($cart['items'] as $item) {
+                $productId = $item['item']['id'] ?? null;
+                if (!$productId) continue;
+
+                $qty          = (float) ($item['qty'] ?? 0);
+                $unit         = $item['unit'] ?? 'pc';
+                $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+
+                $sellCount[$productId] = ($sellCount[$productId] ?? 0) + $effectiveQty;
+            }
+        }
+
+        // High to low sort
+        arsort($sellCount);
+
+        $topProductIds = array_slice(array_keys($sellCount), 0, 24);
+
+        if (!empty($topProductIds)) {
+            $data['trending_products'] = Product::whereIn('id', $topProductIds)
+                ->where('status', 1)
+                ->get()
+                ->sortBy(fn($p) => array_search($p->id, $topProductIds))
+                ->values();
+        } else {
+            $data['trending_products'] = Product::where('status', 1)
+                ->latest()
+                ->take(8)
+                ->get();
+        }
 
         $data['flash_products'] = Product::whereStatus(1)->whereIsDiscount(1)
             ->where('discount_date', '>=', date('Y-m-d'))
@@ -366,6 +397,87 @@ public function promoOffers()
         $data['coupon_sliders'] = CouponSlider::where('published', 1)->get();
 
         return view('frontend.index', $data);
+    }
+     public function popularProducts()
+    {
+        $orders = Order::whereNotNull('cart')->get(['cart']);
+
+        $sellCount = [];
+
+        foreach ($orders as $order) {
+            $cart = json_decode($order->cart, true);
+            if (empty($cart['items'])) continue;
+
+            foreach ($cart['items'] as $item) {
+                $productId = $item['item']['id'] ?? null;
+                if (!$productId) continue;
+
+                $qty  = (float) ($item['qty'] ?? 0);
+                $unit = $item['unit'] ?? 'pc';
+                $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+
+                $sellCount[$productId] = ($sellCount[$productId] ?? 0) + $effectiveQty;
+            }
+        }
+
+        // High to low sort
+        arsort($sellCount);
+
+        $topProductIds = array_keys($sellCount); // সব, blade এ limit দেবো
+
+        // Product আনো
+        $popularProducts = Product::whereIn('id', $topProductIds)
+            ->where('status', 1) // active product only
+            ->get()
+            ->sortBy(fn($p) => array_search($p->id, $topProductIds)) // sell count order maintain
+            ->values();
+
+        return view('frontend.popular_products', compact('popularProducts'));
+    }
+    public function trendingProducts()
+    {
+        // শুধু last 7 days এর orders
+        $orders = Order::whereNotNull('cart')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->get(['cart']);
+
+        $sellCount = [];
+
+        foreach ($orders as $order) {
+            $cart = json_decode($order->cart, true);
+            if (empty($cart['items'])) continue;
+
+            foreach ($cart['items'] as $item) {
+                $productId = $item['item']['id'] ?? null;
+                if (!$productId) continue;
+
+                $qty          = (float) ($item['qty'] ?? 0);
+                $unit         = $item['unit'] ?? 'pc';
+                $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+
+                $sellCount[$productId] = ($sellCount[$productId] ?? 0) + $effectiveQty;
+            }
+        }
+
+        // High to low sort
+        arsort($sellCount);
+
+        $topProductIds = array_keys($sellCount);
+
+        if (!empty($topProductIds)) {
+            $trendingProducts = Product::whereIn('id', $topProductIds)
+                ->where('status', 1)
+                ->get()
+                ->sortBy(fn($p) => array_search($p->id, $topProductIds))
+                ->values();
+        } else {
+            // last week এ কোনো order না থাকলে latest products দেখাও
+            $trendingProducts = Product::where('status', 1)
+                ->latest()
+                ->take(8)
+                ->get();
+        }
+        return view('frontend.trending_products', compact('trendingProducts'));
     }
 
     // Home Page Ajax Display
@@ -1130,6 +1242,11 @@ public function promoOffers()
     {
         $prods = Product::where("sku", $sku)->where("status", 1)->paginate(20);
         return view("includes.frontend.conditional_product", compact('prods'));
+    }
+    public function conditioalOffers()
+    {
+        $prods = Product::where("is_offer_active", 1)->where("status", 1)->paginate(20);
+        return view("includes.frontend.conditional_offers", compact('prods'));
     }
      public function outlets()
     {

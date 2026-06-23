@@ -85,6 +85,21 @@
     </ul>
 </li>
 <li>
+          <a href="#all_reports" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
+                  class="fas fa-hand-holding-usd"></i>{{ __('Pre Order') }}</a>
+          <ul class="collapse list-unstyled" id="all_reports" data-parent="#accordion">
+              <li>
+                  <a href="{{ route('admin.pre_order.index') }}"> {{ __('All pre order') }}</a>
+              </li>
+              <li>
+                  <a href="#"> {{ __('Pending') }}</a>
+              </li>
+              <li>
+                  <a href="#"> {{ __('Confirmed') }}</a>
+              </li>
+          </ul>
+      </li>
+<li>
           <a href="#branch_wise_orders" class="accordion-toggle wave-effect" data-toggle="collapse"
               aria-expanded="false"><i class="fa fa-store"></i>{{ __('Branch Wise Orders') }}
           </a>

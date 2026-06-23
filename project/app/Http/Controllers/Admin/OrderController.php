@@ -407,129 +407,138 @@ class OrderController extends AdminBaseController
     ]);
 }
    public function updateProductQty(Request $request, $id)
-{
-    $request->validate([
-        'qty' => 'required|integer|min:1',
-    ]);
+    {
+        $request->validate([
+            'qty' => 'required|numeric|min:0.001',
+        ]);
 
-    $order = Order::findOrFail($id);
-    $cart = json_decode($order->cart, true);
+        $order = Order::findOrFail($id);
+        $cart  = json_decode($order->cart, true);
 
-    if (!$cart || !isset($cart['items']) || !is_array($cart['items'])) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Cart is empty'
-        ], 404);
-    }
+        if (!$cart || !isset($cart['items']) || !is_array($cart['items'])) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Cart is empty'
+            ], 404);
+        }
 
-    $cartKey = trim((string) $request->cart_key);
+        $cartKey = trim((string) $request->cart_key);
 
-    // fallback old call support
-    if (!$cartKey || !array_key_exists($cartKey, $cart['items'])) {
-        $productId = trim((string) $request->product_id);
+        // fallback old call support
+        if (!$cartKey || !array_key_exists($cartKey, $cart['items'])) {
+            $productId = trim((string) $request->product_id);
 
-        foreach ($cart['items'] as $key => $item) {
-            $keyProductId = explode('_', (string) $key)[0];
-
-            if ((string) $keyProductId === $productId) {
-                $cartKey = $key;
-                break;
+            foreach ($cart['items'] as $key => $item) {
+                $keyProductId = explode('_', (string) $key)[0];
+                if ((string) $keyProductId === $productId) {
+                    $cartKey = $key;
+                    break;
+                }
             }
         }
-    }
 
-    if (!$cartKey || !array_key_exists($cartKey, $cart['items'])) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Product not found in cart',
-            'debug' => [
-                'request_cart_key' => $request->cart_key,
-                'request_product_id' => $request->product_id,
-                'cart_item_keys' => array_keys($cart['items'] ?? [])
-            ]
-        ], 404);
-    }
+        if (!$cartKey || !array_key_exists($cartKey, $cart['items'])) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Product not found in cart',
+                'debug'   => [
+                    'request_cart_key'   => $request->cart_key,
+                    'request_product_id' => $request->product_id,
+                    'cart_item_keys'     => array_keys($cart['items'] ?? [])
+                ]
+            ], 404);
+        }
 
-    $qty = (int) $request->qty;
-    $item = $cart['items'][$cartKey];
+        $qty  = (float) $request->qty;
+        $unit = $request->unit ?? ($cart['items'][$cartKey]['unit'] ?? 'pc');
 
-    $itemPrice = (float) ($item['item_price'] ?? (($item['item']['price'] ?? $item['price']) ?? 0));
-    $oldQty = (int) ($item['qty'] ?? 1);
-
-    // safest discount logic
-    if (isset($item['unit_discount'])) {
-        $unitDiscount = (float) $item['unit_discount'];
-    } else {
-        $oldTotalDiscount = (float) ($item['discount'] ?? 0);
-        $unitDiscount = $oldQty > 0 ? ($oldTotalDiscount / $oldQty) : 0;
-    }
-
-    $cart['items'][$cartKey]['item_price'] = $itemPrice;
-    $cart['items'][$cartKey]['qty'] = $qty;
-    $cart['items'][$cartKey]['unit_discount'] = $unitDiscount;
-    $cart['items'][$cartKey]['discount'] = $unitDiscount * $qty;
-    $cart['items'][$cartKey]['price'] = ($itemPrice * $qty) - ($unitDiscount * $qty);
-
-    $this->recalculateOrderCart($order, $cart);
-
-    $cart = json_decode($order->cart, true);
-    $html = view('admin.order.partials.order_items', compact('order', 'cart'))->render();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Quantity updated successfully',
-        'html' => $html
-    ]);
-}
-    private function recalculateOrderCart($order, array $cart)
-{
-    $totalQty = 0;
-    $subTotal = 0;
-
-    if (!isset($cart['items']) || !is_array($cart['items'])) {
-        $cart['items'] = [];
-    }
-
-    foreach ($cart['items'] as $cartKey => $item) {
-        $qty = (int) ($item['qty'] ?? 0);
+        $item      = $cart['items'][$cartKey];
         $itemPrice = (float) ($item['item_price'] ?? (($item['item']['price'] ?? $item['price']) ?? 0));
+
+        $oldQty = (float) ($item['qty'] ?? 1);
 
         if (isset($item['unit_discount'])) {
             $unitDiscount = (float) $item['unit_discount'];
         } else {
-            $existingDiscount = (float) ($item['discount'] ?? 0);
-            $oldQty = $qty > 0 ? $qty : 1;
-            $unitDiscount = $oldQty > 0 ? ($existingDiscount / $oldQty) : 0;
+            $oldTotalDiscount = (float) ($item['discount'] ?? 0);
+            $unitDiscount = $oldQty > 0 ? ($oldTotalDiscount / $oldQty) : 0;
         }
 
-        $lineDiscount = $unitDiscount * $qty;
-        $lineTotal = ($itemPrice * $qty) - $lineDiscount;
+        $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
 
-        $cart['items'][$cartKey]['item_price'] = $itemPrice;
+        $cart['items'][$cartKey]['qty']           = $qty;
+        $cart['items'][$cartKey]['unit']          = $unit;
+        $cart['items'][$cartKey]['item_price']    = $itemPrice;
         $cart['items'][$cartKey]['unit_discount'] = $unitDiscount;
-        $cart['items'][$cartKey]['discount'] = $lineDiscount;
-        $cart['items'][$cartKey]['price'] = $lineTotal;
+        $cart['items'][$cartKey]['discount']      = $unitDiscount * $effectiveQty;
+        $cart['items'][$cartKey]['price']         = ($itemPrice * $effectiveQty) - ($unitDiscount * $effectiveQty);
 
-        $totalQty += $qty;
-        $subTotal += $lineTotal;
+        $this->recalculateOrderCart($order, $cart);
+
+        $cart = json_decode($order->cart, true);
+        $html = view('admin.order.partials.order_items', compact('order', 'cart'))->render();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Quantity updated successfully',
+            'html'    => $html
+        ]);
     }
 
-    $cart['totalQty'] = $totalQty;
-    $cart['totalPrice'] = $subTotal;
+    private function recalculateOrderCart($order, array $cart)
+    {
+        $totalQty = 0;
+        $subTotal = 0;
 
-    $shippingCost = (float) ($order->shipping_cost ?? 0);
-    $packingCost = (float) ($order->packing_cost ?? 0);
-    $tax = (float) ($order->tax ?? 0);
-    $couponDiscount = (float) ($order->coupon_discount ?? 0);
-    $orderDiscount = (float) ($order->discount ?? 0);
+        if (!isset($cart['items']) || !is_array($cart['items'])) {
+            $cart['items'] = [];
+        }
 
-    $grandTotal = $subTotal + $shippingCost + $packingCost + $tax - $couponDiscount - $orderDiscount;
+        foreach ($cart['items'] as $cartKey => $item) {
+            // (int) থেকে (float)
+            $qty       = (float) ($item['qty'] ?? 0);
+            $unit      = $item['unit'] ?? 'pc';
+            $itemPrice = (float) ($item['item_price'] ?? (($item['item']['price'] ?? $item['price']) ?? 0));
 
-    $order->cart = json_encode($cart);
-    $order->totalQty = $totalQty;
-    $order->pay_amount = $grandTotal;
-    $order->save();
-}
+            if (isset($item['unit_discount'])) {
+                $unitDiscount = (float) $item['unit_discount'];
+            } else {
+                $existingDiscount = (float) ($item['discount'] ?? 0);
+                $unitDiscount     = $qty > 0 ? ($existingDiscount / $qty) : 0;
+            }
+
+            // gram হলে effective qty দিয়ে calculate
+            $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+
+            $lineDiscount = $unitDiscount * $effectiveQty;
+            $lineTotal    = ($itemPrice * $effectiveQty) - $lineDiscount;
+
+            $cart['items'][$cartKey]['item_price']    = $itemPrice;
+            $cart['items'][$cartKey]['unit']          = $unit;
+            $cart['items'][$cartKey]['unit_discount'] = $unitDiscount;
+            $cart['items'][$cartKey]['discount']      = $lineDiscount;
+            $cart['items'][$cartKey]['price']         = $lineTotal;
+
+            $totalQty += $qty;
+            $subTotal += $lineTotal;
+        }
+
+        $cart['totalQty']   = $totalQty;
+        $cart['totalPrice'] = $subTotal;
+
+        $shippingCost   = (float) ($order->shipping_cost   ?? 0);
+        $packingCost    = (float) ($order->packing_cost    ?? 0);
+        $tax            = (float) ($order->tax             ?? 0);
+        $couponDiscount = (float) ($order->coupon_discount ?? 0);
+        $orderDiscount  = (float) ($order->discount        ?? 0);
+
+        $grandTotal = $subTotal + $shippingCost + $packingCost + $tax - $couponDiscount - $orderDiscount;
+
+        $order->cart      = json_encode($cart);
+        $order->totalQty  = $totalQty;
+        $order->pay_amount = $grandTotal;
+        $order->save();
+    }
     public function multipleOrderNote(Request $request)
     {
 

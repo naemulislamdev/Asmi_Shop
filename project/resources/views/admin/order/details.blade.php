@@ -68,6 +68,7 @@
                                         <td width="10%">:</td>
                                         <td width="45%">
                                             @php $total = $order->pay_amount  - $order->shipping_cost; @endphp
+                                            
                                             {{ \PriceHelper::showOrderCurrencyPrice($total, $order->currency_sign) }}
                                         </td>
                                     </tr>
@@ -114,25 +115,30 @@
                                             </td>
                                         </tr>
                                     @endif
-                                 
-
-                                    @if (($order->first_order_discount ?? 0) > 0)
+                                      @if ($order->coupon_discount != null)
                                         <tr>
-                                            <th width="45%">{{ __('First Order Discount') }}</th>
-                                            <td width="10%">:</td>
-                                            <td width="45%">
-                                                − {{ \PriceHelper::showOrderCurrencyPrice($order->first_order_discount * $order->currency_value, $order->currency_sign) }}
-                                            </td>
+                                            <th width="45%">{{ __('Coupon Discount') }}</th>
+                                            <th width="10%">:</th>
+                                            @if ($gs->currency_format == 0)
+                                                <td width="45%">
+                                                    {{ $order->currency_sign }}{{ $order->coupon_discount }}</td>
+                                            @else
+                                                <td width="45%">
+                                                    {{ $order->coupon_discount }}{{ $order->currency_sign }}</td>
+                                            @endif
                                         </tr>
                                     @endif
+
+                                  
 
                                     <tr>
                                         <th width="45%">{{ __('Total Cost') }}</th>
                                         <td width="10%">:</td>
                                         <td width="45%">
-                                            <strong>
+                                             <strong>
                                                 {{ \PriceHelper::showOrderCurrencyPrice(
-                                                    (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
+                                                    ($order->pay_amount + $order->wallet_price - $order->discount) *
+                                                        $order->currency_value,
                                                     $order->currency_sign,
                                                 ) }}
                                             </strong>
@@ -650,43 +656,49 @@
         });
     });
 </script>
-   <script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    });
-
-    let qtyTimer;
-
-    $(document).on('input', '.update_qty', function () {
-        let el = $(this);
-
-        clearTimeout(qtyTimer);
-
-        qtyTimer = setTimeout(function () {
-            let qty = parseInt(el.val());
-            let cartKey = el.data('cart-key');
-            let productId = el.data('product-id');
-            let orderId = el.data('order-id');
-
-            if (!qty || qty < 1) {
-                qty = 1;
-                el.val(1);
+  <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        });
 
-            $.post('{{ url("admin/order") }}/' + orderId + '/update-product-qty', {
-                cart_key: cartKey,
-                product_id: productId,
-                qty: qty
-            }, function (res) {
-                if (res.status) {
-                    $('#order-items-wrapper').html(res.html);
+        let qtyTimer;
+
+        $(document).on('input', '.update_qty', function() {
+            let el = $(this);
+
+            clearTimeout(qtyTimer);
+
+            qtyTimer = setTimeout(function() {
+                let unit = el.data('unit') || 'pc';
+                // parseInt বাদ — parseFloat করা হয়েছে decimal support এর জন্য
+                let qty = parseFloat(el.val());
+                let cartKey = el.data('cart-key');
+                let productId = el.data('product-id');
+                let orderId = el.data('order-id');
+
+                // Fallback
+                let minVal = (unit === 'pc') ? 1 : 0.001;
+                if (isNaN(qty) || qty < minVal) {
+                    qty = minVal;
+                    el.val(qty);
                 }
-            }).fail(function (xhr) {
-                alert(xhr.responseJSON?.message || 'Something went wrong while updating quantity.');
-            });
-        }, 400);
-    });
-</script>
+
+                $.post('{{ url('admin/order') }}/' + orderId + '/update-product-qty', {
+                    cart_key: cartKey,
+                    product_id: productId,
+                    qty: qty,
+                    unit: unit // unit ও পাঠাও backend এ
+                }, function(res) {
+                    if (res.status) {
+                        $('#order-items-wrapper').html(res.html);
+                    }
+                }).fail(function(xhr) {
+                    alert(xhr.responseJSON?.message ||
+                        'Something went wrong while updating quantity.');
+                });
+            }, 600);
+        });
+    </script>
 @endpush

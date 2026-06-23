@@ -12,6 +12,7 @@ use App\Models\State;
 use App\Helpers\PriceHelper;
 use Illuminate\Http\Request;
 use App\Models\PaymentGateway;
+use App\Models\RequestItem;
 use Illuminate\Support\Facades\Session;
 use Svg\Tag\Rect;
 
@@ -508,4 +509,16 @@ public function getOfferInfo($id)
 }
 
     //////////////////////Chnage///////////////////////////
+    public function requestItem($id, Request $request)
+    {
+        RequestItem::create([
+            'product_id' => $id,
+            'user_id'    => auth()->id() ?? null,
+        ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Your request has been submitted successfully!',
+        ]);
+    }
 }

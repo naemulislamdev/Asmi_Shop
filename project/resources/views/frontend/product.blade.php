@@ -988,23 +988,15 @@
 
 
 
-                                    @if ($productt->measure)
+                                    @if ($productt->measure == 1 && $productt->measures->count() > 0)
                                         <h6 class="measure-product">
                                             / Per
                                             <select class="measure-select" data-measure-type="{{ $productt->measure }}">
-                                                @if ($productt->measure == 'KG')
-                                                    <option value="1">1kg</option>
-                                                    <option value="0.5">500gm</option>
-                                                    <option value="0.25">250gm</option>
-                                                @elseif($productt->measure == 'LTR')
-                                                    <option value="1">1L</option>
-                                                    <option value="0.5">500ml</option>
-                                                    <option value="0.25">250ml</option>
-                                                @elseif($productt->measure == 'PCS')
-                                                    <option value="1">1p</option>
-                                                    <option value="5">5p</option>
-                                                    <option value="10">10p</option>
-                                                @endif
+                                               @foreach ($productt->measures as $measure)
+                                <option value="{{ $measure->value }}" data-price="{{ $measure->price }}">
+                                    {{ $measure->label }}
+                                </option>
+                            @endforeach
                                             </select>
                                         </h6>
                                     @endif
@@ -1078,7 +1070,7 @@
                             @if ($productt->stock <= 0)
                                 <div class="outofstock">
                                     @if ($productt->preordered == 2)
-                                        <h5>{{ __('Request a product !') }}</h5>
+                                        <h5>{{ __('Request Item') }}</h5>
                                     @else
                                         <h5>{{ __('Out of Stock !') }}</h5>
                                     @endif
@@ -1086,13 +1078,24 @@
                             @endif
 
 
-                            @if ($productt->stock > 0 || $productt->preordered == 2)
+                            @if ($productt->stock <= 0)
+                                @if ($productt->preordered == 2)
+                                    <div class="w-100 d-block mt-auto" data-product-id="{{ $productt->id }}">
+                                        <button
+                                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center click_to_request_item"
+                                            type="button" data-href="{{ route('request.product', $productt->id) }}"
+                                            data-product-id="{{ $productt->id }}">
+                                            <i class="fa fa-bell me-2"></i> Request Item
+                                        </button>
+                                    </div>
+                                @endif
+                            @else
                                 @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
                                     @if ($existingQty == 0)
                                         {{-- SHOW ADD TO BAG --}}
                                         <div class="w-100 d-block mt-auto add-btn-wrapper">
                                             <button
-                                                class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center add_cart_details"
+                                                class="btn btn-sm add-cart-btn btn-info d-flex  justify-content-center align-items-center add_cart_details"
                                                 data-href="{{ route('product.add.to.cart', $productt->id) }}"
                                                 data-product-id="{{ $productt->id }}">
                                                 <i class="fa fa-bolt mr-2" aria-hidden="true"> </i> Add To Cart
