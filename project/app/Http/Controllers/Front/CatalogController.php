@@ -211,7 +211,8 @@ if ($request->ajax()) {
     $products = Product::where('status', 1)
         ->where(function ($query) use ($keyword) {
             $query->where('name', 'like', "%{$keyword}%")
-                  ->orWhere('sku', 'like', "%{$keyword}%");
+                  ->orWhere('sku', 'like', "%{$keyword}%")
+                  ->orWhere('bn_keywords', 'like', "%{$keyword}%");
         })
         ->paginate(20);
 
@@ -229,20 +230,68 @@ public function ajaxSearch(Request $request)
     $products = Product::where('status', 1)
         ->where(function ($query) use ($keyword) {
             $query->where('name', 'like', "%{$keyword}%")
-                  ->orWhere('sku', 'like', "%{$keyword}%");
+                  ->orWhere('sku', 'like', "%{$keyword}%")
+                  ->orWhere('details', 'like', "%{$keyword}%")
+                  ->orWhere('tags', 'like', "%{$keyword}%")
+                  ->orWhere('bn_keywords', 'like', "%{$keyword}%");
         })
         ->where('is_offer_active', 0)
         ->get(['id', 'name', 'slug', 'price', 'thumbnail', 'photo']);
 
     return response()->json($products);
 }
-
-    public function getsubs(Request $request)
+// mobile sarch
+    public function mobileAjaxSearch(Request $request)
     {
-        $category = Category::where('slug', $request->category)->firstOrFail();
-        $subcategories = Subcategory::where('category_id', $category->id)->get();
-        return $subcategories;
+        $request->validate([
+            'q' => 'nullable|string|max:100'
+        ]);
+
+        $keyword = strip_tags($request->query('q'));
+
+        if (empty($keyword)) {
+            return response()->json([]);
+        }
+
+        $param = "%{$keyword}%";
+
+        $products = Product::where('status', 1)
+            ->where(function ($query) use ($param) {
+                $query->whereRaw("CONVERT(`name` USING utf8mb4) LIKE ?", [$param])
+                    ->orWhereRaw("CONVERT(`sku` USING utf8mb4) LIKE ?", [$param]);
+            })
+            ->where('is_offer_active', 0)
+            ->limit(10)
+            ->get(['id', 'name', 'slug', 'price', 'thumbnail', 'photo']);
+
+        return response()->json($products);
     }
+
+    public function mobileHomeSearch(Request $request)
+    {
+        $request->validate([
+            'search' => 'nullable|string|max:100'
+        ]);
+
+        $keyword = strip_tags($request->search);
+        $param = "%{$keyword}%";
+
+        $products = Product::where('status', 1)
+            ->where(function ($query) use ($param) {
+                $query->whereRaw("CONVERT(`name` USING utf8mb4) LIKE ?", [$param])
+                    ->orWhereRaw("CONVERT(`sku` USING utf8mb4) LIKE ?", [$param]);
+            })
+            ->paginate(20);
+
+        return view('frontend.search', compact('products', 'keyword'));
+    }
+    // mobile sarch
+public function getsubs(Request $request)
+{
+    $category = Category::where('slug', $request->category)->firstOrFail();
+    $subcategories = Subcategory::where('category_id', $category->id)->get();
+    return $subcategories;
+}
     public function report(Request $request)
     {
 

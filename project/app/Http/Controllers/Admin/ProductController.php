@@ -27,7 +27,6 @@ class ProductController extends AdminBaseController
    public function datatables(Request $request)
 {
     $query = Product::query()
-        ->whereProductType('normal')
         ->latest('id');
 
     if ($request->type == 'deactive') {
@@ -404,6 +403,9 @@ class ProductController extends AdminBaseController
         if (!empty($request->tags)) {
             $input['tags'] = implode(',', $request->tags);
         }
+
+        // Bengali search keywords
+        $input['bn_keywords'] = $request->bn_keywords;
 
          // Video Url
         if (!empty($request->video_url)) {
@@ -910,6 +912,9 @@ class ProductController extends AdminBaseController
         if (empty($request->tags)) {
             $input['tags'] = null;
         }
+
+        // Bengali search keywords
+        $input['bn_keywords'] = $request->bn_keywords;
 
         $input['price'] = $input['price'] / $sign->value;
         //$input['previous_price'] = $input['previous_price'] / $sign->value;

@@ -816,6 +816,14 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-12">
+                                                <label>{{ __('Bengali Search Keywords') }} (বাংলা)
+                                                    <small>{{ __('Bangla words/synonyms so customers can search in Bengali. Space or comma separated.') }}</small></label>
+                                                <textarea name="bn_keywords" id="bn_keywords" class="input-field"
+                                                    rows="2" placeholder="যেমনঃ ডিম, দুধ, মাছ">{{ old('bn_keywords') }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
                                                 <label>{{ __('Video URL') }}
                                                     <small>EX:https://www.youtube.com/embed/gqGbgfdfE</small></label>
                                                 <input type="url" name="video_url" id="video_url"

@@ -810,7 +810,7 @@
     <label>Maximum Order Quantity <small class="text-muted">(খালি রাখলে unlimited)</small></label>
     <input type="number" name="max_qty" class="form-control" 
            value="{{ old('max_qty', $data->max_qty ?? '') }}" 
-           min="1" placeholder="e.g. 5">
+            placeholder="e.g. 5">
 </div>
 
 
@@ -1254,6 +1254,18 @@
                                                         @endforeach
                                                     @endif
                                                 </ul>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="left-area">
+                                                    <h4 class="heading">{{ __('Bengali Search Keywords') }} (বাংলা)</h4>
+                                                    <small>{{ __('Bangla words/synonyms so customers can search in Bengali. Space or comma separated.') }}</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <textarea name="bn_keywords" id="bn_keywords" class="input-field"
+                                                    rows="2" placeholder="যেমনঃ ডিম, দুধ, মাছ">{{ $data->bn_keywords }}</textarea>
                                             </div>
                                         </div>
                                         <div class="row">
