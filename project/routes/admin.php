@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\PromoOffersController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ConditionalOfferController;
+use App\Http\Controllers\Admin\PreOrderController;
 use App\Http\Controllers\Admin\SitemapController;
 Route::prefix('admin')->group(function () {
 
@@ -182,6 +183,13 @@ Route::as('admin-')->group(function () {
         Route::get('/branch-sales', 'index')->name('admin.branch.sales');
         Route::get('/branch-sales/summary', 'summary')->name('admin.branch.sales.summary');
         Route::get('/branch-sales/datatable', 'datatable')->name('admin.branch.sales.datatable');
+    });
+
+    Route::controller(PreOrderController::class)->group(function () {
+        Route::get('/pre-order/list', 'index')->name('admin.pre_order.index');
+        Route::get('/pre-order/datatables/{status}', 'datatables')->name('admin.pre_order.datatables');
+        Route::post('/pre-order/confirm/{id}', 'confirm')->name('admin.pre_order.confirm');
+        Route::post('/pre-order/update-status/{id}', 'updateStatus')->name('admin.pre_order.update_status');
     });
 
     /////////////////////////////// ////////////////////////////////////////////
@@ -743,7 +751,7 @@ Route::as('admin-')->group(function () {
         Route::get('/slider/status/{id1}/{id2}', 'Admin\SliderController@status')->name('admin-sl-status');
 
         //------------ ADMIN SLIDER SECTION ENDS ------------
-    
+
     	  //------------ ADMIN Offer Coupon SLIDER SECTION START------------
         Route::get('/coupon-slider/datatables', 'Admin\CouponSliderController@datatables')->name('admin-coupon-slider-datatables'); //JSON REQUEST
         Route::get('/coupon-slider', 'Admin\CouponSliderController@index')->name('admin-coupon-slider-index');
@@ -753,7 +761,7 @@ Route::as('admin-')->group(function () {
         Route::post('/coupon-slider/edit/{id}', 'Admin\CouponSliderController@update')->name('admin-coupon-slider-update');
         Route::delete('/coupon-slider/delete/{id}', 'Admin\CouponSliderController@destroy')->name('admin-coupon-slider-delete');
         Route::get('/coupon-slider/status/{id1}/{id2}', 'Admin\CouponSliderController@status')->name('admin-coupon-slider-status');
-        
+
         //------------ ADMIN Offer Coupon SLIDER SECTION ENDS ------------
 
         Route::get('/arrival/datatables', 'Admin\ArrivalsectionController@datatables')->name('admin-arrival-datatables');

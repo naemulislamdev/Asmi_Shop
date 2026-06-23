@@ -23,8 +23,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                        Breadcumb style start
-                                                                                                                                                                                                    =====================================*/
+                                                                                                                                                                                                            Breadcumb style start
+                                                                                                                                                                                                        =====================================*/
 
         .custom-breadcrumb {
             display: flex;
@@ -75,8 +75,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                    Breadcumb style End
-                                                                                                                                                                                                    =====================================*/
+                                                                                                                                                                                                                        Breadcumb style End
+                                                                                                                                                                                                        =====================================*/
 
         .single-product-details-content-wrapper .qty-box,
         .single-product-details-content-wrapper .add-btn-wrapper {
@@ -94,8 +94,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                                    Promo Offer style start
-                                                                                                                                                                                                     =====================================*/
+                                                                                                                                                                                                                        Promo Offer style start
+                                                                                                                                                                                                         =====================================*/
 
         .promoOfferWrap {
             padding: 10px 0 4px;
@@ -282,8 +282,8 @@
         }
 
         /* ==================================
-                                                                                                                                                                                                    Promo Offer style End
-                                                                                                                                                                                                =====================================*/
+                                                                                                                                                                                                        Promo Offer style End
+                                                                                                                                                                                                    =====================================*/
 
 
         .discount-pill {
@@ -320,8 +320,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                        Flash Deal timer style Start
-                                                                                                                                                                    ========================================== */
+                                                                                                                                                                            Flash Deal timer style Start
+                                                                                                                                                                        ========================================== */
         .product-countdown {
             margin-top: 30px;
             background: #E1F5EE;
@@ -382,8 +382,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                                                        Flash Deal timer style End
-                                                                                                                                                                                                    ========================================== */
+                                                                                                                                                                                                            Flash Deal timer style End
+                                                                                                                                                                                                        ========================================== */
         /* stock and sku section */
         .product-meta-flex {
             display: flex;
@@ -991,20 +991,13 @@
                                     @if ($productt->measure)
                                         <h6 class="measure-product">
                                             / Per
-                                            <select class="measure-select" data-measure-type="{{ $productt->measure }}">
-                                                @if ($productt->measure == 'KG')
-                                                    <option value="1">1kg</option>
-                                                    <option value="0.5">500gm</option>
-                                                    <option value="0.25">250gm</option>
-                                                @elseif($productt->measure == 'LTR')
-                                                    <option value="1">1L</option>
-                                                    <option value="0.5">500ml</option>
-                                                    <option value="0.25">250ml</option>
-                                                @elseif($productt->measure == 'PCS')
-                                                    <option value="1">1p</option>
-                                                    <option value="5">5p</option>
-                                                    <option value="10">10p</option>
-                                                @endif
+                                            <select class="measure-select">
+                                                @foreach ($productt->measures as $measure)
+                                                    <option value="{{ $measure->value }}"
+                                                        data-price="{{ $measure->price }}">
+                                                        {{ $measure->label }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </h6>
                                     @endif

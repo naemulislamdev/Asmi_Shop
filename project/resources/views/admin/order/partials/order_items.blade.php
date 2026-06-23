@@ -67,6 +67,22 @@
                                     // qty input এর step আর min unit অনুযায়ী
                                     $qtyStep = $unit === 'pc'   ? '1'     : ($unit === 'gram' ? '1' : '0.001');
                                     $qtyMin  = $unit === 'pc'   ? '1'     : ($unit === 'gram' ? '1' : '0.001');
+
+                                    // measure_value cart এ int কিন্তু product_measures এ float (1.000)
+                                    // তাই float cast করে compare করা হচ্ছে
+
+                                    $productTable = \App\Models\Product::where('id', $productId)->first();
+                                    $measureLabel = null;
+
+                                    if (isset($product['measure_value']) && $productId) {
+                                        $measureValueFloat = (float) $product['measure_value'];
+
+                                        $measured = \App\Models\ProductMeasure::where('product_id', $productId)
+                                            ->whereRaw('CAST(value AS DECIMAL(10,3)) = ?', [$measureValueFloat])
+                                            ->first();
+
+                                        $measureLabel = $measured->label ?? null;
+                                    }
                                 @endphp
 
                                 <tr>
@@ -90,7 +106,7 @@
                                     </td>
 
                                     <td>
-                                        {{ \PriceHelper::showCurrencyPrice($itemPrice * $order->currency_value, $itemDiscount) }}
+                                        {{ $productTable->price }}
                                     </td>
 
                                     <td>
@@ -115,6 +131,9 @@
 
                                     <td class="row-subtotal-cell">
                                         {{ \PriceHelper::showCurrencyPrice($subtotal * $order->currency_value) }}
+                                        @if ($measureLabel)
+                                            <span class="badge badge-info ml-1">{{ $measureLabel }}</span>
+                                        @endif
                                     </td>
 
                                     <td>

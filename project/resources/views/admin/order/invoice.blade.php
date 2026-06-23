@@ -145,10 +145,10 @@
     }
 
     .invoice-table tbody td {
-    padding: 3px 16px;
-    color: #111;
-    vertical-align: center;
-}
+        padding: 3px 16px;
+        color: #111;
+        vertical-align: center;
+    }
 
     .invoice-table tbody td:last-child {
         text-align: right;
@@ -207,10 +207,10 @@
         font-weight: 600;
     }
 
-   .tfoot-label {
-    color: #111;
-    font-weight: 700;
-}
+    .tfoot-label {
+        color: #111;
+        font-weight: 700;
+    }
 
     .tfoot-value {
         color: #111827;
@@ -389,6 +389,19 @@
                         <tbody>
                             @php $subtotal = 0; @endphp
                             @foreach ($cart['items'] as $product)
+                                @php
+                                    $productId = $product['item']['id'];
+                                    $measureLabel = null;
+                                    if (isset($product['measure_value']) && $productId) {
+                                        $measureValueFloat = (float) $product['measure_value'];
+
+                                        $measured = \App\Models\ProductMeasure::where('product_id', $productId)
+                                            ->whereRaw('CAST(value AS DECIMAL(10,3)) = ?', [$measureValueFloat])
+                                            ->first();
+
+                                        $measureLabel = $measured->label ?? null;
+                                    }
+                                @endphp
                                 <tr>
                                     <td>
                                         @if ($product['item']['user_id'] != 0)
@@ -425,7 +438,12 @@
                                             {{ \PriceHelper::showCurrencyPrice($product['item_price'] * $order->currency_value) }}
                                         </p>
                                         <p class="product-detail-row">
-                                            <strong>{{ __('Qty') }}:</strong> {{ $product['qty'] }}
+                                            @if ($measureLabel)
+                                                <span class="badge badge-info ml-1">{{ $measureLabel }}</span>
+                                            @else
+                                                <strong>{{ __('Qty') }}:</strong> {{ $product['qty'] }}
+                                            @endif
+
                                         </p>
                                         @if (!empty($product['keys']))
                                             @foreach (array_combine(explode(',', $product['keys']), explode(',', $product['values'])) as $key => $value)
@@ -469,7 +487,8 @@
                                 @if (DB::table('shippings')->where('price', '=', $price)->count() > 0)
                                     <tr>
                                         <td colspan="2" class="tfoot-label">
-                                            Delivery Charge <small>({{ DB::table('shippings')->where('price', '=', $price)->first()->title }})</small>
+                                            Delivery Charge
+                                            <small>({{ DB::table('shippings')->where('price', '=', $price)->first()->title }})</small>
                                         </td>
                                         <td class="tfoot-value">
                                             {{ \PriceHelper::showOrderCurrencyPrice($order->shipping_cost, $order->currency_sign) }}
@@ -555,8 +574,8 @@
                                 <td colspan="2" class="tfoot-label grand-total-label">{{ __('Grand Total') }}</td>
                                 <td class="tfoot-value grand-total-value">
                                     {{ \PriceHelper::showOrderCurrencyPrice(
-                                        (($order->pay_amount + $order->wallet_price) - $order->discount) * $order->currency_value,
-                                        $order->currency_sign
+                                        ($order->pay_amount + $order->wallet_price - $order->discount) * $order->currency_value,
+                                        $order->currency_sign,
                                     ) }}
                                 </td>
                             </tr>

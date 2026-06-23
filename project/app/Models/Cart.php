@@ -28,7 +28,14 @@ class Cart extends Model
     // ************** ADD TO CART *****************
     public function add($item, $id, $finalPrice = null, $uniqueKey, $measureValue = '', $quantity, $isOffer = false)
     {
+        $requestProduct = false;
+        if ($item->stock == 0 && $item->preordered == 0) {
+            $requestProduct = true;
+        }
+
         $finalPrice = is_null($finalPrice) ? (float) $item->price : (float) $finalPrice;
+
+        $item['request_product'] = $requestProduct;
 
         // Default stored item structure
         $storedItem = [
@@ -51,6 +58,7 @@ class Cart extends Model
             'measure_value' => $measureValue,
             'unique_key'  => $uniqueKey,
             'is_offer' => $isOffer,
+            'request_product' => $requestProduct,
         ];
 
         // If same uniqueKey already exists, use it (increase qty) otherwise keep default
