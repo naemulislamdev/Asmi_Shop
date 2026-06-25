@@ -174,6 +174,8 @@
                                         {{ __('Completed') }}</option>
                                     <option value="cancelled">
                                         {{ __('Cancel') }}</option>
+                                    <option value="return">
+                                        {{ __('Return') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-1">
@@ -586,6 +588,35 @@
                 $('#orderStatus').val('');
                 table.ajax.reload();
             });
+            // Rider form submit
+            $('#riderForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{ route('branch-orders.assignRider') }}",
+
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(res) {
+                        $('#riderModal').modal('hide');
+                        $('#geniustable').DataTable().ajax.reload();
+                        table.ajax.reload();
+                        toastr.success(res.message ?? 'Rider assigned!');
+
+                        Swal.fire(
+                            "{{ __('Rider Assigned Success!') }}",
+                            res.message,
+                            'success'
+                        );
+                    },
+                    error: function(res) {
+                        Swal.fire(
+                            "{{ __('Something Went Wrong!') }}",
+                            res.message,
+                            'error'
+                        );
+                    }
+                });
+            });
 
 
             $(function() {
@@ -595,6 +626,7 @@
                     '</a>' +
                     '</div>');
             });
+
 
         })(jQuery);
     </script>
@@ -734,6 +766,40 @@
             currentStatus = $(this).data('status');
             $('#geniustable').DataTable().ajax.reload();
             loadSummary(); // tab change এও summary update
+        });
+        // Add Rider বাটন click এ
+        $(document).on('click', '.add-rider-btn', function() {
+            var orderId = $(this).data('id');
+            var branchId = $(this).data('branch-id');
+
+            $('#rider_order_id').val(orderId);
+            $('#riderSelect').html('<option disabled selected>Loading riders...</option>');
+            $('#riderLoadMsg').text('');
+
+            // Branch অনুযায়ী rider fetch
+            $.ajax({
+                url: '{{ route('branch-orders.riders', ['branch_id' => ':branchId']) }}'.replace(
+                    ':branchId', branchId),
+                type: 'GET',
+                success: function(riders) {
+                    $('#riderSelect').html(
+                        '<option disabled selected>{{ __('Choose Rider') }}</option>');
+
+                    if (riders.length === 0) {
+                        $('#riderLoadMsg').text('এই branch এ কোনো rider নেই।');
+                    } else {
+                        $.each(riders, function(i, rider) {
+                            $('#riderSelect').append(
+                                '<option value="' + rider.id + '">' + rider.name +
+                                '</option>'
+                            );
+                        });
+                    }
+                },
+                error: function() {
+                    $('#riderLoadMsg').text('Rider load করতে সমস্যা হয়েছে।');
+                }
+            });
         });
     </script>
 @endsection

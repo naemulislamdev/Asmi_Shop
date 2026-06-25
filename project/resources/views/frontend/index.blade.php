@@ -1,6 +1,6 @@
 @extends('layouts.front')
 @section('css')
- <style>
+    <style>
         .gs-hero-section img {
             width: 100%;
             height: 100%;
@@ -17,8 +17,8 @@
             color: white;
             text-align: center;
             overflow: hidden;
-			border-radius: 8px;
-			margin: 0 auto;
+            border-radius: 8px;
+            margin: 0 auto;
         }
 
         .gs-hero-section {
@@ -30,14 +30,14 @@
             .gs-hero-section {
                 height: auto;
             }
-        	
+
             .gs-hero-section img {
-            	border-radius: 6px;
+                border-radius: 6px;
                 height: 100%;
                 /* Smaller height for mobile */
                 background-position: center top;
             }
-        	
+
         }
     </style>
     <style>
@@ -79,6 +79,7 @@
         .slider-section .card img {
             border-radius: 10px !important;
         }
+
         .slider-section .left-promo .card,
         .slider-section .right-promo .card {
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -138,7 +139,7 @@
         /* Optional: remove default arrows background on hover */
         .home-coupon-slider .slick-prev:hover,
         .home-coupon-slider .slick-next:hover {
-      
+
             color: #fff;
         }
 
@@ -162,8 +163,8 @@
         .right-promo .slick-dots li.slick-active button {
             width: 30px;
         }
-	
-       
+
+
 
         .swiper-button-next,
         .swiper-button-prev {
@@ -183,12 +184,12 @@
         .category-item {
             background: #fff;
             border-radius: 6px;
-            box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+            /* box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset; */
             text-align: center;
             padding-bottom: 0;
         }
 
-   		.category-item img {
+        .category-item img {
             max-width: 100%;
             height: 107px;
             object-fit: contain;
@@ -196,7 +197,7 @@
         }
 
         /* wrapper stretch */
-       /* wrapper stretch */
+        /* wrapper stretch */
         .home-category-slider .swiper-wrapper {
             align-items: stretch;
         }
@@ -206,6 +207,7 @@
             height: auto;
             display: flex;
         }
+
         /* link full height */
         .slide-link {
             display: flex;
@@ -218,9 +220,9 @@
             flex-direction: column;
             height: 100%;
             width: 100%;
-      
+
             background: #fff;
-            box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+
         }
 
         /* image fixed height */
@@ -234,10 +236,11 @@
         .cate-title {
             margin-top: auto;
             text-align: center;
-        	padding-bottom: 5px;
+            padding-bottom: 5px;
         }
-		.cate-title h6 {
-        	font-size: 16px;
+
+        .cate-title h6 {
+            font-size: 16px;
         }
 
         .swiper-pagination-bullet {
@@ -250,40 +253,188 @@
         .swiper-pagination-bullet-active {
             background: #1598a7 !important;
         }
-    </style>
 
+        /* new category card design */
+        /* ===== Category Section ===== */
+        .category {
+            background-color: #fdf9f5;
+            padding: 2rem 0;
+        }
+
+        .section-heading-title h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #3a2f25;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ===== Slider Wrapper — এটাই clip করবে ===== */
+        .category-slider-wrapper {
+            position: relative;
+            overflow: hidden;
+            /* padding: 0 40px; */
+        }
+
+        /* ===== Swiper — overflow visible রাখবে ===== */
+        .home-category-slider {
+            position: relative;
+            padding: 0 !important;
+            overflow: visible !important;
+        }
+
+        .home-category-slider .swiper-wrapper {
+            padding: 4px 0;
+        }
+
+        .home-category-slider .swiper-slide {
+            height: auto !important;
+        }
+
+        /* ===== Card ===== */
+        .cat-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        /* Image box */
+        .cat-card__img-wrap {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 16px;
+            border: 1.5px solid #ede4d8;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .cat-card:hover .cat-card__img-wrap {
+            transform: scale(1.05);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.13);
+        }
+
+        .cat-card__img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Title */
+        .cat-card__name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #3a2f25;
+            text-align: center;
+            background: none;
+            margin: 0;
+            line-height: 1.3;
+            white-space: wrap;
+            width: 100%;
+        }
+
+        /* ===== Swiper Nav Buttons ===== */
+        .home-category-slider .swiper-button-next,
+        .home-category-slider .swiper-button-prev {
+            width: 30px !important;
+            height: 30px !important;
+            min-width: 30px !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            border-radius: 50% !important;
+            top: 43% !important;
+            transform: translateY(-50%) !important;
+            margin-top: 0 !important;
+        }
+
+        .home-category-slider .swiper-button-next::after,
+        .home-category-slider .swiper-button-prev::after {
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+        }
+
+        .home-category-slider .swiper-button-prev {
+            left: 0 !important;
+        }
+
+        .home-category-slider .swiper-button-next {
+            right: 0 !important;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 480px) {
+            .cat-card__name {
+                font-size: 12px;
+            }
+
+            .cat-card__img-wrap {
+                border-radius: 12px;
+            }
+
+            .home-category-slider .swiper-button-next,
+            .home-category-slider .swiper-button-prev {
+                width: 24px !important;
+                height: 24px !important;
+                min-width: 24px !important;
+                top: 43% !important;
+            }
+
+            .home-category-slider .swiper-button-next::after,
+            .home-category-slider .swiper-button-prev::after {
+                font-size: 10px !important;
+            }
+        }
+
+        @media (min-width: 481px) and (max-width: 767px) {
+            .cat-card__name {
+                font-size: 11px;
+            }
+
+            .cat-card__img-wrap {
+                border-radius: 14px;
+            }
+
+            .home-category-slider .swiper-button-next,
+            .home-category-slider .swiper-button-prev {
+                top: 42% !important;
+            }
+        }
+    </style>
 @endsection
 @section('content')
-  
-   <!-- hero section start -->
 
-        <section class="slider-section">
-            <div class="row ">
-                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
-                    <div class="left-promo">
+    <!-- hero section start -->
 
-                        @foreach ($left_promo_offers->chunk(2) as $chunk)
-                            {{-- ONE SLIDE --}}
-                            <div class="left-promo-wrapper d-flex flex-column gap-3">
+    <section class="slider-section">
+        <div class="row ">
+            <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block p-0">
+                <div class="left-promo">
 
-                                @foreach ($chunk as $item)
-                                    <div class="card border-0">
-                                        <a href="{{ $item->link }}">
-                                            <img class="card-img-top slider-side-img"
-                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                        </a>
-                                    </div>
-                                @endforeach
+                    @foreach ($left_promo_offers->chunk(2) as $chunk)
+                        {{-- ONE SLIDE --}}
+                        <div class="left-promo-wrapper d-flex flex-column gap-3">
 
-                            </div>
-                        @endforeach
+                            @foreach ($chunk as $item)
+                                <div class="card border-0">
+                                    <a href="{{ $item->link }}">
+                                        <img class="card-img-top slider-side-img"
+                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                    </a>
+                                </div>
+                            @endforeach
 
-                    </div>
+                        </div>
+                    @endforeach
+
                 </div>
+            </div>
 
-                <div class="@if ($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
-                    <div class="hero ">
-                        <div class="hero-slider">
+            <div class="@if ($promoOffers->count() > 0) col-lg-8 @else col-lg-12 @endif  px-0">
+                <div class="hero ">
+                    <div class="hero-slider">
                         <div class="container">
                             <!-- Swiper -->
                             <div class="swiper heroSlider" style="">
@@ -291,7 +442,7 @@
                                     @foreach ($sliders as $slider)
                                         <div class="swiper-slide rounded">
                                             <a href="{{ $slider->link ?? '#' }}" target="_blank" rel="noopener noreferrer">
-                                                <img  class="rounded img-fluid"
+                                                <img class="rounded img-fluid"
                                                     src="{{ asset('assets/images/sliders/' . $slider->photo) }}"
                                                     alt="slider image">
                                             </a>
@@ -309,46 +460,46 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block ps-0">
+                <div class="right-promo">
+
+                    @foreach ($right_promo_offers->chunk(2) as $chunk)
+                        {{-- ONE SLIDE --}}
+                        <div class="right-promo-wrapper d-flex flex-column gap-3">
+
+                            @foreach ($chunk as $item)
+                                <div class="card border-0">
+                                    <a href="{{ $item->link }}">
+                                        <img class="card-img-top slider-side-img"
+                                            src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
+                                    </a>
+                                </div>
+                            @endforeach
+
+                        </div>
+                    @endforeach
+
                 </div>
-                <div class="@if ($promoOffers->count() > 0) col-lg-2 @endif d-none d-lg-block ps-0">
-                    <div class="right-promo">
-
-                        @foreach ($right_promo_offers->chunk(2) as $chunk)
-                            {{-- ONE SLIDE --}}
-                            <div class="right-promo-wrapper d-flex flex-column gap-3">
-
-                                @foreach ($chunk as $item)
-                                    <div class="card border-0">
-                                        <a href="{{ $item->link }}">
-                                            <img class="card-img-top slider-side-img"
-                                                src="{{ asset('assets/images/sliders/' . $item->photo) }}" alt="">
-                                        </a>
-                                    </div>
-                                @endforeach
-
-                            </div>
-                        @endforeach
-
-                    </div>
-                </div>
-
             </div>
 
-        </section>
+        </div>
+
+    </section>
 
     <!-- hero section end -->
 
-     <!-- Coupon slider section start -->
-      @if($coupon_sliders->count() > 0)
+    <!-- Coupon slider section start -->
+    @if ($coupon_sliders->count() > 0)
         <section class="mt-4">
             <div class="container-fluid">
                 <div class="home-coupon-slider">
-                    @foreach($coupon_sliders as $slider)
-                    <div class="coupon-item">
-                        <a href="{{$slider->link}}">
-                            <img src="{{ asset('assets/images/sliders/coupon/' . $slider->image) }}" alt="coupon image">
-                        </a>
-                    </div>
+                    @foreach ($coupon_sliders as $slider)
+                        <div class="coupon-item">
+                            <a href="{{ $slider->link }}">
+                                <img src="{{ asset('assets/images/sliders/coupon/' . $slider->image) }}" alt="coupon image">
+                            </a>
+                        </div>
                     @endforeach
 
                 </div>
@@ -357,8 +508,8 @@
     @endif
     <!-- Coupon slider section end -->
 
-   
-	    <!-- categories section start -->
+
+    <!-- categories section start -->
     <div class="gs-cate-section py-2">
         <div class="container">
             <!-- title box -->
@@ -370,23 +521,19 @@
                     </div>
                 </div>
             </div>
-            <div class="d-none d-lg-block">
+            <div class="category-slider-wrapper">
                 <div class="swiper home-category-slider">
                     <div class="swiper-wrapper">
-
                         @foreach ($featured_categories as $fcategory)
                             <div class="swiper-slide">
                                 <a href="{{ route('front.category', $fcategory->slug) }}" class="slide-link">
-
-                                    <div class="gs-single-cat">
-                                        <img class="cate-img"
-                                            src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
-                                            alt="{{ $fcategory->name }}">
-                                        <div class="cate-title">
-                                            <h6 class="title text-dark">{{ $fcategory->name }}</h6>
+                                    <div class="cat-card">
+                                        <div class="cat-card__img-wrap">
+                                            <img src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
+                                                alt="{{ $fcategory->name }}">
                                         </div>
+                                        <p class="cat-card__name">{{ $fcategory->name }}</p>
                                     </div>
-
                                 </a>
                             </div>
                         @endforeach
@@ -396,25 +543,27 @@
                 </div>
             </div>
             {{-- for mobile and tablet --}}
-            <div class="d-block d-lg-none mt-3 mt-lg-0">
+            {{-- <div class="d-block d-lg-none mt-3 mt-lg-0">
                 <div class="row">
                     @foreach ($featured_categories as $fcategory)
                         <div class="col-4 col-sm-4 d-flex mobile-category-box">
                             <a href="{{ route('front.category', $fcategory->slug) }}"
                                 class="category-item w-100 position-relative">
 
-                                <img class="cate-img" src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
-                                    alt="{{ $fcategory->name }}">
-
-                                <div class="cate-title py-1 w-100">
-                                    <h6 class="title mb-0 mt-0  text-dark">{{ $fcategory->name }}</h6>
+                                <div class="cat-card">
+                                    <div class="cat-card__img-wrap">
+                                        <img src="{{ asset('assets/images/categories/' . $fcategory->image) }}"
+                                            alt="{{ $fcategory->name }}">
+                                    </div>
+                                    <p class="cat-card__name">{{ $fcategory->name }}</p>
                                 </div>
+
 
                             </a>
                         </div>
                     @endforeach
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 
@@ -717,9 +866,9 @@
                         <div class="gs-title-box text-center">
                             <h2 class="title wow-replaced">@lang('Latest Post') </h2>
                             <p class="des mb-0 wow-replaced" data-wow-delay=".1s">@lang('Cillum eu id enim aliquip aute ullamco
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            deserunt
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            anim. Culpa
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            deserunt
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            nostrud excepteur voluptate velit ipsum esse enim.')</p>
                         </div>
                     </div>
                 </div>
@@ -773,50 +922,50 @@
             });
         });
     </script>
-   <script>
-        $(function () {
+    <script>
+        $(function() {
 
-    $('.countdown').each(function () {
+            $('.countdown').each(function() {
 
-        let $this = $(this);
+                let $this = $(this);
 
-        let startDate = new Date($this.data('start') + " 00:00:00").getTime();
-        let endDate = new Date($this.data('end') + " 23:59:59").getTime();
+                let startDate = new Date($this.data('start') + " 00:00:00").getTime();
+                let endDate = new Date($this.data('end') + " 23:59:59").getTime();
 
-        let timer = setInterval(function () {
+                let timer = setInterval(function() {
 
-            let now = new Date().getTime();
+                    let now = new Date().getTime();
 
-            // Before start
-            if (now < startDate) {
-                $this.html("<h5>⏳ Deal Not Started Yet!</h5>");
-                return;
-            }
+                    // Before start
+                    if (now < startDate) {
+                        $this.html("<h5>⏳ Deal Not Started Yet!</h5>");
+                        return;
+                    }
 
-            // After end
-            if (now > endDate) {
-                clearInterval(timer);
-                $this.html("<h5>⚡ Deal Expired!</h5>");
-                return;
-            }
+                    // After end
+                    if (now > endDate) {
+                        clearInterval(timer);
+                        $this.html("<h5>⚡ Deal Expired!</h5>");
+                        return;
+                    }
 
-            // Running
-            let distance = endDate - now;
+                    // Running
+                    let distance = endDate - now;
 
-            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            $this.find('.days').text(days < 10 ? "0" + days : days);
-            $this.find('.hours').text(hours < 10 ? "0" + hours : hours);
-            $this.find('.minutes').text(minutes < 10 ? "0" + minutes : minutes);
-            $this.find('.seconds').text(seconds < 10 ? "0" + seconds : seconds);
+                    $this.find('.days').text(days < 10 ? "0" + days : days);
+                    $this.find('.hours').text(hours < 10 ? "0" + hours : hours);
+                    $this.find('.minutes').text(minutes < 10 ? "0" + minutes : minutes);
+                    $this.find('.seconds').text(seconds < 10 ? "0" + seconds : seconds);
 
-        }, 1000);
+                }, 1000);
 
-    });
+            });
 
-});
+        });
     </script>
 @endpush

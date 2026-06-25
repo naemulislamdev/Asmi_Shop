@@ -116,13 +116,25 @@
                                     @endif
 
 
+                                    @if (($order->first_order_discount ?? 0) > 0)
+                                        <tr>
+                                            <th width="45%">{{ __('First Order Discount') }}</th>
+                                            <td width="10%">:</td>
+                                            <td width="45%">
+                                                −
+                                                {{ \PriceHelper::showOrderCurrencyPrice($order->first_order_discount * $order->currency_value, $order->currency_sign) }}
+                                            </td>
+                                        </tr>
+                                    @endif
                                     <tr>
+                                        {{-- changes --}}
                                         <th width="45%">{{ __('Total Cost') }}</th>
                                         <td width="10%">:</td>
                                         <td width="45%">
                                             <strong>
                                                 {{ \PriceHelper::showOrderCurrencyPrice(
-                                                    ($order->pay_amount + $order->wallet_price - $order->discount) * $order->currency_value,
+                                                    ($order->pay_amount + $order->wallet_price - $order->discount - ($order->first_order_discount ?? 0)) *
+                                                        $order->currency_value,
                                                     $order->currency_sign,
                                                 ) }}
                                             </strong>

@@ -21,7 +21,8 @@
                                     <div class="col-lg-7">
                                         <select name="payment_status" required="">
                                             <option value="Pending"
-                                                {{ $data->payment_status == 'Pending' ? 'selected' : '' }}>{{ __('Unpaid') }}
+                                                {{ $data->payment_status == 'Pending' ? 'selected' : '' }}>
+                                                {{ __('Unpaid') }}
                                             </option>
                                             <option value="Completed"
                                                 {{ $data->payment_status == 'Completed' ? 'selected' : '' }}>
@@ -42,7 +43,8 @@
                                                 {{ __('Pending') }}</option>
                                             <option value="hold" {{ $data->status == 'hold' ? 'selected' : '' }}>
                                                 {{ __('Hold') }}</option>
-                                            <option value="processing" {{ $data->status == 'processing' ? 'selected' : '' }}>
+                                            <option value="processing"
+                                                {{ $data->status == 'processing' ? 'selected' : '' }}>
                                                 {{ __('Processing') }}</option>
                                             <option value="on delivery"
                                                 {{ $data->status == 'on delivery' ? 'selected' : '' }}>

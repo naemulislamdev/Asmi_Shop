@@ -1,4 +1,3 @@
-
 <div
     class="{{ isset($class) ? $class : 'col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-3' }} {{ request()->is('search') ? 'mb-3' : '' }} ">
     {{-- 1taka dojon egg offer condition start --}}
@@ -7,13 +6,13 @@
 
         $isOfferItem = false;
 
-    if ($cart && $cart->items) {
-        foreach ($cart->items as $cItem) {
-            if ($cItem['item']->id == $product->id) {
-                $isOfferItem = $cItem['is_offer'] ?? false;
+        if ($cart && $cart->items) {
+            foreach ($cart->items as $cItem) {
+                if ($cItem['item']->id == $product->id) {
+                    $isOfferItem = $cItem['is_offer'] ?? false;
+                }
             }
         }
-    }
     @endphp
 
     @php
@@ -84,36 +83,35 @@
             @endphp
 
             @php
-    $basePath = '/home/asmishop/htdocs/asmishop.com/public';
+                $basePath = '/home/asmishop/htdocs/asmishop.com/public';
 
-    $imgSrc = asset('assets/images/noimage.png');
+                $imgSrc = asset('assets/images/noimage.png');
 
-    if (
-        $product->thumbnail &&
-        file_exists($basePath . '/assets/images/thumbnails/' . $product->thumbnail)
-    ) {
-        $imgSrc = asset('assets/images/thumbnails/' . $product->thumbnail);
-    } elseif (
-        $product->photo &&
-        file_exists($basePath . '/assets/images/products/' . $product->photo)
-    ) {
-        $imgSrc = asset('assets/images/products/' . $product->photo);
-    }
-@endphp
+                if (
+                    $product->thumbnail &&
+                    file_exists($basePath . '/assets/images/thumbnails/' . $product->thumbnail)
+                ) {
+                    $imgSrc = asset('assets/images/thumbnails/' . $product->thumbnail);
+                } elseif ($product->photo && file_exists($basePath . '/assets/images/products/' . $product->photo)) {
+                    $imgSrc = asset('assets/images/products/' . $product->photo);
+                }
+            @endphp
 
 
             <a href="{{ route('front.product', $product->slug) }}">
-           
+
                 <!-- <img class="product-img"
                     src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/noimage.png') }}"
                     alt="product img"> -->
-                    <!-- <img class="product-img"
+                <!-- <img class="product-img"
                         src="{{ $product->thumbnail ? asset('assets/images/thumbnails/' . $product->thumbnail) : asset('assets/images/products/' . $product->photo) }}"
                         onerror="this.onerror=null; this.src='{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}';"
                         alt="product img"> -->
 
-                    <img class="product-img" src=" {{ $imgSrc }}" alt="product img">
-                    
+                <img class="product-img"
+                    src="{{ $product->photo ? asset('assets/images/products/' . $product->photo) : asset('assets/images/noimage.png') }}"
+                    onerror="this.onerror=null; this.src='{{ asset('assets/images/noimage.png') }}';"
+                    alt="product img">
             </a>
             @if ($product->stock <= 0)
                 <div class="outofstock-box flex-column align-content-center justify-content-center">
@@ -168,7 +166,8 @@
                                             <span class="h3 text-white qty-text">{{ $existingQty }}</span>
 
                                             <button
-                                                class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle" {{ $isOfferItem ? 'disabled' : '' }}>
+                                                class="btn btn-outline-light border-2 btn-sm qty-plus rounded-circle"
+                                                {{ $isOfferItem ? 'disabled' : '' }}>
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -221,36 +220,37 @@
 
                     @endif
                 </div>
-               @if ($product->start_date != null && $product->end_date != null)
-                <div style="position: absolute; left: 2px; bottom: 45%" class="card-countdown" data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">
-                    <div class="card-timer-badge">
-                        <i class="ti ti-bolt"></i>
-                        <div class="cd-unit">
-                            <span data-unit="days">00</span>
-                            <small>day</small>
-                        </div>
-                        <span class="cd-sep">:</span>
-                        <div class="cd-unit">
-                            <span data-unit="hours">00</span>
-                            <small>hours</small>
-                        </div>
-                        <span class="cd-sep">:</span>
-                        <div class="cd-unit">
-                            <span data-unit="mins">00</span>
-                            <small>minute</small>
-                        </div>
-                        <span class="cd-sep">:</span>
-                        <div class="cd-unit">
-                            <span data-unit="secs">00</span>
-                            <small>second</small>
+                @if ($product->start_date != null && $product->end_date != null)
+                    <div style="position: absolute; left: 2px; bottom: 45%" class="card-countdown"
+                        data-start="{{ $product->start_date }}" data-end="{{ $product->end_date }}">
+                        <div class="card-timer-badge">
+                            <i class="ti ti-bolt"></i>
+                            <div class="cd-unit">
+                                <span data-unit="days">00</span>
+                                <small>day</small>
+                            </div>
+                            <span class="cd-sep">:</span>
+                            <div class="cd-unit">
+                                <span data-unit="hours">00</span>
+                                <small>hours</small>
+                            </div>
+                            <span class="cd-sep">:</span>
+                            <div class="cd-unit">
+                                <span data-unit="mins">00</span>
+                                <small>minute</small>
+                            </div>
+                            <span class="cd-sep">:</span>
+                            <div class="cd-unit">
+                                <span data-unit="secs">00</span>
+                                <small>second</small>
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endif
                 {{-- add to cart and cart item quantity increment decrement buttons --}}
 
                 <div class="cart-ui normal-ui w-100">
-                   @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
+                    @if (!$isOfferProduct || ($isOfferProduct && $isEligible && !$hasOfferInCart))
                         @if ($existingQty == 0)
                             <div class="w-100 d-block mt-auto add-btn-wrapper" data-product-id="{{ $product->id }}">
                                 <button
@@ -265,7 +265,8 @@
                                 data-product-id="{{ $product->id }}" data-unique-key="{{ $uniqueKey }}">
                                 <button class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
                                 <span class="qty-text">{{ $existingQty }} in Bag</span>
-                                <button class="qty-btn qty-plus" {{ $isOfferItem ? 'disabled' : '' }}><i class="fas fa-plus"></i></button>
+                                <button class="qty-btn qty-plus" {{ $isOfferItem ? 'disabled' : '' }}><i
+                                        class="fas fa-plus"></i></button>
                             </div>
                         @endif
                     @endif

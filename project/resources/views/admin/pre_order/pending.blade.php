@@ -119,7 +119,7 @@
         <div class="mr-breadcrumb">
             <div class="row">
                 <div class="col-lg-6">
-                    <h4 class="heading">{{ __('All Pre Orders') }}</h4>
+                    <h4 class="heading">{{ __('Pending Pre Order List') }}</h4>
                     <ul class="links">
                         <li>
                             <a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }} </a>
@@ -128,7 +128,7 @@
                             <a href="javascript:;">{{ __('Orders') }}</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.pre_order.index') }}">{{ __('All per Orders') }}</a>
+                            <a href="{{ route('admin.pre_order.index') }}">{{ __('pending pre order') }}</a>
                         </li>
                     </ul>
                 </div>
@@ -152,18 +152,6 @@
                                 <div class="col-md-3">
                                     <label for="to_date">To Date</label>
                                     <input type="date" id="to_date" class="form-control" placeholder="To Date">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="status">Status</label>
-                                    <select name="status" id="orderStatus" class="form-control">
-                                        <option value="">All Statuses</option>
-                                        <option value="pending">
-                                            {{ __('Pending') }}</option>
-                                        <option value="confirmed">
-                                            {{ __('Confirmed') }}</option>
-                                        <option value="cancelled">
-                                            {{ __('Cancel') }}</option>
-                                    </select>
                                 </div>
                                 <div class="col-md-1">
                                     <button type="button" id="filter_btn" class="btn btn-primary mt-3">Filter</button>
@@ -212,7 +200,7 @@
 
 
                 ajax: {
-                    url: '{{ route('admin.pre_order.datatables', 'all') }}',
+                    url: '{{ route('admin.pre_order.datatables', 'pending') }}',
                     data: function(d) {
                         d.from_date = $('#from_date').val();
                         d.to_date = $('#to_date').val();

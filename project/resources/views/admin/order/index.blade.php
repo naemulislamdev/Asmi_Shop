@@ -94,20 +94,21 @@
         .note-ok-btn:hover {
             background: #0b5ed7;
         }
-        .note-modal-close{
+
+        .note-modal-close {
             color: #dc3545;
             transition: all 0.3s ease-in-out
         }
+
         .note-modal-close:hover {
             background: #dc3545;
-            color: #fff ;
+            color: #fff;
         }
 
         table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
         table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
             top: 77% !important;
         }
-
     </style>
 @endsection
 
@@ -134,7 +135,7 @@
                 <div class="col-lg-6">
                     <!-----Export button dropdown----->
                     <div class="btn-group float-right">
-    <a href="{{ route('admin-order-create') }}" class="btn btn-primary mr-2">
+                        <a href="{{ route('admin-order-create') }}" class="btn btn-primary mr-2">
                             {{ __('Create Custome Order') }}
                         </a>
                         <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exportModal">
@@ -154,7 +155,7 @@
                             <div class="gocover"
                                 style="background: url({{ asset('assets/images/' . $gs->admin_loader) }}) no-repeat scroll center center rgba(45, 45, 45, 0.5);">
                             </div>
-                             <div class="row mb-3 align-items-center">
+                            <div class="row mb-3 align-items-center">
                                 <div class="col-md-3">
                                     <label for="from_date">From Date</label>
                                     <input type="date" id="from_date" class="form-control" placeholder="From Date">
@@ -277,8 +278,8 @@
                                             <ul>
                                                 <li>
                                                     <input type="email" class="input-field eml-val" id="eml"
-                                                        name="to" placeholder="{{ __('Email') }} *" value=""
-                                                        required="">
+                                                        name="to" placeholder="{{ __('Email') }} *"
+                                                        value="" required="">
                                                 </li>
                                                 <li>
                                                     <input type="text" class="input-field" id="subj"
@@ -366,6 +367,36 @@
     </div>
     <!--End Branch modal -->
 
+    {{-- Rider Modal Start --}}
+
+    <div class="modal fade w-100" id="riderModal" data-backdrop="static" tabindex="-1" role="dialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered w-100" role="document">
+            <form id="riderForm" class="w-100"> {{-- id পরিবর্তন করুন --}}
+                @csrf
+                <input type="hidden" name="order_id" id="rider_order_id"> {{-- আলাদা id --}}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('Select Rider') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>{{ __('Rider') }}</label>
+                            <select name="rider_id" id="riderSelect" class="form-control" required>
+                                <option selected disabled>{{ __('Choose Rider') }}</option>
+                            </select>
+                            <small id="riderLoadMsg" class="text-muted"></small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {{-- Rider Modal End --}}
 
     <!-- Modal -->
     <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
@@ -440,7 +471,7 @@
 @section('scripts')
     {{-- DATA TABLE --}}
 
-     <script type="text/javascript">
+    <script type="text/javascript">
         var currentStatus = 'all';
         (function($) {
             "use strict";
@@ -460,7 +491,7 @@
                         d.status = $('#orderStatus').val();
                     }
                 },
-               columns: [{
+                columns: [{
                         data: 'customer_name',
                         name: 'customer_name'
                     },
@@ -536,6 +567,7 @@
                 table.ajax.reload();
             });
 
+
             $(function() {
                 $(".btn-area").append('<div class="col-sm-4 table-contents">' +
                     '<a class="add-btn" href="{{ route('admin-order-create') }}">' +
@@ -573,43 +605,43 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-$(document).on('click', '.delete-order', function () {
+    <script>
+        $(document).on('click', '.delete-order', function() {
 
-    let url = $(this).data('href');
+            let url = $(this).data('href');
 
-    Swal.fire({
-        title: "{{ __('Are you sure?') }}",
-        text: "{{ __('This order will be permanently deleted') }}",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: "{{ __('Yes, delete it!') }}",
-        cancelButtonText: "{{ __('Cancel') }}"
-    }).then((result) => {
+            Swal.fire({
+                title: "{{ __('Are you sure?') }}",
+                text: "{{ __('This order will be permanently deleted') }}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: "{{ __('Yes, delete it!') }}",
+                cancelButtonText: "{{ __('Cancel') }}"
+            }).then((result) => {
 
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (res) {
-                    Swal.fire(
-                        "{{ __('Deleted!') }}",
-                        res.message,
-                        'success'
-                    );
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            Swal.fire(
+                                "{{ __('Deleted!') }}",
+                                res.message,
+                                'success'
+                            );
 
-                    $('#geniustable').DataTable().ajax.reload(null, false);
+                            $('#geniustable').DataTable().ajax.reload(null, false);
+                        }
+                    });
                 }
             });
-        }
-    });
-});
-</script>
+        });
+    </script>
 
     <script>
         $(document).on('click', '.note-view-btn', function() {

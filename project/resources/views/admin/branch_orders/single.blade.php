@@ -305,6 +305,65 @@
 
         {{-- ORDER MODAL ENDS --}}
 
+        <!-- Branch Modal -->
+        <div class="modal fade" id="branchModal" data-backdrop="static" tabindex="-1" role="dialog"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <form id="branchForm">
+                    @csrf
+                    <input type="hidden" name="order_id" id="branch_order_id">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ __('Select Branch') }}</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>{{ __('Branch') }}</label>
+                                <select name="branch_id" class="form-control" required>
+                                    <option selected disabled>{{ __('Choose Branch') }}</option>
+                                    @foreach ($modalBranch as $brch)
+                                        <option value="{{ $brch->id }}">{{ $brch->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--End Branch modal -->
+        <!-- Rider Modal -->
+        <div class="modal fade w-100" id="riderModal" data-backdrop="static" tabindex="-1" role="dialog"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered w-100" role="document">
+                <form id="riderForm" class="w-100"> {{-- id পরিবর্তন করুন --}}
+                    @csrf
+                    <input type="hidden" name="order_id" id="rider_order_id"> {{-- আলাদা id --}}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ __('Select Rider') }}</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>{{ __('Rider') }}</label>
+                                <select name="rider_id" id="riderSelect" class="form-control" required>
+                                    <option selected disabled>{{ __('Choose Rider') }}</option>
+                                </select>
+                                <small id="riderLoadMsg" class="text-muted"></small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         {{-- MESSAGE MODAL --}}
         <div class="sub-categori">
             <div class="modal" id="vendorform" tabindex="-1" role="dialog" aria-labelledby="vendorformLabel"
@@ -487,251 +546,318 @@
 @endsection
 
 @section('scripts')
-    {{-- DATA TABLE --}}
+    <<<<<<< HEAD======={{-- DATA TABLE --}}>>>>>>> a5f17146630c9f7b2c5fb425c16e81a23cb7a0d7
+        <script type="text/javascript">
+            (function($) {
+                "use strict";
 
-    <script type="text/javascript">
-        (function($) {
-            "use strict";
+                var table = $('#geniustable').DataTable({
+                    ordering: false,
+                    processing: true,
+                    serverSide: true,
+                    // ajax: '{{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}',
+                    ajax: {
 
-            var table = $('#geniustable').DataTable({
-                ordering: false,
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}',
-                ajax: {
-                    url: '{{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}',
-                    data: function(d) {
-                        d.from_date = $('#from_date').val();
-                        d.to_date = $('#to_date').val();
-                        d.order_status = $('#orderStatus').val();
+                        url: '{{ route('branch-orders.datatables', ['branch_id' => $branch->id]) }}',
+                        data: function(d) {
+                            d.from_date = $('#from_date').val();
+                            d.to_date = $('#to_date').val();
+                            d.order_status = $('#orderStatus').val();
+                        }
+                    },
+
+                    columns: [{
+                            data: 'customer_name',
+                            name: 'customer_name'
+                        },
+                        {
+                            data: 'customer_address',
+                            name: 'customer_address'
+                        },
+                        {
+                            data: 'branch',
+                            name: 'branch'
+                        },
+                        {
+                            data: 'date',
+                            name: 'date'
+                        },
+
+                        {
+                            data: 'id',
+                            name: 'id'
+                        },
+                        {
+                            data: 'totalQty',
+                            name: 'totalQty'
+                        },
+                        {
+                            data: 'pay_amount',
+                            name: 'pay_amount'
+                        },
+                        {
+                            data: 'status',
+                            name: 'status'
+                        },
+                        {
+                            data: 'custom_note',
+                            name: 'custom_note'
+                        },
+
+                        {
+                            data: 'order_source',
+                            name: 'order_source'
+                        },
+                        {
+                            data: 'action',
+                            searchable: false,
+                            orderable: false
+                        }
+
+                    ],
+                    language: {
+                        processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">'
+                    },
+                    drawCallback: function(settings) {
+                        $('.select').niceSelect();
                     }
-                },
+                }); <<
+                << << < HEAD
 
-                columns: [{
-                        data: 'customer_name',
-                        name: 'customer_name'
-                    },
-                    {
-                        data: 'customer_address',
-                        name: 'customer_address'
-                    },
-                    {
-                        data: 'branch',
-                        name: 'branch'
-                    },
-                    {
-                        data: 'date',
-                        name: 'date'
-                    },
+                    ===
+                    === =
+                    // table.on('processing.dt', function(e, settings, processing) {
+                    //     if (processing) {
+                    //         $('#loader').fadeIn(100);
+                    //     } else {
+                    //         $('#loader').fadeOut(100);
+                    //     }
+                    // });
+                    >>>
+                    >>> > a5f17146630c9f7b2c5fb425c16e81a23cb7a0d7
 
-                    {
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'totalQty',
-                        name: 'totalQty'
-                    },
-                    {
-                        data: 'pay_amount',
-                        name: 'pay_amount'
-                    },
-                    {
-                        data: 'status',
-                        name: 'status'
-                    },
-                    {
-                        data: 'custom_note',
-                        name: 'custom_note'
-                    },
+                // Filter button click
+                $('#filter_btn').on('click', function() {
+                    table.ajax.reload();
+                });
 
-                    {
-                        data: 'order_source',
-                        name: 'order_source'
+                // Reset button click
+                $('#reset_btn').on('click', function() {
+                    $('#from_date').val('');
+                    $('#to_date').val('');
+                    $('#orderStatus').val('');
+                    table.ajax.reload();
+                });
+                // Rider form submit
+                $('#riderForm').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: "{{ route('branch-orders.assignRider') }}",
+
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(res) {
+                            $('#riderModal').modal('hide');
+                            table.ajax.reload();
+                            toastr.success(res.message ?? 'Rider assigned!');
+                            Swal.fire(
+                                "{{ __('Rider Assigned Success!') }}",
+                                res.message,
+                                'success'
+                            );
+                        },
+                        error: function(res) {
+                            Swal.fire(
+                                "{{ __('Something Went Wrong!') }}",
+                                res.message,
+                                'error'
+                            );
+                        }
+                    });
+                });
+
+                $(function() {
+                    $(".btn-area").append('<div class="col-sm-4 table-contents">' +
+                        '<a class="add-btn" href="{{ route('admin-order-create') }}">' +
+                        '<i class="fas fa-plus"></i> <span class="remove-mobile">{{ __('Add an Order') }}<span>' +
+                        '</a>' +
+                        '</div>');
+                });
+
+            })(jQuery);
+        </script>
+        <script>
+            $(document).on('click', '.select-branch', function() {
+                var orderId = $(this).data('id');
+                $('#branch_order_id').val(orderId);
+            });
+
+            $('#branchForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{ route('admin-order-assign-branch') }}",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function(res) {
+                        $('#branchModal').modal('hide');
+                        $('#geniustable').DataTable().ajax.reload(); // reload datatable
+                        // toastr.success(res.message);
                     },
-                    {
-                        data: 'action',
-                        searchable: false,
-                        orderable: false
+                    error: function(err) {
+                        toastr.error('Something went wrong');
                     }
+                });
+            });
+        </script>
+        {{-- DATA TABLE --}}
 
-                ],
-                language: {
-                    processing: '<img src="{{ asset('assets/images/' . $gs->admin_loader) }}">'
-                },
-                drawCallback: function(settings) {
-                    $('.select').niceSelect();
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            $(document).on('click', '.delete-order', function() {
+
+                let url = $(this).data('href');
+
+                Swal.fire({
+                    title: "{{ __('Are you sure?') }}",
+                    text: "{{ __('This order will be permanently deleted') }}",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: "{{ __('Yes, delete it!') }}",
+                    cancelButtonText: "{{ __('Cancel') }}"
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            data: {
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(res) {
+                                Swal.fire(
+                                    "{{ __('Deleted!') }}",
+                                    res.message,
+                                    'success'
+                                );
+
+                                $('#geniustable').DataTable().ajax.reload(null, false);
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $(document).on('click', '.note-view-btn', function() {
+                let note = $(this).data('note');
+                $('#noteContent').text(note);
+                $('#noteModal').addClass('active');
+            });
+
+            $(document).on('click', '.note-modal-close, .note-ok-btn', function() {
+                $('#noteModal').removeClass('active');
+            });
+
+            $(document).on('click', '#noteModal', function(e) {
+                if (e.target.id === 'noteModal') {
+                    $('#noteModal').removeClass('active');
                 }
             });
-            // table.on('processing.dt', function(e, settings, processing) {
-            //     if (processing) {
-            //         $('#loader').fadeIn(100);
-            //     } else {
-            //         $('#loader').fadeOut(100);
-            //     }
-            // });
+        </script>
+        <script>
+            // summary route — index বা single অনুযায়ী বদলাও
+            var summaryUrl = '{{ route('branch-orders.summary', $branch->id) }}';;
+            // single branch হলে:
 
-            // Filter button click
+            function loadSummary() {
+                $.ajax({
+                    url: summaryUrl,
+                    data: {
+
+                        from_date: $('#from_date').val(),
+                        to_date: $('#to_date').val(),
+                        order_status: $('#orderStatus').val(),
+                    },
+                    success: function(res) {
+
+                        $('#s_total_orders').text(res.total_orders);
+                        $('#s_total_amount').text(res.total_amount);
+                        $('#s_pending_qty').text(res.pending_qty);
+                        $('#s_pending_amount').text(res.pending_amount);
+                        $('#s_confirmed_qty').text(res.confirmed_qty);
+                        $('#s_confirmed_amount').text(res.confirmed_amount);
+                        $('#s_canceled_qty').text(res.canceled_qty);
+                        $('#s_canceled_amount').text(res.canceled_amount);
+                    }
+                });
+            }
+
+            // page load এ
+            loadSummary();
+
+            // Filter button
             $('#filter_btn').on('click', function() {
-                table.ajax.reload();
+                $('#geniustable').DataTable().ajax.reload();
+                loadSummary(); // একসাথে summary ও update হবে
             });
 
-            // Reset button click
+            // Reset button
             $('#reset_btn').on('click', function() {
                 $('#from_date').val('');
                 $('#to_date').val('');
                 $('#orderStatus').val('');
-                table.ajax.reload();
+
+                $('.status-filter-btn').removeClass('active');
+                $('.status-filter-btn[data-status="all"]').addClass('active');
+                $('#geniustable').DataTable().ajax.reload();
+                loadSummary();
             });
 
-            $(function() {
-                $(".btn-area").append('<div class="col-sm-4 table-contents">' +
-                    '<a class="add-btn" href="{{ route('admin-order-create') }}">' +
-                    '<i class="fas fa-plus"></i> <span class="remove-mobile">{{ __('Add an Order') }}<span>' +
-                    '</a>' +
-                    '</div>');
+            // Status tab click এ ও update
+            $(document).on('click', '.status-filter-btn', function() {
+                $('.status-filter-btn').removeClass('active');
+                $(this).addClass('active');
+
+                $('#geniustable').DataTable().ajax.reload();
+                loadSummary(); // tab change এও summary update
             });
+            // Add Rider বাটন click এ
+            $(document).on('click', '.add-rider-btn', function() {
+                var orderId = $(this).data('id');
+                var branchId = $(this).data('branch-id');
 
-        })(jQuery);
-    </script>
-    <script>
-        $(document).on('click', '.select-branch', function() {
-            var orderId = $(this).data('id');
-            $('#branch_order_id').val(orderId);
-        });
+                $('#rider_order_id').val(orderId);
+                $('#riderSelect').html('<option disabled selected>Loading riders...</option>');
+                $('#riderLoadMsg').text('');
 
-        $('#branchForm').on('submit', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "{{ route('admin-order-assign-branch') }}",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function(res) {
-                    $('#branchModal').modal('hide');
-                    $('#geniustable').DataTable().ajax.reload(); // reload datatable
-                    // toastr.success(res.message);
-                },
-                error: function(err) {
-                    toastr.error('Something went wrong');
-                }
-            });
-        });
-    </script>
-    {{-- DATA TABLE --}}
+                // Branch অনুযায়ী rider fetch
+                $.ajax({
+                    url: '{{ route('branch-orders.riders', ['branch_id' => ':branchId']) }}'.replace(
+                        ':branchId', branchId),
+                    type: 'GET',
+                    success: function(riders) {
+                        $('#riderSelect').html(
+                            '<option disabled selected>{{ __('Choose Rider') }}</option>');
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        $(document).on('click', '.delete-order', function() {
-
-            let url = $(this).data('href');
-
-            Swal.fire({
-                title: "{{ __('Are you sure?') }}",
-                text: "{{ __('This order will be permanently deleted') }}",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: "{{ __('Yes, delete it!') }}",
-                cancelButtonText: "{{ __('Cancel') }}"
-            }).then((result) => {
-
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: 'DELETE',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(res) {
-                            Swal.fire(
-                                "{{ __('Deleted!') }}",
-                                res.message,
-                                'success'
-                            );
-
-                            $('#geniustable').DataTable().ajax.reload(null, false);
+                        if (riders.length === 0) {
+                            $('#riderLoadMsg').text('এই branch এ কোনো rider নেই।');
+                        } else {
+                            $.each(riders, function(i, rider) {
+                                $('#riderSelect').append(
+                                    '<option value="' + rider.id + '">' + rider.name +
+                                    '</option>'
+                                );
+                            });
                         }
-                    });
-                }
+                    },
+                    error: function() {
+                        $('#riderLoadMsg').text('Rider load করতে সমস্যা হয়েছে।');
+                    }
+                });
             });
-        });
-    </script>
-
-    <script>
-        $(document).on('click', '.note-view-btn', function() {
-            let note = $(this).data('note');
-            $('#noteContent').text(note);
-            $('#noteModal').addClass('active');
-        });
-
-        $(document).on('click', '.note-modal-close, .note-ok-btn', function() {
-            $('#noteModal').removeClass('active');
-        });
-
-        $(document).on('click', '#noteModal', function(e) {
-            if (e.target.id === 'noteModal') {
-                $('#noteModal').removeClass('active');
-            }
-        });
-    </script>
-    <script>
-        // summary route — index বা single অনুযায়ী বদলাও
-        var summaryUrl = '{{ route('branch-orders.summary', $branch->id) }}';;
-        // single branch হলে:
-
-        function loadSummary() {
-            $.ajax({
-                url: summaryUrl,
-                data: {
-
-                    from_date: $('#from_date').val(),
-                    to_date: $('#to_date').val(),
-                    order_status: $('#orderStatus').val(),
-                },
-                success: function(res) {
-
-                    $('#s_total_orders').text(res.total_orders);
-                    $('#s_total_amount').text(res.total_amount);
-                    $('#s_pending_qty').text(res.pending_qty);
-                    $('#s_pending_amount').text(res.pending_amount);
-                    $('#s_confirmed_qty').text(res.confirmed_qty);
-                    $('#s_confirmed_amount').text(res.confirmed_amount);
-                    $('#s_canceled_qty').text(res.canceled_qty);
-                    $('#s_canceled_amount').text(res.canceled_amount);
-                }
-            });
-        }
-
-        // page load এ
-        loadSummary();
-
-        // Filter button
-        $('#filter_btn').on('click', function() {
-            $('#geniustable').DataTable().ajax.reload();
-            loadSummary(); // একসাথে summary ও update হবে
-        });
-
-        // Reset button
-        $('#reset_btn').on('click', function() {
-            $('#from_date').val('');
-            $('#to_date').val('');
-            $('#orderStatus').val('');
-
-            $('.status-filter-btn').removeClass('active');
-            $('.status-filter-btn[data-status="all"]').addClass('active');
-            $('#geniustable').DataTable().ajax.reload();
-            loadSummary();
-        });
-
-        // Status tab click এ ও update
-        $(document).on('click', '.status-filter-btn', function() {
-            $('.status-filter-btn').removeClass('active');
-            $(this).addClass('active');
-
-            $('#geniustable').DataTable().ajax.reload();
-            loadSummary(); // tab change এও summary update
-        });
-    </script>
-@endsection
+        </script>
+    @endsection

@@ -92,10 +92,10 @@
                   <a href="{{ route('admin.pre_order.index') }}"> {{ __('All pre order') }}</a>
               </li>
               <li>
-                  <a href="{{ route('admin.report.dailySales') }}"> {{ __('Pending') }}</a>
+                  <a href="{{ route('admin.pre_order.index') }}?status=pending"> {{ __('Pending') }}</a>
               </li>
               <li>
-                  <a href="{{ route('admin.branch.sales') }}"> {{ __('Confirmed') }}</a>
+                  <a href="{{ route('admin.pre_order.index') }}?status=confirmed"> {{ __('Confirmed') }}</a>
               </li>
           </ul>
       </li>

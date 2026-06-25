@@ -174,6 +174,8 @@
                                         {{ __('Completed') }}</option>
                                     <option value="cancelled">
                                         {{ __('Cancel') }}</option>
+                                    <option value="return">
+                                        {{ __('Return') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-1">

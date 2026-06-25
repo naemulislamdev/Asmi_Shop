@@ -343,7 +343,7 @@
             <h6>{{ __('Billing Details') }}</h6>
             <p>
                 <strong>{{ __('Branch') }}:</strong> {{ $order->branch->name ?? 'N/A' }}<br>
-                <strong>{{ __('Address') }}:</strong> {{ $order->branch->address ?? 'N/A' }}
+                <strong>{{ __('Address') }}:</strong> {!! $order->branch->address !!}
             </p>
         </div>
 
@@ -453,6 +453,19 @@
             <tr>
                 <td class="sum-label">{{ __('Delivery Charge') }}</td>
                 <td class="sum-value"><span class="badge-free">Free</span></td>
+            </tr>
+        @endif
+        {{-- first Order discount --}}
+        @if ($order->first_order_discount)
+            @php $price = round($order->first_order_discount, 2); @endphp
+
+            <tr>
+                <td class="sum-label">
+                    First App Order Discount
+                </td>
+                <td class="sum-value">
+                    <span class="badge-free">{{ $order->first_order_discount }}</span>
+                </td>
             </tr>
         @endif
 

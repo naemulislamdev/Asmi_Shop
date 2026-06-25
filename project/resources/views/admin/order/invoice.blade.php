@@ -369,7 +369,7 @@
                         <span class="meta-item"><strong>{{ __('Branch') }}:</strong>
                             {{ $order->branch->name ?? 'N/A' }}</span>
                         <span class="meta-item"><strong>{{ __('Address') }}:</strong>
-                            {{ $order->branch->address ?? 'N/A' }}</span>
+                            {!! $order->branch->address !!}</span>
                     </div>
                 </div>
 
@@ -499,6 +499,21 @@
                                 <tr>
                                     <td colspan="2" class="tfoot-label">{{ __('Delivery Charge') }}</td>
                                     <td class="tfoot-value"><span class="badge-free">Free</span></td>
+                                </tr>
+                            @endif
+
+                            {{-- first Order discount --}}
+                            @if ($order->first_order_discount)
+                                @php $price = round($order->first_order_discount, 2); @endphp
+
+                                <tr>
+                                    <td colspan="2" class="tfoot-label">
+                                        First App Order Discount
+                                        <small></small>
+                                    </td>
+                                    <td class="tfoot-value">
+                                        <span class="badge-free">{{ $order->first_order_discount }}</span>
+                                    </td>
                                 </tr>
                             @endif
 

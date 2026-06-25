@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
 
             $d['totalBranchOrders'] = Order::count();
 
-            // branchWiseOrders MUST be Order objects with the `branch` relation:
+            // branchWiseOrders MUST be Order objects with the branch relation:
             // admin super.blade.php reads $item->branch_id and $item->branch->name.
             $d['branchWiseOrders'] = Order::select('branch_id', DB::raw('COUNT(*) as total'))
                 ->with('branch')

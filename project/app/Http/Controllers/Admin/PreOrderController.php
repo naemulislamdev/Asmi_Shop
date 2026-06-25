@@ -41,9 +41,20 @@ class PreOrderController extends Controller
                 $q->whereDate('created_at', '<=', $request->to_date);
             });
 
+        $query = $query->latest('id');
+
         return DataTables::eloquent($query)
             ->addIndexColumn()
+            ->editColumn('photo', function (RequestItem $data) {
+                $photo = $data->product->photo
+                    ? asset('assets/images/products/' . $data->product->photo)
+                    : asset('assets/images/noimage.png');
+
+                return '<img src="' . $photo . '" class="img-thumbnail" style="width:80px">';
+            })
+
             ->addColumn('product_name', fn($row) => $row->product->name ?? 'N/A')
+            ->addColumn('product_sku', fn($row) => $row->product->sku ?? 'N/A')
             ->addColumn('price', fn($row) => $row->product->price ?? 'N/A')
             ->addColumn('date', fn($row) => $row->created_at->format('d M Y, h:i A'))
             ->addColumn('customer_phone', fn($row) => $row->user->phone ?? 'Guest')
@@ -59,13 +70,13 @@ class PreOrderController extends Controller
             ->addColumn('action', function ($row) {
                 return '
                 <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-danger delete-order-btn" data-id="' . $row->id . '">
+                    <a href="#" data-href="' . route('admin.pre_order.delete', $row->id) . '" class="btn btn-sm btn-danger delete-order" data-id="' . $row->id . '">
                         <i class="fa fa-trash"></i>
-                    </button>
+                    </a>
                 </div>
             ';
             })
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['status', 'action', 'photo'])
             ->make(true);
     }
     public function updateStatus(Request $request, $id)
@@ -78,5 +89,12 @@ class PreOrderController extends Controller
         $item->update(['status' => $request->status]);
 
         return response()->json(['message' => 'Status updated successfully!']);
+    }
+    public function preorderDelete($id)
+    {
+        $item = RequestItem::findOrFail($id);
+        $item->delete();
+
+        return response()->json(['message' => 'Item deleted successfully!']);
     }
 }

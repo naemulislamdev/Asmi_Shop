@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Front\FrontendController;
 use App\Http\Controllers\Front\FeedController;
 use App\Http\Controllers\Front\CartController;
@@ -13,16 +14,16 @@ Route::get('/feed/facebook', [FeedController::class, 'facebookFeed']);
 
 Route::group(['middleware' => 'maintenance'], function () {
 
-  // Outlet Section
+    // Outlet Section
     Route::get('/outlets', 'Front\FrontendController@outlets')->name('front.outlets');
 
     // ************************************ FRONT SECTION **********************************************
-        // sitemap start
+    // sitemap start
     Route::get('/sitemap.xml', [FrontendController::class, 'sitemap'])->name('sitemap');
     // sitemap end
     Route::post('/item/report', 'Front\CatalogController@report')->name('product.report');
     Route::get('/conditonal-product/{sku}', 'Front\FrontendController@conditioalProduct')->name("front.conditional-product");
-    Route::get('/', [FrontendController::class,'index'])->name('front.index');
+    Route::get('/', [FrontendController::class, 'index'])->name('front.index');
     Route::get('/view', 'Front\CartController@view_cart')->name('front.cart-view');
     Route::get('/extras', 'Front\FrontendController@extraIndex')->name('front.extraIndex');
 
@@ -32,7 +33,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     // BLOG SECTION
     Route::get('/offers/{category?}/{subcategory?}/{childcategory?}', 'Front\FrontendController@offers')->name('front.offers');
     Route::get('/pusti-brand-promo/offers/', 'Front\FrontendController@promoOffers')->name('front.promo_offers');
-	 Route::get('/category/Combo-Offers', function () {
+    Route::get('/category/Combo-Offers', function () {
         return redirect()->route('front.category', 'family-pack');
     });
     Route::get('/blog', 'Front\FrontendController@blog')->name('front.blog');
@@ -45,7 +46,7 @@ Route::group(['middleware' => 'maintenance'], function () {
 
     // FAQ SECTION
     Route::get('/faq', 'Front\FrontendController@faq')->name('front.faq');
-	Route::post('/auto-save/userinfo', 'Front\FrontendController@autoSaveUserInfo')->name('front.save.user.info');
+    Route::post('/auto-save/userinfo', 'Front\FrontendController@autoSaveUserInfo')->name('front.save.user.info');
     // FAQ SECTION ENDS
 
     // CONTACT SECTION
@@ -54,7 +55,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/contact/refresh_code', 'Front\FrontendController@refresh_code');
     // CONTACT SECTION  ENDS
 
-	   // Front CAREER SECTION START
+    // Front CAREER SECTION START
     Route::get("/career", [FrontendController::class, 'career'])->name('front.career');
     Route::get("/career/{slug}", [FrontendController::class, 'careerForm'])->name('front.career.applyForm');
     Route::post("/career/store", [FrontendController::class, 'careerStore'])->name('front.career.store');
@@ -78,6 +79,9 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/search', 'Front\CatalogController@homeSearch')->name('front.search');
     Route::get('/ajax-search', 'Front\CatalogController@ajaxSearch')->name('front.ajax.search');
 
+    // Mobile search
+    Route::get('/mobileajax-search', 'Front\CatalogController@mobileAjaxSearch')->name('front-mobile.ajax.search');
+    Route::get('/mobile-search', 'Front\CatalogController@mobileHomeSearch')->name('front-mobile.search');
     // TAG SECTION ENDS
 
     // PRODCT SECTION
@@ -117,11 +121,11 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::post('/cart/decrement', 'Front\CartController@decrement');
 
     Route::get('/cart/offcanvas', function () {
-    $cart = Session::get('cart');
-    $cartItems = $cart ? $cart->items : [];
-    $cartObject = $cart;
-    return view('includes.frontend.offcanvas-cart', compact('cartItems', 'cartObject'));
-});
+        $cart = Session::get('cart');
+        $cartItems = $cart ? $cart->items : [];
+        $cartObject = $cart;
+        return view('includes.frontend.offcanvas-cart', compact('cartItems', 'cartObject'));
+    });
 
     Route::post('/cart/remove', 'Front\CartController@cartRemove')->name('ajax.cart.remove');
 
@@ -312,11 +316,11 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/{slug}', 'Front\VendorController@index')->name('front.vendor');
 
     Route::get('/cache/clear', function () {
-            Artisan::call('cache:clear');
-            Artisan::call('config:clear');
-            Artisan::call('route:clear');
-            Artisan::call('view:clear');
-            return 'Cache Cleared Successfully';
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('route:clear');
+        Artisan::call('view:clear');
+        return 'Cache Cleared Successfully';
     });
 
     // VENDOR AND PAGE SECTION ENDS

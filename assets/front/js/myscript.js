@@ -55,7 +55,12 @@
 
     const $btn = $(this);
     const pid = $btn.data("product-id");
-    const wrap = $btn.closest(".single-product");
+
+    let wrap = $btn.closest(".single-product");
+    if (wrap.length === 0) {
+        wrap = $btn.closest(".swiper-slide");
+    }
+    
 
     const measureType = wrap.find(".measure-select").data("measure-type");
     const measureValue = parseFloat(wrap.find(".measure-select").val() || 1);

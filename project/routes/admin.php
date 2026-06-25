@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\BranchOrderController;
 use App\Http\Controllers\Admin\BranchSalesReportController;
 use App\Http\Controllers\Admin\CustomeOrderController;
@@ -13,9 +14,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ConditionalOfferController;
 use App\Http\Controllers\Admin\PreOrderController;
 use App\Http\Controllers\Admin\SitemapController;
+
 Route::prefix('admin')->group(function () {
 
-     // generate sitemap
+    // generate sitemap
     Route::get('/sitemap', [SitemapController::class, 'index'])->name('admin-sitemap');
     Route::get('sitemap-download', [SitemapController::class, 'download'])->name('admin-sitemap-download');
 
@@ -38,7 +40,7 @@ Route::prefix('admin')->group(function () {
 
     //------------ ADMIN NOTIFICATION SECTION ------------
 
-	 // all notification show in datatable
+    // all notification show in datatable
     Route::get("/notification/all/view", 'Admin\NotificationController@viewAllNotification')->name('allNotificationView');
     Route::get("/notification/datatables", 'Admin\NotificationController@datatables')->name('admin-notification-datatables');
 
@@ -85,7 +87,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/order/edit/{id}', 'Admin\OrderController@edit')->name('admin-order-edit');
         Route::post('/order/update/{id}', 'Admin\OrderController@update')->name('admin-order-update');
         Route::get('/order/{id}/show', 'Admin\OrderController@show')->name('admin-order-show');
-    	Route::post("admin-multinote", 'Admin\OrderController@multipleOrderNote')->name("admin-order-mulitple-note");
+        Route::post("admin-multinote", 'Admin\OrderController@multipleOrderNote')->name("admin-order-mulitple-note");
         Route::get('/order/{id}/invoice', 'Admin\OrderController@invoice')->name('admin-order-invoice');
         Route::get('/order/{id}/print', 'Admin\OrderController@printpage')->name('admin-order-print');
         Route::get('/order/{id1}/status/{status}', 'Admin\OrderController@status')->name('admin-order-status');
@@ -101,13 +103,13 @@ Route::prefix('admin')->group(function () {
         Route::get('/orders/export', [OrderExportController::class, 'export'])->name('orders.export');
         Route::post('order/assign-branch', 'Admin\OrderController@assignBranch')->name('admin-order-assign-branch');
         Route::delete('order/delete/{id}', 'Admin\OrderController@orderDelete')->name('admin-order-delete');
-// Add product in order details page route
+        // Add product in order details page route
         Route::get('/order/product-search', 'Admin\OrderController@productSearch')->name('admin.order.product_search');
         Route::post('/order/{id}/add-product', 'Admin\OrderController@addProduct')
             ->name('admin.order.add_product');
         Route::delete('/order/{id}/remove-product/{productId}', 'Admin\OrderController@removeProduct')
             ->name('admin.order.remove_product');
-            Route::post('/order/{id}/update-product-qty', 'Admin\OrderController@updateProductQty')
+        Route::post('/order/{id}/update-product-qty', 'Admin\OrderController@updateProductQty')
             ->name('admin.order.update_product_qty');
         // CREATE ORDER
 
@@ -138,31 +140,30 @@ Route::prefix('admin')->group(function () {
         // Order Tracking Ends
 
         Route::controller(PromoOffersController::class)->group(function () {
-        Route::get('/promo-offers', 'index')->name('admin-promo-offer-index');
-        Route::get('/promo-offers/create', 'create')->name('admin-promo-offer-create');
-        Route::post('/promo-offers/store', 'store')->name('admin-promo-offer-store');
-        Route::get('/promo-offers/edit/{id}', 'edit')->name('admin-promo-offer-edit');
-        Route::post('/promo-offers/update/{id}', 'update')->name('admin-promo-offer-update');
-        Route::get('/promo-offers/delete/{id}', 'destroy')->name('admin-promo-offer-delete');
-    });
-     // Conditional offer routes
-    Route::controller(ConditionalOfferController::class)->group(function () {
-        Route::get('/conditional-offers', 'index')->name('admin-conditional-offer-index');
-        Route::get('/conditional-offers/create', 'create')->name('admin-conditional-offer-create');
-        Route::post('/conditional-offers/store', 'store')->name('admin-conditional-offer-store');
-        Route::get('/conditional-offers/edit/{id}', 'edit')->name('admin-conditional-offer-edit');
-        Route::post('/conditional-offers/update/{id}', 'update')->name('admin-conditional-offer-update');
-        Route::delete('/conditional-offers/delete/{id}', 'destroy')->name('admin-conditional-offer-delete');
-        Route::get('/conditional-offers/status/{id1}/{id2}', 'status')->name('admin-conditional-offer-status');
+            Route::get('/promo-offers', 'index')->name('admin-promo-offer-index');
+            Route::get('/promo-offers/create', 'create')->name('admin-promo-offer-create');
+            Route::post('/promo-offers/store', 'store')->name('admin-promo-offer-store');
+            Route::get('/promo-offers/edit/{id}', 'edit')->name('admin-promo-offer-edit');
+            Route::post('/promo-offers/update/{id}', 'update')->name('admin-promo-offer-update');
+            Route::get('/promo-offers/delete/{id}', 'destroy')->name('admin-promo-offer-delete');
+        });
+        // Conditional offer routes
+        Route::controller(ConditionalOfferController::class)->group(function () {
+            Route::get('/conditional-offers', 'index')->name('admin-conditional-offer-index');
+            Route::get('/conditional-offers/create', 'create')->name('admin-conditional-offer-create');
+            Route::post('/conditional-offers/store', 'store')->name('admin-conditional-offer-store');
+            Route::get('/conditional-offers/edit/{id}', 'edit')->name('admin-conditional-offer-edit');
+            Route::post('/conditional-offers/update/{id}', 'update')->name('admin-conditional-offer-update');
+            Route::delete('/conditional-offers/delete/{id}', 'destroy')->name('admin-conditional-offer-delete');
+            Route::get('/conditional-offers/status/{id1}/{id2}', 'status')->name('admin-conditional-offer-status');
+        });
     });
 
-    });
-
-Route::group(['middleware' => ['permissions:reports', 'not.hr']], function () {
+    Route::group(['middleware' => ['permissions:reports', 'not.hr']], function () {
         Route::get('/orders/report', 'Admin\ReportController@orderReportIndex')->name('admin-order-report-index');
         Route::get('/orders/report/filter', 'Admin\ReportController@orderReportFilter')->name('admin-order-report-filter');
     });
-Route::as('admin-')->group(function () {
+    Route::as('admin-')->group(function () {
         Route::get('/user-info/index', 'Admin\UserInfoController@index')->name('user-info-index');
         Route::get('/user-info/datatable', 'Admin\UserInfoController@datatable')->name('user-info-datatables');
 
@@ -190,6 +191,7 @@ Route::as('admin-')->group(function () {
         Route::get('/pre-order/datatables/{status}', 'datatables')->name('admin.pre_order.datatables');
         Route::post('/pre-order/confirm/{id}', 'confirm')->name('admin.pre_order.confirm');
         Route::post('/pre-order/update-status/{id}', 'updateStatus')->name('admin.pre_order.update_status');
+        Route::post('/pre-order/delete/{id}', 'preorderDelete')->name('admin.pre_order.delete');
     });
 
     /////////////////////////////// ////////////////////////////////////////////
@@ -287,7 +289,7 @@ Route::as('admin-')->group(function () {
         Route::delete('/subcategory/delete/{id}', 'Admin\SubCategoryController@destroy')->name('admin-subcat-delete');
         Route::get('/subcategory/status/{id1}/{id2}', 'Admin\SubCategoryController@status')->name('admin-subcat-status');
         Route::get('/load/subcategories/{id}/', 'Admin\SubCategoryController@load')->name('admin-subcat-load'); //JSON REQUEST
-    	Route::get('/subcategory/featured/{id1}/{id2}', 'Admin\SubCategoryController@featured')->name('admin-subcat-featured');
+        Route::get('/subcategory/featured/{id1}/{id2}', 'Admin\SubCategoryController@featured')->name('admin-subcat-featured');
 
         // SUBCATEGORY SECTION ENDS------------
 
@@ -302,7 +304,7 @@ Route::as('admin-')->group(function () {
         Route::delete('/childcategory/delete/{id}', 'Admin\ChildCategoryController@destroy')->name('admin-childcat-delete');
         Route::get('/childcategory/status/{id1}/{id2}', 'Admin\ChildCategoryController@status')->name('admin-childcat-status');
         Route::get('/load/childcategories/{id}/', 'Admin\ChildCategoryController@load')->name('admin-childcat-load'); //JSON REQUEST
-    	Route::get('/childcategory/featured/{id1}/{id2}', 'Admin\ChildCategoryController@featured')->name('admin-childcat-featured');
+        Route::get('/childcategory/featured/{id1}/{id2}', 'Admin\ChildCategoryController@featured')->name('admin-childcat-featured');
 
         // CHILDCATEGORY SECTION ENDS------------
 
@@ -345,7 +347,7 @@ Route::as('admin-')->group(function () {
 
         Route::get('/products/product-settings', 'Admin\ProductController@productsettings')->name('admin-gs-prod-settings');
         Route::post('/products/product-settings/update', 'Admin\ProductController@settingUpdate')->name('admin-gs-prod-settings-update');
-     	Route::get('/bulk-update-price', 'Admin\ProductController@bulkPrice')->name('admin-bulk-update-price');
+        Route::get('/bulk-update-price', 'Admin\ProductController@bulkPrice')->name('admin-bulk-update-price');
         Route::post('/products/bulk-update-price', 'Admin\ProductController@bulkPriceUpdate')->name('admin-bulk-update-price-submit');
         // Expired Product
         Route::get('/products/expired', 'Admin\ProductController@expired')->name('admin-product-expired');
@@ -388,7 +390,7 @@ Route::as('admin-')->group(function () {
 
     //------------ ADMIN PRODUCT DISCUSSION SECTION ------------
 
-    Route::group(['middleware' =>['permissions:product_discussion', 'not.hr']], function () {
+    Route::group(['middleware' => ['permissions:product_discussion', 'not.hr']], function () {
 
         // RATING SECTION ENDS------------
 
@@ -591,7 +593,7 @@ Route::as('admin-')->group(function () {
 
     //------------ ADMIN VENDOR SUBSCRIPTION PLAN SECTION ------------
 
-    Route::group(['middleware' =>['permissions:vendor_subscription_plans', 'not.hr']], function () {
+    Route::group(['middleware' => ['permissions:vendor_subscription_plans', 'not.hr']], function () {
 
         Route::get('/vendors/subs/datatables/{status}', 'Admin\VendorSubscriptionController@subsdatatables')->name('admin-vendor-subs-datatables');
         Route::get('/vendors/subs/{slug}', 'Admin\VendorSubscriptionController@subs')->name('admin-vendor-subs');
@@ -603,7 +605,7 @@ Route::as('admin-')->group(function () {
 
     //------------ ADMIN USER MESSAGE SECTION ------------
 
-    Route::group(['middleware' =>['permissions:messages', 'not.hr']], function () {
+    Route::group(['middleware' => ['permissions:messages', 'not.hr']], function () {
 
         Route::get('/messages/datatables/{type}', 'Admin\MessageController@datatables')->name('admin-message-datatables');
         Route::get('/tickets', 'Admin\MessageController@index')->name('admin-message-index');
@@ -877,12 +879,11 @@ Route::as('admin-')->group(function () {
         Route::post('/groupemailpost', 'Admin\EmailController@groupemailpost')->name('admin-group-submit');
     });
 
-    if(addon("otp")){
+    if (addon("otp")) {
 
-    Route::group(['middleware' => 'permissions:otp_setting'], function () {
-        Route::get('/opt/config', 'Admin\GeneralSettingController@otpConfig')->name('admin-otp-config');
-    });
-
+        Route::group(['middleware' => 'permissions:otp_setting'], function () {
+            Route::get('/opt/config', 'Admin\GeneralSettingController@otpConfig')->name('admin-otp-config');
+        });
     }
 
     //------------ ADMIN EMAIL SETTINGS SECTION ENDS ------------
@@ -1122,7 +1123,7 @@ Route::as('admin-')->group(function () {
     Route::post('/activation', 'Admin\DashboardController@activation_submit')->name('admin-activate-purchase');
     Route::get('/clear/backup', 'Admin\DashboardController@clear_bkup')->name('admin-clear-backup');
 
-	Route::controller(CustomeOrderController::class)->group(function () {
+    Route::controller(CustomeOrderController::class)->group(function () {
         Route::get('/create/orders', 'createOrder')->name('admin-create-orders');
         Route::post('/create/orders/store', 'store')->name('admin-store-orders');
         Route::get('/get-product', 'getProduct')->name('admin-get-product');
@@ -1130,14 +1131,15 @@ Route::as('admin-')->group(function () {
         Route::get('/customer/search', 'search')->name('admin-customer-search');
         Route::post('/create-orders/apply-coupon', 'applyCoupon')->name('admin-apply-coupon');
     });
-     // Branch Wise Order Show
-   Route::prefix('/branch-orders')->name('branch-orders.')->controller(BranchOrderController::class)->group(function () {
+    // Branch Wise Order Show
+    Route::prefix('/branch-orders')->name('branch-orders.')->controller(BranchOrderController::class)->group(function () {
         Route::get('/', 'allBranchOrders')->name('index');
         Route::get('/datatable/{branch_id?}', 'datatables')->name('datatables');
         Route::get('/summary/{branch_id?}', 'summary')->name('summary');
         // wildcard সবার শেষে
         Route::get('/{branch_id}', 'singleBranchOrders')->name('single');
         Route::get('/branch/not-assigned', 'notAssignedBranch')->name('not-assigned');
+        Route::get('/branch/assignrider', 'notAssignedBranch')->name('assignRider');
     });
 });
 
