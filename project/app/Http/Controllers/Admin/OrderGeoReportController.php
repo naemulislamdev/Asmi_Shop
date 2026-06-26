@@ -14,7 +14,11 @@ class OrderGeoReportController extends Controller
      */
     public function index()
     {
-        return view('admin.report.order_location_heatmap.index');
+        $branches = DB::table('branches')->where('status', 1)->orderBy('name')->get(['id', 'name']);
+        $statuses = DB::table('orders')->whereNotNull('status')->where('status', '<>', '')
+            ->distinct()->orderBy('status')->pluck('status');
+
+        return view('admin.report.order_location_heatmap.index', compact('branches', 'statuses'));
     }
 
     /**
@@ -26,14 +30,18 @@ class OrderGeoReportController extends Controller
     {
         $from   = $request->get('from_date');
         $to     = $request->get('to_date');
-        $source = $request->get('source'); // all | Website | Mobile Apps
+        $source = $request->get('source');     // all | Website | Mobile Apps
+        $branch = $request->get('branch_id');  // all | <branch id>
+        $status = $request->get('status');     // all | <status>
 
         // Reusable filter applied to every query below.
-        $filter = function ($q) use ($from, $to, $source) {
+        $filter = function ($q) use ($from, $to, $source, $branch, $status) {
             return $q
                 ->when($from, fn ($x) => $x->whereDate('orders.created_at', '>=', $from))
                 ->when($to, fn ($x) => $x->whereDate('orders.created_at', '<=', $to))
-                ->when($source && $source !== 'all', fn ($x) => $x->where('orders.order_source', $source));
+                ->when($source && $source !== 'all', fn ($x) => $x->where('orders.order_source', $source))
+                ->when($branch && $branch !== 'all', fn ($x) => $x->where('orders.branch_id', $branch))
+                ->when($status && $status !== 'all', fn ($x) => $x->where('orders.status', $status));
         };
 
         // --- Data-quality summary over the whole filtered set ---
