@@ -198,9 +198,12 @@ Route::as('admin-')->group(function () {
     });
 
     // Order Location Heatmap (buyer's real device location captured at checkout)
-    Route::controller(OrderGeoReportController::class)->group(function () {
-        Route::get('/order-location-heatmap', 'index')->name('admin.order.location.heatmap');
-        Route::get('/order-location-heatmap/points', 'points')->name('admin.order.location.heatmap.points');
+    // Gated behind the reports permission so order GPS data is never public.
+    Route::middleware(['permissions:reports', 'not.hr'])->group(function () {
+        Route::controller(OrderGeoReportController::class)->group(function () {
+            Route::get('/order-location-heatmap', 'index')->name('admin.order.location.heatmap');
+            Route::get('/order-location-heatmap/points', 'points')->name('admin.order.location.heatmap.points');
+        });
     });
 
     Route::controller(PreOrderController::class)->group(function () {
