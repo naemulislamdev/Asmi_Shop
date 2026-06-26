@@ -87,6 +87,7 @@
         }).addTo(map);
 
         var heatLayer = null;
+        var markerLayer = L.layerGroup().addTo(map);
         var pointsUrl = "{{ route('admin.order.location.heatmap.points') }}";
 
         function loadHeatmap() {
@@ -103,15 +104,38 @@
                 $('#stat_denied').text(res.stats.denied);
                 $('#stat_other').text(res.stats.other);
 
-                // Refresh heat layer
+                // Heat layer for density. maxZoom kept high so points stay
+                // visible at low zoom levels (Leaflet.heat fades them otherwise).
                 if (heatLayer) {
                     map.removeLayer(heatLayer);
                 }
                 heatLayer = L.heatLayer(res.points, {
                     radius: 25,
                     blur: 15,
-                    maxZoom: 12
+                    minOpacity: 0.4,
+                    maxZoom: 5
                 }).addTo(map);
+
+                // Always-visible dot per order, so even a single point shows
+                // clearly regardless of heat scaling. Auto-zoom to the data.
+                markerLayer.clearLayers();
+                var latlngs = [];
+                res.points.forEach(function (p) {
+                    var ll = [p[0], p[1]];
+                    latlngs.push(ll);
+                    L.circleMarker(ll, {
+                        radius: 6,
+                        color: '#d6336c',
+                        weight: 1,
+                        fillColor: '#f03e3e',
+                        fillOpacity: 0.7
+                    }).addTo(markerLayer);
+                });
+                if (latlngs.length === 1) {
+                    map.setView(latlngs[0], 13);
+                } else if (latlngs.length > 1) {
+                    map.fitBounds(latlngs, { padding: [40, 40], maxZoom: 14 });
+                }
             }).fail(function () {
                 alert('{{ __('Could not load heatmap data.') }}');
             }).always(function () {
