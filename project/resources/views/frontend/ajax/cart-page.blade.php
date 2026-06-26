@@ -435,20 +435,211 @@
         .checkout-page .checkout-box-body {
             font-family: "Rubik", sans-serif !important;
         }
+         /* checkout product */
+        /* ===== Checkout Product Section ===== */
+        .checkout-product {
+            background: #f9fafb;
+            padding: 16px 0 24px;
+        }
+
+        /* ===== Slider wrapper ===== */
+        .checkout-product-slider {
+            position: relative;
+            padding: 0 0 32px;
+
+        }
+
+        /* ===== Slide card ===== */
+        .checkout-product-slider .swiper-slide {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            flex-direction: row;
+            height: 130px;
+        }
+
+        /* ===== Image ===== */
+        .checkout-product-slider .slide-img {
+            width: 95px;
+            min-width: 95px;
+            background: #fff;
+            border-right: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .checkout-product-slider .slide-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform: scale(0.8);
+        }
+
+        /* ===== Body ===== */
+        .checkout-product-slider .slide-body {
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* ===== Product name ===== */
+        .checkout-product-slider .slide-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #111;
+            white-space: pre-wrap;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* ===== Price group ===== */
+        .checkout-product-slider .slide-price-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px 6px;
+        }
+
+        .checkout-product-slider .slide-price-current {
+            font-size: 13px;
+            font-weight: 600;
+            color: #007182;
+            font-family: "Rubik", sans-serif;
+        }
+
+        .checkout-product-slider .slide-price-original {
+            font-size: 11px;
+            color: #9ca3af;
+            text-decoration: line-through;
+        }
+
+        .checkout-product-slider .slide-discount-pill {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: #fef2f2;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .checkout-product-slider .slide-measure {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        /* ===== Add to cart button ===== */
+        .checkout-product-slider .slide-btn {
+            align-self: flex-start;
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #007182;
+            background: #007182;
+            color: #fff;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .checkout-product-slider .slide-btn:hover {
+            background: #005f6e;
+        }
+
+        /* ===== Nav buttons ===== */
+        .cps-nav {
+            position: absolute;
+            top: 31%;
+            z-index: 10;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #374151;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            transition: background .15s;
+        }
+
+        .cps-nav:hover {
+            background: #f3f4f6;
+        }
+
+        .cps-nav.prev {
+            left: 0;
+        }
+
+        .cps-nav.next {
+            right: 0;
+        }
+
+        .cps-nav.swiper-button-disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* ===== Pagination ===== */
+        .checkout-product-slider .swiper-pagination {
+            bottom: 4px;
+            top: auto;
+        }
+
+        .checkout-product-slider .swiper-pagination-bullet {
+            background: #9ca3af;
+            opacity: 1;
+        }
+
+        .checkout-product-slider .swiper-pagination-bullet-active {
+            background: #374151;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 575px) {
+            
+           .checkout-product-slider .swiper-slide {
+                height: 140px;
+            }
+            .checkout-product-slider .slide-img {
+                width: 80px;
+                min-width: 80px;
+            }
+
+            .checkout-product-slider .slide-name {
+                font-size: 12px;
+            }
+
+            .checkout-product-slider .slide-btn {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+
+            .cps-nav {
+                width: 26px;
+                height: 26px;
+                font-size: 11px;
+            }
+        }
     </style>
 
 @endsection
+
+@include('frontend.ajax.suggestedProduct')
+
 <form class="address-wrapper checkoutform" method="POST" id="userInfoForm">
     @csrf
     <input type="hidden" name="session_id" value="{{ session()->getId() }}">
 
    
     <div class="container gs-cart-container checkout-page py-0 my-0">
-        <nav class="custom-breadcrumb mb-2 mb-lg-0">
-            <a href="{{ url('/') }}">Home</a>
-            <span class="separator"><i class="fa fa-chevron-right"></i></span>
-            <span class="active">Checkout</span>
-        </nav>
+        
         <h1 class="text-center h3">Cart Checkout</h1>
         <div class="row gs-cart-row justify-content-center">
 
@@ -881,6 +1072,11 @@
                         value="{{ Session::has('coupon') ? Session::get('coupon_id') : '' }}">
                     <input type="hidden" name="user_id" id="user_id"
                         value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
+                    {{-- Current device location captured at checkout for order-origin analytics --}}
+                    <input type="hidden" name="order_lat" id="order_lat" value="">
+                    <input type="hidden" name="order_lng" id="order_lng" value="">
+                    <input type="hidden" name="location_accuracy" id="location_accuracy" value="">
+                    <input type="hidden" name="location_source" id="location_source" value="unsupported">
 
                 </div>
             @else
@@ -909,9 +1105,39 @@
     </div>
 </form>
 @section('script')
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <!-- <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="https://sdk.mercadopago.com/js/v2"></script>
-    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://js.stripe.com/v3/"></script> -->
+    <script>
+        new Swiper('.checkout-product-slider', {
+            slidesPerView: 1,
+            spaceBetween: 12,
+            loop: true,
+            autoplay: {
+                delay: 5000, // 3 seconds
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: '#cpsNext',
+                prevEl: '#cpsPrev',
+            },
+            pagination: {
+                el: '.checkout-product-slider .swiper-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                576: {
+                    slidesPerView: 1
+                },
+                768: {
+                    slidesPerView: 2
+                },
+                992: {
+                    slidesPerView: 4
+                },
+            }
+        });
+    </script>
       <script>
         document
             .getElementById('userInfoForm')
@@ -1249,6 +1475,37 @@
                 });
             }
         });
+    </script>
+
+    <script>
+        // Capture buyer's current device location at checkout for order-origin analytics.
+        // Posts with the order (COD/payment form) into orders.order_lat/lng. Defaults to
+        // 'unsupported'; 'gps' on success, 'denied' if refused, 'error' otherwise.
+        (function () {
+            var srcEl = document.getElementById('location_source');
+            if (!srcEl) {
+                return;
+            }
+            if (!('geolocation' in navigator)) {
+                srcEl.value = 'unsupported';
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    document.getElementById('order_lat').value = pos.coords.latitude.toFixed(7);
+                    document.getElementById('order_lng').value = pos.coords.longitude.toFixed(7);
+                    if (pos.coords.accuracy != null) {
+                        document.getElementById('location_accuracy').value = Math.round(pos.coords.accuracy);
+                    }
+                    srcEl.value = 'gps';
+                },
+                function (err) {
+                    // 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+                    srcEl.value = (err && err.code === 1) ? 'denied' : 'error';
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+            );
+        })();
     </script>
 
     <script>
