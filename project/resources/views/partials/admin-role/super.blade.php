@@ -91,11 +91,11 @@
               <li>
                   <a href="{{ route('admin.pre_order.index') }}"> {{ __('All pre order') }}</a>
               </li>
-              <li>
-                  <a href="#"> {{ __('Pending') }}</a>
+             <li>
+                  <a href="{{ route('admin.pre_order.index') }}?status=pending"> {{ __('Pending') }}</a>
               </li>
               <li>
-                  <a href="#"> {{ __('Confirmed') }}</a>
+                  <a href="{{ route('admin.pre_order.index') }}?status=confirmed"> {{ __('Confirmed') }}</a>
               </li>
           </ul>
       </li>
@@ -145,6 +145,9 @@
         </li>
          <li>
             <a href="{{ route('admin.branch.sales') }}"> {{ __('Branch Sales Reports') }}</a>
+        </li>
+        <li>
+            <a href="{{ route('admin.order.location.heatmap') }}"> {{ __('Order Location Heatmap') }}</a>
         </li>
     </ul>
 </li>
@@ -266,6 +269,9 @@
               <li>
                   <a
                       href="{{ route('admin-conditional-offer-index') }}"><span>{{ __('Conditional Offers') }}</span></a>
+              </li>
+              <li>
+                  <a href="{{ route('admin.combo-offer.index') }}"><span>{{ __('Combo Offers') }}</span></a>
               </li>
           </ul>
       </li>

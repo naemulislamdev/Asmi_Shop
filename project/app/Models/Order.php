@@ -10,6 +10,24 @@ class Order extends Model
 	protected $guarded = ['id'];
 	//protected $fillable = ['user_id', 'cart', 'method','shipping', 'pickup_location', 'totalQty', 'pay_amount', 'txnid', 'charge_id', 'order_number', 'payment_status', 'customer_name', 'customer_email', 'customer_phone', 'customer_address', 'customer_city', 'customer_zip','customer_state', 'customer_country','shipping_name', 'shipping_email', 'shipping_phone', 'shipping_address', 'shipping_city', 'shipping_zip','shipping_state','shipping_country', 'order_note','coupon_code','coupon_discount','status','affilate_user','affilate_charge','currency_sign','currency_name','currency_value','shipping_cost','packing_cost','tax','tax_location','dp','pay_id','vendor_shipping_id','vendor_packing_id','wallet_price','shipping_title','packing_title','affilate_users','commission','is_shipping','vendor_ids'];
 
+    // Geolocation fields post as empty strings when the buyer denies/blocks GPS.
+    // MySQL strict mode rejects '' for DECIMAL/INT, so coerce blanks to NULL here.
+    // Centralised so every checkout path (web payment controllers + API) is covered.
+    public function setOrderLatAttribute($value)
+    {
+        $this->attributes['order_lat'] = ($value === '' || $value === null) ? null : $value;
+    }
+
+    public function setOrderLngAttribute($value)
+    {
+        $this->attributes['order_lng'] = ($value === '' || $value === null) ? null : $value;
+    }
+
+    public function setLocationAccuracyAttribute($value)
+    {
+        $this->attributes['location_accuracy'] = ($value === '' || $value === null) ? null : $value;
+    }
+
     public function vendororders()
     {
         return $this->hasMany('App\Models\VendorOrder','order_id');

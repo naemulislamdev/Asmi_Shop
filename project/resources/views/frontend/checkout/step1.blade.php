@@ -311,6 +311,11 @@
                     value="{{ Session::has('coupon') ? Session::get('coupon_id') : '' }}">
                 <input type="hidden" name="user_id" id="user_id"
                     value="{{ Auth::guard('web')->check() ? Auth::guard('web')->user()->id : '' }}">
+                {{-- Current device location captured at checkout for order-origin analytics --}}
+                <input type="hidden" name="order_lat" id="order_lat" value="">
+                <input type="hidden" name="order_lng" id="order_lng" value="">
+                <input type="hidden" name="location_accuracy" id="location_accuracy" value="">
+                <input type="hidden" name="location_source" id="location_source" value="unsupported">
             </form>
         </div>
     </div>
@@ -517,5 +522,35 @@
             $('#show_shipping_address input[name="order_notes"]').prop('required', false);
 
         });
+    </script>
+    <script type="text/javascript">
+        // Capture buyer's current device location at checkout for order-origin analytics.
+        // Defaults to 'unsupported'; updated to 'gps' on success, 'denied' if the user
+        // refuses, 'error' on any other failure. Coordinates left blank unless granted.
+        (function () {
+            var srcEl = document.getElementById('location_source');
+            if (!srcEl) {
+                return;
+            }
+            if (!('geolocation' in navigator)) {
+                srcEl.value = 'unsupported';
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    document.getElementById('order_lat').value = pos.coords.latitude.toFixed(7);
+                    document.getElementById('order_lng').value = pos.coords.longitude.toFixed(7);
+                    if (pos.coords.accuracy != null) {
+                        document.getElementById('location_accuracy').value = Math.round(pos.coords.accuracy);
+                    }
+                    srcEl.value = 'gps';
+                },
+                function (err) {
+                    // 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+                    srcEl.value = (err && err.code === 1) ? 'denied' : 'error';
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+            );
+        })();
     </script>
 @endsection

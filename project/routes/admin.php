@@ -2,11 +2,13 @@
 use App\Http\Controllers\Admin\BranchOrderController;
 use App\Http\Controllers\Admin\BranchSalesReportController;
 use App\Http\Controllers\Admin\CustomeOrderController;
+use App\Http\Controllers\Admin\ComboOfferController;
 use App\Http\Controllers\Admin\DailySalesReportController;
 use App\Http\Controllers\Admin\JobApplicationController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
 use App\Http\Controllers\Admin\OrderExportController;
+use App\Http\Controllers\Admin\OrderGeoReportController;
 use App\Http\Controllers\Admin\PromoOffersController;
 use App\Http\Controllers\Admin\PreOrderController;
 use Illuminate\Support\Facades\Artisan;
@@ -155,6 +157,16 @@ Route::prefix('admin')->group(function () {
         Route::delete('/conditional-offers/delete/{id}', 'destroy')->name('admin-conditional-offer-delete');
         Route::get('/conditional-offers/status/{id1}/{id2}', 'status')->name('admin-conditional-offer-status');
     });
+         Route::controller(ComboOfferController::class)->prefix('/combo-offer')->as('admin.combo-offer.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/edit/{id}', 'edit')->name('edit');
+            Route::post('/update/{id}', 'update')->name('update');
+            Route::post('/remove-image/{id}', 'removeImage')->name('remove-img');
+            Route::delete('/delete/{id}', 'destroy')->name('delete');
+            Route::get('/status/{id1}/{id2}', 'status')->name('status');
+        });
 
     });
 
@@ -185,11 +197,19 @@ Route::as('admin-')->group(function () {
         Route::get('/branch-sales/datatable', 'datatable')->name('admin.branch.sales.datatable');
     });
 
+    // Order Location Heatmap (buyer's real device location captured at checkout)
+    Route::controller(OrderGeoReportController::class)->group(function () {
+        Route::get('/order-location-heatmap', 'index')->name('admin.order.location.heatmap');
+        Route::get('/order-location-heatmap/points', 'points')->name('admin.order.location.heatmap.points');
+    });
+
     Route::controller(PreOrderController::class)->group(function () {
         Route::get('/pre-order/list', 'index')->name('admin.pre_order.index');
         Route::get('/pre-order/datatables/{status}', 'datatables')->name('admin.pre_order.datatables');
         Route::post('/pre-order/confirm/{id}', 'confirm')->name('admin.pre_order.confirm');
         Route::post('/pre-order/update-status/{id}', 'updateStatus')->name('admin.pre_order.update_status');
+        Route::post('/pre-order/delete/{id}', 'preorderDelete')->name('admin.pre_order.delete');
+
     });
 
     /////////////////////////////// ////////////////////////////////////////////
