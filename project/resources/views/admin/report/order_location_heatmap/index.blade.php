@@ -42,6 +42,10 @@
         #order_heatmap { height:520px; width:100%; border-radius:12px; z-index:1; }
         .olh-maphint { font-size:12px; color:#adb5bd; margin-top:8px; }
         #geo_status { font-size:12px; color:#adb5bd; }
+        /* Percentage label centered on each bubble */
+        .olh-bubble-lbl { background:transparent !important; border:none !important; box-shadow:none !important;
+                          color:#08306b; font-weight:700; font-size:12px; padding:0; }
+        .olh-bubble-lbl::before { display:none !important; }
     </style>
 @endsection
 
@@ -116,8 +120,8 @@
 
         <!-- Map -->
         <div class="olh-panel mb-3">
-            <h6><i class="fas fa-fire" style="color:#2171b5;"></i> {{ __('GPS Heatmap') }}
-                <span class="count" id="map_count">{{ __('precise buyer location at checkout') }}</span></h6>
+            <h6><i class="fas fa-map-marker-alt" style="color:#2171b5;"></i> {{ __('GPS Order Map') }}
+                <span class="count" id="map_count">{{ __('bubble size = orders · label = % share') }}</span></h6>
             <div id="order_heatmap"></div>
             <div class="olh-maphint">{{ __('Each dot = one order where the buyer allowed location. Division/Thana are derived from these GPS points.') }}</div>
         </div>
@@ -236,14 +240,26 @@
                 return (selDiv === 'all' || p.division === selDiv) && (selThana === 'all' || p.thana === selThana);
             });
 
-            if (heatLayer) { map.removeLayer(heatLayer); }
-            heatLayer = L.heatLayer(pts.map(function (p) { return [p.lat, p.lng, 1]; }), {
-                radius: 28, blur: 18, minOpacity: 0.5, maxZoom: 5,
-                gradient: { 0.2: '#c6dbef', 0.4: '#9ecae1', 0.6: '#6baed6', 0.75: '#4292c6', 0.9: '#2171b5', 1.0: '#08306b' }
-            }).addTo(map);
+            // Proportional blue circles: one per area (thana, or coarse coord if
+            // unknown), radius scaled by order count, label = % of shown orders.
             markerLayer.clearLayers();
+            var groups = {};
             pts.forEach(function (p) {
-                L.circleMarker([p.lat, p.lng], { radius: 6, color: '#08519c', weight: 1, fillColor: '#4292c6', fillOpacity: .8 }).addTo(markerLayer);
+                var key = p.thana || (p.lat.toFixed(2) + ',' + p.lng.toFixed(2));
+                if (!groups[key]) { groups[key] = { name: p.thana || '{{ __('Unknown area') }}', lat: 0, lng: 0, n: 0 }; }
+                groups[key].lat += p.lat; groups[key].lng += p.lng; groups[key].n++;
+            });
+            var total = pts.length || 1;
+            Object.keys(groups).forEach(function (k) {
+                var g = groups[k], clat = g.lat / g.n, clng = g.lng / g.n;
+                var pct = Math.round(g.n / total * 100);
+                var radius = Math.min(46, 10 + Math.sqrt(g.n) * 8);
+                var c = L.circleMarker([clat, clng], {
+                    radius: radius, color: '#08519c', weight: 2, fillColor: '#4292c6', fillOpacity: 0.45
+                });
+                c.bindTooltip(pct + '%', { permanent: true, direction: 'center', className: 'olh-bubble-lbl' });
+                c.bindPopup('<b>' + g.name + '</b><br>' + fmt(g.n) + ' {{ __('orders') }} (' + pct + '%)');
+                c.addTo(markerLayer);
             });
             document.getElementById('map_count').textContent = fmt(pts.length) + ' {{ __('GPS orders shown') }}';
 
