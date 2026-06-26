@@ -990,7 +990,8 @@
                                 @forelse($outlets as $outlet)
                                     <label class="shipping-option-card" for="outlet_{{ $outlet->id }}">
                                         <input type="radio" id="outlet_{{ $outlet->id }}" name="branch_id"
-                                            value="{{ $outlet->id }}">
+                                            value="{{ $outlet->id }}"
+                                            data-lat="{{ $outlet->latitude }}" data-lng="{{ $outlet->longitude }}">
 
                                         <div class="shipping-icon">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -1490,6 +1491,43 @@
                 srcEl.value = 'unsupported';
                 return;
             }
+            // Straight-line distance (km) between two lat/lng points.
+            function haversine(lat1, lon1, lat2, lon2) {
+                var R = 6371;
+                var dLat = (lat2 - lat1) * Math.PI / 180;
+                var dLon = (lon2 - lon1) * Math.PI / 180;
+                var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            }
+
+            // Pre-select the outlet closest to the buyer — but never override a
+            // choice the user already made (geolocation resolves a few seconds in).
+            function selectNearestOutlet(lat, lng) {
+                if (document.querySelector('input[name="branch_id"]:checked')) {
+                    return;
+                }
+                var radios = document.querySelectorAll('input[name="branch_id"]');
+                var best = null, bestDist = Infinity;
+                radios.forEach(function (r) {
+                    var blat = parseFloat(r.getAttribute('data-lat'));
+                    var blng = parseFloat(r.getAttribute('data-lng'));
+                    if (isNaN(blat) || isNaN(blng)) {
+                        return;
+                    }
+                    var d = haversine(lat, lng, blat, blng);
+                    if (d < bestDist) {
+                        bestDist = d;
+                        best = r;
+                    }
+                });
+                if (best) {
+                    best.checked = true;
+                    best.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+
             navigator.geolocation.getCurrentPosition(
                 function (pos) {
                     document.getElementById('order_lat').value = pos.coords.latitude.toFixed(7);
@@ -1498,6 +1536,7 @@
                         document.getElementById('location_accuracy').value = Math.round(pos.coords.accuracy);
                     }
                     srcEl.value = 'gps';
+                    selectNearestOutlet(pos.coords.latitude, pos.coords.longitude);
                 },
                 function (err) {
                     // 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
