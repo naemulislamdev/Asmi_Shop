@@ -141,7 +141,10 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script type="text/javascript">
-        var map = L.map('order_heatmap', { scrollWheelZoom: false }).setView([23.6850, 90.3563], 7);
+        // Default view = full Bangladesh (SW + NE corners).
+        var BD_BOUNDS = [[20.59, 88.01], [26.64, 92.68]];
+        var map = L.map('order_heatmap', { scrollWheelZoom: false });
+        map.fitBounds(BD_BOUNDS);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO'
         }).addTo(map);
@@ -190,21 +193,17 @@
 
                 if (heatLayer) { map.removeLayer(heatLayer); }
                 heatLayer = L.heatLayer(res.points, {
-                    radius: 28, blur: 18, minOpacity: 0.45, maxZoom: 5,
-                    // Warm "thermal" gradient: pale yellow (sparse) -> deep red (hotspot)
-                    gradient: { 0.2: '#fed976', 0.4: '#feb24c', 0.6: '#fd8d3c', 0.75: '#fc4e2a', 0.9: '#e31a1c', 1.0: '#b10026' }
+                    radius: 28, blur: 18, minOpacity: 0.5, maxZoom: 5,
+                    // Bluish gradient: light blue (sparse) -> deep blue (hotspot)
+                    gradient: { 0.2: '#c6dbef', 0.4: '#9ecae1', 0.6: '#6baed6', 0.75: '#4292c6', 0.9: '#2171b5', 1.0: '#08306b' }
                 }).addTo(map);
 
+                // Blue dot per order. Map stays on full Bangladesh (no auto-zoom).
                 markerLayer.clearLayers();
-                var latlngs = [];
                 res.points.forEach(function (p) {
-                    var ll = [p[0], p[1]];
-                    latlngs.push(ll);
-                    L.circleMarker(ll, { radius: 6, color: '#b10026', weight: 1, fillColor: '#f03e3e', fillOpacity: .8 })
+                    L.circleMarker([p[0], p[1]], { radius: 6, color: '#08519c', weight: 1, fillColor: '#4292c6', fillOpacity: .8 })
                         .addTo(markerLayer);
                 });
-                if (latlngs.length === 1) { map.setView(latlngs[0], 13); }
-                else if (latlngs.length > 1) { map.fitBounds(latlngs, { padding: [40, 40], maxZoom: 14 }); }
 
                 renderOutlets(res.breakdowns.outlets);
             }).fail(function () {
