@@ -60,6 +60,11 @@ complete cycles re-credit. Same currency the referral feature pays into.
 **Fix (if desired):** capture `$old=$data->status` before assignment and gate all
 point side-effects on `$old !== $input['status']`.
 
-## Status
-Live with these open. Revisit H2/M2/M3 (low-risk, ours) first; A1 + C1 need
-product decisions. See [[asmishop-referral-system]].
+## Status — ALL FIXED 2026-06-29 (deployed live, verified via tinker)
+- **H2 FIXED:** `reverseForOrder` now `wallet_points = max(0, balance - points)` (no negative). Verified: referee at 10, reverse 30 → 0.
+- **M2 FIXED:** `findOrCreateReferee` looks up by phone OR synthetic email, and wraps create in try/catch to re-fetch on collision (no reward rollback).
+- **M3 FIXED:** backfilled `customer_phone_normalized` on all 222 rows (0 remaining null).
+- **A1 FIXED (defense-in-depth):** (a) per-referrer lifetime cap `generalsettings.refer_max_per_referrer` (live=50, 0=unlimited), checked at capture; (b) `sharesIdentity()` rejects capture when referee order shares the referrer's delivery address (normalized) or GPS point (round 4 dec ≈11m). Verified: shared-address skip, shared-GPS skip, cap=1 blocks 2nd. NOTE: residual abuse possible with distinct addresses + distinct SIMs under the cap — cap is the backstop; consider device-id correlation later.
+- **C1 FIXED:** `OrderController@update` captures `$oldStatus` and gates ALL point side-effects (loyalty increment/decrement + referral reward/reverse) on `$statusChanged = $oldStatus !== $input['status']` → no re-credit on repeated 'completed' saves.
+
+Backups `*.audit.bak` on server. Migration `2026_06_29_000002_*` for the cap column.

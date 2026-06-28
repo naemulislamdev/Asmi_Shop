@@ -635,19 +635,24 @@ class OrderController extends AdminBaseController
         $input = $request->all();
 
         if ($request->has('status')) {
+            // Capture the previous status BEFORE assignment so point
+            // side-effects only run on a real transition (not on every save).
+            $oldStatus = $data->status;
             $data->payment_status = $input['payment_status'];
             $data->status = $input['status'];
+
+            $statusChanged = $oldStatus !== $input['status'];
 
             // ✅ Fix: Ensure loyalty_point is a valid numeric value
             $loyaltyPoint = (int) ($data->loyalty_point ?? 0);
 
-            if ($input['status'] == 'cancelled') {
+            if ($statusChanged && $input['status'] == 'cancelled') {
                 if ($data->user && $loyaltyPoint > 0) {
                     $data->user->decrement('wallet_points', $loyaltyPoint);
                 }
             }
 
-            if ($input['status'] == 'completed') {
+            if ($statusChanged && $input['status'] == 'completed') {
                 if ($data->user && $loyaltyPoint > 0) {
                     $data->user->increment('wallet_points', $loyaltyPoint);
                 }
@@ -656,9 +661,9 @@ class OrderController extends AdminBaseController
             $data->update();
 
             // ---- referral reward / reverse (idempotent, fail-safe, gated by is_refer) ----
-            if ($input['status'] == 'completed') {
+            if ($statusChanged && $input['status'] == 'completed') {
                 \App\Helpers\ReferralHelper::rewardForOrder($data);
-            } elseif (in_array($input['status'], ['cancelled', 'return'])) {
+            } elseif ($statusChanged && in_array($input['status'], ['cancelled', 'return'])) {
                 \App\Helpers\ReferralHelper::reverseForOrder($data);
             }
             // ---- end referral ----

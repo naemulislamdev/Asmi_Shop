@@ -59,11 +59,29 @@ class ReferralHelper
             $orderCount = Order::where('customer_phone_normalized', $refereePhone)->count();
             if ($orderCount > 1) return;
 
-            // No self-referral.
+            // No self-referral (same phone).
             $referrerPhone = PhoneHelper::normalize($referrer->phone);
             if ($referrerPhone && $referrerPhone === $refereePhone) return;
 
-            // One referral per referee, ever.
+            // A1: anti-farming — per-referrer lifetime cap (0 = unlimited).
+            $cap = (int) ($gs->refer_max_per_referrer ?? 0);
+            if ($cap > 0) {
+                $used = Referral::where('referrer_id', $referrer->id)
+                    ->whereIn('status', ['pending', 'rewarded'])->count();
+                if ($used >= $cap) {
+                    Log::info('referral.capture skipped: cap reached for referrer ' . $referrer->id);
+                    return;
+                }
+            }
+
+            // A1: anti-farming — reject when referee shares the referrer's own
+            // delivery address or GPS point (same person / household self-refer).
+            if (self::sharesIdentity($referrer, $order)) {
+                Log::info('referral.capture skipped: shared identity referrer ' . $referrer->id);
+                return;
+            }
+
+            // One referral per referee, ever (DB UNIQUE is the real guard).
             if (Referral::where('referee_phone_normalized', $refereePhone)->exists()) return;
 
             Referral::create([
@@ -85,6 +103,40 @@ class ReferralHelper
         } catch (\Throwable $e) {
             Log::error('referral.capture failed: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * True when the referee order shares a delivery address or GPS point with
+     * any of the referrer's own past orders (same-person / household farming).
+     */
+    protected static function sharesIdentity(User $referrer, Order $order): bool
+    {
+        $rNorm = PhoneHelper::normalize($referrer->phone);
+        if (!$rNorm) return false;
+
+        $norm = function ($s) {
+            return mb_strtolower(trim(preg_replace('/\s+/', ' ', (string) $s)));
+        };
+        $addr = $norm($order->customer_address);
+        $lat  = $order->order_lat;
+        $lng  = $order->order_lng;
+
+        $referrerOrders = Order::where('customer_phone_normalized', $rNorm)
+            ->get(['customer_address', 'order_lat', 'order_lng']);
+
+        foreach ($referrerOrders as $ro) {
+            if ($addr !== '' && $addr === $norm($ro->customer_address)) {
+                return true;
+            }
+            if ($lat && $lng && $ro->order_lat && $ro->order_lng) {
+                // ~11m precision at 4 decimal places.
+                if (round((float) $lat, 4) === round((float) $ro->order_lat, 4)
+                    && round((float) $lng, 4) === round((float) $ro->order_lng, 4)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -128,7 +180,10 @@ class ReferralHelper
         }
     }
 
-    /** Reverse points if a rewarded order is later cancelled/returned. */
+    /**
+     * Reverse points if a rewarded order is later cancelled/returned.
+     * Clamps at 0 so a user who already spent the points cannot go negative.
+     */
     public static function reverseForOrder(Order $order): void
     {
         try {
@@ -139,11 +194,17 @@ class ReferralHelper
 
                 if ($row->referrer_id && $row->referrer_points > 0) {
                     $u = User::find($row->referrer_id);
-                    if ($u) $u->decrement('wallet_points', $row->referrer_points);
+                    if ($u) {
+                        $u->wallet_points = max(0, (float) $u->wallet_points - (float) $row->referrer_points);
+                        $u->save();
+                    }
                 }
                 if ($row->referee_user_id && $row->referee_points > 0) {
                     $u = User::find($row->referee_user_id);
-                    if ($u) $u->decrement('wallet_points', $row->referee_points);
+                    if ($u) {
+                        $u->wallet_points = max(0, (float) $u->wallet_points - (float) $row->referee_points);
+                        $u->save();
+                    }
                 }
                 $row->status = 'void';
                 $row->save();
@@ -153,27 +214,44 @@ class ReferralHelper
         }
     }
 
-    /** Mirror of the auto-create-from-order pattern in AuthController@by-order. */
+    /**
+     * Find the referee user by phone or synthetic email, else create one.
+     * Tolerant of the '<phone>@asmi.local' email UNIQUE collision so it never
+     * aborts the reward transaction.
+     */
     protected static function findOrCreateReferee(string $phone, Order $order): ?User
     {
+        $email = $phone . '@asmi.local';
+
         $user = User::where('phone', $phone)
-            ->orWhere('phone', '+88' . $phone)->first();
+            ->orWhere('phone', '+88' . $phone)
+            ->orWhere('email', $email)
+            ->first();
         if ($user) return $user;
 
-        $user = new User();
-        $user->name           = $order->customer_name ?: 'Customer';
-        $user->email          = $phone . '@asmi.local';
-        $user->phone          = $phone;
-        $user->address        = $order->customer_address;
-        $user->password       = bcrypt($phone);
-        $user->email_verified = 'Yes';
-        if (Schema::hasColumn('users', 'force_password_change')) {
-            $user->force_password_change = 1;
+        try {
+            $user = new User();
+            $user->name           = $order->customer_name ?: 'Customer';
+            $user->email          = $email;
+            $user->phone          = $phone;
+            $user->address        = $order->customer_address;
+            $user->password       = bcrypt($phone);
+            $user->email_verified = 'Yes';
+            if (Schema::hasColumn('users', 'force_password_change')) {
+                $user->force_password_change = 1;
+            }
+            if (Schema::hasColumn('users', 'auto_created_via')) {
+                $user->auto_created_via = 'referral_reward';
+            }
+            $user->save();
+            return $user;
+        } catch (\Throwable $e) {
+            // Lost a create race / email already taken — fetch the existing row.
+            Log::warning('referral.referee create collision: ' . $e->getMessage());
+            return User::where('phone', $phone)
+                ->orWhere('phone', '+88' . $phone)
+                ->orWhere('email', $email)
+                ->first();
         }
-        if (Schema::hasColumn('users', 'auto_created_via')) {
-            $user->auto_created_via = 'referral_reward';
-        }
-        $user->save();
-        return $user;
     }
 }
