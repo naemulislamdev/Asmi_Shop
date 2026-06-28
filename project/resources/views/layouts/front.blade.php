@@ -2091,6 +2091,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     "timeOut": "3000",
 };
     </script>
+    @include('partials.global.live-chat-widget')
 </body>
 
 </html>

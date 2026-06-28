@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\JobDepartmentController;
 use App\Http\Controllers\Admin\OrderExportController;
 use App\Http\Controllers\Admin\OrderGeoReportController;
+use App\Http\Controllers\Admin\LiveChatController;
 use App\Http\Controllers\Admin\PromoOffersController;
 use App\Http\Controllers\Admin\PreOrderController;
 use Illuminate\Support\Facades\Artisan;
@@ -205,6 +206,10 @@ Route::as('admin-')->group(function () {
             Route::get('/order-location-heatmap/points', 'points')->name('admin.order.location.heatmap.points');
         });
     });
+
+    // Live Chat console (talks to self-hosted Node service via /chat). Admin-gated in controller.
+    Route::get('/live-chat', [LiveChatController::class, 'index'])->name('admin.live-chat');
+    Route::get('/chat/customer-context', [LiveChatController::class, 'customerContext'])->name('admin.chat.context');
 
     Route::controller(PreOrderController::class)->group(function () {
         Route::get('/pre-order/list', 'index')->name('admin.pre_order.index');
@@ -709,6 +714,7 @@ Route::as('admin-')->group(function () {
         Route::get('/general-settings/loader', 'Admin\GeneralSettingController@loader')->name('admin-gs-load');
         Route::get('/general-settings/contents', 'Admin\GeneralSettingController@websitecontent')->name('admin-gs-contents');
         Route::get('/general-settings/affilate', 'Admin\GeneralSettingController@affilate')->name('admin-gs-affilate');
+        Route::get('/general-settings/refer', 'Admin\GeneralSettingController@refer')->name('admin-gs-refer');
         Route::get('/general-settings/error-banner', 'Admin\GeneralSettingController@error_banner')->name('admin-gs-error-banner');
         Route::get('/general-settings/popup', 'Admin\GeneralSettingController@popup')->name('admin-gs-popup');
         Route::get('/general-settings/breadcrumb', 'Admin\GeneralSettingController@breadcrumb')->name('admin-gs-bread');

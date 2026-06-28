@@ -153,7 +153,14 @@ class SearchController extends Controller
                                         return $query->where('childcategory_id', $childcat->id);
                                     })
                                     ->when($search, function ($query, $search) {
-                                        return $query->where('name', 'like', '%' . $search . '%');
+                                        // Same as website search: match name / sku / bn_keywords
+                                        // (bn_keywords holds Bangla terms). Columns are utf8mb4.
+                                        $like = '%' . $search . '%';
+                                        return $query->where(function ($q) use ($like) {
+                                            $q->where('name', 'like', $like)
+                                              ->orWhere('sku', 'like', $like)
+                                              ->orWhere('bn_keywords', 'like', $like);
+                                        });
                                     })
                                     ->when($minprice, function($query, $minprice) {
                                       return $query->where('price', '>=', $minprice);

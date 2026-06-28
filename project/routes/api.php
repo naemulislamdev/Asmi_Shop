@@ -33,6 +33,10 @@ Route::group(['prefix' => 'user'], function () {
     Route::group(['middleware' => 'auth:api'], function () {
 
 
+        // --------------------- LOGIN DEVICES / SECURITY ---------------------
+
+        Route::get('/devices', 'Api\Auth\AuthController@devices');
+
         // --------------------- USER DASHBOARD ---------------------
 
         Route::get('/dashboard', 'Api\User\ProfileController@dashboard');
@@ -195,6 +199,7 @@ Route::group(['prefix' => 'front'], function () {
     Route::get('/blog/{slug}',          'Api\Front\FrontendController@blogShow');
     Route::post('/subscribe',           'Api\Front\FrontendController@subscribe');
     Route::get('/autosearch',           'Api\Front\FrontendController@autosearch');
+    Route::post('/chat/guest-token',    'Api\Front\ChatController@guestToken')->middleware('throttle:10,1');
     Route::get('/pages', 'Api\Front\FrontendController@pages');
     Route::get('/ordertrack','Api\Front\FrontendController@ordertrack');
     Route::post('/contactmail', 'Api\Front\FrontendController@contactmail');

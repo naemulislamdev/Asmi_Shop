@@ -86,6 +86,11 @@ class GeneralSettingController extends AdminBaseController
         return view('admin.generalsetting.affilate');
     }
 
+    public function refer()
+    {
+        return view('admin.generalsetting.refer');
+    }
+
     public function error_banner()
     {
         return view('admin.generalsetting.error_banner');

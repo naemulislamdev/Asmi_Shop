@@ -52,24 +52,31 @@ class AuthController extends Controller
             $user->otp = $otp;
             $user->save();
 
-            $gs = Generalsetting::first();
-
+            // Send OTP via BulkSMSBD (BD SMS gateway). Fail-safe: an SMS
+            // failure does NOT block the flow — the OTP is saved on the user
+            // either way, and failures are logged for diagnosis.
             try {
-                if (!empty($gs->vonage_key) && !empty($gs->vonage_secret)) {
-                    config([
-                        'vonage.api_key'    => $gs->vonage_key,
-                        'vonage.api_secret' => $gs->vonage_secret,
+                $smsNumber = preg_replace('/\D/', '', (string) $user->phone); // digits only
+                if (substr($smsNumber, 0, 2) !== '88') {
+                    $smsNumber = '88' . $smsNumber; // 01XXXXXXXXX -> 8801XXXXXXXXX
+                }
+                $message = $otp . ' is your ASMI Shop login OTP. Do not share it with anyone.';
+                $resp = \Illuminate\Support\Facades\Http::asForm()->post(env('BULKSMSBD_URL'), [
+                    'api_key'  => env('BULKSMSBD_API_KEY'),
+                    'type'     => 'text',
+                    'number'   => $smsNumber,
+                    'senderid' => env('BULKSMSBD_SENDER_ID'),
+                    'message'  => $message,
+                ]);
+                $result = $resp->json();
+                if (!isset($result['response_code']) || $result['response_code'] != 202) {
+                    \Illuminate\Support\Facades\Log::error('Login OTP SMS failed', [
+                        'number'   => $smsNumber,
+                        'response' => $result,
                     ]);
-                    $text = new \Vonage\SMS\Message\SMS(
-                        $user->phone,
-                        $gs->from_number ?? 'AsmiShop',
-                        'Your OTP : ' . $otp
-                    );
-                    \Vonage\Laravel\Facade\Vonage::sms()->send($text);
                 }
             } catch (\Exception $sendErr) {
-                // SMS failure does NOT block the flow — OTP is still set on
-                // the user. Return success so dev/test can read otp from DB.
+                \Illuminate\Support\Facades\Log::error('Login OTP SMS exception: ' . $sendErr->getMessage());
             }
 
             return response()->json([
@@ -135,6 +142,7 @@ class AuthController extends Controller
             $user->save();
 
             $token = JWTAuth::fromUser($user);
+            $this->recordLoginSession($user, $token, $request);
 
             return response()->json([
                 'status' => true,
@@ -245,6 +253,7 @@ class AuthController extends Controller
             }
 
             $token = JWTAuth::fromUser($user);
+            $this->recordLoginSession($user, $token, $request);
 
             return response()->json([
                 'status' => true,
@@ -364,10 +373,117 @@ class AuthController extends Controller
         return response()->json(['status' => false, 'data' => [], 'error' => ["message" => 'Your Account Has Been Banned.']]);
       }
       $expired = auth()->factory()->getTTL() * 60;
+      $this->recordLoginSession(auth()->user(), $token, $request);
 
       return response()->json(['status' => true, 'data' => ['token' => $token, 'expires_in' => $expired, 'user' => new UserResource(auth()->user())], 'error' => []]);
     } catch (\Exception $e) {
       return response()->json(['status' => true, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+    }
+  }
+
+  /**
+   * Record a login session (device/IP/time) and email a new-device alert.
+   * Fully fail-safe: any error here is swallowed so login can never break.
+   * Alert email only fires when generalsettings.login_alert_enabled = 1.
+   */
+  private function recordLoginSession($user, $token, Request $request)
+  {
+    try {
+      if (!$user) {
+        return;
+      }
+      $ip = $request->ip();
+      $agent = substr((string) $request->userAgent(), 0, 255);
+      $deviceName = $request->input('device_name');   // app sends this in Phase 2; null for now
+      $appVersion = $request->input('app_version');
+
+      $jti = null;
+      try {
+        $jti = JWTAuth::setToken($token)->getPayload()->get('jti');
+      } catch (\Throwable $e) {
+        // jti is best-effort (only needed for future remote-revoke).
+      }
+
+      // Does the user already have ANY recorded session? Their very first
+      // recorded login is the baseline — we never alert on it (otherwise the
+      // whole existing user base would be emailed on their next login when
+      // alerts are first enabled).
+      $hasPriorSession = \DB::table('user_login_sessions')
+        ->where('user_id', $user->id)
+        ->exists();
+
+      // New device = this (user + user_agent) combo not seen before.
+      $isNewDevice = !\DB::table('user_login_sessions')
+        ->where('user_id', $user->id)
+        ->where('user_agent', $agent)
+        ->exists();
+
+      \DB::table('user_login_sessions')->insert([
+        'user_id'       => $user->id,
+        'token_id'      => $jti,
+        'ip_address'    => $ip,
+        'user_agent'    => $agent,
+        'device_name'   => $deviceName,
+        'app_version'   => $appVersion,
+        'last_login_at' => now(),
+        'created_at'    => now(),
+        'updated_at'    => now(),
+      ]);
+
+      // Alert only when: alerts enabled, it's a NEW device, AND the user
+      // already had a baseline session (so first-ever login stays silent).
+      $enabled = (int) (optional(\App\Models\Generalsetting::first())->login_alert_enabled ?? 0);
+      if ($isNewDevice && $hasPriorSession && $enabled === 1 && !empty($user->email)) {
+        $this->sendLoginAlert($user, $ip, $agent, $deviceName);
+      }
+    } catch (\Throwable $e) {
+      \Log::warning('login session record failed: ' . $e->getMessage());
+    }
+  }
+
+  private function sendLoginAlert($user, $ip, $agent, $deviceName)
+  {
+    try {
+      $when = now()->format('d M Y, h:i A');
+      $device = $deviceName ?: $agent;
+      $body = 'Hello ' . e($user->name) . ',<br><br>'
+        . 'A new sign-in to your account was just detected:<br><br>'
+        . '<b>Device:</b> ' . e($device) . '<br>'
+        . '<b>IP address:</b> ' . e($ip) . '<br>'
+        . '<b>Time:</b> ' . $when . '<br><br>'
+        . 'If this was you, you can ignore this email. If you do not recognise this activity, '
+        . 'please change your password immediately.';
+      $mailer = new \App\Classes\GeniusMailer();
+      $mailer->sendCustomMail([
+        'to'      => $user->email,
+        'subject' => 'New sign-in to your account',
+        'body'    => $body,
+      ]);
+    } catch (\Throwable $e) {
+      \Log::warning('login alert email failed: ' . $e->getMessage());
+    }
+  }
+
+  /**
+   * List the authenticated user's recent login sessions / devices.
+   * Additive endpoint — old app builds simply never call it.
+   */
+  public function devices(Request $request)
+  {
+    try {
+      $user = auth()->user();
+      if (!$user) {
+        return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'Unauthenticated']]);
+      }
+      $rows = \DB::table('user_login_sessions')
+        ->where('user_id', $user->id)
+        ->orderByDesc('last_login_at')
+        ->limit(50)
+        ->get(['id', 'ip_address', 'user_agent', 'device_name', 'app_version', 'last_login_at', 'created_at']);
+
+      return response()->json(['status' => true, 'data' => $rows, 'error' => []]);
+    } catch (\Throwable $e) {
+      return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
     }
   }
 
@@ -408,6 +524,7 @@ class AuthController extends Controller
         $user->email_verified = 'Yes';
         $user->save();
         $token = auth()->login($user);
+        $this->recordLoginSession($user, $token, $request);
         return response()->json(['status' => true, 'data' => ['token' => $token], 'error' => []]);
       }
 
@@ -422,6 +539,7 @@ class AuthController extends Controller
       }
 
       auth()->login($user);
+      $this->recordLoginSession($user, $userToken, $request);
 
       return response()->json(['status' => true, 'data' => ['token' => $userToken, 'user' => auth()->user()], 'error' => []]);
     } catch (\Exception $e) {

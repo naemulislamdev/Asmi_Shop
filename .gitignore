@@ -4,3 +4,6 @@
 project/.env.example
 *.zip
 assets/images
+
+# Local-only ops doc — contains live SSH/DB credentials, never commit
+LOGIN_ALERTS_TESTING.md

@@ -151,6 +151,10 @@
         </li>
     </ul>
 </li>
+<li>
+    <a href="{{ route('admin.live-chat') }}" class="accordion-toggle wave-effect"><i
+            class="fas fa-comments"></i>{{ __('Live Chat') }}</a>
+</li>
     
     <li>
     <a href="#all_user_infos" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i
@@ -492,6 +496,9 @@
         </li>
         <li>
             <a href="{{ route('admin-gs-affilate') }}"><span>{{ __('Affiliate Program') }}</span></a>
+        </li>
+        <li>
+            <a href="{{ route('admin-gs-refer') }}"><span>{{ __('Refer & Earn') }}</span></a>
         </li>
         <li>
             <a href="{{ route('admin-gs-popup') }}"><span>{{ __('Popup Banner') }}</span></a>

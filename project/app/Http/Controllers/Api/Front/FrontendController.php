@@ -645,10 +645,14 @@ class FrontendController extends Controller
                 return response()->json(['status' => true, 'data' => [], 'error' => []]);
             }
 
+            // Same as website search: match name / sku / bn_keywords
+            // (bn_keywords holds Bangla terms). Columns are utf8mb4.
+            $like = '%' . $q . '%';
             $products = Product::where('status', 1)
-                ->where(function ($qq) use ($q) {
-                    $qq->where('name', 'like', '%' . $q . '%')
-                        ->orWhere('sku', 'like', $q . '%');
+                ->where(function ($qq) use ($like) {
+                    $qq->where('name', 'like', $like)
+                        ->orWhere('sku', 'like', $like)
+                        ->orWhere('bn_keywords', 'like', $like);
                 })
                 ->orderByDesc('updated_at')
                 ->take(10)

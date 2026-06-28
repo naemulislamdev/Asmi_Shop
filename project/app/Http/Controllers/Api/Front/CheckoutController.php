@@ -146,13 +146,30 @@ class CheckoutController extends Controller
                 ? json_encode(OrderHelper::product_affilate_check($cart))
                 : null;
 
+            // ---- First-order eligibility (computed up front) ----
+            // Keyed on normalized customer phone (guests included, no login).
+            // generalsettings percent is the master switch (0 = off).
+            // Eligible customers get the auto first-order discount and are
+            // therefore BLOCKED from coupons (no stacking) further below.
+            $normPhone = \App\Helpers\PhoneHelper::normalize($input['customer_phone'] ?? null);
+            $foPercent = (float) optional($gs)->first_order_discount_percent;
+            $foEligible = false;
+            if ($foPercent > 0 && $normPhone) {
+                $foEligible = ! Order::where('order_source', 'Mobile Apps')
+                    ->where('status', '!=', 'cancelled')
+                    ->where('customer_phone_normalized', $normPhone)
+                    ->exists();
+            }
+
             // ---- App coupon (server-authoritative; client-sent amount ignored) ----
             // App sends coupon_code (+ a raw coupon_discount we do NOT trust).
             // Re-validate the code and compute the real amount, then set coupon_id
             // so PriceHelper::getOrderTotal subtracts it.
             $couponId = null;
             $couponCode = trim($input['coupon_code'] ?? '');
-            if ($couponCode !== '') {
+            // First-order-eligible customers already receive the auto discount,
+            // so any coupon they send is ignored (mutually exclusive).
+            if ($couponCode !== '' && ! $foEligible) {
                 $coupon = Coupon::where('code', $couponCode)->where('status', 1)->first();
                 if ($coupon) {
                     $today = date('Y-m-d');
@@ -200,21 +217,13 @@ class CheckoutController extends Controller
             }
 
             // ---- First-order app discount (server-authoritative) ----
-            // Keyed on the normalized customer phone (guests included, no login).
-            // The generalsettings percent is the master switch (0 = off).
+            // Eligibility ($foEligible) was computed up front; eligible orders
+            // get this discount and were blocked from coupons above.
             $firstOrderDiscount = 0;
-            $normPhone = \App\Helpers\PhoneHelper::normalize($input['customer_phone'] ?? null);
-            $foPercent = (float) optional(Generalsetting::find(1))->first_order_discount_percent;
-            if ($foPercent > 0 && $normPhone) {
-                $foUsed = Order::where('order_source', 'Mobile Apps')
-                    ->where('status', '!=', 'cancelled')
-                    ->where('customer_phone_normalized', $normPhone)
-                    ->exists();
-                if (!$foUsed) {
-                    $foSubtotal = (float) ($orderCalculate['total_amount_of_product'] ?? 0);
-                    $firstOrderDiscount = round($foSubtotal * $foPercent / 100, 2);
-                    $orderCalculate['total_amount'] -= $firstOrderDiscount;
-                }
+            if ($foEligible) {
+                $foSubtotal = (float) ($orderCalculate['total_amount_of_product'] ?? 0);
+                $firstOrderDiscount = round($foSubtotal * $foPercent / 100, 2);
+                $orderCalculate['total_amount'] -= $firstOrderDiscount;
             }
             $input['customer_phone_normalized'] = $normPhone;
             $input['first_order_discount'] = $firstOrderDiscount;
@@ -627,6 +636,21 @@ class CheckoutController extends Controller
         if ($coupon) {
             if ((string) ($coupon->channel ?? 'all') === 'web') {
                 return response()->json(['status' => false, 'data' => [], 'error' => 'Invalid Coupon']);
+            }
+
+            // First-order-eligible customers get the auto discount instead, so
+            // coupons are unavailable to them. Only gated when the app passes a
+            // phone (optional param); checkout() is the authoritative enforcer.
+            $foPercent = (float) optional(Generalsetting::find(1))->first_order_discount_percent;
+            $normPhone = \App\Helpers\PhoneHelper::normalize($request->phone ?? null);
+            if ($foPercent > 0 && $normPhone) {
+                $foEligible = ! Order::where('order_source', 'Mobile Apps')
+                    ->where('status', '!=', 'cancelled')
+                    ->where('customer_phone_normalized', $normPhone)
+                    ->exists();
+                if ($foEligible) {
+                    return response()->json(['status' => false, 'data' => [], 'error' => 'You already get the first-order discount; coupons are not applicable.']);
+                }
             }
 
             $today = date('Y-m-d');
