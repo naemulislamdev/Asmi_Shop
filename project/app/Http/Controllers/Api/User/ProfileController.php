@@ -293,4 +293,44 @@ class ProfileController extends Controller
             return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
         }
     }
+
+    /**
+     * Refer & Earn: the user's referral code + share text + stats.
+     */
+    public function referral()
+    {
+        try {
+            $user = Auth::guard('api')->user();
+            if (!$user) {
+                return response()->json(['status' => false, 'data' => [], 'error' => ['message' => 'Unauthenticated.']], 401);
+            }
+
+            $code = \App\Helpers\ReferralHelper::codeForUser($user);
+            $gs   = \App\Models\Generalsetting::find(1);
+
+            $rows     = \App\Models\Referral::where('referrer_id', $user->id)->get();
+            $pending  = $rows->where('status', 'pending')->count();
+            $rewarded = $rows->where('status', 'rewarded')->count();
+            $earned   = (int) $rows->where('status', 'rewarded')->sum('referrer_points');
+
+            return response()->json([
+                'status' => true,
+                'data'   => [
+                    'code'            => $code,
+                    'share_text'      => 'Use my code ' . $code . ' on ASMI SuperShop and we both earn reward points!',
+                    'referrer_points' => (int) optional($gs)->refer_referrer_points,
+                    'referee_points'  => (int) optional($gs)->refer_referee_points,
+                    'is_enabled'      => (int) optional($gs)->is_refer === 1,
+                    'total_invited'   => $rows->count(),
+                    'pending'         => $pending,
+                    'rewarded'        => $rewarded,
+                    'points_earned'   => $earned,
+                    'wallet_points'   => (float) ($user->wallet_points ?? 0),
+                ],
+                'error' => [],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'data' => [], 'error' => ['message' => $e->getMessage()]]);
+        }
+    }
 }

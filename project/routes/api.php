@@ -145,6 +145,7 @@ Route::group(['prefix' => 'user'], function () {
           // ---------------------AFFILATE CONTROLLER ---------------------
 
           Route::get('/affilate/program', 'Api\User\ProfileController@affilateProgram');
+          Route::get('/referral', 'Api\User\ProfileController@referral');
           Route::get('/affilate/history', 'Api\User\ProfileController@affilateHistory');
 
           // ---------------------AFFILATE CONTROLLER ENDS ---------------------

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Front;
 use App\Classes\GeniusMailer;
 use App\Helpers\OrderHelper;
 use App\Helpers\PriceHelper;
+use App\Helpers\ReferralHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderDetailsResource;
 use App\Models\Cart;
@@ -251,6 +252,10 @@ class CheckoutController extends Controller
             if ($couponId) {
                 OrderHelper::coupon_check($couponId);
             }
+
+            // ---- referral capture (first-order only, fail-safe, gated by is_refer) ----
+            ReferralHelper::captureAtCheckout($request->referral_code ?? null, $order);
+            // ---- end referral capture ----
 
             $order->tracks()->create([
                 'title' => 'Pending',

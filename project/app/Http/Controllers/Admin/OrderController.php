@@ -655,6 +655,14 @@ class OrderController extends AdminBaseController
 
             $data->update();
 
+            // ---- referral reward / reverse (idempotent, fail-safe, gated by is_refer) ----
+            if ($input['status'] == 'completed') {
+                \App\Helpers\ReferralHelper::rewardForOrder($data);
+            } elseif (in_array($input['status'], ['cancelled', 'return'])) {
+                \App\Helpers\ReferralHelper::reverseForOrder($data);
+            }
+            // ---- end referral ----
+
             if ($request->track_text) {
                 $title = ucwords($request->status);
                 $ck = OrderTrack::where('order_id', '=', $id)->where('title', '=', $title)->first();
