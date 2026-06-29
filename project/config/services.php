@@ -34,4 +34,9 @@ return [
     'genius' => [
         'ocean' => 'https://geniusocean.com/verify/'
     ],
+
+    'appcheck' => [
+        'project_number' => env('APPCHECK_PROJECT_NUMBER'),
+        'app_ids' => env('APPCHECK_APP_IDS'),
+    ],
 ];

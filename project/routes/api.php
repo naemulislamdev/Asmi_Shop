@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+// Device identity / App Check attestation (public — guests have devices too).
+Route::post('device/register', 'Api\Front\DeviceController@register');
+
 Route::group(['prefix' => 'user'], function () {
 
     Route::post('registration', 'Api\Auth\AuthController@register');
