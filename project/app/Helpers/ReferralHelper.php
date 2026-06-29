@@ -106,8 +106,10 @@ class ReferralHelper
     }
 
     /**
-     * True when the referee order shares a delivery address or GPS point with
-     * any of the referrer's own past orders (same-person / household farming).
+     * True when the referee order shares a delivery address with any of the
+     * referrer's own past orders (same-person / household self-refer).
+     * Address only — GPS correlation intentionally NOT used: it false-blocks
+     * legit referrals from the same building/flat (apartments share coords).
      */
     protected static function sharesIdentity(User $referrer, Order $order): bool
     {
@@ -118,22 +120,14 @@ class ReferralHelper
             return mb_strtolower(trim(preg_replace('/\s+/', ' ', (string) $s)));
         };
         $addr = $norm($order->customer_address);
-        $lat  = $order->order_lat;
-        $lng  = $order->order_lng;
+        if ($addr === '') return false;
 
         $referrerOrders = Order::where('customer_phone_normalized', $rNorm)
-            ->get(['customer_address', 'order_lat', 'order_lng']);
+            ->get(['customer_address']);
 
         foreach ($referrerOrders as $ro) {
-            if ($addr !== '' && $addr === $norm($ro->customer_address)) {
+            if ($addr === $norm($ro->customer_address)) {
                 return true;
-            }
-            if ($lat && $lng && $ro->order_lat && $ro->order_lng) {
-                // ~11m precision at 4 decimal places.
-                if (round((float) $lat, 4) === round((float) $ro->order_lat, 4)
-                    && round((float) $lng, 4) === round((float) $ro->order_lng, 4)) {
-                    return true;
-                }
             }
         }
         return false;
