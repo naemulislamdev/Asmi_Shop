@@ -42,7 +42,7 @@ class ReferralHelper
      * Record a pending referral when a referee uses a code on their FIRST order.
      * Fail-safe: never throws into the checkout flow.
      */
-    public static function captureAtCheckout(?string $code, Order $order): void
+    public static function captureAtCheckout(?string $code, Order $order, ?string $deviceId = null, bool $deviceTrusted = false): void
     {
         try {
             $gs = Generalsetting::find(1);
@@ -63,6 +63,25 @@ class ReferralHelper
             $referrerPhone = PhoneHelper::normalize($referrer->phone);
             if ($referrerPhone && $referrerPhone === $refereePhone) return;
 
+            // Device attestation gate (admin-controlled, default OFF).
+            if ((int) ($gs->refer_require_attested_device ?? 0) === 1) {
+                if (!$deviceId || !$deviceTrusted) {
+                    Log::info('referral.capture skipped: no attested device');
+                    return;
+                }
+            }
+
+            // Per-device referral cap (0 = unlimited).
+            $devCap = (int) ($gs->refer_max_per_device ?? 0);
+            if ($deviceId && $devCap > 0) {
+                $devUsed = Referral::where('device_id', $deviceId)
+                    ->whereIn('status', ['pending', 'rewarded'])->count();
+                if ($devUsed >= $devCap) {
+                    Log::info('referral.capture skipped: device cap for ' . $deviceId);
+                    return;
+                }
+            }
+
             // A1: anti-farming — per-referrer lifetime cap (0 = unlimited).
             $cap = (int) ($gs->refer_max_per_referrer ?? 0);
             if ($cap > 0) {
@@ -82,6 +101,7 @@ class ReferralHelper
                 'referee_phone_normalized' => $refereePhone,
                 'code'                     => strtoupper(trim($code)),
                 'order_id'                 => $order->id,
+                'device_id'                => $deviceId,
                 'status'                   => 'pending',
                 'created_at'               => now(),
             ]);

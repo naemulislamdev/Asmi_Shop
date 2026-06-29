@@ -85,6 +85,25 @@
                         </div>
 
                         <div class="row justify-content-center">
+                          <div class="col-lg-3"><div class="left-area"><h4 class="heading">{{ __('Max referrals per device') }}</h4></div></div>
+                          <div class="col-lg-6">
+                            <input type="number" step="1" min="0" class="input-field" placeholder="{{ __('0 = unlimited') }}" name="refer_max_per_device" value="{{ $gs->refer_max_per_device }}">
+                            <small>{{ __('Caps referrals from one physical device. 0 = unlimited.') }}</small>
+                          </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                          <div class="col-lg-3"><div class="left-area"><h4 class="heading">{{ __('Require attested device') }}</h4></div></div>
+                          <div class="col-lg-6">
+                            <select class="process select droplinks {{ $gs->refer_require_attested_device == 1 ? 'drop-success' : 'drop-danger' }}">
+                              <option data-val="1" value="{{route('admin-gs-status',['refer_require_attested_device',1])}}" {{ $gs->refer_require_attested_device == 1 ? 'selected' : '' }}>{{ __('Required') }}</option>
+                              <option data-val="0" value="{{route('admin-gs-status',['refer_require_attested_device',0])}}" {{ $gs->refer_require_attested_device == 0 ? 'selected' : '' }}>{{ __('Not required') }}</option>
+                            </select>
+                            <small>{{ __('When required, only attested (genuine-app) devices earn referrals.') }}</small>
+                          </div>
+                        </div>
+
+                        <div class="row justify-content-center">
                           <div class="col-lg-3">
                             <div class="left-area">
 

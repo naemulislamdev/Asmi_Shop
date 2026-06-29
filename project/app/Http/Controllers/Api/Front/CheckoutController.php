@@ -254,7 +254,18 @@ class CheckoutController extends Controller
             }
 
             // ---- referral capture (first-order only, fail-safe, gated by is_refer) ----
-            ReferralHelper::captureAtCheckout($request->referral_code ?? null, $order);
+            $devReg = \App\Services\DeviceService::register(
+                $request->device_id ?? null,
+                $request->app_check_token ?? null,
+                $request->device_platform ?? 'android',
+                $order->customer_phone_normalized
+            );
+            ReferralHelper::captureAtCheckout(
+                $request->referral_code ?? null,
+                $order,
+                $devReg['device_id'],
+                (bool) $devReg['attested']
+            );
             // ---- end referral capture ----
 
             $order->tracks()->create([
