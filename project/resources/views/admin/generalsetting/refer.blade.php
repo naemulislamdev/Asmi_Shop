@@ -75,6 +75,18 @@
                         <div class="row justify-content-center">
                           <div class="col-lg-3">
                             <div class="left-area">
+                                <h4 class="heading">{{ __('Max uses per referral code') }}</h4>
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <input type="number" step="1" min="0" class="input-field" placeholder="{{ __('0 = unlimited') }}" name="refer_max_per_referrer" value="{{ $gs->refer_max_per_referrer }}">
+                            <small>{{ __('How many times one user\'s code can earn rewards. 0 = unlimited.') }}</small>
+                          </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                          <div class="col-lg-3">
+                            <div class="left-area">
 
                             </div>
                           </div>

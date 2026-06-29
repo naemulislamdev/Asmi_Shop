@@ -74,13 +74,6 @@ class ReferralHelper
                 }
             }
 
-            // A1: anti-farming — reject when referee shares the referrer's own
-            // delivery address or GPS point (same person / household self-refer).
-            if (self::sharesIdentity($referrer, $order)) {
-                Log::info('referral.capture skipped: shared identity referrer ' . $referrer->id);
-                return;
-            }
-
             // One referral per referee, ever (DB UNIQUE is the real guard).
             if (Referral::where('referee_phone_normalized', $refereePhone)->exists()) return;
 
@@ -103,34 +96,6 @@ class ReferralHelper
         } catch (\Throwable $e) {
             Log::error('referral.capture failed: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * True when the referee order shares a delivery address with any of the
-     * referrer's own past orders (same-person / household self-refer).
-     * Address only — GPS correlation intentionally NOT used: it false-blocks
-     * legit referrals from the same building/flat (apartments share coords).
-     */
-    protected static function sharesIdentity(User $referrer, Order $order): bool
-    {
-        $rNorm = PhoneHelper::normalize($referrer->phone);
-        if (!$rNorm) return false;
-
-        $norm = function ($s) {
-            return mb_strtolower(trim(preg_replace('/\s+/', ' ', (string) $s)));
-        };
-        $addr = $norm($order->customer_address);
-        if ($addr === '') return false;
-
-        $referrerOrders = Order::where('customer_phone_normalized', $rNorm)
-            ->get(['customer_address']);
-
-        foreach ($referrerOrders as $ro) {
-            if ($addr === $norm($ro->customer_address)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
