@@ -101,6 +101,8 @@
 
 @section('scripts')
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
     <script>
         var TOKEN = @json($chatToken);
         var BASE = @json($chatBase);
@@ -335,6 +337,37 @@
             }
         }
 
+        // FCM web push: registers this browser so the agent is notified even when
+        // the console tab is closed. Client-public config; safe to inline.
+        var FCM_VAPID = 'BFGJdbi4OLfLbKp8fQzdiu4Pbeg29r60p-21bg2SBAd9UoY8htJLWoet54plfI_PTOiMU4rguGRcUFlIJEG7Nkw';
+        var FCM_CONFIG = {
+            apiKey: 'AIzaSyBGUw7ijdogjwlBpCgnJSVE2_hcmmalSX4',
+            authDomain: 'asmi-shop.firebaseapp.com',
+            projectId: 'asmi-shop',
+            storageBucket: 'asmi-shop.firebasestorage.app',
+            messagingSenderId: '401152501376',
+            appId: '1:401152501376:web:146de2d90b8d1286eaa865'
+        };
+        async function initPush() {
+            try {
+                if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
+                if (typeof firebase === 'undefined' || !firebase.messaging) return;
+                var perm = Notification.permission;
+                if (perm === 'default') perm = await Notification.requestPermission();
+                if (perm !== 'granted') return;
+                var reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                if (!firebase.apps.length) firebase.initializeApp(FCM_CONFIG);
+                var messaging = firebase.messaging();
+                var token = await messaging.getToken({ vapidKey: FCM_VAPID, serviceWorkerRegistration: reg });
+                if (!token) return;
+                await fetch(BASE + '/admin/push/register', {
+                    method: 'POST',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+                    body: JSON.stringify({ token: token })
+                });
+            } catch (e) { console.log('push init skipped:', e && e.message); }
+        }
+
         function desktopNotify(conv, body) {
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
             var who = conv && conv.guest_name ? conv.guest_name
@@ -379,6 +412,7 @@
         document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') refreshTitle(); });
 
         setupNotifications();
+        initPush();
         loadAdmins();
         initSocket();
         loadInbox();
