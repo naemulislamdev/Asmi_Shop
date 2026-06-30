@@ -212,11 +212,17 @@ if ($request->ajax()) {
         ->where(function ($query) use ($keyword) {
             $query->where('name', 'like', "%{$keyword}%")
                   ->orWhere('sku', 'like', "%{$keyword}%")
+                  ->orWhere('tags', 'like', "%{$keyword}%")
                   ->orWhere('bn_keywords', 'like', "%{$keyword}%");
         })
-        ->paginate(20);
-
-    return view('frontend.search', compact('products', 'keyword'));
+        ->paginate(20)
+        ->appends($request->query());
+         if ($request->ajax()) {
+            return response()->json([
+                'html' => view('frontend.ajax.search_results_page', compact('products'))->render(),
+            ]);
+        }
+    return view('frontend.search_page', compact('products', 'keyword'));
 }
 
 public function ajaxSearch(Request $request)

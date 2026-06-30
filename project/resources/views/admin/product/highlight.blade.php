@@ -100,6 +100,20 @@
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="left-area">
+                                                <h4 class="heading">{{ __('Highlight in') }} {{ __('Combo Offer') }} *</h4>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label class="switch">
+                                                <input type="checkbox" name="combo_offer" value="1"
+                                                    {{ $data->combo_offer == 1 ? 'checked' : '' }}>
+                                                <span class="slider round"></span>
+                                            </label>
+                                        </div>
+                                    </div>
 
                                     <div class="row">
                                         <div class="col-lg-5">
@@ -112,10 +126,7 @@
                                                 type="submit">{{ __('Submit') }}</button>
                                         </div>
                                     </div>
-
-
                                 </form>
-
 
                             </div>
                         </div>

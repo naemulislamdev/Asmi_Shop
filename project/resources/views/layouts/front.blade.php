@@ -797,13 +797,13 @@
             }
           
             .cartOffCanva {
-                top: 106px !important;
+                top: 154px !important;
             }
             .mobile-offcanvas {
                 top: 88px;
             }
             .cartOffCanva .order-btn-box {
-                bottom: 0;
+                bottom: 51px;
             }
             .footer-bottom-content {
                 padding-bottom: 45px;
@@ -825,6 +825,14 @@
         padding-top: 0 !important;
         padding-bottom: 0 !important;
     }
+    .single-product .img-wrapper .add-to-wishlist-btn, .single-product-list-view .img-wrapper .add-to-wishlist-btn {
+    width: 30px;
+    height: 30px;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    padding: 5px;
+    right: 0;
+    bottom: 6px;
+}
 </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/front') }}/css/sidebar.css">
@@ -867,16 +875,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <!-- Offers Section -->
         <div class="offers-container">
-    		   @foreach ($categories as $category)
-                @if ($category->name == 'Combo Offers')
-                    <a style="font-size: 15px; color: #1598a7" href="{{ route('front.category', $category->slug) }}">
+                    <a style="font-size: 15px; color: #1598a7" href="{{ route('front.combo_offers') }}">
 <img class="rounded" style="width: 50px"
-                            src="{{ asset('assets/images/categories') }}/{{ $category->image }}" alt="{{ $category->name }}">
-                        {{ $category->name }}
+                            src="{{ asset('assets/front/images/combo_offer.jpg') }}" alt="Combo offer">
+                        Combo Offers
                         
                     </a>
-                @endif
-            @endforeach
             <a href="{{ route('front.offers') }}" class="d-flex gap-2 align-items-center mb-2 ">
                 <p style="font-size: 15px; color: #1598a7" class="pb-0 mb-0 d-flex">
                     Current Offers
@@ -1320,10 +1324,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <small>WishList</small>
                 </a> --}}
 
-                <a class="text-center" data-bs-toggle="offcanvas" href="#searchOffcanvas" role="button"
+                <!-- <a class="text-center" data-bs-toggle="offcanvas" href="#searchOffcanvas" role="button"
                     aria-controls="searchOffcanvas"><i class="bi bi-search"></i>
                     <small>Search</small>
-                </a>
+                </a> -->
 
                 @if (Auth::guard('web')->check())
                     <a href="{{ route('user-dashboard') }}" class="text-center"><i class="bi bi-person-circle"
@@ -1366,96 +1370,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button type="button" style="top: 14px;" class="btn-close position-absolute  end-0 m-2"
             data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="modal fade" id="userLoginFirst" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+
+   <div class="modal fade" id="userLoginFirst" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form method="GET" action="#">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Login</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 mx-auto reg-area">
+                            <div class="reg-content">
+                                <h4 class="text-center">@lang('You need to first login!') </h4>
+                                <form id="guestLoginForm" action="{{ route('modal.login.submit') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="product_id" id="modal_product_id">
 
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-12 mx-auto reg-area">
-                                <div class="reg-content">
-                                    <h4 class="text-center">@lang('Welcome Back! Please login') </h4>
-                                    <form action="{{ route('user.login.submit') }}" method="POST">
-                                        @csrf
-                                        <div class="form-group">
+                                    <div class="mb-2">
+                                        <label for="name">@lang('Name')</label>
+                                        <input type="text" name="name" class="form-control" id="name"
+                                            placeholder="@lang('Enter your name')">
+                                        <span class="small text-danger name-error"></span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="phone">@lang('Phone')</label>
+                                        <input type="text" name="phone" class="form-control" id="phone"
+                                            placeholder="@lang('Enter your phone')">
+                                        <span class="small text-danger phone-error"></span>
+                                    </div>
 
-                                            <div>
-                                                <label for="phone">@lang('Phone')</label>
-                                                <input type="number" name="phone" class="form-control"
-                                                    id="phone" placeholder="@lang('Enter your phone')">
-                                                <span id="phoneFeedback" class="small text-danger"></span>
+                                    <div class="mb-3">
+                                        <label for="address">@lang('Address')</label>
+                                        <textarea class="form-control" name="address" id="address"></textarea>
+                                        <span class="small text-danger address-error"></span>
+                                    </div>
 
-                                                @if ($errors->has('phone'))
-                                                    <span class="text-danger">{{ $errors->first('phone') }}</span>
-                                                @endif
-                                            </div>
-
-                                            <div>
-                                                <label for="create-password">@lang('Your Password')</label>
-                                                <div class="pass-wrapper">
-                                                    <input type="password" name="password" class="form-control"
-                                                        id="create-password" placeholder="@lang('Enter your password')">
-                                                </div>
-                                            </div>
-
-                                            @error('password')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-
-                                            <div class="row mt-2 align-items-center">
-                                                <div class="col d-flex ">
-                                                    <!-- Checkbox -->
-                                                    <div class="gs-checkbox-wrapper">
-
-                                                        <input type="checkbox" value="" id="form2Example31">
-                                                        <label class="icon-label pb-0 mb-3" for="form2Example31">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12"
-                                                                height="12" viewBox="0 0 12 12" fill="none">
-                                                                <path d="M10 3L4.5 8.5L2 6" stroke="#EE1243"
-                                                                    stroke-width="1.6666" stroke-linecap="round"
-                                                                    stroke-linejoin="round" />
-                                                            </svg>
-                                                        </label>
-                                                        <label for="form2Example31"> @lang('Remember me')
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col d-flex justify-content-end login-forgot">
-                                                    <!-- Simple link -->
-                                                    <a href="{{ route('user.forgot') }}">@lang('Forgot password?')</a>
-                                                </div>
-                                            </div>
-
-
-
-                                            <button type="submit"
-                                                class="template-btn btn-forms">@lang('Login')</button>
-
-                                            <p class="login-redirect">@lang("Don't have an account?")
-                                                <span>
-                                                    <a href="{{ route('user.register') }}">@lang('Create New Account')
-                                                    </a>
-                                                </span>
-                                            </p>
-                                        </div>
-                                    </form>
-                                </div>
+                                    <div class=" text-center">
+                                        <button type="submit" class="btn btn-primary w-50">@lang('Submit')</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
     </div>

@@ -295,7 +295,16 @@ class ProductController extends AdminBaseController
             }
         }
 
-        
+        if ($request->is_flash_deal == 1) {
+            $input['is_flash_deal'] = 1;
+            $input['start_date'] = $request->start_date;
+            $input['end_date'] = $request->end_date;
+        } else {
+            $input['is_flash_deal'] = 0;
+            $input['start_date'] = null;
+            $input['end_date'] = null;
+        }
+
 
         if ($request->type == "Physical" || $request->type == "Listing") {
             $rules = ['sku' => 'min:4|unique:products'];
@@ -1050,6 +1059,9 @@ class ProductController extends AdminBaseController
         if ($request->trending == "") {
             $input['trending'] = 0;
         }
+        if ($request->combo_offer == "") {
+            $input['combo_offer'] = 0;
+        }
         if ($request->sale == "") {
             $input['sale'] = 0;
         }
@@ -1067,8 +1079,8 @@ class ProductController extends AdminBaseController
         $msg = __('Highlight Updated Successfully.');
         return response()->json($msg);
         //--- Redirect Section Ends
-
     }
+
 
     //*** GET Request
     public function destroy($id)

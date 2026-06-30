@@ -10,7 +10,7 @@ use App\Models\Blog;
 use App\Models\Branch;
 use App\Models\Slider;
 use App\Models\CouponSlider;
-
+use App\Models\ComboOffer;
 use App\Models\BlogCategory;
 use App\Models\Category;
 use App\Models\Childcategory;
@@ -293,6 +293,7 @@ public function promoOffers()
         $topProductIds = array_slice(array_keys($sellCount), 0, 24); // top 24
 
         $data['popular_products'] = Product::whereIn('id', $topProductIds)
+        ->where('stock', '>', 0) 
             ->get()
             ->sortBy(fn($p) => array_search($p->id, $topProductIds))
             ->values();
@@ -393,9 +394,9 @@ public function promoOffers()
             ->latest()->first();
 
         $data['blogs'] = Blog::latest()->take(2)->get();
-     $data['promoOffers'] = $promoOffers;
+        $data['promoOffers'] = $promoOffers;
         $data['coupon_sliders'] = CouponSlider::where('published', 1)->get();
-
+        $data["comboProducts"] = ComboOffer::where("status", 1)->get();
         return view('frontend.index', $data);
     }
      public function popularProducts()
@@ -812,6 +813,158 @@ public function promoOffers()
         }
 
         return view('frontend.offers', $data);
+    }
+    public function combo_Offers(Request $request, $slug = null, $slug1 = null, $slug2 = null, $slug3 = null)
+    {
+        $data['categories'] = Category::where('status', 1)->get();
+
+        if ($request->view_check) {
+            session::put('view', $request->view_check);
+        }
+
+        //   dd(session::get('view'));
+
+        $cat = null;
+        $subcat = null;
+        $childcat = null;
+        $flash = null;
+        $minprice = $request->min;
+        $maxprice = $request->max;
+        $sort = $request->sort;
+        $search = $request->search;
+        $pageby = $request->pageby;
+
+        $minprice = ($minprice / $this->curr->value);
+        $maxprice = ($maxprice / $this->curr->value);
+        $type = $request->has('type') ?? '';
+
+        if (!empty($slug)) {
+            $cat = Category::where('slug', $slug)->firstOrFail();
+            $data['cat'] = $cat;
+            //$data['cat_banner'] = $cat->photo;
+        }
+
+        if (!empty($slug1)) {
+            $subcat = Subcategory::where('slug', $slug1)->firstOrFail();
+            $data['subcat'] = $subcat;
+        }
+        if (!empty($slug2)) {
+            $childcat = Childcategory::where('slug', $slug2)->firstOrFail();
+            $data['childcat'] = $childcat;
+        }
+
+        $prods = Product::with('user')
+            ->where('combo_offer', 1)
+            ->orderByDesc('updated_at') // latest updated discount products first
+            ->orderByDesc('stock')
+            ->when($cat, function ($query, $cat) {
+                return $query->where('category_id', $cat->id);
+            })
+            ->when($subcat, function ($query, $subcat) {
+                return $query->where('subcategory_id', $subcat->id);
+            })
+           
+            ->when($childcat, function ($query, $childcat) {
+                return $query->where('childcategory_id', $childcat->id);
+            })
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%')->orWhere('sku', 'like', $search . '%');
+            })
+            ->when($minprice, function ($query, $minprice) {
+                return $query->where('price', '>=', $minprice);
+            })
+            ->when($maxprice, function ($query, $maxprice) {
+                return $query->where('price', '<=', $maxprice);
+            })
+            ->when($sort, function ($query, $sort) {
+                if ($sort == 'date_desc') {
+                    return $query->latest('id');
+                } elseif ($sort == 'date_asc') {
+                    return $query->oldest('id');
+                } elseif ($sort == 'price_desc') {
+                    return $query->latest('price');
+                } elseif ($sort == 'price_asc') {
+                    return $query->oldest('price');
+                }
+            })
+            ->when(empty($sort), function ($query, $sort) {
+                return $query->latest('id');
+            })
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating');
+
+        $prods = $prods->where(function ($query) use ($cat, $subcat, $childcat, $type, $request) {
+            $flag = 0;
+            if (!empty($cat)) {
+                foreach ($cat->attributes as $key => $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($subcat)) {
+                foreach ($subcat->attributes as $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0 && $flag == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($childcat)) {
+                foreach ($childcat->attributes as $attribute) {
+                    $inname = $attribute->input_name;
+                    $chFilters = $request["$inname"];
+
+                    if (!empty($chFilters)) {
+                        $flag = 1;
+                        foreach ($chFilters as $key => $chFilter) {
+                            if ($key == 0 && $flag == 0) {
+                                $query->where('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            } else {
+                                $query->orWhere('attributes', 'like', '%' . '"' . $chFilter . '"' . '%');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        $prods = $prods->where('status', 1)->get()
+
+            ->map(function ($item) {
+                $item->price = $item->vendorSizePrice();
+                return $item;
+            })->paginate(isset($pageby) ? $pageby : $this->gs->page_count);
+
+
+        $data['prods'] = $prods;
+        if ($request->ajax()) {
+            $data['ajax_check'] = 1;
+            return view('frontend.ajax.category', $data);
+        }
+
+        return view('frontend.combo_offers', $data);
     }
 
     // -------------------------------- BLOG SECTION ----------------------------------------
@@ -1252,5 +1405,12 @@ public function promoOffers()
     {
         $outlets = Branch::where("status", 1)->orderBy('order')->get();
         return view("frontend.outlets", compact('outlets'));
+    }
+     public function comboProduct($slug)
+    {
+        $comboProduct = ComboOffer::where('slug', $slug)->where('status', 1)->first();
+        if ($comboProduct) {
+            return view('frontend.comboProduct.index', compact('comboProduct'));
+        }
     }
 }

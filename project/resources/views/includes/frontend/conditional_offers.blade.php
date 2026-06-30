@@ -221,13 +221,6 @@
                         }
                     @endphp
 
-                    <!-- product nav wrapper -->
-                    <div class=" product-nav-wrapper mb-3 rounded-bottom">
-                        <h5>@lang('You have Get Offer Product') </h5>
-                    </div>
-
-
-
                     @if ($prods->count() == 0)
                         <!-- product nav wrapper for no data found -->
                         <div class="product-nav-wrapper rounded-bottom d-flex justify-content-center ">
@@ -256,7 +249,7 @@
                                 </div>
                                 <div class="promoOfferList">
 
-                                    <div class="promoOfferCard promoOfferCard--green">
+                                    <!-- <div class="promoOfferCard promoOfferCard--green">
                                         <div class="promoOfferAccent"></div>
                                         <div class="promoOfferBody">
                                             <div class="promoOfferIcon">🥔</div>
@@ -266,7 +259,7 @@
                                             </div>
                                             <div class="promoOfferBadge">বিনামূল্যে</div>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="promoOfferCard promoOfferCard--amber">
                                         <div class="promoOfferAccent"></div>
@@ -280,7 +273,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="promoOfferCard promoOfferCard--blue">
+                                    <!-- <div class="promoOfferCard promoOfferCard--blue">
                                         <div class="promoOfferAccent"></div>
                                         <div class="promoOfferBody">
                                             <div class="promoOfferIcon">🥚</div>
@@ -313,7 +306,7 @@
                                                 <div class="promoOfferDesc">২ লিটার সয়াবিন তেল পাবেন</div>
                                             </div>
                                             <div class="promoOfferBadge">মাত্র ২ ৳</div>
-                                        </div>
+                                        </div> -->
                                     </div>
 
                                 </div>

@@ -191,10 +191,14 @@
                 @if ($product->preordered == 2)
                     <div class="w-100 d-block mt-auto" data-product-id="{{ $product->id }}">
                        <button
-                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center @if ($checkUser) click_to_request_item @endif"
-                            type="button" @if ($checkUser) data-href="{{ route('request.product', $product->id) }}"
-                            data-product-id="{{ $product->id }}" @else data-bs-toggle="modal"
-                                            data-bs-target="#userLoginFirst" @endif>
+                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center @if ($checkUser) click_to_request_item @else open_guest_login_modal @endif"
+                            type="button"
+                            @if ($checkUser) data-href="{{ route('request.product', $product->id) }}"
+        data-product-id="{{ $product->id }}"
+    @else
+        data-bs-toggle="modal"
+        data-bs-target="#userLoginFirst"
+        data-product-id="{{ $product->id }}" @endif>
                             <i class="fa fa-bell me-2"></i> Request Item
                         </button>
                     </div>

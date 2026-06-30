@@ -8,11 +8,15 @@ use App\Models\Cart;
 use App\Models\Country;
 use App\Models\Generalsetting;
 use App\Models\Product;
+use App\Models\Order;
 use App\Models\State;
 use App\Helpers\PriceHelper;
 use Illuminate\Http\Request;
 use App\Models\PaymentGateway;
 use App\Models\RequestItem;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Svg\Tag\Rect;
 
@@ -47,7 +51,38 @@ class CartController extends Controller
         $mainTotal = $totalPrice;
         $totalQty = $cart->totalQty;
 
-        return view('frontend.cart', compact('products', 'totalPrice', 'mainTotal', 'gateways', 'digital', 'totalQty'));
+        $orders = Order::whereNotNull('cart')->get(['cart']);
+
+        $sellCount = [];
+
+        foreach ($orders as $order) {
+            $cart = json_decode($order->cart, true);
+            if (empty($cart['items'])) continue;
+
+            foreach ($cart['items'] as $item) {
+                $productId = $item['item']['id'] ?? null;
+                if (!$productId) continue;
+
+                $qty  = (float) ($item['qty'] ?? 0);
+                $unit = $item['unit'] ?? 'pc';
+
+                // gram হলে kg convert করে count করো
+                $effectiveQty = $unit === 'gram' ? $qty / 1000 : $qty;
+
+                $sellCount[$productId] = ($sellCount[$productId] ?? 0) + $effectiveQty;
+            }
+        }
+
+        arsort($sellCount);
+        $topProductIds = array_slice(array_keys($sellCount), 0, 24); // top 24
+
+        $suggestedProducts = Product::whereIn('id', $topProductIds)
+        ->where('status',1)
+            ->get()
+            ->sortBy(fn($p) => array_search($p->id, $topProductIds))
+            ->values();
+
+        return view('frontend.cart', compact('products', 'totalPrice', 'mainTotal', 'gateways', 'digital', 'totalQty', 'suggestedProducts'));
     }
 
     public function cartview()
@@ -441,7 +476,7 @@ class CartController extends Controller
 
                 if ($cartTotal >= $amount) {
 
-                    $product = Product::where('sku', $sku)->first();
+                    $product = Product::where('sku', $sku)->where('status', 1)->first();
 
                     if (!$product) continue;
 
@@ -485,7 +520,7 @@ public function getOfferInfo($id)
     foreach ($offers as $offer) {
         $offerProducts = json_decode($offer->offer_products, true);
         foreach ($offerProducts as $op) {
-            $matchProduct = Product::where('sku', $op['sku'])->first();
+            $matchProduct = Product::where('sku', $op['sku'])->where('status', 1)->first();
             if ($matchProduct && $matchProduct->id == $id) {
 
                 // ✅ Eligible হলে popup দেখাবে না
@@ -519,6 +554,44 @@ public function getOfferInfo($id)
         return response()->json([
             'status'  => 'success',
             'message' => 'Your request has been submitted successfully!',
+        ]);
+    }
+// Front Modal Login submit
+    public function modalLoginSubmit(Request $request)
+    {
+        $request->validate([
+            'name'       => 'required|string|max:255',
+            'phone'      => 'required|string|max:20',
+            'address'    => 'required|string|max:500',
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        // find user by phone, or create new one
+        $user = User::where('phone', $request->phone)->first();
+
+        if (!$user) {
+            $user = User::create([
+                'name'     => $request->name,
+                'phone'    => $request->phone,
+                'address'  => $request->address,
+                'password' => Hash::make($request->phone), // default password, adjust as needed
+            ]);
+        }
+
+        // log the user in
+        Auth::guard('web')->login($user);
+
+        // create the request item now that we have a logged-in user
+        RequestItem::create([
+            'product_id' => $request->product_id,
+            'user_id'    => $user->id,
+            'status'     => 'pending',
+        ]);
+
+        return response()->json([
+            'status'     => 'success',
+            'message'    => 'Your request has been submitted successfully!',
+            'product_id' => $request->product_id,
         ]);
     }
 }

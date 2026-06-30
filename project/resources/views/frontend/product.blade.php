@@ -1076,17 +1076,24 @@
                                     @endif
                                 </div>
                             @endif
-
+                             @php
+                                $checkUser = Auth::guard('web')->check();
+                            @endphp
 
                             @if ($productt->stock <= 0)
                                 @if ($productt->preordered == 2)
                                     <div class="w-100 d-block mt-auto" data-product-id="{{ $productt->id }}">
-                                        <button
-                                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center click_to_request_item"
-                                            type="button" data-href="{{ route('request.product', $productt->id) }}"
-                                            data-product-id="{{ $productt->id }}">
-                                            <i class="fa fa-bell me-2"></i> Request Item
-                                        </button>
+                                      <button
+                            class="btn btn-sm add-cart-btn btn-info d-flex d-block w-100 justify-content-center align-items-center @if ($checkUser) click_to_request_item @else open_guest_login_modal @endif"
+                            type="button"
+                            @if ($checkUser) data-href="{{ route('request.product', $productt->id) }}"
+        data-product-id="{{ $productt->id }}"
+    @else
+        data-bs-toggle="modal"
+        data-bs-target="#userLoginFirst"
+        data-product-id="{{ $productt->id }}" @endif>
+                            <i class="fa fa-bell me-2"></i> Request Item
+                        </button>
                                     </div>
                                 @endif
                             @else
@@ -1322,7 +1329,7 @@
                             </div>
                             <div class="promoOfferList">
 
-                                <div class="promoOfferCard promoOfferCard--green">
+                                <!-- <div class="promoOfferCard promoOfferCard--green">
                                     <div class="promoOfferAccent"></div>
                                     <div class="promoOfferBody">
                                         <div class="promoOfferIcon">🥔</div>
@@ -1332,7 +1339,7 @@
                                         </div>
                                         <div class="promoOfferBadge">বিনামূল্যে</div>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div class="promoOfferCard promoOfferCard--amber">
                                     <div class="promoOfferAccent"></div>
@@ -1346,7 +1353,7 @@
                                     </div>
                                 </div>
 
-                                <div class="promoOfferCard promoOfferCard--blue">
+                                <!-- <div class="promoOfferCard promoOfferCard--blue">
                                     <div class="promoOfferAccent"></div>
                                     <div class="promoOfferBody">
                                         <div class="promoOfferIcon">🥚</div>
@@ -1380,7 +1387,7 @@
                                         </div>
                                         <div class="promoOfferBadge">মাত্র ২ ৳</div>
                                     </div>
-                                </div>
+                                </div> -->
 
                             </div>
                         </div>

@@ -32,6 +32,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/order/track/{id}', 'Front\FrontendController@trackload')->name('front.track.search');
     // BLOG SECTION
     Route::get('/offers/{category?}/{subcategory?}/{childcategory?}', 'Front\FrontendController@offers')->name('front.offers');
+    Route::get('/combo-offers/{category?}/{subcategory?}/{childcategory?}', 'Front\FrontendController@combo_Offers')->name('front.combo_offers');
     Route::get('/pusti-brand-promo/offers/', 'Front\FrontendController@promoOffers')->name('front.promo_offers');
 	 Route::get('/category/Combo-Offers', function () {
         return redirect()->route('front.category', 'family-pack');
@@ -117,6 +118,7 @@ Route::group(['middleware' => 'maintenance'], function () {
     Route::get('/product/offer-info/{id}', [CartController::class, 'getOfferInfo'])->name('product.offer.info');
     Route::get('/removecart/{id}', 'Front\CartController@removecart')->name('product.cart.remove');
     Route::post('/request/product/{id}', 'Front\CartController@requestItem')->name('request.product');
+    Route::post('/modal/login-submit', 'Front\CartController@modalLoginSubmit')->name('modal.login.submit');
     Route::get('/carts/coupon', 'Front\CouponController@coupon');
 
     Route::post('/cart/increment', 'Front\CartController@increment');
@@ -326,6 +328,9 @@ Route::group(['middleware' => 'maintenance'], function () {
     });
 
     // VENDOR AND PAGE SECTION ENDS
+        // combo offer routes
+
+    Route::get('/combo-products/{slug}', 'Front\FrontendController@comboProduct')->name('front.combo-product');
 
     // ************************************ FRONT SECTION ENDS**********************************************
 

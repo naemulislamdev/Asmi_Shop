@@ -61,8 +61,8 @@
             {{-- Desktop Search Box (center, fills remaining space) --}}
             <div class="search-box d-none d-lg-flex position-relative flex-grow-1"
                 style="min-width: 0; max-width: 480px;">
-                <form action="{{ route('front.search') }}" method="GET" style="width: 100%;">
-                    <input autocomplete="off" type="text" name="search" class="searchInput form-control"
+                <form action="{{ route('front.search') }}" method="GET" style="width: 100%;" class="headerSearchForm">
+                    <input autocomplete="off" type="text" name="search" class="searchInput form-control headerSearchInput"
                         placeholder="Search for Products (e.g. " style="width: 100%;" />
                     <div class="typing-placeholder">
                         <span class="typingText"></span>)
@@ -134,19 +134,26 @@
         <!-- Desktop Logo, Menubar, Search End -->
 
         {{-- Mobile Search Box --}}
-        <!-- <div class="search-box d-block d-lg-none position-relative px-2 pb-2">
-            <form action="{{ route('front.search') }}" method="GET">
-                <input autocomplete="off" type="text" name="search" class="searchInput form-control"
+        <div class="search-box d-block d-lg-none position-relative px-2 pb-2">
+            <form action="{{ route('front.search') }}" method="GET" class="headerSearchForm">
+                <input autocomplete="off" type="text" name="search" class="searchInput form-control headerSearchInput"
                     placeholder="Search for Products (e.g. " style="width: 100%;" />
                 <div class="typing-placeholder">
                     <span class="typingText"></span>)
                 </div>
             </form>
+             @php
+                $searchPage = request()->route()->getName();
+                $route = 'front.search';
+                $ifTrue = $searchPage == $route;
+            @endphp
+             @if (!$ifTrue)
             <div class="searchResults"
                 style="min-height: 0; max-height: 300px; overflow-y: auto; overflow-x: hidden;
                        background: #fff; border-radius: 4px; position: absolute;
                        top: 100%; left: 8px; right: 8px; z-index: 9999;">
             </div>
-        </div> -->
+            @endif
+        </div>
     </div>
 </header>

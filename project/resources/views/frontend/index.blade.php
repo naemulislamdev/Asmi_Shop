@@ -399,6 +399,15 @@
             }
 
         }
+     
+    @media (min-width: 992px) and (max-width: 1399px) {
+        .card-timer-badge {
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            padding: 02px !important;
+            border-radius: 3px !important;
+        }
+            }
     </style>
 
 @endsection
@@ -563,6 +572,57 @@
         </div>
     </div>
 
+<!-- Combo Product Section Start -->
+  @if (count($comboProducts) > 0)
+        <section class="gs-explore-product-section" style="background: #ededed">
+            <div class="container">
+                <!-- Title & Nav Tab -->
+                <div class="row mb-36 justify-content-center">
+                    <div class="col-12">
+                        <div class="gs-title-box text-center pt-2">
+                            <h2 class="title wow-replaced">@lang('Exclusive Deals')</h2>
+                        </div>
+                        <!-- Tab Nav -->
+                        <ul class="nav explore-tab-navbar wow-replaced" id="comboTab" role="tablist">
+                            @foreach ($comboProducts as $index => $comboProduct)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {{ $index == 0 ? 'active' : '' }}"
+                                        id="combo-tab-{{ $comboProduct->id }}" data-bs-toggle="tab"
+                                        data-bs-target="#combo-pane-{{ $comboProduct->id }}" type="button"
+                                        role="tab" aria-controls="combo-pane-{{ $comboProduct->id }}"
+                                        aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
+                                        @lang($comboProduct->title)
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="comboTabContent">
+                    @foreach ($comboProducts as $index => $comboProduct)
+                        <div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}"
+                            id="combo-pane-{{ $comboProduct->id }}" role="tabpanel"
+                            aria-labelledby="combo-tab-{{ $comboProduct->id }}" tabindex="0">
+                            <div class="combo-products-card-slider">
+                                @php
+                                    $productIds = json_decode($comboProduct->product_ids, true) ?? [];
+                                    $comboItems = \App\Models\Product::whereIn('id', $productIds)->get();
+                                @endphp
+                                @foreach ($comboItems as $product)
+                                    @include('includes.frontend.home_product')
+                                @endforeach
+                            </div>
+                      
+                        </div>
+                    @endforeach
+                </div>
+
+            </div>
+        </section>
+    @endif
+    <!-- Combo Product Section Completed -->
 
     <!-- Flash Deal Countdown Section -->
     @php
@@ -870,6 +930,58 @@
     @endif
 @endsection
 @push('scripts')
+<script>
+    // combo product slider script start
+
+$(document).ready(function () {
+  initComboSlick($(".tab-pane.active .combo-products-card-slider"));
+});
+
+$('#comboTab button[data-bs-toggle="tab"]').on("shown.bs.tab", function (e) {
+  const target = $(e.target).data("bs-target");
+  const $slider = $(target + " .combo-products-card-slider");
+
+  if ($slider.hasClass("slick-initialized")) {
+    $slider.slick("destroy");
+  }
+  initComboSlick($slider);
+});
+
+function initComboSlick($slider) {
+  const totalItems = $slider.children().length;
+  const useRows = totalItems > 12; // 12 এর বেশি হলে 2 row
+
+  $slider.slick({
+    dots: true,
+    infinite: true,
+    slidesToShow: 5,
+    slidesToScroll: 5,
+    rows: useRows ? 2 : 1,
+    slidesPerRow: 1,
+    speed: 1000,
+    autoplay: true,
+    pauseOnHover: true,
+    fade: false,
+    cssEase: "linear",
+    arrows: false,
+    responsive: [
+      {
+        breakpoint: 1200,
+        settings: { slidesToShow: 4, slidesToScroll: 4, rows: useRows ? 2 : 1 },
+      },
+      {
+        breakpoint: 992,
+        settings: { slidesToShow: 3, slidesToScroll: 3, rows: useRows ? 2 : 1 },
+      },
+      {
+        breakpoint: 768,
+        settings: { slidesToShow: 2, slidesToScroll: 2, rows: useRows ? 2 : 1 },
+      },
+    ],
+  });
+}
+
+</script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll("[data-background]").forEach(function(el) {
