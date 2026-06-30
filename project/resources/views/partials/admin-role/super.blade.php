@@ -153,7 +153,11 @@
 </li>
 <li>
     <a href="{{ route('admin.live-chat') }}" class="accordion-toggle wave-effect"><i
-            class="fas fa-comments"></i>{{ __('Live Chat') }}</a>
+            class="fas fa-comments"></i>{{ __('Live Chat') }}
+        @if (($chatUnread ?? 0) > 0)
+            <span class="badge badge-danger float-right">{{ $chatUnread }}</span>
+        @endif
+    </a>
 </li>
 <li>
     <a href="{{ route('admin.marketing-push') }}" class="accordion-toggle wave-effect"><i

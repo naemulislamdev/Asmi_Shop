@@ -63,6 +63,23 @@ return [
             ]) : [],
         ],
 
+        // Read-only access to the isolated self-hosted live-chat DB (asmi_chat),
+        // used only to show the unread-message badge in the admin sidebar.
+        // Credentials come from the live .env; defaults keep local dev working.
+        'asmi_chat' => [
+            'driver' => 'mysql',
+            'host' => env('CHAT_DB_HOST', '127.0.0.1'),
+            'port' => env('CHAT_DB_PORT', '3306'),
+            'database' => env('CHAT_DB_DATABASE', 'asmi_chat'),
+            'username' => env('CHAT_DB_USERNAME', 'asmi_chat'),
+            'password' => env('CHAT_DB_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

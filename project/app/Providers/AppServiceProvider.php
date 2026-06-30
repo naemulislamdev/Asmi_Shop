@@ -70,6 +70,15 @@ class AppServiceProvider extends ServiceProvider
 
             $d['todayOrders'] = Order::whereDate('created_at', today())->where('status', 'pending')->count();
 
+            // Unread live-chat messages for the sidebar badge. Wrapped: the chat
+            // DB is a separate isolated service — a hiccup must never break a page.
+            try {
+                $d['chatUnread'] = (int) DB::connection('asmi_chat')
+                    ->table('chat_conversations')->sum('unread_admin');
+            } catch (\Throwable $e) {
+                $d['chatUnread'] = 0;
+            }
+
             app()->instance('asmi.viewglobals', $d);
             $view->with($d);
         });
