@@ -155,6 +155,10 @@
     <a href="{{ route('admin.live-chat') }}" class="accordion-toggle wave-effect"><i
             class="fas fa-comments"></i>{{ __('Live Chat') }}</a>
 </li>
+<li>
+    <a href="{{ route('admin.marketing-push') }}" class="accordion-toggle wave-effect"><i
+            class="fas fa-bullhorn"></i>{{ __('Marketing Push') }}</a>
+</li>
     
     <li>
     <a href="#all_user_infos" class="accordion-toggle wave-effect" data-toggle="collapse" aria-expanded="false"><i

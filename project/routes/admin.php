@@ -212,6 +212,10 @@ Route::as('admin-')->group(function () {
     Route::get('/chat/customer-context', [LiveChatController::class, 'customerContext'])->name('admin.chat.context');
     Route::get('/chat/admins', [LiveChatController::class, 'admins'])->name('admin.chat.admins');
 
+    // Marketing push: broadcast a notification to all app users (FCM topic 'all').
+    Route::get('/marketing-push', [\App\Http\Controllers\Admin\PushCampaignController::class, 'index'])->name('admin.marketing-push');
+    Route::post('/marketing-push/send', [\App\Http\Controllers\Admin\PushCampaignController::class, 'send'])->name('admin.marketing-push.send');
+
     Route::controller(PreOrderController::class)->group(function () {
         Route::get('/pre-order/list', 'index')->name('admin.pre_order.index');
         Route::get('/pre-order/datatables/{status}', 'datatables')->name('admin.pre_order.datatables');
