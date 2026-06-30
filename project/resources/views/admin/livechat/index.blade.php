@@ -6,11 +6,30 @@
         .lc-inbox { width:320px; flex:none; background:#fff; border:1px solid #edf0f5; border-radius:12px;
                     overflow-y:auto; }
         .lc-inbox h6 { padding:14px 16px; margin:0; border-bottom:1px solid #f1f3f9; font-weight:700; }
+        .lc-filter { display:flex; gap:6px; padding:10px 16px; border-bottom:1px solid #f1f3f9; }
+        .lc-filter button { flex:1; border:1px solid #dee2e6; background:#fff; color:#495057; border-radius:8px;
+                            padding:6px 0; font-size:12.5px; font-weight:600; cursor:pointer; }
+        .lc-filter button.active { background:#4c6ef5; border-color:#4c6ef5; color:#fff; }
         .lc-conv { padding:12px 16px; border-bottom:1px solid #f4f6fa; cursor:pointer; }
         .lc-conv:hover, .lc-conv.active { background:#f3f6ff; }
         .lc-conv .nm { font-weight:600; color:#1f2937; }
         .lc-conv .meta { font-size:12px; color:#868e96; margin-top:2px; }
         .lc-conv .badge-unread { background:#f03e3e; color:#fff; border-radius:10px; padding:0 7px; font-size:11px; float:right; }
+        .lc-conv .assign-tag { display:inline-block; font-size:11px; margin-top:4px; padding:1px 8px; border-radius:9px;
+                               background:#e7f5ff; color:#1c7ed6; }
+        .lc-conv .assign-tag.mine { background:#ebfbee; color:#2f9e44; }
+        /* Assign dropdown in thread header */
+        .lc-assign { margin-left:auto; position:relative; }
+        .lc-assign-btn { border:1px solid #dee2e6; background:#fff; color:#495057; border-radius:8px;
+                         padding:5px 12px; font-size:13px; font-weight:600; cursor:pointer; }
+        .lc-assign-menu { position:absolute; right:0; top:34px; background:#fff; border:1px solid #e9ecef;
+                          border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.1); min-width:200px; max-height:280px;
+                          overflow-y:auto; z-index:30; display:none; padding:6px; }
+        .lc-assign-menu.open { display:block; }
+        .lc-assign-menu .it { padding:7px 10px; border-radius:7px; font-size:13px; cursor:pointer; color:#343a40; }
+        .lc-assign-menu .it:hover { background:#f1f3f9; }
+        .lc-assign-menu .it.sel { font-weight:700; color:#2f9e44; }
+        .lc-assign-menu .sep { height:1px; background:#f1f3f9; margin:5px 2px; }
         .lc-main { flex:1; display:flex; flex-direction:column; background:#fff; border:1px solid #edf0f5; border-radius:12px; }
         .lc-head { padding:14px 16px; border-bottom:1px solid #f1f3f9; font-weight:700; display:flex; align-items:center; gap:8px; }
         .lc-status { width:9px; height:9px; border-radius:50%; background:#adb5bd; }
@@ -49,12 +68,20 @@
         <div class="lc-wrap">
             <div class="lc-inbox">
                 <h6>{{ __('Conversations') }}</h6>
+                <div class="lc-filter">
+                    <button id="lc-f-all" class="active" onclick="setFilter(false)">{{ __('All') }}</button>
+                    <button id="lc-f-mine" onclick="setFilter(true)">{{ __('My chats') }}</button>
+                </div>
                 <div id="lc-list"><div class="lc-empty">{{ __('Loading…') }}</div></div>
             </div>
             <div class="lc-main">
                 <div class="lc-head">
                     <span class="lc-status" id="lc-conn"></span>
                     <span id="lc-title">{{ __('Select a conversation') }}</span>
+                    <div class="lc-assign" id="lc-assign" style="display:none;">
+                        <button class="lc-assign-btn" id="lc-assign-btn" onclick="toggleAssignMenu()">{{ __('Assign') }} ▾</button>
+                        <div class="lc-assign-menu" id="lc-assign-menu"></div>
+                    </div>
                 </div>
                 <div class="lc-body" id="lc-thread">
                     <div class="lc-empty">{{ __('Pick a customer on the left to start chatting.') }}</div>
@@ -79,9 +106,18 @@
         var BASE = @json($chatBase);
         var SOCKET_PATH = @json($socketPath);
         var CONTEXT_URL = @json($contextUrl);
+        var ADMINS_URL = @json($adminsUrl);
+        var ME_ID = @json($adminId);
+        var ME_NAME = @json($adminName);
         var currentConv = null, socket = null;
+        var convCache = [];      // last inbox list (for filter + assign updates)
+        var admins = [];         // roster for assign dropdown
+        var filterMine = false;  // "My chats" toggle
+        var unreadTotal = 0;     // tab-title badge counter
+        var BASE_TITLE = document.title;
 
         function authHeaders() { return { 'Authorization': 'Bearer ' + TOKEN }; }
+        function convById(id) { for (var i=0;i<convCache.length;i++){ if (convCache[i].id===id) return convCache[i]; } return null; }
         function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
         function fmtTime(s){ try { return new Date(s).toLocaleString(); } catch(e){ return ''; } }
 
@@ -89,23 +125,45 @@
             try {
                 var r = await fetch(BASE + '/admin/conversations', { headers: authHeaders() });
                 var d = await r.json();
-                renderInbox(d.conversations || []);
+                convCache = d.conversations || [];
+                renderInbox();
+                refreshTitle();
             } catch (e) { /* ignore */ }
         }
 
-        function renderInbox(list) {
+        function renderInbox() {
             var el = document.getElementById('lc-list');
-            if (!list.length) { el.innerHTML = '<div class="lc-empty">{{ __('No conversations yet') }}</div>'; return; }
+            var list = filterMine
+                ? convCache.filter(function (c) { return Number(c.assigned_admin_id) === Number(ME_ID); })
+                : convCache;
+            if (!list.length) {
+                el.innerHTML = '<div class="lc-empty">' +
+                    (filterMine ? '{{ __('No chats assigned to you') }}' : '{{ __('No conversations yet') }}') + '</div>';
+                return;
+            }
             el.innerHTML = list.map(function (c) {
                 var unread = c.unread_admin > 0 ? '<span class="badge-unread">' + c.unread_admin + '</span>' : '';
                 var active = c.id === currentConv ? ' active' : '';
                 var label = c.guest_name ? esc(c.guest_name) : ('{{ __('Customer') }} #' + (c.user_id || '?'));
                 var phone = c.guest_phone || '';
                 var meta = (phone ? esc(phone) + ' · ' : '') + (c.last_message_at ? fmtTime(c.last_message_at) : '');
+                var tag = '';
+                if (c.assigned_admin_id) {
+                    var mine = Number(c.assigned_admin_id) === Number(ME_ID);
+                    tag = '<div class="assign-tag' + (mine ? ' mine' : '') + '">'
+                        + (mine ? '{{ __('You') }}' : esc(c.assigned_admin_name || '{{ __('Assigned') }}')) + '</div>';
+                }
                 return '<div class="lc-conv' + active + '" onclick="openConv(' + c.id + ',' + (c.user_id || 'null') + ',\'' + phone + '\')">'
                     + unread + '<div class="nm">' + label + '</div>'
-                    + '<div class="meta">' + meta + '</div></div>';
+                    + '<div class="meta">' + meta + '</div>' + tag + '</div>';
             }).join('');
+        }
+
+        function setFilter(mine) {
+            filterMine = mine;
+            document.getElementById('lc-f-all').classList.toggle('active', !mine);
+            document.getElementById('lc-f-mine').classList.toggle('active', mine);
+            renderInbox();
         }
 
         async function openConv(id, userId, phone) {
@@ -114,6 +172,8 @@
                 (phone ? phone : '{{ __('Customer') }} #' + (userId || '?'));
             document.getElementById('lc-input').disabled = false;
             document.getElementById('lc-send').disabled = false;
+            document.getElementById('lc-assign').style.display = 'block';
+            renderAssignMenu();
             loadContext(userId, phone);
             try {
                 var r = await fetch(BASE + '/admin/conversations/' + id + '/messages', { headers: authHeaders() });
@@ -186,6 +246,119 @@
             inp.value = '';
         }
 
+        // ---- assignment ----
+        async function loadAdmins() {
+            try {
+                var r = await fetch(ADMINS_URL, { headers: { 'Accept': 'application/json' } });
+                var d = await r.json();
+                admins = (d && d.admins) || [];
+            } catch (e) { admins = []; }
+        }
+
+        function renderAssignMenu() {
+            var menu = document.getElementById('lc-assign-menu');
+            var conv = convById(currentConv);
+            var curId = conv && conv.assigned_admin_id ? Number(conv.assigned_admin_id) : null;
+            var html = '<div class="it' + (curId === Number(ME_ID) ? ' sel' : '') + '" onclick="assignConv(' + Number(ME_ID) + ')">'
+                + '{{ __('Assign to me') }}</div><div class="sep"></div>';
+            admins.forEach(function (a) {
+                if (Number(a.id) === Number(ME_ID)) return; // "me" already on top
+                html += '<div class="it' + (curId === Number(a.id) ? ' sel' : '') + '" onclick="assignConv(' + Number(a.id) + ')">'
+                    + esc(a.name) + '</div>';
+            });
+            html += '<div class="sep"></div><div class="it" onclick="assignConv(null)">{{ __('Unassign') }}</div>';
+            menu.innerHTML = html;
+            // header button reflects current assignee
+            var btn = document.getElementById('lc-assign-btn');
+            btn.textContent = (curId
+                ? ('{{ __('Assigned') }}: ' + (curId === Number(ME_ID) ? '{{ __('You') }}' : (nameOf(curId) || '')))
+                : '{{ __('Assign') }}') + ' ▾';
+        }
+
+        function nameOf(id) {
+            for (var i=0;i<admins.length;i++){ if (Number(admins[i].id)===Number(id)) return admins[i].name; }
+            var c = convById(currentConv);
+            return c ? c.assigned_admin_name : '';
+        }
+
+        function toggleAssignMenu() { document.getElementById('lc-assign-menu').classList.toggle('open'); }
+
+        async function assignConv(adminId) {
+            document.getElementById('lc-assign-menu').classList.remove('open');
+            if (!currentConv) return;
+            var name = adminId === null ? null
+                : (Number(adminId) === Number(ME_ID) ? ME_NAME : nameOf(adminId));
+            try {
+                var r = await fetch(BASE + '/admin/conversations/' + currentConv + '/assign', {
+                    method: 'POST',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+                    body: JSON.stringify({ assigned_admin_id: adminId, assigned_admin_name: name })
+                });
+                var d = await r.json();
+                if (!d || !d.ok) { alert('{{ __('Assignment failed') }}'); return; }
+                var conv = convById(currentConv);
+                if (conv) { conv.assigned_admin_id = adminId; conv.assigned_admin_name = name; }
+                renderInbox();
+                renderAssignMenu();
+            } catch (e) { alert('{{ __('Assignment failed') }}'); }
+        }
+
+        // close assign menu on outside click
+        document.addEventListener('click', function (e) {
+            var wrap = document.getElementById('lc-assign');
+            if (wrap && !wrap.contains(e.target)) document.getElementById('lc-assign-menu').classList.remove('open');
+        });
+
+        // ---- notifications (WhatsApp-web style) ----
+        function refreshTitle() {
+            unreadTotal = convCache.reduce(function (s, c) { return s + (Number(c.unread_admin) || 0); }, 0);
+            document.title = unreadTotal > 0 ? '(' + unreadTotal + ') ' + BASE_TITLE : BASE_TITLE;
+        }
+
+        var audioCtx = null;
+        function beep() {
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination);
+                o.type = 'sine'; o.frequency.value = 660;
+                g.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.02);
+                g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+                o.start(); o.stop(audioCtx.currentTime + 0.36);
+            } catch (e) { /* audio blocked until first interaction */ }
+        }
+
+        function setupNotifications() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                try { Notification.requestPermission(); } catch (e) {}
+            }
+        }
+
+        function desktopNotify(conv, body) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            var who = conv && conv.guest_name ? conv.guest_name
+                : ('{{ __('Customer') }} #' + ((conv && conv.user_id) || '?'));
+            try {
+                var n = new Notification('{{ __('New message') }} — ' + who, { body: body || '', tag: 'lc-' + (conv ? conv.id : '') });
+                n.onclick = function () {
+                    window.focus();
+                    if (conv) openConv(conv.id, conv.user_id || 'null', conv.guest_phone || '');
+                    n.close();
+                };
+            } catch (e) { /* ignore */ }
+        }
+
+        // Fire sound + desktop popup for an incoming customer message, unless the
+        // admin is already focused on that exact conversation.
+        function onCustomerMessage(m) {
+            var focusedHere = (document.visibilityState === 'visible') && (m.conversation_id === currentConv);
+            if (focusedHere) return;
+            beep();
+            var conv = convById(m.conversation_id);
+            desktopNotify(conv, m.body);
+        }
+
         function initSocket() {
             socket = io(window.location.origin, {
                 path: SOCKET_PATH, auth: { token: TOKEN }, transports: ['websocket', 'polling']
@@ -194,12 +367,19 @@
             socket.on('disconnect', function () { document.getElementById('lc-conn').classList.remove('on'); });
             socket.on('message:new', function (m) {
                 if (m.conversation_id === currentConv) appendMsg(m);
+                if (m.sender_type === 'user') onCustomerMessage(m);
                 loadInbox();
             });
             socket.on('inbox:update', function () { loadInbox(); });
             socket.on('connect_error', function (e) { console.log('chat connect_error', e.message); });
         }
 
+        // refresh tab title when the admin returns to the tab
+        window.addEventListener('focus', refreshTitle);
+        document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') refreshTitle(); });
+
+        setupNotifications();
+        loadAdmins();
         initSocket();
         loadInbox();
     </script>

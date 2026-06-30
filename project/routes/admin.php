@@ -210,6 +210,7 @@ Route::as('admin-')->group(function () {
     // Live Chat console (talks to self-hosted Node service via /chat). Admin-gated in controller.
     Route::get('/live-chat', [LiveChatController::class, 'index'])->name('admin.live-chat');
     Route::get('/chat/customer-context', [LiveChatController::class, 'customerContext'])->name('admin.chat.context');
+    Route::get('/chat/admins', [LiveChatController::class, 'admins'])->name('admin.chat.admins');
 
     Route::controller(PreOrderController::class)->group(function () {
         Route::get('/pre-order/list', 'index')->name('admin.pre_order.index');

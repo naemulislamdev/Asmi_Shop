@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -27,8 +28,27 @@ class LiveChatController extends Controller
             'chatBase'   => '/chat',                 // nginx path -> Node service
             'socketPath' => '/chat/socket.io',
             'chatToken'  => $token,
+            'adminId'    => (int) $admin->id,
             'adminName'  => $admin->name ?? 'Admin',
             'contextUrl' => route('admin.chat.context'),
+            'adminsUrl'  => route('admin.chat.admins'),
+        ]);
+    }
+
+    /**
+     * List of admins for the chat-assignment dropdown. Admins live in the
+     * Laravel DB (not the isolated asmi_chat DB), so the console fetches the
+     * roster from here. Admin-only; returns plain JSON.
+     */
+    public function admins()
+    {
+        abort_unless(Auth::guard('admin')->user(), 403);
+
+        $admins = Admin::orderBy('name')->get(['id', 'name']);
+
+        return response()->json([
+            'status' => true,
+            'admins' => $admins,
         ]);
     }
 
